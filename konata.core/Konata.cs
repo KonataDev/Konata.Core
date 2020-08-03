@@ -12,7 +12,7 @@ namespace Konata
     {
         public static void Main()
         {
-            byte[] tlv = Tlv.T191();
+            byte[] tlv = Tlv.T202(Device.MacAddress, "<unknown ssid>");
 
             Console.WriteLine(Hex.Bytes2HexStr(tlv));
             Console.Read();

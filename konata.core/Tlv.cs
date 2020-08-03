@@ -185,9 +185,12 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T202()
+        public static byte[] T202(byte[] bssid, string ssid)
         {
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x202);
+            builder.PushBytes(Md5.Create(bssid), false, true, true, 16);
+            builder.PushString(ssid, true, true, 32);
+            return builder.GetPacket();
         }
 
         public static byte[] T511(string[] domains)
