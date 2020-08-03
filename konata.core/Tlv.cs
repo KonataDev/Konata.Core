@@ -1,5 +1,6 @@
 ﻿using System;
 using Konata.Utils;
+using Konata.Crypto;
 
 namespace Konata
 {
@@ -164,10 +165,11 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T187()
+        public static byte[] T187(byte[] macAddress)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x187);
+            builder.PushBytes(Md5.Create(macAddress));
+            return builder.GetPacket();
         }
 
         public static byte[] T188()

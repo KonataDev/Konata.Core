@@ -36,6 +36,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="crypto\Md5.cs" />
     <Compile Include="crypto\Tea.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Konata.cs" />
