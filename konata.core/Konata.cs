@@ -12,23 +12,7 @@ namespace konata
     {
         static void Main()
         {
-            byte[] tlv = Tlv.T511(
-                new string[] {
-                    "tenpay.com",
-                    "openmobile.qq.com",
-                    "docs.qq.com",
-                    "connect.qq.com",
-                    "qzone.qq.com",
-                    "vip.qq.com",
-                    "qun.qq.com",
-                    "game.qq.com",
-                    "qqweb.qq.com",
-                    "office.qq.com",
-                    "ti.qq.com",
-                    "mail.qq.com",
-                    "qzone.com",
-                    "mma.qq.com"
-                });
+            byte[] tlv = Tlv.T116(16252796, 66560, new long[] { 1600000226 });
 
             Console.WriteLine(Hex.Bytes2HexStr(tlv));
             Console.Read();

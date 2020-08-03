@@ -25,7 +25,7 @@ namespace Konata
             return new byte[0];
         }
 
-        static public byte[] T018(long appID, int appClientVersion, ulong uin, int preservedBeZero)
+        static public byte[] T018(long appID, int appClientVersion, ulong uin, int preservedBeZero = 0)
         {
             TlvBuilder builder = new TlvBuilder(0x18);
             builder.PushInt16(1); // _ping_version
@@ -91,10 +91,18 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        static public byte[] T116(int i, int i2, long[] jArr)
+        static public byte[] T116(int bitmap, int getSig, long[] subAppIDList)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x116);
+            builder.PushInt8(0); // _ver
+            builder.PushInt32(bitmap);
+            builder.PushInt32(getSig);
+            builder.PushInt8((sbyte)subAppIDList.Length);
+            foreach (long element in subAppIDList)
+            {
+                builder.PushInt32((int)element);
+            }
+            return builder.GetPacket();
         }
 
         static public byte[] T142(string apkID)
@@ -142,12 +150,12 @@ namespace Konata
             return new byte[0];
         }
 
-        static public byte[] T177(long time = 1577331209, string unknownArg1 = "6.0.0.2425")
+        static public byte[] T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
         {
             TlvBuilder builder = new TlvBuilder(0x177);
             builder.PushInt8(1);
-            builder.PushInt32((int)time);
-            builder.PushString(unknownArg1);
+            builder.PushInt32((int)buildTime);
+            builder.PushString(sdkVersion);
             return builder.GetPacket();
         }
 
