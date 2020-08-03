@@ -55,9 +55,16 @@ namespace Konata.Utils
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushString(string value)
+        public void PushString(string value, bool IncludePrefixByteLength = true)
         {
-            PushBytes(Encoding.UTF8.GetBytes(value), false);
+            byte[] stringByte = Encoding.UTF8.GetBytes(value);
+
+            if (IncludePrefixByteLength)
+            {
+                PushInt16((short)stringByte.Length);
+            }
+
+            PushBytes(stringByte, false);
         }
 
         public void PushBytes(byte[] value, bool flip = true)

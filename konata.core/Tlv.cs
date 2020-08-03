@@ -74,8 +74,6 @@ namespace Konata
             return builder.GetPacket();
         }
 
-
-
         static public byte[] T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
         {
             TlvBuilder builder = new TlvBuilder(0x107);
@@ -108,10 +106,14 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        static public byte[] T141()
+        static public byte[] T141(string simOperatorName, int networkType, string apnName)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x141);
+            builder.PushInt16(1); // _version
+            builder.PushString(simOperatorName);
+            builder.PushInt16((short)networkType);
+            builder.PushString(apnName);
+            return builder.GetPacket();
         }
 
         // 未完成 有加密
@@ -121,10 +123,11 @@ namespace Konata
             return new byte[0];
         }
 
-        static public byte[] T145()
+        static public byte[] T145(byte[] guid)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x145);
+            builder.PushBytes(guid, false);
+            return builder.GetPacket();
         }
 
         static public byte[] T147()
@@ -138,12 +141,12 @@ namespace Konata
 
             return new byte[0];
         }
-        static public byte[] T177(long unknownArg0 = 0x5E042A09, string unknownArg1 = "6.0.0.2425")
+
+        static public byte[] T177(long time = 1577331209, string unknownArg1 = "6.0.0.2425")
         {
             TlvBuilder builder = new TlvBuilder(0x177);
             builder.PushInt8(1);
-            builder.PushInt32((int)unknownArg0);
-            builder.PushInt16((short)unknownArg1.Length);
+            builder.PushInt32((int)time);
             builder.PushString(unknownArg1);
             return builder.GetPacket();
         }
@@ -172,11 +175,11 @@ namespace Konata
             return new byte[0];
         }
 
-        static public byte[] T511(List<string> Domains)
+        static public byte[] T511(string[] Domains)
         {
             TlvBuilder builder = new TlvBuilder(0x511);
 
-            builder.PushUInt16((ushort)Domains.Count);
+            builder.PushUInt16((ushort)Domains.Length);
 
             foreach (string element in Domains)
             {

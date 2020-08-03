@@ -64,6 +64,8 @@ namespace Konata.Utils
 
         public static byte[] HexStr2Bytes(string str)
         {
+            str = str.Replace(" ", "");
+
             if (str == null || str == "")
             {
                 return emptyBytes;
