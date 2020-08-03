@@ -172,10 +172,11 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T188()
+        public static byte[] T188(byte[] androidId)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x188);
+            builder.PushBytes(Md5.Create(androidId));
+            return builder.GetPacket();
         }
 
         public static byte[] T191()
