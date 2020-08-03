@@ -111,8 +111,7 @@ namespace Konata
         {
             TlvBuilder builder = new TlvBuilder(0x142);
             builder.PushInt16(0); // _version
-            builder.PushInt16(20); // limit_len
-            builder.PushString(apkId);
+            builder.PushString(apkId, true, true, 32);
             return builder.GetPacket();
         }
 
@@ -179,15 +178,15 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T191()
+        public static byte[] T191(int unknownK = 0x82)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x191);
+            builder.PushUInt8((byte)unknownK);
+            return builder.GetPacket();
         }
 
         public static byte[] T202()
         {
-
             return new byte[0];
         }
 
