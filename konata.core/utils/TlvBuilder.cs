@@ -55,36 +55,46 @@ namespace Konata.Utils
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushString(string value, bool IncludePrefixByteLength = true)
+        public void PushString(string value, bool needPrefixLength = true, bool needLimitLength = false, int limitLength = 0)
         {
-            byte[] stringByte = Encoding.UTF8.GetBytes(value);
-
-            if (IncludePrefixByteLength)
-            {
-                PushInt16((short)stringByte.Length);
-            }
-
-            PushBytes(stringByte, false);
+            PushBytes(Encoding.UTF8.GetBytes(value), false, needPrefixLength, needLimitLength, limitLength);
         }
 
-        public void PushBytes(byte[] value, bool flip = true)
+        public void PushBytes(byte[] value, bool needFlipData = true, bool needPrefixLength = false, bool needLimitLength = false, int limitLength = 0)
         {
-            body.Add(flip ? value.Reverse().ToArray() : value);
+            byte[] data = value;
+
+            if (needLimitLength && data.Length > limitLength)
+            {
+                data = value.Take(limitLength).ToArray();
+            }
+
+            if (needFlipData && data.Length > 1)
+            {
+                data = data.Reverse().ToArray();
+            }
+
+            if (needPrefixLength)
+            {
+                PushUInt16((ushort)data.Length);
+            }
+
+            body.Add(data);
         }
 
         public byte[] GetPacket()
         {
-            byte[] _tlv_body = new byte[0];
+            byte[] tlvBody = new byte[0];
 
-            foreach (byte[] i in body)
+            foreach (byte[] element in body)
             {
-                _tlv_body = _tlv_body.Concat(i).ToArray();
+                tlvBody = tlvBody.Concat(element).ToArray();
             }
 
-            byte[] _tlv_cmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
-            byte[] _tlv_length = BitConverter.GetBytes((short)_tlv_body.Length).Reverse().ToArray();
+            byte[] tlvCmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
+            byte[] tlvLength = BitConverter.GetBytes((short)tlvBody.Length).Reverse().ToArray();
 
-            return _tlv_cmd.Concat(_tlv_length).Concat(_tlv_body).ToArray();
+            return tlvCmd.Concat(tlvLength).Concat(tlvBody).ToArray();
         }
 
 
