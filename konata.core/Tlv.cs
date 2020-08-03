@@ -193,6 +193,13 @@ namespace Konata
             return builder.GetPacket();
         }
 
+        public static byte[] T318(byte[] tgtQR)
+        {
+            TlvBuilder builder = new TlvBuilder(0x318);
+            builder.PushBytes(tgtQR, false);
+            return builder.GetPacket();
+        }
+
         public static byte[] T511(string[] domains)
         {
             TlvBuilder builder = new TlvBuilder(0x511);
