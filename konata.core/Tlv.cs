@@ -185,45 +185,54 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T202(byte[] bssid, string ssid)
+        public static byte[] T202(byte[] wifiBssid, string wifiSsid)
         {
             TlvBuilder builder = new TlvBuilder(0x202);
-            builder.PushBytes(Md5.Create(bssid), false, true, true, 16);
-            builder.PushString(ssid, true, true, 32);
+            builder.PushBytes(Md5.Create(wifiBssid), false, true, true, 16);
+            builder.PushString(wifiSsid, true, true, 32);
             return builder.GetPacket();
         }
 
         public static byte[] T511(string[] domains)
         {
             TlvBuilder builder = new TlvBuilder(0x511);
-
             builder.PushUInt16((ushort)domains.Length);
-
             foreach (string element in domains)
             {
                 builder.PushInt8(1);
                 builder.PushString(element);
             }
-
             return builder.GetPacket();
         }
 
-        public static byte[] T516()
+        public static byte[] T516(int sourceType = 0)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x516);
+            builder.PushInt32(sourceType);
+            return builder.GetPacket();
         }
 
-        public static byte[] T521()
+        public static byte[] T521(int productType = 0, short unknown = 0)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x521);
+            builder.PushInt32(productType);
+            builder.PushInt16(unknown);
+            return builder.GetPacket();
         }
 
-        public static byte[] T525()
+        public static byte[] T525(byte[] t536Data)
         {
+            TlvBuilder builder = new TlvBuilder(0x525);
+            builder.PushInt16(1);
+            builder.PushBytes(t536Data, false);
+            return builder.GetPacket();
+        }
 
-            return new byte[0];
+        public static byte[] T536(byte[] loginExtraData)
+        {
+            TlvBuilder builder = new TlvBuilder(0x536);
+            builder.PushBytes(loginExtraData, false);
+            return builder.GetPacket();
         }
 
     }
