@@ -5,7 +5,7 @@ namespace Konata
 {
     static class Tlv
     {
-        public static byte[] T001(ulong uin, byte[] ipAddress)
+        public static byte[] T1(ulong uin, byte[] ipAddress)
         {
             TlvBuilder builder = new TlvBuilder(0x01);
             builder.PushInt16(1); // _ip_ver
@@ -17,10 +17,13 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T008()
+        public static byte[] T8(int localId = 2052, int timeZoneVer = 0, int timeZoneOffset = 0)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x08);
+            builder.PushInt16((short)timeZoneVer);
+            builder.PushInt32(localId);
+            builder.PushInt16((short)timeZoneOffset);
+            return builder.GetPacket();
         }
 
         public static byte[] T018(long appId, int appClientVersion, ulong uin, int preservedBeZero = 0)
@@ -145,10 +148,11 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T154()
+        public static byte[] T154(int ssoSequenceId)
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x154);
+            builder.PushInt32(ssoSequenceId);
+            return builder.GetPacket();
         }
 
         public static byte[] T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
