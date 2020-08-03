@@ -1,74 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Konata.Utils
 {
     class TlvBuilder
     {
-        private short cmd_;
-        private List<byte[]> body_;
+        private ushort cmd;
+        private List<byte[]> body = new List<byte[]>();
 
-        public TlvBuilder(short command)
+        public TlvBuilder(ushort command)
         {
-            cmd_ = command;
+            cmd = command;
         }
 
-        public void PushInt16(Int16 value)
+        public void PushInt8(sbyte value)
+        {
+            PushBytes(new byte[] { (byte)value });
+        }
+
+        public void PushUInt8(byte value)
+        {
+            PushBytes(new byte[] { value });
+        }
+
+        public void PushInt16(short value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushUint16(UInt16 value)
+        public void PushUInt16(ushort value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushInt32(Int32 value)
+        public void PushInt32(int value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushUint32(UInt32 value)
+        public void PushUInt32(uint value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushInt64(Int64 value)
+        public void PushInt64(long value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushUint64(UInt64 value)
+        public void PushUInt64(ulong value)
         {
             PushBytes(BitConverter.GetBytes(value));
         }
 
-        public void PushHexStr(string value)
+        public void PushString(string value)
         {
-
+            PushBytes(Encoding.UTF8.GetBytes(value), false);
         }
 
-        public void PushBytes(byte[] value)
+        public void PushBytes(byte[] value, bool flip = true)
         {
-            body_.Add(value);
+            body.Add(flip ? value.Reverse().ToArray() : value);
         }
 
         public byte[] GetPacket()
         {
             byte[] _tlv_body = new byte[0];
 
-            foreach (byte[] i in body_)
+            foreach (byte[] i in body)
             {
                 _tlv_body = _tlv_body.Concat(i).ToArray();
             }
 
-            byte[] _tlv_cmd = BitConverter.GetBytes(cmd_);
-            byte[] _tlv_length = BitConverter.GetBytes((short)_tlv_body.Length);
+            byte[] _tlv_cmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
+            byte[] _tlv_length = BitConverter.GetBytes((short)_tlv_body.Length).Reverse().ToArray();
 
-            return _tlv_length.Concat(_tlv_cmd).Concat(_tlv_body).ToArray();
+            return _tlv_cmd.Concat(_tlv_length).Concat(_tlv_body).ToArray();
         }
 
 

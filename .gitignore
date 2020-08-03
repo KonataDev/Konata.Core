@@ -1,3 +1,4 @@
 # visual studio files
 /.vs/
-
+obj/
+bin/
