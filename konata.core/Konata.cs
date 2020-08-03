@@ -12,7 +12,7 @@ namespace konata
     {
         static void Main()
         {
-            byte[] tlv = Tlv.T107(1);
+            byte[] tlv = Tlv.T177();
 
             Console.WriteLine(Hex.Bytes2HexStr(tlv));
             Console.Read();

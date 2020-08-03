@@ -138,10 +138,14 @@ namespace Konata
 
             return new byte[0];
         }
-        static public byte[] T177()
+        static public byte[] T177(long unknownArg0 = 0x5E042A09, string unknownArg1 = "6.0.0.2425")
         {
-
-            return new byte[0];
+            TlvBuilder builder = new TlvBuilder(0x177);
+            builder.PushInt8(1);
+            builder.PushInt32((int)unknownArg0);
+            builder.PushInt16((short)unknownArg1.Length);
+            builder.PushString(unknownArg1);
+            return builder.GetPacket();
         }
 
         static public byte[] T187()
