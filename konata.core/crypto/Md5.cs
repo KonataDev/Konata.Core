@@ -7,7 +7,7 @@ namespace Konata.Crypto
     {
         public static byte[] Create(byte[] data)
         {
-            return HashAlgorithm.Create("MD5").ComputeHash(data);
+            return MD5.Create().ComputeHash(data);
         }
     }
 }

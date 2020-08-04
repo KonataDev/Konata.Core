@@ -1,4 +1,5 @@
 # visual studio files
 /.vs/
+/.vscode/
 obj/
 bin/
