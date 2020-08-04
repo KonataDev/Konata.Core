@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{47052D6B-7E37-4CD2-8658-102BEDCE394D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>konata</RootNamespace>
-    <AssemblyName>konata</AssemblyName>
+    <ProjectGuid>{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>konata.debug</RootNamespace>
+    <AssemblyName>konata.debug</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,19 +32,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="crypto\Md5Cryptor.cs" />
-    <Compile Include="crypto\TeaCryptor.cs" />
-    <Compile Include="DeviceInfo.cs" />
-    <Compile Include="Tlv.cs" />
-    <Compile Include="utils\Hex.cs" />
-    <Compile Include="utils\TlvBuilder.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\konata.core\konata.core.csproj">
+      <Project>{47052d6b-7e37-4cd2-8658-102bedce394d}</Project>
+      <Name>konata.core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

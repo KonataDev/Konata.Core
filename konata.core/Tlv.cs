@@ -4,7 +4,7 @@ using Konata.Crypto;
 
 namespace Konata
 {
-    static class Tlv
+    public static class Tlv
     {
         public static byte[] T1(ulong uin, byte[] ipAddress)
         {
