@@ -8,7 +8,8 @@ namespace Konata
     {
         public static void Main()
         {
-            byte[] tlv = Tlv.T525(Tlv.T536(Hex.HexStr2Bytes("01 00")));
+            byte[] tlv = Tlv.T124("android", "9.0.0",
+                0, "中華電信", new byte[] { 0x00 }, "wifi");
 
             Console.WriteLine(Hex.Bytes2HexStr(tlv));
             Console.Read();

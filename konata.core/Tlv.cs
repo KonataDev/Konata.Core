@@ -76,6 +76,45 @@ namespace Konata
             return builder.GetPacket();
         }
 
+        /*
+         * decompiled signature:(long arg9, long arg11, int arg13, long arg14,
+         * byte[] arg16, byte[] arg17, int arg18, byte[] arg19, long arg20, 
+         * byte[] arg22, int arg23, byte[] arg24, int arg25)
+         * public static byte[] T106(long appId, long subAppId, int appClientVersion,
+           ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
+           byte[] uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
+         */
+        public static byte[] T106(long appId, long subAppId, int appClientVersion, long uin)
+        {
+            TlvBuilder builder = new TlvBuilder(0x106);
+            builder.PushInt16(3); // _TGTGTVer
+            //(int)(Math.random() * 2147483647)
+            int _r = Convert.ToInt32(new Random().Next() * 2147483647);
+            builder.PushInt32(_r);
+            builder.PushInt32(5);  // _SSoVer
+            //builder.PushInt32(Covert.ToInt32(arg9));
+            //builder.PushInt32(arg13);
+            //builder.PushInt64(arg14);
+            //builder.PushBytes(arg16);
+            //builder.PushBytes(arg17);
+            //builder.PushInt8(arg18);
+            //builder.PushBytes(arg19);
+            //builder.PushBytes(arg22);
+            //builder.PushInt32(0);   // maybe padding
+            //if (arg24 == null || arg24.Length <= 0)
+            //{
+
+            //}
+            //else
+            //{
+            //    builder.Push
+            //}
+            //builder.PushInt8(arg23);
+            //builder.Push
+            return builder.GetPacket();
+            //arg11
+        }
+
         public static byte[] T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
         {
             TlvBuilder builder = new TlvBuilder(0x107);
@@ -104,6 +143,34 @@ namespace Konata
             {
                 builder.PushInt32((int)element);
             }
+            return builder.GetPacket();
+        }
+
+        public static byte[] T124(string osType, string osVersion, short networkType,
+            string networkDetail, byte[] unknownZeroBytes, string apnName)
+        {
+            TlvBuilder builder = new TlvBuilder(0x124);
+            builder.PushString(osType, true, true, 16);
+            builder.PushString(osVersion, true, true, 16);
+            builder.PushInt16(networkType);
+            builder.PushString(networkDetail, true, true, 16);
+            builder.PushBytes(unknownZeroBytes, false, true, true, 32);
+            builder.PushString(apnName, true, true, 16);
+            return builder.GetPacket();
+        }
+
+        //t128.get_tlv_128
+        //(request_global._new_install,
+        //request_global._read_guid,
+        //request_global._guid_chg,
+        //request_global._dev_report,
+        //request_global._device,
+        //request_global._IMEI,
+        //request_global._brand
+        public static byte[] T128(bool isNewInstall)
+        {
+            TlvBuilder builder = new TlvBuilder(0x128);
+
             return builder.GetPacket();
         }
 
@@ -193,10 +260,10 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T318(byte[] tgtQR)
+        public static byte[] T318(byte[] tgtQr)
         {
             TlvBuilder builder = new TlvBuilder(0x318);
-            builder.PushBytes(tgtQR, false);
+            builder.PushBytes(tgtQr, false);
             return builder.GetPacket();
         }
 

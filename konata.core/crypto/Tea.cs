@@ -14,7 +14,7 @@ namespace Konata.Crypto
         private byte[] _plain;
         private long _pos;
         private byte[] _prePlain;
-        private Random _random = new Random();
+        private readonly Random _random = new Random();
 
         private byte[] CopyMemory(byte[] arr, int arrIndex, long input)
         {
@@ -23,22 +23,27 @@ namespace Konata.Crypto
                 return arr;
             }
 
-            arr[arrIndex + 3] = (byte)((input & 4278190080u) >> 24);
-            arr[arrIndex + 2] = (byte)((input & 0xFF0000) >> 16);
-            arr[arrIndex + 1] = (byte)((input & 0xFF00) >> 8);
             arr[arrIndex] = (byte)(input & 0xFF);
-            arr[arrIndex] &= byte.MaxValue;
-            arr[arrIndex + 1] &= byte.MaxValue;
-            arr[arrIndex + 2] &= byte.MaxValue;
-            arr[arrIndex + 3] &= byte.MaxValue;
+            arr[arrIndex + 1] = (byte)((input >> 8) & 0xFF);
+            arr[arrIndex + 2] = (byte)((input >> 16) & 0xFF);
+            arr[arrIndex + 3] = (byte)((input >> 24) & 0xFF);
+
+            // arr[arrIndex + 3] = (byte)((input & 0xFF000000U) >> 24);
+            // arr[arrIndex + 2] = (byte)((input & 0xFF0000) >> 16);
+            // arr[arrIndex + 1] = (byte)((input & 0xFF00) >> 8);
+            // arr[arrIndex] = (byte)(input & 0xFF);
+            // arr[arrIndex] &= byte.MaxValue;
+            // arr[arrIndex + 1] &= byte.MaxValue;
+            // arr[arrIndex + 2] &= byte.MaxValue;
+            // arr[arrIndex + 3] &= byte.MaxValue;
             return arr;
         }
 
         private long GetUnsignedInt(byte[] arrayIn, int offset, int len)
         {
-            var num = 0L;
-            var num2 = len <= 8 ? offset + len : offset + 8;
-            for (var i = offset; i < num2; i++)
+            long num = 0L;
+            int num2 = len <= 8 ? offset + len : offset + 8;
+            for (int i = offset; i < num2; i++)
             {
                 num <<= 8;
                 num |= (ushort)(arrayIn[i] & 0xFF);
@@ -54,8 +59,8 @@ namespace Konata.Crypto
 
         private byte[] Decipher(byte[] arrayIn, byte[] arrayKey, long offset = 0L)
         {
-            var arr = new byte[24];
-            var array = new byte[8];
+            byte[] arr = new byte[24];
+            byte[] array = new byte[8];
             if (arrayIn.Length < 8)
             {
                 return array;
@@ -66,17 +71,17 @@ namespace Konata.Crypto
                 return array;
             }
 
-            var num = 3816266640L;
+            long num = 3816266640L;
             num &= uint.MaxValue;
-            var num2 = 2654435769L;
+            long num2 = 2654435769L;
             num2 &= uint.MaxValue;
-            var num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
-            var num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
-            var unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
-            var unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
-            var unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
-            var unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
-            for (var i = 1; i <= 16; i++)
+            long num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
+            long num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
+            long unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
+            long unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
+            long unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
+            long unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
+            for (int i = 1; i <= 16; i++)
             {
                 num4 -= ((num3 << 4) + unsignedInt3) ^ (num3 + num) ^ ((num3 >> 5) + unsignedInt4);
                 num4 &= uint.MaxValue;
@@ -101,23 +106,23 @@ namespace Konata.Crypto
 
         private byte[] Encipher(byte[] arrayIn, byte[] arrayKey, long offset = 0L)
         {
-            var array = new byte[8];
-            var arr = new byte[24];
+            byte[] array = new byte[8];
+            byte[] arr = new byte[24];
             if (arrayIn.Length < 8 || arrayKey.Length < 16)
             {
                 return array;
             }
 
-            var num = 0L;
-            var num2 = 2654435769L;
+            long num = 0L;
+            long num2 = 2654435769L;
             num2 &= uint.MaxValue;
-            var num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
-            var num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
-            var unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
-            var unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
-            var unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
-            var unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
-            for (var i = 1; i <= 16; i++)
+            long num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
+            long num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
+            long unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
+            long unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
+            long unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
+            long unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
+            for (int i = 1; i <= 16; i++)
             {
                 num += num2;
                 num &= uint.MaxValue;
@@ -154,8 +159,8 @@ namespace Konata.Crypto
                 }
             }
 
-            var array = Encipher(_plain, _key);
-            for (var i = 0; i <= 7; i++)
+            byte[] array = Encipher(_plain, _key);
+            for (int i = 0; i <= 7; i++)
             {
                 _out[_crypt + i] = array[i];
             }
@@ -193,7 +198,7 @@ namespace Konata.Crypto
                 return false;
             }
 
-            var num = _prePlain.Length - 1;
+            int num = _prePlain.Length - 1;
             _contextStart += 8L;
             _crypt += 8L;
             _pos = 0L;
@@ -218,7 +223,7 @@ namespace Konata.Crypto
 
             _out = new byte[arrayIn.Length + _pos + 10];
             _plain[0] = (byte)((Rand() & 0xF8) | _pos);
-            for (var i = 1; i <= _pos; i++)
+            for (int i = 1; i <= _pos; i++)
             {
                 _plain[i] = (byte)(Rand() & 0xFF);
             }
@@ -239,7 +244,7 @@ namespace Konata.Crypto
                 }
             }
 
-            var num = (int)offset;
+            int num = (int)offset;
             long num2 = arrayIn.Length;
             while (num2 > 0)
             {
@@ -277,7 +282,7 @@ namespace Konata.Crypto
         public byte[] Encrypt(byte[] arrayIn, byte[] arrayKey)
         {
             byte[] array = null;
-            var num = 0;
+            int num = 0;
             while (array == null && num < 2)
             {
                 try
@@ -310,7 +315,7 @@ namespace Konata.Crypto
         // Token: 0x06000637 RID: 1591 RVA: 0x00026210 File Offset: 0x00024410
         public byte[] Decrypt(byte[] inData, byte[] key)
         {
-            var result = new byte[0];
+            byte[] result = new byte[0];
             try
             {
                 result = Decrypt(inData, key, 0L);
@@ -336,18 +341,18 @@ namespace Konata.Crypto
 
         public byte[] Decrypt(byte[] arrayIn, byte[] arrayKey, long offset)
         {
-            var result = new byte[0];
+            byte[] result = new byte[0];
             if (arrayIn.Length < 16 || arrayIn.Length % 8 != 0)
             {
                 return result;
             }
 
-            var array = new byte[offset + 8];
+            byte[] array = new byte[offset + 8];
             arrayKey.CopyTo(_key, 0);
             _crypt = _preCrypt = 0L;
             _prePlain = Decipher(arrayIn, arrayKey, offset);
             _pos = _prePlain[0] & 7;
-            var num = arrayIn.Length - _pos - 10;
+            long num = arrayIn.Length - _pos - 10;
             if (num <= 0)
             {
                 return result;
@@ -368,7 +373,7 @@ namespace Konata.Crypto
                 }
                 else if (_pos == 8)
                 {
-                    for (var i = 0; i < array.Length; i++)
+                    for (int i = 0; i < array.Length; i++)
                     {
                         array[i] = arrayIn[i];
                     }
@@ -380,7 +385,7 @@ namespace Konata.Crypto
                 }
             }
 
-            var num2 = 0L;
+            long num2 = 0L;
             while (num != 0)
             {
                 if (_pos < 8)
@@ -414,7 +419,7 @@ namespace Konata.Crypto
                 }
                 else if (_pos == 8)
                 {
-                    for (var i = 0; i < array.Length; i++)
+                    for (int i = 0; i < array.Length; i++)
                     {
                         array[i] = arrayIn[i];
                     }

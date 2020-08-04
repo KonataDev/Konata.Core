@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace Konata.Utils
 {
-    class TlvBuilder
+    public class TlvBuilder
     {
-        private ushort cmd;
-        private List<byte[]> body = new List<byte[]>();
+        private readonly ushort cmd;
+        private readonly List<byte[]> body = new List<byte[]>();
 
         public TlvBuilder(ushort command)
         {
@@ -62,7 +62,8 @@ namespace Konata.Utils
 
         public void PushBytes(byte[] value, bool needFlipData = true, bool needPrefixLength = false, bool needLimitLength = false, int limitLength = 0)
         {
-            byte[] data = value;
+            byte[] data = new byte[value.Length];
+            Array.Copy(value, data, value.Length);
 
             if (needLimitLength && data.Length > limitLength)
             {
