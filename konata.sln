@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "konata.core", "konata.core\konata.core.csproj", "{47052D6B-7E37-4CD2-8658-102BEDCE394D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "konata.debug", "konata.debug\konata.debug.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{47052D6B-7E37-4CD2-8658-102BEDCE394D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47052D6B-7E37-4CD2-8658-102BEDCE394D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47052D6B-7E37-4CD2-8658-102BEDCE394D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
