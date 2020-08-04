@@ -8,10 +8,14 @@ namespace Konata
     {
         public static void Main()
         {
-            byte[] tlv = Tlv.T124("android", "9.0.0",
-                0, "中華電信", new byte[] { 0x00 }, "wifi");
+            byte[] output;
+            //byte[] key = Hex.HexStr2Bytes("01 55 C2 C0 CA A2 34 66 00 82 BC FF 33 80 EF FE");
+            //byte[] data = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
+            //byte[] encrypted = new Tea().Encrypt(data, key);
 
-            Console.WriteLine(Hex.Bytes2HexStr(tlv));
+            output = Tlv.T2("egijer0g943kg", new byte[] { 1, 2, 3, 4, 5, 56, 5, 5, 5 });
+
+            Console.WriteLine(Hex.Bytes2HexStr(output));
             Console.Read();
         }
 

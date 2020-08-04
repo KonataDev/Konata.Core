@@ -18,6 +18,15 @@ namespace Konata
             return builder.GetPacket();
         }
 
+        public static byte[] T2(string captchaCode, byte[] captchaKey)
+        {
+            TlvBuilder builder = new TlvBuilder(0x02);
+            builder.PushInt16(0); // _sigVer
+            builder.PushString(captchaCode);
+            builder.PushBytes(captchaKey, false, true);
+            return builder.GetPacket();
+        }
+
         public static byte[] T8(int localId = 2052, int timeZoneVer = 0, int timeZoneOffset = 0)
         {
             TlvBuilder builder = new TlvBuilder(0x08);
@@ -27,7 +36,7 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        public static byte[] T018(long appId, int appClientVersion, ulong uin, int preservedBeZero = 0)
+        public static byte[] T18(long appId, int appClientVersion, ulong uin, int preservedBeZero = 0)
         {
             TlvBuilder builder = new TlvBuilder(0x18);
             builder.PushInt16(1); // _ping_version
@@ -37,6 +46,13 @@ namespace Konata
             builder.PushInt32((int)uin);
             builder.PushInt16((short)preservedBeZero);
             builder.PushInt16(0);
+            return builder.GetPacket();
+        }
+
+        // 未完成
+        public static byte[] T104(string sigSession)
+        {
+            TlvBuilder builder = new TlvBuilder(0x104);
             return builder.GetPacket();
         }
 
@@ -80,40 +96,48 @@ namespace Konata
          * decompiled signature:(long arg9, long arg11, int arg13, long arg14,
          * byte[] arg16, byte[] arg17, int arg18, byte[] arg19, long arg20, 
          * byte[] arg22, int arg23, byte[] arg24, int arg25)
-         * public static byte[] T106(long appId, long subAppId, int appClientVersion,
-           ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
-           byte[] uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
          */
-        public static byte[] T106(long appId, long subAppId, int appClientVersion, long uin)
-        {
-            TlvBuilder builder = new TlvBuilder(0x106);
-            builder.PushInt16(3); // _TGTGTVer
-            //(int)(Math.random() * 2147483647)
-            int _r = Convert.ToInt32(new Random().Next() * 2147483647);
-            builder.PushInt32(_r);
-            builder.PushInt32(5);  // _SSoVer
-            //builder.PushInt32(Covert.ToInt32(arg9));
-            //builder.PushInt32(arg13);
-            //builder.PushInt64(arg14);
-            //builder.PushBytes(arg16);
-            //builder.PushBytes(arg17);
-            //builder.PushInt8(arg18);
-            //builder.PushBytes(arg19);
-            //builder.PushBytes(arg22);
-            //builder.PushInt32(0);   // maybe padding
-            //if (arg24 == null || arg24.Length <= 0)
-            //{
+        //public static byte[] T106(long appId, long subAppId, int appClientVersion,
+        //   ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
+        //   byte[] uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x106);
+        //    builder.PushInt16(3); // _TGTGTVer
+        //    //(int)(Math.random() * 2147483647)
+        //    int _r = Convert.ToInt32(new Random().Next() * 2147483647);
+        //    builder.PushInt32(_r);
+        //    builder.PushInt32(5);  // _SSoVer
+        //    builder.PushInt32((int)appId);  //originally arg9
+        //    builder.PushInt32(appClientVersion);  //originally arg13
+        //    builder.PushUInt64(uin);        //originally arg14
+        //    builder.PushBytes(ipAddress);           // originally arg16
+        //    builder.PushBytes(passwordMd5);           // originally arg17
+        //    builder.PushInt8(isSavePassword);            // originally arg18
+        //    builder.PushBytes(uinString);           // originally arg19
+        //    builder.PushBytes(tgtgKey);           // originally arg22
+        //    builder.PushInt32(0);   // maybe padding
+        //    builder.PushInt8(isGuidAvailable);            // originally arg23
+        //    if(guid==null || guid.Length <=0){   // originally arg24
+        //        for(int i = 0;i<3;i++){
+        //            int _r1 = Convert.ToInt32(new Random().Next() * 2147483647);
+        //            builder.PushInt8(_r1);
+        //        }
+        //    }else{
+        //        builder.PushBytes(guid);
+        //    }
+        //    builder.PushInt32(subAppId & 0xffffffff); //get the lower 32 bits originally arg11
+        //    builder.PushInt32(loginType); // originally arg25
 
-            //}
-            //else
-            //{
-            //    builder.Push
-            //}
-            //builder.PushInt8(arg23);
-            //builder.Push
-            return builder.GetPacket();
-            //arg11
-        }
+        //    List<byte> keyBytes = new List<byte>(uinString); // originally arg19
+        //    byte[] addtional = BitConverter.GetBytes(salt!=0?salt:uin);  // arg14 and arg20 is long
+        //    keyBytes.concat(addtional.ToList());
+        //    byte[] key = Md5.Create(keyBytes.ToArray());
+
+        //    TlvBuilder finalBuilder = new TlvBuilder(0x106);
+        //    byte[] encrypted = encrypt(builder.GetPacket(),key.getBytes()); //todo: an encrypt function encrypt(plaintext,key)
+        //    finalBuilder.PushBytes(encrypted);
+        //    return finalBuilder.GetPacket();
+        //}
 
         public static byte[] T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
         {
@@ -249,6 +273,13 @@ namespace Konata
         {
             TlvBuilder builder = new TlvBuilder(0x191);
             builder.PushUInt8((byte)unknownK);
+            return builder.GetPacket();
+        }
+
+        public static byte[] T192(string url)
+        {
+            TlvBuilder builder = new TlvBuilder(0x192);
+            builder.PushString(url, false);
             return builder.GetPacket();
         }
 
