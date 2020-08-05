@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Konata.Utils;
 using Konata.Crypto;
 
@@ -68,16 +69,14 @@ namespace Konata
             builder.PushInt32((int)appId);
             builder.PushInt32(appClientVersion);
             builder.PushUInt64(uin == 0 ? salt : uin);
-            //builder.PushInt8();
             builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            //builder.PushInt8();
             builder.PushBytes(ipAddress);
-
             builder.PushInt32((int)subAppId);
             builder.PushInt32(loginType);
             builder.PushInt16(0);
 
-            return builder.GetPacket();
+            byte[] cryptKey = passwordMd5.Concat(BitConverter.GetBytes(uin)).ToArray();
+            return builder.GetEnctyptedPacket(new TeaCryptor(), cryptKey);
         }
 
         public static byte[] T100(long appId, long subAppId, int appClientVersion)
@@ -102,8 +101,9 @@ namespace Konata
         //   byte[] uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
         //{
         //    TlvBuilder builder = new TlvBuilder(0x106);
+
         //    builder.PushInt16(3); // _TGTGTVer
-        //    //(int)(Math.random() * 2147483647)
+        //    //    //(int)(Math.random() * 2147483647)
         //    int _r = Convert.ToInt32(new Random().Next() * 2147483647);
         //    builder.PushInt32(_r);
         //    builder.PushInt32(5);  // _SSoVer

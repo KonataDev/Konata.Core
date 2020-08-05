@@ -39,10 +39,12 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="crypto\IKonataCryptor.cs" />
     <Compile Include="crypto\Md5Cryptor.cs" />
     <Compile Include="crypto\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="Tlv.cs" />
+    <Compile Include="utils\StreamBuilder.cs" />
     <Compile Include="utils\Hex.cs" />
     <Compile Include="utils\TlvBuilder.cs" />
   </ItemGroup>
