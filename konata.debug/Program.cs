@@ -16,6 +16,9 @@ namespace Konata.Debug
             //byte[] data = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
             //output = new TeaCryptor().Encrypt(data, key);
 
+            output = Tlv.T128(true, true, false,
+                new Md5Cryptor().Encrypt(new byte[] { 0x00 }), 0, Device.Name, Device.Vendor);
+
             Console.WriteLine(Hex.Bytes2HexStr(output));
             Console.Read();
         }
