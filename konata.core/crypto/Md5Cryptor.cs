@@ -3,11 +3,18 @@ using System.Security.Cryptography;
 
 namespace Konata.Crypto
 {
-    public static class Md5
+    public class Md5Cryptor : IKonataCryptor
     {
-        public static byte[] Create(byte[] data)
+
+        public byte[] Decrypt(byte[] data) => null;
+
+        public byte[] Decrypt(byte[] data, byte[] key) => null;
+
+        public byte[] Encrypt(byte[] data)
         {
             return MD5.Create().ComputeHash(data);
         }
+
+        public byte[] Encrypt(byte[] data, byte[] key) => null;
     }
 }
