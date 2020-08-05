@@ -46,6 +46,11 @@ namespace konata.Utils
             PushBytes(new byte[] { value });
         }
 
+        public void PushBool(bool value)
+        {
+            PushBytes(new byte[] { (byte)(value ? 1 : 0) });
+        }
+
         public void PushInt16(short value)
         {
             PushBytes(BitConverter.GetBytes(value));

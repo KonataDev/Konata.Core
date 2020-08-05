@@ -26,12 +26,16 @@ namespace Konata.Utils
             {
                 return null;
             }
-            char[] buf = new char[(bytes.Length * 2)];
+            char[] buf = new char[(bytes.Length * 2) + bytes.Length];
             for (int i = 0; i < bytes.Length; i++)
             {
                 byte b = bytes[i];
-                buf[(i * 2) + 1] = digits[b & 15];
-                buf[(i * 2) + 0] = digits[((byte)(b >> 4)) & 15];
+
+                if ((i * 3) + 3 < bytes.Length)
+                    buf[(i * 3) + 3] = ' ';
+                buf[(i * 3) + 1] = digits[b & 15];
+                buf[(i * 3) + 0] = digits[((byte)(b >> 4)) & 15];
+
             }
             return new string(buf);
         }
