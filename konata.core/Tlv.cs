@@ -143,18 +143,18 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        //t128.get_tlv_128
-        //(request_global._new_install,
-        //request_global._read_guid,
-        //request_global._guid_chg,
-        //request_global._dev_report,
-        //request_global._device,
-        //request_global._IMEI,
-        //request_global._brand
-        public static byte[] T128(bool isNewInstall)
+        public static byte[] T128(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
+            byte[] guid, int guidFlag, string deviceModel, string deviceBrand)
         {
             TlvBuilder builder = new TlvBuilder(0x128);
-
+            builder.PushInt16(0);
+            builder.PushBool(isNewInstall);
+            builder.PushBool(isGuidAvaliable);
+            builder.PushBool(isGuidChanged);
+            builder.PushInt32(guidFlag);
+            builder.PushString(deviceModel, true, true, 32);
+            builder.PushBytes(guid, false, true, true, 16);
+            builder.PushString(deviceBrand, true, true, 16);
             return builder.GetPacket();
         }
 
