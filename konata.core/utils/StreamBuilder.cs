@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
+using Konata.Crypto;
 
 namespace konata.Utils
 {
@@ -46,8 +45,13 @@ namespace konata.Utils
             PushBytes(new byte[] { value });
         }
 
-        public void PushBool(bool value)
+        public void PushBool(bool value, int length)
         {
+            if (length < 0 || length > 8)
+                throw new Exception("do not do that.");
+            byte[] boolBytes = new byte[length];
+            boolBytes[length - 1] = (byte)(value ? 1 : 0);
+
             PushBytes(new byte[] { (byte)(value ? 1 : 0) });
         }
 
@@ -90,7 +94,7 @@ namespace konata.Utils
             PushBytes(Encoding.UTF8.GetBytes(value), false, needPrefixLength, needLimitLength, limitLength);
         }
 
-        public byte[] GetStreamBytes()
+        public byte[] GetPlainBytes()
         {
             byte[] bytes = { };
             foreach (byte[] element in body)
@@ -98,6 +102,11 @@ namespace konata.Utils
                 bytes = bytes.Concat(element).ToArray();
             }
             return bytes;
+        }
+
+        public byte[] GetEncryptedBytes(IKonataCryptor cryptor, byte[] cryptKey)
+        {
+            return cryptor.Encrypt(GetPlainBytes(), cryptKey);
         }
 
     }

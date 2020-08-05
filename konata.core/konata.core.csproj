@@ -48,6 +48,7 @@
     <Compile Include="utils\StreamBuilder.cs" />
     <Compile Include="utils\Hex.cs" />
     <Compile Include="utils\TlvBuilder.cs" />
+    <Compile Include="utils\TlvPacker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

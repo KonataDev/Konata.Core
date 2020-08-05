@@ -17,7 +17,7 @@ namespace Konata.Utils
         public byte[] GetPacket()
         {
             byte[] tlvCmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
-            byte[] tlvBody = GetStreamBytes();
+            byte[] tlvBody = GetPlainBytes();
             byte[] tlvLength = BitConverter.GetBytes((short)tlvBody.Length).Reverse().ToArray();
 
             return tlvCmd.Concat(tlvLength).Concat(tlvBody).ToArray();
@@ -26,7 +26,7 @@ namespace Konata.Utils
         public byte[] GetEnctyptedPacket(IKonataCryptor cryptor, byte[] cryptKey)
         {
             byte[] tlvCmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
-            byte[] tlvBody = cryptor.Encrypt(GetStreamBytes(), cryptKey);
+            byte[] tlvBody = GetEncryptedBytes(cryptor, cryptKey);
             byte[] tlvLength = BitConverter.GetBytes((short)tlvBody.Length).Reverse().ToArray();
 
             return tlvCmd.Concat(tlvLength).Concat(tlvBody).ToArray();
