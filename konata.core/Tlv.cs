@@ -58,7 +58,6 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        // 未完成 有加密
         public static byte[] T106(long appId, long subAppId, int appClientVersion,
            ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
            string uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
@@ -80,7 +79,7 @@ namespace Konata
             builder.PushBytes(isGuidAvailable ? guid : Guid.Generate(), false);
             builder.PushInt32((int)subAppId);
             builder.PushInt32(loginType);
-            builder.PushString(uinString, true);
+            builder.PushString(uinString);
             builder.PushInt16(0);
 
             byte[] cryptKey = new Md5Cryptor().Encrypt(passwordMd5.Concat(BitConverter.GetBytes(uin).Reverse().ToArray()).ToArray());
