@@ -116,6 +116,14 @@ namespace Konata
             return builder.GetPacket();
         }
 
+        // 尚未測試
+        public static byte[] T109(string osType)
+        {
+            TlvBuilder builder = new TlvBuilder(0x109);
+            builder.PushString(osType, false);
+            return builder.GetPacket();
+        }
+
         public static byte[] T116(int bitmap, int getSig, long[] subAppIdList)
         {
             TlvBuilder builder = new TlvBuilder(0x116);
@@ -176,11 +184,56 @@ namespace Konata
             return builder.GetPacket();
         }
 
-        // 未完成 有加密
-        public static byte[] T144()
+        // 尚未測試
+        public static byte[] T144(string androidId, byte[] deviceDevInfo,
+            string osType, string osVersion, short networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
+            bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag, string deviceModel, string deviceBrand,
+            byte[] tgtgKey)
         {
+            return T144(
+                T109(androidId),
+                T52d(deviceDevInfo),
+                T124(osType, osVersion, networkType, networkDetail, unknownZeroBytes, apnName),
+                T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand),
+                null, tgtgKey
+                );
+        }
 
-            return new byte[0];
+        public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
+            byte[] tlv16e, byte[] tgtgKey)
+        {
+            TlvBuilder builder = new TlvBuilder(0x144);
+
+            TlvPacker packer = new TlvPacker();
+            packer.PushTlv(tlv109);
+            packer.PushTlv(tlv52d);
+            packer.PushTlv(tlv124);
+            packer.PushTlv(tlv109);
+            packer.PushTlv(tlv128);
+            packer.PushTlv(tlv16e);
+            builder.PushBytes(packer.GetEncryptedPacket(true, new TeaCryptor(), tgtgKey), false);
+
+            return builder.GetPacket();
+        }
+
+        // 尚未測試
+        public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
+            byte[] tlv148, byte[] tlv153, byte[] tlv16e, byte[] tgtgKey)
+        {
+            TlvBuilder builder = new TlvBuilder(0x144);
+
+            TlvPacker packer = new TlvPacker();
+            packer.PushTlv(tlv109);
+            packer.PushTlv(tlv52d);
+            packer.PushTlv(tlv124);
+            packer.PushTlv(tlv109);
+            packer.PushTlv(tlv128);
+            packer.PushTlv(tlv148);
+            packer.PushTlv(tlv153);
+            packer.PushTlv(tlv16e);
+            builder.PushBytes(packer.GetEncryptedPacket(true, new TeaCryptor(), tgtgKey), false);
+
+            return builder.GetPacket();
         }
 
         public static byte[] T145(byte[] guid)
@@ -199,10 +252,38 @@ namespace Konata
             return builder.GetPacket();
         }
 
+        // 尚未測試
+        public static byte[] T148(string appName, long ssoVersion, long appId, long subAppId,
+            string appVersion, string appSignature)
+        {
+            TlvBuilder builder = new TlvBuilder(0x148);
+            builder.PushString(appName);
+            builder.PushInt32((int)ssoVersion);
+            builder.PushInt32((int)appId);
+            builder.PushInt32((int)subAppId);
+            builder.PushString(appVersion);
+            builder.PushString(appSignature);
+            return builder.GetPacket();
+        }
+
+        public static byte[] T153(bool isRooted)
+        {
+            TlvBuilder builder = new TlvBuilder(0x153);
+            builder.PushBool(isRooted, 2);
+            return builder.GetPacket();
+        }
+
         public static byte[] T154(int ssoSequenceId)
         {
             TlvBuilder builder = new TlvBuilder(0x154);
             builder.PushInt32(ssoSequenceId);
+            return builder.GetPacket();
+        }
+
+        public static byte[] T16e(string deviceName)
+        {
+            TlvBuilder builder = new TlvBuilder(0x16e);
+            builder.PushString(deviceName, false);
             return builder.GetPacket();
         }
 
@@ -290,6 +371,14 @@ namespace Konata
             TlvBuilder builder = new TlvBuilder(0x525);
             builder.PushInt16(1);
             builder.PushBytes(t536Data, false);
+            return builder.GetPacket();
+        }
+
+        // 尚未測試
+        public static byte[] T52d(byte[] deviceDevInfo)
+        {
+            TlvBuilder builder = new TlvBuilder(0x52d);
+            builder.PushBytes(deviceDevInfo, false);
             return builder.GetPacket();
         }
 
