@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Konata.Utils;
-using Konata.Crypto;
+using Konata.Protocol.Crypto;
+using Konata.Protocol.Utils;
+
 using Guid = Konata.Utils.Guid;
 
-namespace Konata
+namespace Konata.Protocol.Packet.Login
 {
     public static class Tlv
     {
@@ -199,6 +200,7 @@ namespace Konata
                 );
         }
 
+        // 尚未測試
         public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
             byte[] tlv16e, byte[] tgtgKey)
         {

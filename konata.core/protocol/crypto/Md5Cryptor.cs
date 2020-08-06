@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Konata.Crypto
+namespace Konata.Protocol.Crypto
 {
     public class Md5Cryptor : IKonataCryptor
     {

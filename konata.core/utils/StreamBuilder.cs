@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Konata.Crypto;
+using System.Collections.Generic;
+using Konata.Protocol.Crypto;
 
-namespace konata.Utils
+namespace Konata.Utils
 {
     public class StreamBuilder
     {

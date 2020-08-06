@@ -39,16 +39,19 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="crypto\IKonataCryptor.cs" />
-    <Compile Include="crypto\Md5Cryptor.cs" />
-    <Compile Include="crypto\TeaCryptor.cs" />
+    <Compile Include="protocol\crypto\IKonataCryptor.cs" />
+    <Compile Include="protocol\crypto\Md5Cryptor.cs" />
+    <Compile Include="protocol\crypto\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
-    <Compile Include="Tlv.cs" />
+    <Compile Include="protocol\packet\login\Tlv.cs" />
     <Compile Include="utils\Guid.cs" />
     <Compile Include="utils\StreamBuilder.cs" />
     <Compile Include="utils\Hex.cs" />
-    <Compile Include="utils\TlvBuilder.cs" />
-    <Compile Include="utils\TlvPacker.cs" />
+    <Compile Include="protocol\utils\TlvBuilder.cs" />
+    <Compile Include="protocol\utils\TlvPacker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="protocol\protobuf\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

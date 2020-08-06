@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Konata.Crypto;
-using konata.Utils;
+using Konata.Utils;
+using Konata.Protocol.Crypto;
 
-namespace Konata.Utils
+namespace Konata.Protocol.Utils
 {
     public class TlvBuilder : StreamBuilder
     {
