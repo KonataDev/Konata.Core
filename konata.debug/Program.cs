@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Text;
 using Konata;
-using Konata.Crypto;
 using Konata.Utils;
+using Konata.Protocol.Packet.Login;
 
 namespace Konata.Debug
 {
