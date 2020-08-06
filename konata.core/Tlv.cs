@@ -202,18 +202,10 @@ namespace Konata
         public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
             byte[] tlv16e, byte[] tgtgKey)
         {
-            TlvBuilder builder = new TlvBuilder(0x144);
-
-            TlvPacker packer = new TlvPacker();
-            packer.PushTlv(tlv109);
-            packer.PushTlv(tlv52d);
-            packer.PushTlv(tlv124);
-            packer.PushTlv(tlv109);
-            packer.PushTlv(tlv128);
-            packer.PushTlv(tlv16e);
-            builder.PushBytes(packer.GetEncryptedPacket(true, new TeaCryptor(), tgtgKey), false);
-
-            return builder.GetPacket();
+            return T144(
+                tlv109, tlv52d, tlv124, tlv128,
+                null, null, tlv16e, tgtgKey
+                );
         }
 
         // 尚未測試
