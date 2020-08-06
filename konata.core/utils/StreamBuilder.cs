@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using Konata.Protocol.Crypto;
+using Konata.Utils.Crypto;
 
 namespace Konata.Utils
 {
