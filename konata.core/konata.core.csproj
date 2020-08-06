@@ -40,9 +40,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="protocol\crypto\IKonataCryptor.cs" />
-    <Compile Include="protocol\crypto\Md5Cryptor.cs" />
-    <Compile Include="protocol\crypto\TeaCryptor.cs" />
+    <Compile Include="utils\crypto\IKonataCryptor.cs" />
+    <Compile Include="utils\crypto\Md5Cryptor.cs" />
+    <Compile Include="utils\crypto\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="protocol\packet\login\Tlv.cs" />
     <Compile Include="protocol\protobuf\DeviceReport.cs" />

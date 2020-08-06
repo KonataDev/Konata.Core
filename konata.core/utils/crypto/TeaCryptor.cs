@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Protocol.Crypto
+namespace Konata.Utils.Crypto
 {
     public class TeaCryptor : IKonataCryptor
     {
