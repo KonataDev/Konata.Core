@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Konata.Protocol.Crypto;
+using Konata.Protocol.Protobuf;
 using Konata.Protocol.Utils;
 
 using Guid = Konata.Utils.Guid;
@@ -368,11 +371,37 @@ namespace Konata.Protocol.Packet.Login
             return builder.GetPacket();
         }
 
+
         // 尚未測試
-        public static byte[] T52d(byte[] deviceDevInfo)
+        public static byte[] T52d(byte[] deviceReportInfo)
         {
             TlvBuilder builder = new TlvBuilder(0x52d);
-            builder.PushBytes(deviceDevInfo, false);
+            builder.PushBytes(deviceReportInfo, false);
+            return builder.GetPacket();
+        }
+
+        // 尚未測試
+        public static byte[] T52d(string bootLoader, string version, string codeName, string incremental,
+            string fingerprint, string bootId, string androidId, string baseBand, string innerVersion)
+        {
+            DeviceReport report = new DeviceReport
+            {
+                Bootloader = Encoding.UTF8.GetBytes(bootLoader),
+                Version = Encoding.UTF8.GetBytes(version),
+                CodeName = Encoding.UTF8.GetBytes(codeName),
+                Incremental = Encoding.UTF8.GetBytes(incremental),
+                Fingerprint = Encoding.UTF8.GetBytes(fingerprint),
+                BootId = Encoding.UTF8.GetBytes(bootId),
+                AndroidId = Encoding.UTF8.GetBytes(androidId),
+                BaseBand = Encoding.UTF8.GetBytes(baseBand),
+                InnerVersion = Encoding.UTF8.GetBytes(innerVersion)
+            };
+
+            MemoryStream stream = new MemoryStream();
+            ProtoBuf.Serializer.Serialize(stream, report);
+
+            TlvBuilder builder = new TlvBuilder(0x52d);
+            builder.PushBytes(stream.ToArray(), false);
             return builder.GetPacket();
         }
 
