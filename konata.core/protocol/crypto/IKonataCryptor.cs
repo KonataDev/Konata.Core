@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konata.Crypto
+namespace Konata.Protocol.Crypto
 {
     public interface IKonataCryptor
     {

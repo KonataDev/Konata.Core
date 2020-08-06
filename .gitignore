@@ -3,3 +3,6 @@
 /.vscode/
 obj/
 bin/
+
+# nuget package files
+/packages/

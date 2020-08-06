@@ -15,15 +15,7 @@ namespace Konata.Debug
             //byte[] data = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
             //output = new TeaCryptor().Encrypt(data, key);
 
-            output = Tlv.T144(
-                Tlv.T109(Device.OS),
-                Tlv.T52d(new byte[] { 1, 2, 3, 4, 5, 6 }),
-                Tlv.T124(Device.OS, Device.OSVersion, 1, "中華電信", new byte[] { 0, 0 }, "ChinaNet"),
-                Tlv.T128(false, true, false, new byte[] { 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4 }, 1, Device.Name, Device.Vendor),
-                Tlv.T148("QQ", 0, 16, 0, "7.0.0", "sdsdf"),
-                Tlv.T153(false),
-                Tlv.T16e(Device.Name),
-                Hex.HexStr2Bytes("12 B4 BB E7 CD E0 5F DA 91 78 A6 EE 2E 22 39 04"));
+            output = Tlv.test();
 
             Console.WriteLine(Hex.Bytes2HexStr(output));
             Console.Read();
