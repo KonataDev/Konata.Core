@@ -15,7 +15,9 @@ namespace Konata.Debug
             //byte[] data = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
             //output = new TeaCryptor().Encrypt(data, key);
 
-            output = Tlv.test();
+            output = Tlv.T52d("bootloader", "version", "codename",
+                "incremental", "fingerprint", "bootid", "androidid",
+                "baseband", "innerversion");
 
             Console.WriteLine(Hex.Bytes2HexStr(output));
             Console.Read();
