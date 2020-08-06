@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Konata
 {
-    class Device
+    public class Device
     {
         public const string Name = "ONEPLUS A5000";
         public const string Vendor = "OnePlus";

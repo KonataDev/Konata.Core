@@ -7,7 +7,7 @@ namespace Konata.Utils
 {
     public class TlvPacker
     {
-        private int count = 0;
+        private short count = 0;
         private readonly StreamBuilder builder = new StreamBuilder();
 
         public void PushTlv(byte[] tlvData)
