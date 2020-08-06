@@ -49,6 +49,7 @@ namespace konata.Utils
         {
             if (length < 0 || length > 8)
                 throw new Exception("do not do that.");
+
             byte[] boolBytes = new byte[length];
             boolBytes[length - 1] = (byte)(value ? 1 : 0);
 
