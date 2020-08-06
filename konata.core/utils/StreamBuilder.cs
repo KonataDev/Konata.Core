@@ -45,7 +45,7 @@ namespace konata.Utils
             PushBytes(new byte[] { value });
         }
 
-        public void PushBool(bool value, int length)
+        public void PushBool(bool value, int length = 1)
         {
             if (length < 0 || length > 8)
                 throw new Exception("do not do that.");
