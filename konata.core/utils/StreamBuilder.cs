@@ -105,7 +105,7 @@ namespace Konata.Utils
             return bytes;
         }
 
-        public byte[] GetEncryptedBytes(IKonataCryptor cryptor, byte[] cryptKey)
+        public byte[] GetEncryptedBytes(ICryptor cryptor, byte[] cryptKey)
         {
             return cryptor.Encrypt(GetPlainBytes(), cryptKey);
         }

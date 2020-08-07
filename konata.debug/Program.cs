@@ -1,7 +1,8 @@
 ﻿using System;
 using Konata;
+using Konata.Protocol.Packet;
+using Konata.Protocol.Packet.Oicq;
 using Konata.Utils;
-using Konata.Protocol.Packet.Login;
 
 namespace Konata.Debug
 {
@@ -15,11 +16,13 @@ namespace Konata.Debug
             //byte[] data = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
             //output = new TeaCryptor().Encrypt(data, key);
 
-            output = Tlv.T52d("bootloader", "version", "codename",
-                "incremental", "fingerprint", "bootid", "androidid",
-                "baseband", "innerversion");
+            //output = Tlv.T52d("bootloader", "version", "codename",
+            //    "incremental", "fingerprint", "bootid", "androidid",
+            //    "baseband", "innerversion");
 
-            Console.WriteLine(Hex.Bytes2HexStr(output));
+            Bot bot = new Bot("2051118019", "12345678");
+            bot.Login();
+
             Console.Read();
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Konata.Utils.Crypto
 {
-    public class TeaCryptor : IKonataCryptor
+    public class TeaCryptor : ICryptor
     {
         private long _contextStart;
         private long _crypt;

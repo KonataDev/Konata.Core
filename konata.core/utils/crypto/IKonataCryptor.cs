@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konata.Protocol.Crypto
+namespace Konata.Utils.Crypto
 {
-    public interface IKonataCryptor
+    public interface ICryptor
     {
         byte[] Encrypt(byte[] data);
 

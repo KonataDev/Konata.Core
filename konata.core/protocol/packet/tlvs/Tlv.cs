@@ -2,13 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Konata.Protocol.Crypto;
-using Konata.Protocol.Protobuf;
+using Konata.Utils.Crypto;
 using Konata.Protocol.Utils;
+using Konata.Protocol.Protobuf;
 
 using Guid = Konata.Utils.Guid;
 
-namespace Konata.Protocol.Packet.Login
+namespace Konata.Protocol.Packet
 {
     public static class Tlv
     {
@@ -64,7 +64,7 @@ namespace Konata.Protocol.Packet.Login
 
         public static byte[] T106(long appId, long subAppId, int appClientVersion,
            ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
-           string uinString, byte[] tgtgKey, bool isGuidAvailable, byte[] guid, int loginType)
+            byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
         {
             TlvBuilder builder = new TlvBuilder(0x106);
             builder.PushInt16(4); // _TGTGTVer
@@ -82,8 +82,8 @@ namespace Konata.Protocol.Packet.Login
             builder.PushBool(isGuidAvailable);
             builder.PushBytes(isGuidAvailable ? guid : Guid.Generate(), false);
             builder.PushInt32((int)subAppId);
-            builder.PushInt32(loginType);
-            builder.PushString(uinString);
+            builder.PushInt32((int)loginType);
+            builder.PushString(uin.ToString());
             builder.PushInt16(0);
 
             byte[] cryptKey = new Md5Cryptor().Encrypt(passwordMd5.Concat(BitConverter.GetBytes(uin).Reverse().ToArray()).ToArray());
@@ -128,8 +128,11 @@ namespace Konata.Protocol.Packet.Login
             return builder.GetPacket();
         }
 
-        public static byte[] T116(int bitmap, int getSig, long[] subAppIdList)
+        public static byte[] T116(int bitmap, int getSig, long[] subAppIdList = null)
         {
+            if (subAppIdList == null)
+                subAppIdList = new long[] { 1600000226L };
+
             TlvBuilder builder = new TlvBuilder(0x116);
             builder.PushInt8(0); // _ver
             builder.PushInt32(bitmap);
@@ -142,13 +145,13 @@ namespace Konata.Protocol.Packet.Login
             return builder.GetPacket();
         }
 
-        public static byte[] T124(string osType, string osVersion, short networkType,
+        public static byte[] T124(string osType, string osVersion, NetworkType networkType,
             string networkDetail, byte[] unknownZeroBytes, string apnName)
         {
             TlvBuilder builder = new TlvBuilder(0x124);
             builder.PushString(osType, true, true, 16);
             builder.PushString(osVersion, true, true, 16);
-            builder.PushInt16(networkType);
+            builder.PushInt16((short)networkType);
             builder.PushString(networkDetail, true, true, 16);
             builder.PushBytes(unknownZeroBytes, false, true, true, 32);
             builder.PushString(apnName, true, true, 16);
@@ -178,7 +181,7 @@ namespace Konata.Protocol.Packet.Login
             return builder.GetPacket();
         }
 
-        public static byte[] T141(string simOperatorName, int networkType, string apnName)
+        public static byte[] T141(string simOperatorName, NetworkType networkType, string apnName)
         {
             TlvBuilder builder = new TlvBuilder(0x141);
             builder.PushInt16(1); // _version
@@ -190,7 +193,7 @@ namespace Konata.Protocol.Packet.Login
 
         // 尚未測試
         public static byte[] T144(string androidId, byte[] deviceDevInfo,
-            string osType, string osVersion, short networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
+            string osType, string osVersion, NetworkType networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
             bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag, string deviceModel, string deviceBrand,
             byte[] tgtgKey)
         {

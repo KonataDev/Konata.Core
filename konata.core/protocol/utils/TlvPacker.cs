@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Konata.Utils;
-using Konata.Protocol.Crypto;
+using Konata.Utils.Crypto;
 
 namespace Konata.Protocol.Utils
 {
@@ -27,7 +27,7 @@ namespace Konata.Protocol.Utils
             return header.Concat(tlvBytes).ToArray();
         }
 
-        public byte[] GetEncryptedPacket(bool needPrefixTlvCount, IKonataCryptor cryptor, byte[] cryptKey)
+        public byte[] GetEncryptedPacket(bool needPrefixTlvCount, ICryptor cryptor, byte[] cryptKey)
         {
             return cryptor.Encrypt(GetPacket(needPrefixTlvCount), cryptKey);
         }
