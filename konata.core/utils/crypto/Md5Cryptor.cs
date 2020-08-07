@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Konata.Utils.Crypto
 {
-    public class Md5Cryptor : IKonataCryptor
+    public class Md5Cryptor : ICryptor
     {
 
         public byte[] Decrypt(byte[] data) => null;

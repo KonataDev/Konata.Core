@@ -40,11 +40,22 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bot.cs" />
+    <Compile Include="AppInfo.cs" />
+    <Compile Include="protocol\LoginType.cs" />
+    <Compile Include="protocol\NetworkType.cs" />
+    <Compile Include="protocol\packet\OutGoingPacket.cs" />
+    <Compile Include="protocol\packet\PacketBase.cs" />
+    <Compile Include="protocol\packet\oicq\OicqRequest.cs" />
+    <Compile Include="protocol\packet\oicq\OicqRequestCheckImage.cs" />
+    <Compile Include="protocol\packet\oicq\OicqRequestCheckSms.cs" />
+    <Compile Include="protocol\packet\oicq\OicqRequestTgtgt.cs" />
+    <Compile Include="protocol\utils\SsoBuilder.cs" />
     <Compile Include="utils\crypto\IKonataCryptor.cs" />
     <Compile Include="utils\crypto\Md5Cryptor.cs" />
     <Compile Include="utils\crypto\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
-    <Compile Include="protocol\packet\login\Tlv.cs" />
+    <Compile Include="protocol\packet\tlvs\Tlv.cs" />
     <Compile Include="protocol\protobuf\DeviceReport.cs" />
     <Compile Include="utils\Guid.cs" />
     <Compile Include="utils\StreamBuilder.cs" />
@@ -84,5 +95,6 @@
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
