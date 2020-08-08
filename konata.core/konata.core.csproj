@@ -50,6 +50,10 @@
     <Compile Include="protocol\packet\oicq\OicqRequestCheckImage.cs" />
     <Compile Include="protocol\packet\oicq\OicqRequestCheckSms.cs" />
     <Compile Include="protocol\packet\oicq\OicqRequestTgtgt.cs" />
+    <Compile Include="protocol\packet\tlvs\T1.cs" />
+    <Compile Include="protocol\packet\tlvs\T2.cs" />
+    <Compile Include="protocol\packet\tlvs\T8.cs" />
+    <Compile Include="protocol\packet\tlvs\TlvBase.cs" />
     <Compile Include="protocol\utils\SsoBuilder.cs" />
     <Compile Include="utils\crypto\IKonataCryptor.cs" />
     <Compile Include="utils\crypto\Md5Cryptor.cs" />
