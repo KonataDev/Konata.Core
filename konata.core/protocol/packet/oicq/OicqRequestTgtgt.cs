@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Konata.Protocol.Packet.Tlvs;
 using Konata.Protocol.Protobuf;
 using Konata.Protocol.Utils;
 using Konata.Utils;
@@ -52,7 +53,7 @@ namespace Konata.Protocol.Packet.Oicq
             byte[] passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
 
             tlvs.PushTlv(Tlv.T18(AppInfo.appId, AppInfo.appClientVersion, uin));
-            tlvs.PushTlv(Tlv.T1(uin, DeviceInfo.Network.Wifi.IpAddress));
+            tlvs.PushTlv(new T1(uin, DeviceInfo.Network.Wifi.IpAddress));
             tlvs.PushTlv(Tlv.T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, uin,
                 new byte[4], true, passwordMd5, 0, tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
             tlvs.PushTlv(Tlv.T116(184024956, 66560));

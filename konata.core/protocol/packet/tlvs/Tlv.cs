@@ -12,26 +12,26 @@ namespace Konata.Protocol.Packet
 {
     public static class Tlv
     {
-        public static byte[] T1(ulong uin, byte[] ipAddress)
-        {
-            TlvBuilder builder = new TlvBuilder(0x01);
-            builder.PushInt16(1); // _ip_ver
-            builder.PushInt32(new Random().Next());
-            builder.PushInt32((int)uin);
-            builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PushBytes(ipAddress);
-            builder.PushInt16(0);
-            return builder.GetPacket();
-        }
+        //public static byte[] T1(ulong uin, byte[] ipAddress)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x01);
+        //    builder.PushInt16(1); // _ip_ver
+        //    builder.PushInt32(new Random().Next());
+        //    builder.PushInt32((int)uin);
+        //    builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        //    builder.PushBytes(ipAddress);
+        //    builder.PushInt16(0);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T2(string captchaCode, byte[] captchaKey)
-        {
-            TlvBuilder builder = new TlvBuilder(0x02);
-            builder.PushInt16(0); // _sigVer
-            builder.PushString(captchaCode);
-            builder.PushBytes(captchaKey, false, true);
-            return builder.GetPacket();
-        }
+        //public static byte[] T2(string captchaCode, byte[] captchaKey)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x02);
+        //    builder.PushInt16(0); // _sigVer
+        //    builder.PushString(captchaCode);
+        //    builder.PushBytes(captchaKey, false, true);
+        //    return builder.GetPacket();
+        //}
 
         public static byte[] T8(int localId = 2052, int timeZoneVer = 0, int timeZoneOffset = 0)
         {

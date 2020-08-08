@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Konata.Protocol.Packet.Tlvs;
 using Konata.Utils;
 using Konata.Utils.Crypto;
 
@@ -17,6 +18,15 @@ namespace Konata.Protocol.Utils
 
             ++count;
             builder.PushBytes(tlvData, false);
+        }
+
+        public void PushTlv(TlvBase tlvData)
+        {
+            if (tlvData == null)
+                return;
+
+            ++count;
+            builder.PushBytes(tlvData.GetBytes(), false);
         }
 
         public byte[] GetPacket(bool needPrefixTlvCount)
