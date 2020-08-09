@@ -370,13 +370,13 @@ namespace Konata.Protocol.Packet
             return builder.GetPacket();
         }
 
-        public static byte[] T525(byte[] t536Data)
-        {
-            TlvBuilder builder = new TlvBuilder(0x525);
-            builder.PushInt16(1);
-            builder.PushBytes(t536Data, false);
-            return builder.GetPacket();
-        }
+        //public static byte[] T525(byte[] t536Data)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x525);
+        //    builder.PushInt16(1);
+        //    builder.PushBytes(t536Data, false);
+        //    return builder.GetPacket();
+        //}
 
 
         // // 尚未測試
@@ -388,29 +388,29 @@ namespace Konata.Protocol.Packet
         //}
 
         // // 尚未測試
-        public static byte[] T52d(string bootLoader, string version, string codeName, string incremental,
-            string fingerprint, string bootId, string androidId, string baseBand, string innerVersion)
-        {
-            DeviceReport report = new DeviceReport
-            {
-                Bootloader = Encoding.UTF8.GetBytes(bootLoader),
-                Version = Encoding.UTF8.GetBytes(version),
-                CodeName = Encoding.UTF8.GetBytes(codeName),
-                Incremental = Encoding.UTF8.GetBytes(incremental),
-                Fingerprint = Encoding.UTF8.GetBytes(fingerprint),
-                BootId = Encoding.UTF8.GetBytes(bootId),
-                AndroidId = Encoding.UTF8.GetBytes(androidId),
-                BaseBand = Encoding.UTF8.GetBytes(baseBand),
-                InnerVersion = Encoding.UTF8.GetBytes(innerVersion)
-            };
+        //public static byte[] T52d(string bootLoader, string version, string codeName, string incremental,
+        //    string fingerprint, string bootId, string androidId, string baseBand, string innerVersion)
+        //{
+        //    DeviceReport report = new DeviceReport
+        //    {
+        //        Bootloader = Encoding.UTF8.GetBytes(bootLoader),
+        //        Version = Encoding.UTF8.GetBytes(version),
+        //        CodeName = Encoding.UTF8.GetBytes(codeName),
+        //        Incremental = Encoding.UTF8.GetBytes(incremental),
+        //        Fingerprint = Encoding.UTF8.GetBytes(fingerprint),
+        //        BootId = Encoding.UTF8.GetBytes(bootId),
+        //        AndroidId = Encoding.UTF8.GetBytes(androidId),
+        //        BaseBand = Encoding.UTF8.GetBytes(baseBand),
+        //        InnerVersion = Encoding.UTF8.GetBytes(innerVersion)
+        //    };
 
-            MemoryStream stream = new MemoryStream();
-            ProtoBuf.Serializer.Serialize(stream, report);
+        //    MemoryStream stream = new MemoryStream();
+        //    ProtoBuf.Serializer.Serialize(stream, report);
 
-            TlvBuilder builder = new TlvBuilder(0x52d);
-            builder.PushBytes(stream.ToArray(), false);
-            return builder.GetPacket();
-        }
+        //    TlvBuilder builder = new TlvBuilder(0x52d);
+        //    builder.PushBytes(stream.ToArray(), false);
+        //    return builder.GetPacket();
+        //}
 
         /*
         public static byte[] T536(byte[] loginExtraData)
