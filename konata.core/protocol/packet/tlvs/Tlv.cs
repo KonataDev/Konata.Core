@@ -12,199 +12,199 @@ namespace Konata.Protocol.Packet
 {
     public static class Tlv
     {
-        public static byte[] T1(ulong uin, byte[] ipAddress)
-        {
-            TlvBuilder builder = new TlvBuilder(0x01);
-            builder.PushInt16(1); // _ip_ver
-            builder.PushInt32(new Random().Next());
-            builder.PushInt32((int)uin);
-            builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PushBytes(ipAddress);
-            builder.PushInt16(0);
-            return builder.GetPacket();
-        }
+        //public static byte[] T1(ulong uin, byte[] ipAddress)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x01);
+        //    builder.PushInt16(1); // _ip_ver
+        //    builder.PushInt32(new Random().Next());
+        //    builder.PushInt32((int)uin);
+        //    builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        //    builder.PushBytes(ipAddress);
+        //    builder.PushInt16(0);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T2(string captchaCode, byte[] captchaKey)
-        {
-            TlvBuilder builder = new TlvBuilder(0x02);
-            builder.PushInt16(0); // _sigVer
-            builder.PushString(captchaCode);
-            builder.PushBytes(captchaKey, false, true);
-            return builder.GetPacket();
-        }
+        //public static byte[] T2(string captchaCode, byte[] captchaKey)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x02);
+        //    builder.PushInt16(0); // _sigVer
+        //    builder.PushString(captchaCode);
+        //    builder.PushBytes(captchaKey, false, true);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T8(int localId = 2052, int timeZoneVer = 0, int timeZoneOffset = 0)
-        {
-            TlvBuilder builder = new TlvBuilder(0x08);
-            builder.PushInt16((short)timeZoneVer);
-            builder.PushInt32(localId);
-            builder.PushInt16((short)timeZoneOffset);
-            return builder.GetPacket();
-        }
+        //public static byte[] T8(int localId = 2052, int timeZoneVer = 0, int timeZoneOffset = 0)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x08);
+        //    builder.PushInt16((short)timeZoneVer);
+        //    builder.PushInt32(localId);
+        //    builder.PushInt16((short)timeZoneOffset);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T18(long appId, int appClientVersion, ulong uin, int preservedBeZero = 0)
-        {
-            TlvBuilder builder = new TlvBuilder(0x18);
-            builder.PushInt16(1); // _ping_version
-            builder.PushInt32(1536); // _sso_version
-            builder.PushInt32((int)appId);
-            builder.PushInt32(appClientVersion);
-            builder.PushInt32((int)uin);
-            builder.PushInt16((short)preservedBeZero);
-            builder.PushInt16(0);
-            return builder.GetPacket();
-        }
+        //public static byte[] T18(long appId, int appClientVersion, ulong uin, int preservedBeZero = 0)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x18);
+        //    builder.PushInt16(1); // _ping_version
+        //    builder.PushInt32(1536); // _sso_version
+        //    builder.PushInt32((int)appId);
+        //    builder.PushInt32(appClientVersion);
+        //    builder.PushInt32((int)uin);
+        //    builder.PushInt16((short)preservedBeZero);
+        //    builder.PushInt16(0);
+        //    return builder.GetPacket();
+        //}
 
         // 未完成
-        public static byte[] T104(string sigSession)
-        {
-            TlvBuilder builder = new TlvBuilder(0x104);
-            return builder.GetPacket();
-        }
+        //public static byte[] T104(string sigSession)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x104);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T106(long appId, long subAppId, int appClientVersion,
-           ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
-            byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
-        {
-            TlvBuilder builder = new TlvBuilder(0x106);
-            builder.PushInt16(4); // _TGTGTVer
-            builder.PushInt32(new Random().Next());
-            builder.PushInt32(6); // _SSoVer
-            builder.PushInt32((int)appId);
-            builder.PushInt32(appClientVersion);
-            builder.PushUInt64(uin == 0 ? salt : uin);
-            builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PushBytes(ipAddress);
-            builder.PushBool(isSavePassword);
-            builder.PushBytes(passwordMd5, false);
-            builder.PushBytes(tgtgKey, false);
-            builder.PushInt32(0);
-            builder.PushBool(isGuidAvailable);
-            builder.PushBytes(isGuidAvailable ? guid : Guid.Generate(), false);
-            builder.PushInt32((int)subAppId);
-            builder.PushInt32((int)loginType);
-            builder.PushString(uin.ToString());
-            builder.PushInt16(0);
+        //public static byte[] T106(long appId, long subAppId, int appClientVersion,
+        //   ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
+        //    byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x106);
+        //    builder.PushInt16(4); // _TGTGTVer
+        //    builder.PushInt32(new Random().Next());
+        //    builder.PushInt32(6); // _SSoVer
+        //    builder.PushInt32((int)appId);
+        //    builder.PushInt32(appClientVersion);
+        //    builder.PushUInt64(uin == 0 ? salt : uin);
+        //    builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        //    builder.PushBytes(ipAddress);
+        //    builder.PushBool(isSavePassword);
+        //    builder.PushBytes(passwordMd5, false);
+        //    builder.PushBytes(tgtgKey, false);
+        //    builder.PushInt32(0);
+        //    builder.PushBool(isGuidAvailable);
+        //    builder.PushBytes(isGuidAvailable ? guid : Guid.Generate(), false);
+        //    builder.PushInt32((int)subAppId);
+        //    builder.PushInt32((int)loginType);
+        //    builder.PushString(uin.ToString());
+        //    builder.PushInt16(0);
 
-            byte[] cryptKey = new Md5Cryptor().Encrypt(passwordMd5.Concat(BitConverter.GetBytes(uin).Reverse().ToArray()).ToArray());
+        //    byte[] cryptKey = new Md5Cryptor().Encrypt(passwordMd5.Concat(BitConverter.GetBytes(uin).Reverse().ToArray()).ToArray());
 
-            return builder.GetEnctyptedPacket(new TeaCryptor(), cryptKey);
-        }
+        //    return builder.GetEnctyptedPacket(new TeaCryptor(), cryptKey);
+        //}
 
-        public static byte[] T100(long appId, long subAppId, int appClientVersion)
-        {
-            TlvBuilder builder = new TlvBuilder(0x100);
-            builder.PushInt16(1); // _db_buf_ver
-            builder.PushInt32(6); // _sso_ver
-            builder.PushInt32((int)appId);
-            builder.PushInt32((int)subAppId);
-            builder.PushInt32(appClientVersion);
-            builder.PushInt32(34869472); // sigmap
-            return builder.GetPacket();
-        }
+        //public static byte[] T100(long appId, long subAppId, int appClientVersion)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x100);
+        //    builder.PushInt16(1); // _db_buf_ver
+        //    builder.PushInt32(6); // _sso_ver
+        //    builder.PushInt32((int)appId);
+        //    builder.PushInt32((int)subAppId);
+        //    builder.PushInt32(appClientVersion);
+        //    builder.PushInt32(34869472); // sigmap
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
-        {
-            TlvBuilder builder = new TlvBuilder(0x107);
-            builder.PushInt16((short)picType);
-            builder.PushInt8((sbyte)capType);
-            builder.PushInt16((short)picSize);
-            builder.PushInt8((sbyte)retType);
-            return builder.GetPacket();
-        }
+        //public static byte[] T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x107);
+        //    builder.PushInt16((short)picType);
+        //    builder.PushInt8((sbyte)capType);
+        //    builder.PushInt16((short)picSize);
+        //    builder.PushInt8((sbyte)retType);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T108(byte[] ksid)
-        {
-            TlvBuilder builder = new TlvBuilder(0x108);
-            builder.PushBytes(ksid);
-            return builder.GetPacket();
-        }
-
-        // 尚未測試
-        public static byte[] T109(string osType)
-        {
-            TlvBuilder builder = new TlvBuilder(0x109);
-            builder.PushString(osType, false);
-            return builder.GetPacket();
-        }
-
-        public static byte[] T116(int bitmap, int getSig, long[] subAppIdList = null)
-        {
-            if (subAppIdList == null)
-                subAppIdList = new long[] { 1600000226L };
-
-            TlvBuilder builder = new TlvBuilder(0x116);
-            builder.PushInt8(0); // _ver
-            builder.PushInt32(bitmap);
-            builder.PushInt32(getSig);
-            builder.PushInt8((sbyte)subAppIdList.Length);
-            foreach (long element in subAppIdList)
-            {
-                builder.PushInt32((int)element);
-            }
-            return builder.GetPacket();
-        }
-
-        public static byte[] T124(string osType, string osVersion, NetworkType networkType,
-            string networkDetail, byte[] unknownZeroBytes, string apnName)
-        {
-            TlvBuilder builder = new TlvBuilder(0x124);
-            builder.PushString(osType, true, true, 16);
-            builder.PushString(osVersion, true, true, 16);
-            builder.PushInt16((short)networkType);
-            builder.PushString(networkDetail, true, true, 16);
-            builder.PushBytes(unknownZeroBytes, false, true, true, 32);
-            builder.PushString(apnName, true, true, 16);
-            return builder.GetPacket();
-        }
-
-        public static byte[] T128(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
-            byte[] guid, int guidFlag, string deviceModel, string deviceBrand)
-        {
-            TlvBuilder builder = new TlvBuilder(0x128);
-            builder.PushInt16(0);
-            builder.PushBool(isNewInstall);
-            builder.PushBool(isGuidAvaliable);
-            builder.PushBool(isGuidChanged);
-            builder.PushInt32(guidFlag);
-            builder.PushString(deviceModel, true, true, 32);
-            builder.PushBytes(guid, false, true, true, 16);
-            builder.PushString(deviceBrand, true, true, 16);
-            return builder.GetPacket();
-        }
-
-        public static byte[] T142(string apkId)
-        {
-            TlvBuilder builder = new TlvBuilder(0x142);
-            builder.PushInt16(0); // _version
-            builder.PushString(apkId, true, true, 32);
-            return builder.GetPacket();
-        }
-
-        public static byte[] T141(string simOperatorName, NetworkType networkType, string apnName)
-        {
-            TlvBuilder builder = new TlvBuilder(0x141);
-            builder.PushInt16(1); // _version
-            builder.PushString(simOperatorName);
-            builder.PushInt16((short)networkType);
-            builder.PushString(apnName);
-            return builder.GetPacket();
-        }
+        //public static byte[] T108(byte[] ksid)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x108);
+        //    builder.PushBytes(ksid);
+        //    return builder.GetPacket();
+        //}
 
         // 尚未測試
-        public static byte[] T144(string androidId, byte[] deviceDevInfo,
-            string osType, string osVersion, NetworkType networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
-            bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag, string deviceModel, string deviceBrand,
-            byte[] tgtgKey)
-        {
-            return T144(
-                T109(androidId),
-                T52d(deviceDevInfo),
-                T124(osType, osVersion, networkType, networkDetail, unknownZeroBytes, apnName),
-                T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand),
-                null, tgtgKey
-                );
-        }
+        //public static byte[] T109(string osType)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x109);
+        //    builder.PushString(osType, false);
+        //    return builder.GetPacket();
+        //}
+
+        //public static byte[] T116(int bitmap, int getSig, long[] subAppIdList = null)
+        //{
+        //    if (subAppIdList == null)
+        //        subAppIdList = new long[] { 1600000226L };
+
+        //    TlvBuilder builder = new TlvBuilder(0x116);
+        //    builder.PushInt8(0); // _ver
+        //    builder.PushInt32(bitmap);
+        //    builder.PushInt32(getSig);
+        //    builder.PushInt8((sbyte)subAppIdList.Length);
+        //    foreach (long element in subAppIdList)
+        //    {
+        //        builder.PushInt32((int)element);
+        //    }
+        //    return builder.GetPacket();
+        //}
+
+        //public static byte[] T124(string osType, string osVersion, NetworkType networkType,
+        //    string networkDetail, byte[] unknownZeroBytes, string apnName)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x124);
+        //    builder.PushString(osType, true, true, 16);
+        //    builder.PushString(osVersion, true, true, 16);
+        //    builder.PushInt16((short)networkType);
+        //    builder.PushString(networkDetail, true, true, 16);
+        //    builder.PushBytes(unknownZeroBytes, false, true, true, 32);
+        //    builder.PushString(apnName, true, true, 16);
+        //    return builder.GetPacket();
+        //}
+
+        //public static byte[] T128(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
+        //    byte[] guid, int guidFlag, string deviceModel, string deviceBrand)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x128);
+        //    builder.PushInt16(0);
+        //    builder.PushBool(isNewInstall);
+        //    builder.PushBool(isGuidAvaliable);
+        //    builder.PushBool(isGuidChanged);
+        //    builder.PushInt32(guidFlag);
+        //    builder.PushString(deviceModel, true, true, 32);
+        //    builder.PushBytes(guid, false, true, true, 16);
+        //    builder.PushString(deviceBrand, true, true, 16);
+        //    return builder.GetPacket();
+        //}
+
+        //public static byte[] T142(string apkId)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x142);
+        //    builder.PushInt16(0); // _version
+        //    builder.PushString(apkId, true, true, 32);
+        //    return builder.GetPacket();
+        //}
+
+        //public static byte[] T141(string simOperatorName, NetworkType networkType, string apnName)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x141);
+        //    builder.PushInt16(1); // _version
+        //    builder.PushString(simOperatorName);
+        //    builder.PushInt16((short)networkType);
+        //    builder.PushString(apnName);
+        //    return builder.GetPacket();
+        //}
+
+        // 尚未測試
+        //public static byte[] T144(string androidId, byte[] deviceDevInfo,
+        //    string osType, string osVersion, NetworkType networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
+        //    bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag, string deviceModel, string deviceBrand,
+        //    byte[] tgtgKey)
+        //{
+        //    return T144(
+        //        T109(androidId),
+        //        T52d(deviceDevInfo),
+        //        T124(osType, osVersion, networkType, networkDetail, unknownZeroBytes, apnName),
+        //        T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand),
+        //        null, tgtgKey
+        //        );
+        //}
 
         // 尚未測試
         public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
@@ -236,21 +236,21 @@ namespace Konata.Protocol.Packet
             return builder.GetPacket();
         }
 
-        public static byte[] T145(byte[] guid)
-        {
-            TlvBuilder builder = new TlvBuilder(0x145);
-            builder.PushBytes(guid);
-            return builder.GetPacket();
-        }
+        //public static byte[] T145(byte[] guid)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x145);
+        //    builder.PushBytes(guid);
+        //    return builder.GetPacket();
+        //}
 
-        public static byte[] T147(long appId, string apkVersionName, byte[] apkSignatureMd5)
-        {
-            TlvBuilder builder = new TlvBuilder(0x147);
-            builder.PushInt32((int)appId);
-            builder.PushString(apkVersionName, true, true, 32);
-            builder.PushBytes(apkSignatureMd5, false, true, true, 32);
-            return builder.GetPacket();
-        }
+        //public static byte[] T147(long appId, string apkVersionName, byte[] apkSignatureMd5)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x147);
+        //    builder.PushInt32((int)appId);
+        //    builder.PushString(apkVersionName, true, true, 32);
+        //    builder.PushBytes(apkSignatureMd5, false, true, true, 32);
+        //    return builder.GetPacket();
+        //}
 
         // // 尚未測試
         public static byte[] T148(string appName, long ssoVersion, long appId, long subAppId,
