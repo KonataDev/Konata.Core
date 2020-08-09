@@ -18,7 +18,7 @@ namespace Konata.Protocol.Utils
 
         public PacketBase GetPacket()
         {
-            OutGoingPacket packet = new OutGoingPacket();
+            ToServicePacket packet = new ToServicePacket();
             packet.SetBytes(oicqRequest.GetBytes());
             return packet;
         }
