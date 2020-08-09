@@ -27,8 +27,6 @@ namespace Konata.Protocol.Packet.Oicq
             this.uin = botUin;
             this.password = botPassword;
             this.tgtgKey = tgtgKey;
-
-
         }
 
         public override byte[] GetBytes()
@@ -88,7 +86,7 @@ namespace Konata.Protocol.Packet.Oicq
                 "gamecenter.qq.com",
             }));
             tlvs.PushTlv(new T187(DeviceInfo.Network.Wifi.MacAddress));
-            tlvs.PushTlv(new T188(Hex.HexStr2Bytes(DeviceInfo.System.AndroidId)));
+            tlvs.PushTlv(new T188(DeviceInfo.System.AndroidId));
             // tlvs.PushTlv(Tlv.194());
             tlvs.PushTlv(new T191());
             tlvs.PushTlv(Tlv.T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
