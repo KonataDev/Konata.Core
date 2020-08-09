@@ -1,32 +1,30 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Konata.Protocol.Packet.Tlvs;
 using Konata.Protocol.Protobuf;
 using Konata.Protocol.Utils;
 using Konata.Utils;
 using Konata.Utils.Crypto;
+using ProtoBuf;
 
 namespace Konata.Protocol.Packet.Oicq
 {
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        private ulong uin;
-        private string password;
-        private byte[] tgtgKey;
+        private ulong _uin;
+        private string _password;
+        private byte[] _tgtgKey;
 
         public OicqRequestTgtgt(ulong botUin, string botPassword, byte[] tgtgKey)
         {
-            cmd = 0x0810;
-            subCmd = 0x09;
-            serviceCmd = "wtlogin.login";
+            _cmd = 0x0810;
+            _subCmd = 0x09;
+            _serviceCmd = "wtlogin.login";
 
-            this.uin = botUin;
-            this.password = botPassword;
-            this.tgtgKey = tgtgKey;
+            _uin = botUin;
+            _password = botPassword;
+            _tgtgKey = tgtgKey;
         }
 
         public override byte[] GetBytes()
@@ -46,21 +44,21 @@ namespace Konata.Protocol.Packet.Oicq
             deviceReport.InnerVersion = Encoding.UTF8.GetBytes(DeviceInfo.Build.InnerVersion);
 
             MemoryStream reportData = new MemoryStream();
-            ProtoBuf.Serializer.Serialize(reportData, deviceReport);
+            Serializer.Serialize(reportData, deviceReport);
 
-            byte[] passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
+            byte[] passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(_password));
 
-            tlvs.PushTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, uin));
-            tlvs.PushTlv(new T1(uin, DeviceInfo.Network.Wifi.IpAddress));
-            tlvs.PushTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, uin,
-                new byte[4], true, passwordMd5, 0, tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
+            tlvs.PushTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, _uin));
+            tlvs.PushTlv(new T1(_uin, DeviceInfo.Network.Wifi.IpAddress));
+            tlvs.PushTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, _uin,
+                new byte[4], true, passwordMd5, 0, _tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
             tlvs.PushTlv(new T116(184024956, 66560));
             tlvs.PushTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
             tlvs.PushTlv(new T142(AppInfo.apkPackageName));
             tlvs.PushTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
                 DeviceInfo.System.OsVersion, DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                 new byte[0], DeviceInfo.Network.Wifi.ApnName, true, true, false,
-                DeviceInfo.Guid, 0, DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, tgtgKey));
+                DeviceInfo.Guid, 0, DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, _tgtgKey));
             tlvs.PushTlv(new T145(DeviceInfo.Guid));
             tlvs.PushTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
             // tlvs.PushTlv(Tlv.166());
@@ -95,9 +93,7 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(Tlv.T521());
             tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
 
-
             return tlvs.GetPacket(true);
         }
-
     }
 }

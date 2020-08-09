@@ -10,9 +10,9 @@ namespace Konata.Protocol.Packet.Oicq
     {
         public OicqRequestCheckImage()
         {
-            cmd = 0x0810;
-            subCmd = 0x02;
-            serviceCmd = "wtlogin.login";
+            _cmd = 0x0810;
+            _subCmd = 0x02;
+            _serviceCmd = "wtlogin.login";
         }
 
     }

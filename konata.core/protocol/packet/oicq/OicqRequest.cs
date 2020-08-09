@@ -7,9 +7,9 @@ namespace Konata.Protocol.Packet.Oicq
 {
     public abstract class OicqRequest : PacketBase
     {
-        protected short cmd;
-        protected short subCmd;
-        protected string serviceCmd;
+        protected short _cmd;
+        protected short _subCmd;
+        protected string _serviceCmd;
 
         public override byte[] GetBytes() => null;
 
