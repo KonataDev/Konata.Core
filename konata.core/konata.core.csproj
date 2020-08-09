@@ -77,6 +77,8 @@
     <Compile Include="protocol\packet\tlvs\T2.cs" />
     <Compile Include="protocol\packet\tlvs\T318.cs" />
     <Compile Include="protocol\packet\tlvs\T516.cs" />
+    <Compile Include="protocol\packet\tlvs\T525.cs" />
+    <Compile Include="protocol\packet\tlvs\T52d.cs" />
     <Compile Include="protocol\packet\tlvs\T536.cs" />
     <Compile Include="protocol\packet\tlvs\T8.cs" />
     <Compile Include="protocol\packet\tlvs\TlvBase.cs" />

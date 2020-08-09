@@ -59,7 +59,7 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(new T116(184024956, 66560));
             tlvs.PushTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
             tlvs.PushTlv(new T142(AppInfo.apkPackageName));
-            tlvs.PushTlv(Tlv.T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
+            tlvs.PushTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
                 DeviceInfo.System.OsVersion, DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                 new byte[0], DeviceInfo.Network.Wifi.ApnName, true, true, false,
                 DeviceInfo.Guid, 0, DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, tgtgKey));
@@ -95,7 +95,7 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(Tlv.T177());
             tlvs.PushTlv(new T516());
             tlvs.PushTlv(Tlv.T521());
-            tlvs.PushTlv(Tlv.T525(Tlv.T536(new byte[] { 0x01, 0x00 })));
+            tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
 
 
             return tlvs.GetPacket(true);

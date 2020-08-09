@@ -207,34 +207,34 @@ namespace Konata.Protocol.Packet
         //}
 
         // 尚未測試
-        public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
-            byte[] tlv16e, byte[] tgtgKey)
-        {
-            return T144(
-                tlv109, tlv52d, tlv124, tlv128,
-                null, null, tlv16e, tgtgKey
-                );
-        }
+        //public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
+        //    byte[] tlv16e, byte[] tgtgKey)
+        //{
+        //    return T144(
+        //        tlv109, tlv52d, tlv124, tlv128,
+        //        null, null, tlv16e, tgtgKey
+        //        );
+        //}
 
         // 尚未測試
-        public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
-            byte[] tlv148, byte[] tlv153, byte[] tlv16e, byte[] tgtgKey)
-        {
-            TlvBuilder builder = new TlvBuilder(0x144);
+        //public static byte[] T144(byte[] tlv109, byte[] tlv52d, byte[] tlv124, byte[] tlv128,
+        //    byte[] tlv148, byte[] tlv153, byte[] tlv16e, byte[] tgtgKey)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x144);
 
-            TlvPacker packer = new TlvPacker();
-            packer.PushTlv(tlv109);
-            packer.PushTlv(tlv52d);
-            packer.PushTlv(tlv124);
-            packer.PushTlv(tlv109);
-            packer.PushTlv(tlv128);
-            packer.PushTlv(tlv148);
-            packer.PushTlv(tlv153);
-            packer.PushTlv(tlv16e);
-            builder.PushBytes(packer.GetEncryptedPacket(true, new TeaCryptor(), tgtgKey), false);
+        //    TlvPacker packer = new TlvPacker();
+        //    packer.PushTlv(tlv109);
+        //    packer.PushTlv(tlv52d);
+        //    packer.PushTlv(tlv124);
+        //    packer.PushTlv(tlv109);
+        //    packer.PushTlv(tlv128);
+        //    packer.PushTlv(tlv148);
+        //    packer.PushTlv(tlv153);
+        //    packer.PushTlv(tlv16e);
+        //    builder.PushBytes(packer.GetEncryptedPacket(true, new TeaCryptor(), tgtgKey), false);
 
-            return builder.GetPacket();
-        }
+        //    return builder.GetPacket();
+        //}
 
         //public static byte[] T145(byte[] guid)
         //{
@@ -253,18 +253,18 @@ namespace Konata.Protocol.Packet
         //}
 
         // // 尚未測試
-        public static byte[] T148(string appName, long ssoVersion, long appId, long subAppId,
-            string appVersion, string appSignature)
-        {
-            TlvBuilder builder = new TlvBuilder(0x148);
-            builder.PushString(appName);
-            builder.PushInt32((int)ssoVersion);
-            builder.PushInt32((int)appId);
-            builder.PushInt32((int)subAppId);
-            builder.PushString(appVersion);
-            builder.PushString(appSignature);
-            return builder.GetPacket();
-        }
+        //public static byte[] T148(string appName, long ssoVersion, long appId, long subAppId,
+        //    string appVersion, string appSignature)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x148);
+        //    builder.PushString(appName);
+        //    builder.PushInt32((int)ssoVersion);
+        //    builder.PushInt32((int)appId);
+        //    builder.PushInt32((int)subAppId);
+        //    builder.PushString(appVersion);
+        //    builder.PushString(appSignature);
+        //    return builder.GetPacket();
+        //}
 
         /*
         public static byte[] T153(bool isRooted)
@@ -380,12 +380,12 @@ namespace Konata.Protocol.Packet
 
 
         // // 尚未測試
-        public static byte[] T52d(byte[] deviceReportInfo)
-        {
-            TlvBuilder builder = new TlvBuilder(0x52d);
-            builder.PushBytes(deviceReportInfo, false);
-            return builder.GetPacket();
-        }
+        //public static byte[] T52d(byte[] deviceReportInfo)
+        //{
+        //    TlvBuilder builder = new TlvBuilder(0x52d);
+        //    builder.PushBytes(deviceReportInfo, false);
+        //    return builder.GetPacket();
+        //}
 
         // // 尚未測試
         public static byte[] T52d(string bootLoader, string version, string codeName, string incremental,
