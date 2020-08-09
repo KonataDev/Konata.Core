@@ -1,5 +1,4 @@
-﻿using System;
-using Konata.Utils;
+﻿using Konata.Utils;
 
 namespace Konata.Protocol.Packet.Tlvs
 {
