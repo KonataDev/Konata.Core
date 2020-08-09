@@ -2,7 +2,7 @@
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T521:TlvBase
+    public class T521 : TlvBase
     {
         private readonly int _productType;
         private readonly short _unknown;

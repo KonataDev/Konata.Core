@@ -2,7 +2,7 @@
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T511:TlvBase
+    public class T511 : TlvBase
     {
         private readonly string[] _domains;
 

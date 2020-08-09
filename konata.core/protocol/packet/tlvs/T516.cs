@@ -1,7 +1,7 @@
 ﻿using Konata.Utils;
 
 namespace Konata.Protocol.Packet.Tlvs
-{    
+{
     public class T516 : TlvBase
     {
         private readonly int _sourceType;
