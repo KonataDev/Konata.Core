@@ -35,9 +35,8 @@ namespace Konata
 
         public void Login()
         {
-            // PacketBase ssoPacket = new SsoBuilder(new OicqRequestTgtgt(uin, passsword, tgtgKey)).GetPacket();
-            // Console.WriteLine(ssoPacket.ToString());
-
+            PacketBase ssoPacket = new SsoBuilder(new OicqRequestTgtgt(uin, passsword, tgtgKey)).GetPacket();
+            Console.WriteLine(ssoPacket.ToString());
         }
     }
 

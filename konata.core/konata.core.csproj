@@ -68,6 +68,7 @@
     <Compile Include="protocol\packet\tlvs\T148.cs" />
     <Compile Include="protocol\packet\tlvs\T153.cs" />
     <Compile Include="protocol\packet\tlvs\T154.cs" />
+    <Compile Include="protocol\packet\tlvs\T166.cs" />
     <Compile Include="protocol\packet\tlvs\T16e.cs" />
     <Compile Include="protocol\packet\tlvs\T177.cs" />
     <Compile Include="protocol\packet\tlvs\T18.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="protocol\packet\tlvs\T188.cs" />
     <Compile Include="protocol\packet\tlvs\T191.cs" />
     <Compile Include="protocol\packet\tlvs\T192.cs" />
+    <Compile Include="protocol\packet\tlvs\T194.cs" />
     <Compile Include="protocol\packet\tlvs\T2.cs" />
     <Compile Include="protocol\packet\tlvs\T202.cs" />
     <Compile Include="protocol\packet\tlvs\T318.cs" />
