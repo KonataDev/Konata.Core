@@ -38,8 +38,6 @@ namespace Konata
             // PacketBase ssoPacket = new SsoBuilder(new OicqRequestTgtgt(uin, passsword, tgtgKey)).GetPacket();
             // Console.WriteLine(ssoPacket.ToString());
 
-            Console.WriteLine(Hex.Bytes2HexStr(Tlv.T16e("咕咕")));
-
         }
     }
 
