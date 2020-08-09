@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Konata.Protocol.Packet;
 using Konata.Protocol.Packet.Oicq;
+using Konata.Protocol.Packet.Tlvs;
 using Konata.Protocol.Utils;
+using Konata.Utils;
 
 namespace Konata
 {
@@ -33,8 +35,11 @@ namespace Konata
 
         public void Login()
         {
-            PacketBase ssoPacket = new SsoBuilder(new OicqRequestTgtgt(uin, passsword, tgtgKey)).GetPacket();
-            Console.WriteLine(ssoPacket.ToString());
+            // PacketBase ssoPacket = new SsoBuilder(new OicqRequestTgtgt(uin, passsword, tgtgKey)).GetPacket();
+            // Console.WriteLine(ssoPacket.ToString());
+
+            Console.WriteLine(Hex.Bytes2HexStr(Tlv.T16e("咕咕")));
+
         }
     }
 
