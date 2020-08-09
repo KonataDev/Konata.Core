@@ -266,12 +266,14 @@ namespace Konata.Protocol.Packet
             return builder.GetPacket();
         }
 
+        /*
         public static byte[] T153(bool isRooted)
         {
             TlvBuilder builder = new TlvBuilder(0x153);
             builder.PushBool(isRooted, 2);
             return builder.GetPacket();
         }
+      
 
         public static byte[] T154(int ssoSequenceId)
         {
@@ -279,14 +281,14 @@ namespace Konata.Protocol.Packet
             builder.PushInt32(ssoSequenceId);
             return builder.GetPacket();
         }
-
+ 
         public static byte[] T16e(string deviceName)
         {
             TlvBuilder builder = new TlvBuilder(0x16e);
             builder.PushString(deviceName, false);
             return builder.GetPacket();
         }
-
+ */
         public static byte[] T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
         {
             TlvBuilder builder = new TlvBuilder(0x177);
@@ -296,19 +298,20 @@ namespace Konata.Protocol.Packet
             return builder.GetPacket();
         }
 
+        /*
         public static byte[] T187(byte[] macAddress)
         {
             TlvBuilder builder = new TlvBuilder(0x187);
             builder.PushBytes(new Md5Cryptor().Encrypt(macAddress));
             return builder.GetPacket();
         }
-
         public static byte[] T188(byte[] androidId)
         {
             TlvBuilder builder = new TlvBuilder(0x188);
             builder.PushBytes(new Md5Cryptor().Encrypt(androidId));
             return builder.GetPacket();
         }
+
 
         public static byte[] T191(int unknownK = 0x82)
         {
@@ -323,6 +326,7 @@ namespace Konata.Protocol.Packet
             builder.PushString(url, false);
             return builder.GetPacket();
         }
+*/
 
         public static byte[] T202(byte[] wifiBssid, string wifiSsid)
         {
@@ -331,14 +335,14 @@ namespace Konata.Protocol.Packet
             builder.PushString(wifiSsid, true, true, 32);
             return builder.GetPacket();
         }
-
+/*
         public static byte[] T318(byte[] tgtQr)
         {
             TlvBuilder builder = new TlvBuilder(0x318);
             builder.PushBytes(tgtQr, false);
             return builder.GetPacket();
         }
-
+*/
         public static byte[] T511(string[] domains)
         {
             TlvBuilder builder = new TlvBuilder(0x511);
@@ -350,14 +354,14 @@ namespace Konata.Protocol.Packet
             }
             return builder.GetPacket();
         }
-
+        /*
         public static byte[] T516(int sourceType = 0)
         {
             TlvBuilder builder = new TlvBuilder(0x516);
             builder.PushInt32(sourceType);
             return builder.GetPacket();
         }
-
+        */
         public static byte[] T521(int productType = 0, short unknown = 0)
         {
             TlvBuilder builder = new TlvBuilder(0x521);
@@ -408,13 +412,14 @@ namespace Konata.Protocol.Packet
             return builder.GetPacket();
         }
 
+        /*
         public static byte[] T536(byte[] loginExtraData)
         {
             TlvBuilder builder = new TlvBuilder(0x536);
             builder.PushBytes(loginExtraData, false);
             return builder.GetPacket();
         }
-
+        */
     }
 
 }
