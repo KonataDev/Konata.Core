@@ -288,15 +288,15 @@ namespace Konata.Protocol.Packet
             builder.PushString(deviceName, false);
             return builder.GetPacket();
         }
- */
-        public static byte[] T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
-        {
-            TlvBuilder builder = new TlvBuilder(0x177);
-            builder.PushInt8(1);
-            builder.PushInt32((int)buildTime);
-            builder.PushString(sdkVersion);
-            return builder.GetPacket();
-        }
+
+        // public static byte[] T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
+        // {
+        //     TlvBuilder builder = new TlvBuilder(0x177);
+        //     builder.PushInt8(1);
+        //     builder.PushInt32((int)buildTime);
+        //     builder.PushString(sdkVersion);
+        //     return builder.GetPacket();
+        // }
 
         /*
         public static byte[] T187(byte[] macAddress)
@@ -361,14 +361,14 @@ namespace Konata.Protocol.Packet
             builder.PushInt32(sourceType);
             return builder.GetPacket();
         }
-        */
-        public static byte[] T521(int productType = 0, short unknown = 0)
-        {
-            TlvBuilder builder = new TlvBuilder(0x521);
-            builder.PushInt32(productType);
-            builder.PushInt16(unknown);
-            return builder.GetPacket();
-        }
+
+        // public static byte[] T521(int productType = 0, short unknown = 0)
+        // {
+        //     TlvBuilder builder = new TlvBuilder(0x521);
+        //     builder.PushInt32(productType);
+        //     builder.PushInt16(unknown);
+        //     return builder.GetPacket();
+        // }
 
         //public static byte[] T525(byte[] t536Data)
         //{
