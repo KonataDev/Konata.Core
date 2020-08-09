@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using Konata.Protocol.Utils;
-using Konata.Utils;
+﻿using Konata.Utils;
 
 namespace Konata.Protocol.Packet.Tlvs
 {
@@ -34,5 +27,4 @@ namespace Konata.Protocol.Packet.Tlvs
             return builder.GetPlainBytes();
         }
     }
-
 }
