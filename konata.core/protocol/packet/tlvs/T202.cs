@@ -3,7 +3,7 @@ using Konata.Utils.Crypto;
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T202:TlvBase
+    public class T202 : TlvBase
     {
         private readonly byte[] _wifiBssid;
         private readonly string _wifiSsid;

@@ -65,7 +65,7 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(new T154(0));
             tlvs.PushTlv(new T141(DeviceInfo.Network.Mobile.OperatorName, DeviceInfo.Network.Type, DeviceInfo.Network.Wifi.ApnName));
             tlvs.PushTlv(new T8());
-            tlvs.PushTlv(Tlv.T511(new string[]
+            tlvs.PushTlv(new T511(new string[]
             {
                 "game.qq.com",
                 "mail.qq.com",
@@ -87,10 +87,10 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(new T188(DeviceInfo.System.AndroidId));
             // tlvs.PushTlv(Tlv.194());
             tlvs.PushTlv(new T191());
-            tlvs.PushTlv(Tlv.T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
-            tlvs.PushTlv(Tlv.T177());
+            tlvs.PushTlv(new T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
+            tlvs.PushTlv(new T177());
             tlvs.PushTlv(new T516());
-            tlvs.PushTlv(Tlv.T521());
+            tlvs.PushTlv(new T521());
             tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
 
             return tlvs.GetPacket(true);
