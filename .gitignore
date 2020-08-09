@@ -6,3 +6,5 @@ bin/
 
 # nuget package files
 /packages/
+
+.idea
