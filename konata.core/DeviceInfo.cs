@@ -33,6 +33,13 @@ namespace Konata
                 }
             }
 
+            public static string Imsi
+            {
+                get
+                {
+                    return "123123333123123";
+                }
+            }
         }
 
 
@@ -163,7 +170,7 @@ namespace Konata
                 {
                     get
                     {
-                        return "ChinaTelecom";
+                        return "China Telecom";
                     }
                 }
 

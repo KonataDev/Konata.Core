@@ -29,7 +29,6 @@ namespace Konata.Protocol.Packet.Oicq
 
         public override byte[] GetBytes()
         {
-            StreamBuilder builder = new StreamBuilder();
             TlvPacker tlvs = new TlvPacker();
 
             DeviceReport deviceReport = new DeviceReport();
@@ -61,7 +60,7 @@ namespace Konata.Protocol.Packet.Oicq
                 DeviceInfo.Guid, 0, DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, _tgtgKey));
             tlvs.PushTlv(new T145(DeviceInfo.Guid));
             tlvs.PushTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
-            // tlvs.PushTlv(Tlv.166());
+            // tlvs.PushTlv(new 166());
             tlvs.PushTlv(new T154(0));
             tlvs.PushTlv(new T141(DeviceInfo.Network.Mobile.OperatorName, DeviceInfo.Network.Type, DeviceInfo.Network.Wifi.ApnName));
             tlvs.PushTlv(new T8());
@@ -92,6 +91,9 @@ namespace Konata.Protocol.Packet.Oicq
             tlvs.PushTlv(new T516());
             tlvs.PushTlv(new T521());
             tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
+
+            // 構建oicq_request
+            StreamBuilder builder = new StreamBuilder();
 
             return tlvs.GetPacket(true);
         }
