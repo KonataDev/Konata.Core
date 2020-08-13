@@ -1,5 +1,6 @@
 ﻿using System;
 using Konata.Utils;
+using Konata.Utils.Crypto;
 
 namespace Konata.Protocol.Packet
 {
@@ -8,9 +9,9 @@ namespace Konata.Protocol.Packet
 
         public virtual byte[] GetBytes() => null;
 
-        public virtual void SetBytes(byte[] data) { }
+        public byte[] GetEncryptedBytes(ICryptor cryptor, byte[] key = null) => cryptor.Encrypt(GetBytes(), key);
 
-        public byte[] ToBytes() => GetBytes();
+        public virtual bool SetBytes(byte[] data) => false;
 
         public override string ToString() => Hex.Bytes2HexStr(GetBytes());
 

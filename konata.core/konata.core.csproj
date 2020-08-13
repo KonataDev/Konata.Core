@@ -92,6 +92,7 @@
     <Compile Include="protocol\packet\tlvs\TlvBase.cs" />
     <Compile Include="protocol\SsoServiceCmd.cs" />
     <Compile Include="protocol\utils\SsoPacketFactory.cs" />
+    <Compile Include="protocol\utils\ToServicePacketFactory.cs" />
     <Compile Include="utils\crypto\IKonataCryptor.cs" />
     <Compile Include="utils\crypto\Md5Cryptor.cs" />
     <Compile Include="utils\crypto\TeaCryptor.cs" />

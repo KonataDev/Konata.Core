@@ -106,7 +106,7 @@ namespace Konata.Utils
         public void PushHexString(string value, bool needFlipData = true, bool needPrefixLength = false,
             bool needLimitLength = false, int limitLength = 0)
         {
-            PushBytes(ProcessBytes(Hex.HexStr2Bytes(value), needFlipData, needPrefixLength, needLimitLength, limitLength));
+            PushBytes(Hex.HexStr2Bytes(value), needFlipData, needPrefixLength, needLimitLength, limitLength);
         }
 
         public byte[] GetPlainBytes()
@@ -123,6 +123,8 @@ namespace Konata.Utils
         {
             return cryptor.Encrypt(GetPlainBytes(), cryptKey);
         }
+
+        public void Clear() => body.Clear();
 
         public int Length
         {
