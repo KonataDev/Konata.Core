@@ -11,9 +11,9 @@ namespace Konata.Protocol.Packet.Tlvs
 
         private readonly long _appId;
         private readonly int _appClientVersion;
-        private readonly ulong _uin;
+        private readonly long _uin;
 
-        public T18(long appId, int appClientVersion, ulong uin)
+        public T18(long appId, int appClientVersion, long uin)
         {
             _appId = appId;
             _appClientVersion = appClientVersion;

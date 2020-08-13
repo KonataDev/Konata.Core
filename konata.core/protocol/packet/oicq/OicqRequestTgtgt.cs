@@ -12,21 +12,22 @@ namespace Konata.Protocol.Packet.Oicq
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        private ulong _uin;
+        private long _uin;
         private string _password;
         private byte[] _tgtgKey;
-        private byte[] _randKey = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-        private byte[] _shareKey = { 0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2, 0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7 };
+        private byte[] _randKey;
+        private byte[] _shareKey;
 
-        public OicqRequestTgtgt(ulong botUin, string botPassword, byte[] tgtgKey)
+        public OicqRequestTgtgt(long uin, string botPassword, byte[] tgtgKey, byte[] randKey, byte[] shareKey)
         {
             _cmd = 0x0810;
             _subCmd = 0x09;
-            _serviceCmd = "wtlogin.login";
 
-            _uin = botUin;
+            _uin = uin;
             _password = botPassword;
             _tgtgKey = tgtgKey;
+            _randKey = randKey;
+            _shareKey = shareKey;
         }
 
         public override byte[] GetBytes()

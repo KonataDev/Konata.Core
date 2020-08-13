@@ -14,18 +14,18 @@ namespace Konata.Protocol.Packet.Tlvs
         private readonly long _appId;
         private readonly long _subAppId;
         private readonly int _appClientVersion;
-        private readonly ulong _uin;
+        private readonly long _uin;
         private readonly byte[] _ipAddress;
         private readonly bool _isSavePassword;
         private readonly byte[] _passwordMd5;
-        private readonly ulong _salt;
+        private readonly long _salt;
         private readonly byte[] _tgtgKey;
         private readonly bool _isGuidAvailable;
         private readonly byte[] _guid;
         private readonly LoginType _loginType;
 
         public T106(long appId, long subAppId, int appClientVersion,
-            ulong uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, ulong salt,
+            long uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
             byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
         {
             _appId = appId;
@@ -55,7 +55,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt32(_ssoVer);
             builder.PushInt32((int)_appId);
             builder.PushInt32(_appClientVersion);
-            builder.PushUInt64(_uin == 0 ? _salt : _uin);
+            builder.PushInt64(_uin == 0 ? _salt : _uin);
             builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             builder.PushBytes(_ipAddress);
             builder.PushBool(_isSavePassword);

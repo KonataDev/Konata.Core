@@ -14,6 +14,12 @@ namespace Konata.Utils
         private byte[] ProcessBytes(byte[] value, bool needFlipData, bool needPrefixLength,
             bool needLimitLength, int limitLength = 0)
         {
+
+            if (value == null || value.Length == 0)
+            {
+                return new byte[0];
+            }
+
             byte[] data = new byte[value.Length];
             Array.Copy(value, data, value.Length);
 
@@ -85,7 +91,9 @@ namespace Konata.Utils
         {
             PushBytes(BitConverter.GetBytes(value));
         }
-        public void PushBytes(byte[] value, bool needFlipData = true, bool needPrefixLength = false, bool needLimitLength = false, int limitLength = 0)
+
+        public void PushBytes(byte[] value, bool needFlipData = true, bool needPrefixLength = false,
+            bool needLimitLength = false, int limitLength = 0)
         {
             body.Add(ProcessBytes(value, needFlipData, needPrefixLength, needLimitLength, limitLength));
         }
@@ -93,6 +101,12 @@ namespace Konata.Utils
         public void PushString(string value, bool needPrefixLength = true, bool needLimitLength = false, int limitLength = 0)
         {
             PushBytes(Encoding.UTF8.GetBytes(value), false, needPrefixLength, needLimitLength, limitLength);
+        }
+
+        public void PushHexString(string value, bool needFlipData = true, bool needPrefixLength = false,
+            bool needLimitLength = false, int limitLength = 0)
+        {
+            PushBytes(ProcessBytes(Hex.HexStr2Bytes(value), needFlipData, needPrefixLength, needLimitLength, limitLength));
         }
 
         public byte[] GetPlainBytes()
@@ -109,6 +123,21 @@ namespace Konata.Utils
         {
             return cryptor.Encrypt(GetPlainBytes(), cryptKey);
         }
+
+        public int Length
+        {
+            get
+            {
+                int length = 0;
+                foreach (byte[] element in body)
+                {
+                    length += element.Length;
+                }
+                return length;
+            }
+        }
+
+        public int Count => body.Count;
 
     }
 }
