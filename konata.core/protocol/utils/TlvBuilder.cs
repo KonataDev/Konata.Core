@@ -17,7 +17,7 @@ namespace Konata.Protocol.Utils
         public byte[] GetPacket()
         {
             byte[] tlvCmd = BitConverter.GetBytes(cmd).Reverse().ToArray();
-            byte[] tlvBody = GetPlainBytes();
+            byte[] tlvBody = GetBytes();
             byte[] tlvLength = BitConverter.GetBytes((short)tlvBody.Length).Reverse().ToArray();
 
             return tlvCmd.Concat(tlvLength).Concat(tlvBody).ToArray();

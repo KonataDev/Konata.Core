@@ -33,7 +33,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt32((int)_subAppId);
             builder.PushInt32(_appClientVersion);
             builder.PushInt32(_sigmap);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

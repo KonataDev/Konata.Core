@@ -29,7 +29,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushString(_simOperatorName);
             builder.PushInt16((short)_networkType);
             builder.PushString(_apnName);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

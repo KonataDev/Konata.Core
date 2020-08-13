@@ -23,7 +23,7 @@ namespace Konata.Protocol.Packet.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

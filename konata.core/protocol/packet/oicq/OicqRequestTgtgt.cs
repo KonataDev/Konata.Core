@@ -120,12 +120,12 @@ namespace Konata.Protocol.Packet.Oicq
             request.PushInt16(0x0101);
             request.PushBytes(_randKey, false);
             request.PushInt16(0x0102);
-            request.PushBytes(new byte[0], false, true);
+            request.PushBytes(_shareKey, false, true);
 
             request.PushBytes(requestBody.GetEncryptedBytes(new TeaCryptor(), _shareKey), false);
             request.PushInt8(0x03); // 尾部 0x03
 
-            return request.GetPlainBytes();
+            return request.GetBytes();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushString(_networkDetail, true, true, 16);
             builder.PushBytes(_unknownZeroBytes, false, true, true, 32);
             builder.PushString(_apnName, true, true, 16);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

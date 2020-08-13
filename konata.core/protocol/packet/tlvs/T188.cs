@@ -26,7 +26,7 @@ namespace Konata.Protocol.Packet.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PushBytes(new Md5Cryptor().Encrypt(_androidId));
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

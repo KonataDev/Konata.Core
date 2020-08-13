@@ -25,7 +25,7 @@ namespace Konata.Protocol.Packet.Tlvs
                 builder.PushInt8(1);
                 builder.PushString(element);
             }
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

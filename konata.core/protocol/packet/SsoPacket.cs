@@ -59,18 +59,15 @@ namespace Konata.Protocol.Packet
             builder.PushUInt32((uint)(unknownBytes1.Length + 4));
             builder.PushBytes(unknownBytes1, false);
 
-
-            var ssoHeader = builder.GetPlainBytes();
-            var ssoRequest = _oicqRequest.GetBytes();
-
             // 構建整個包
-            builder.Clear();
+            var ssoHeader = builder.GetBytes();
+            var ssoRequest = _oicqRequest.GetBytes();
             builder.PushUInt32((uint)(ssoHeader.Length + 4));
             builder.PushBytes(ssoHeader, false);
             builder.PushUInt32((uint)(ssoRequest.Length + 4));
             builder.PushBytes(ssoRequest, false);
 
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

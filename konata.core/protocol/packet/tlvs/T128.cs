@@ -40,7 +40,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushString(_deviceModel, true, true, 32);
             builder.PushBytes(_guid, false, true, true, 16);
             builder.PushString(_deviceBrand, true, true, 16);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

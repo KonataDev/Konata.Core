@@ -26,7 +26,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt32((int)_appId);
             builder.PushString(_apkVersionName, true, true, 32);
             builder.PushBytes(_apkSignatureMd5, false, true, true, 32);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

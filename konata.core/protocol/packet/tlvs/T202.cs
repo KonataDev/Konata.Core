@@ -24,7 +24,7 @@ namespace Konata.Protocol.Packet.Tlvs
             StreamBuilder builder = new StreamBuilder();
             builder.PushBytes(new Md5Cryptor().Encrypt(_wifiBssid), false, true, true, 16);
             builder.PushString(_wifiSsid, true, true, 32);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

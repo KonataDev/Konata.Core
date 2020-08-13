@@ -24,7 +24,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt16(0); // _sigVer
             builder.PushString(_captchaCode);
             builder.PushBytes(_captchaKey, false, true);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
 
     }
