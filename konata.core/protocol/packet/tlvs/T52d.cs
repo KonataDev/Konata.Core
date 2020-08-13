@@ -46,7 +46,7 @@ namespace Konata.Protocol.Packet.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PushBytes(_deviceReportInfo, false);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

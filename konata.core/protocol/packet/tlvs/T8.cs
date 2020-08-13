@@ -27,7 +27,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt16(_timeZoneVer);
             builder.PushInt32(_localId);
             builder.PushInt16(_timeZoneOffset);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
 
     }

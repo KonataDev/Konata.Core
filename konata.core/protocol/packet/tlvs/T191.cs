@@ -20,7 +20,7 @@ namespace Konata.Protocol.Packet.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PushUInt8((byte)_unknownK);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

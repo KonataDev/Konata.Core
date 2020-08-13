@@ -29,7 +29,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt8(_capType);
             builder.PushInt16(_picSize);
             builder.PushInt8(_retType);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

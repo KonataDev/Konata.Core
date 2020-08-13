@@ -23,7 +23,7 @@ namespace Konata.Protocol.Packet.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PushBytes(new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(_imsi).ToArray()), false);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

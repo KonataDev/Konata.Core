@@ -36,7 +36,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt32((int)_uin);
             builder.PushInt16(_alwaysZero);
             builder.PushInt16(0);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

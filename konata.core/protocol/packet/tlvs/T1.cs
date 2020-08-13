@@ -28,7 +28,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             builder.PushBytes(_ipAddress);
             builder.PushInt16(0);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

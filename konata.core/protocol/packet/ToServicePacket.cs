@@ -55,17 +55,14 @@ namespace Konata.Protocol.Packet
             builder.PushUInt32((uint)(uin.Length + 4));
             builder.PushString(uin, false);
 
-            // 構建整包
-            var packetHeader = builder.GetPlainBytes();
+            // 構建整個包
+            var packetHeader = builder.GetBytes();
             var packetBody = _packet.GetEncryptedBytes(new TeaCryptor(), _encryptKey);
-
-            builder.Clear();
             builder.PushUInt32((uint)(packetHeader.Length + packetBody.Length + 4));
             builder.PushBytes(packetHeader, false);
             builder.PushBytes(packetBody, false);
 
-
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Konata.Protocol.Packet.Tlvs
             builder.PushInt8(1);
             builder.PushInt32((int)_buildTime);
             builder.PushString(_sdkVersion);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

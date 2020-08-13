@@ -23,7 +23,7 @@ namespace Konata.Protocol.Packet.Tlvs
             StreamBuilder builder = new StreamBuilder();
             builder.PushInt16(_version);
             builder.PushString(_apkId, true, true, 32);
-            return builder.GetPlainBytes();
+            return builder.GetBytes();
         }
     }
 }

@@ -109,22 +109,21 @@ namespace Konata.Utils
             PushBytes(Hex.HexStr2Bytes(value), needFlipData, needPrefixLength, needLimitLength, limitLength);
         }
 
-        public byte[] GetPlainBytes()
+        public byte[] GetBytes()
         {
             byte[] bytes = { };
             foreach (byte[] element in body)
             {
                 bytes = bytes.Concat(element).ToArray();
             }
+            body.Clear();
             return bytes;
         }
 
         public byte[] GetEncryptedBytes(ICryptor cryptor, byte[] cryptKey)
         {
-            return cryptor.Encrypt(GetPlainBytes(), cryptKey);
+            return cryptor.Encrypt(GetBytes(), cryptKey);
         }
-
-        public void Clear() => body.Clear();
 
         public int Length
         {

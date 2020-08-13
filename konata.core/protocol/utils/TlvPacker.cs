@@ -32,7 +32,7 @@ namespace Konata.Protocol.Utils
         public byte[] GetPacket(bool needPrefixTlvCount)
         {
             byte[] header = needPrefixTlvCount ? BitConverter.GetBytes(count).Reverse().ToArray() : new byte[0];
-            byte[] tlvBytes = builder.GetPlainBytes();
+            byte[] tlvBytes = builder.GetBytes();
 
             return header.Concat(tlvBytes).ToArray();
         }
