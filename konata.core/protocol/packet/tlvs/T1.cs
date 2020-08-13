@@ -5,10 +5,10 @@ namespace Konata.Protocol.Packet.Tlvs
 {
     public class T1 : TlvBase
     {
-        private readonly ulong _uin;
+        private readonly long _uin;
         private readonly byte[] _ipAddress;
 
-        public T1(ulong uin, byte[] ipAddress)
+        public T1(long uin, byte[] ipAddress)
         {
             _uin = uin;
             _ipAddress = ipAddress;

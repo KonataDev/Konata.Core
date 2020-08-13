@@ -9,7 +9,6 @@ namespace Konata.Protocol.Packet.Oicq
     {
         protected short _cmd;
         protected short _subCmd;
-        protected string _serviceCmd;
 
         public override byte[] GetBytes() => null;
 

@@ -8,12 +8,13 @@ namespace Konata
 {
     public static class AppInfo
     {
-        public const long appId = 537063202;
-        public const long subAppId = 537063202;
+        public const uint appId = 537063202;
+        public const uint subAppId = 537063202;
         public const int appClientVersion = 0;
         public const string apkPackageName = "com.tencent.mobileqq";
         public const string apkVersionName = "8.2.7";
         public const string appBuildVer = "8.2.7.4395";
+        public const string appRevision = "7288ad61";
 
         public static readonly byte[] apkSignature = new byte[]
         {
