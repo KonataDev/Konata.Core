@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
+    <Compile Include="protocol\network\msf\MsfServer.cs" />
+    <Compile Include="protocol\network\PacketMan.cs" />
     <Compile Include="protocol\EncryptType.cs" />
     <Compile Include="protocol\LoginType.cs" />
     <Compile Include="protocol\NetworkType.cs" />
