@@ -38,13 +38,14 @@ namespace Konata.Protocol.Packet.Tlvs
         }
 
         public T144(string androidId, byte[] deviceDevInfo, string osType, string osVersion,
-            NetworkType networkType, string networkDetail, byte[] unknownZeroBytes, string apnName,
+            NetworkType networkType, string networkDetail, string apnName,
             bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag,
             string deviceModel, string deviceBrand, byte[] tgtgKey)
         {
             _tlv109 = new T109(androidId);
+            _tlv16e = new T16e(deviceModel);
             _tlv52d = new T52d(deviceDevInfo);
-            _tlv124 = new T124(osType, osVersion, networkType, networkDetail, unknownZeroBytes, apnName);
+            _tlv124 = new T124(osType, osVersion, networkType, networkDetail, apnName);
             _tlv128 = new T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand);
             _tgtgKey = tgtgKey;
         }
@@ -60,7 +61,6 @@ namespace Konata.Protocol.Packet.Tlvs
             packer.PushTlv(_tlv109);
             packer.PushTlv(_tlv52d);
             packer.PushTlv(_tlv124);
-            packer.PushTlv(_tlv109);
             packer.PushTlv(_tlv128);
             packer.PushTlv(_tlv148);
             packer.PushTlv(_tlv153);
