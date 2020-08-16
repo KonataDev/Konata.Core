@@ -20,7 +20,7 @@ namespace Konata
         {
             public static string Os = "android";
             public static string OsVersion = "8.1.0";
-            public static string AndroidId = "9774d56d682e549c";
+            public static string AndroidId = "8edadfb1e4a02cdc";
 
             public static string ModelName = "SM-G9009W";
             public static string Manufacturer = "samsung";
@@ -58,7 +58,7 @@ namespace Konata
             {
                 get
                 {
-                    return "Bootloader";
+                    return "G9009WKEU1BOL1";
                 }
             }
 
@@ -74,7 +74,7 @@ namespace Konata
             {
                 get
                 {
-                    return "samsung";
+                    return "G9009WKEU1BOL1";
                 }
             }
 
@@ -98,7 +98,8 @@ namespace Konata
             {
                 get
                 {
-                    return Incremental;
+                    var version = "lineage_kltechnduo-userdebug 8.1.0 OPM2.171026.006.H1 c0ab6bb259";
+                    return version ?? Incremental;
                 }
             }
 
@@ -106,7 +107,7 @@ namespace Konata
             {
                 get
                 {
-                    return "76a92151209405be1ec0858a74afd431";
+                    return "samsung/klteduosctc/klte:6.0.1/MMB29M/G9009WKEU1CQB2:user/release-keys";
                 }
             }
 

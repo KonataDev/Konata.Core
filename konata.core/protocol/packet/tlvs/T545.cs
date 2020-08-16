@@ -1,25 +1,26 @@
 ﻿using Konata.Utils;
+using Konata.Utils.Crypto;
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T145 : TlvBase
+    public class T545 : TlvBase
     {
-        private readonly byte[] _guid;
+        private readonly string _unknownQiMei;
 
-        public T145(byte[] guid)
+        public T545(string qiMei = "")
         {
-            _guid = guid;
+            _unknownQiMei = qiMei;
         }
 
         public override ushort GetTlvCmd()
         {
-            return 0x145;
+            return 0x545;
         }
 
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(_guid, false);
+            builder.PushBytes(new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(_unknownQiMei)), false);
             return builder.GetBytes();
         }
     }

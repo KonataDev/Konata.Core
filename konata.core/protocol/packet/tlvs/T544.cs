@@ -2,24 +2,26 @@
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T145 : TlvBase
+    /// <summary>
+    /// 未完成
+    /// </summary>
+    public class T544 : TlvBase
     {
-        private readonly byte[] _guid;
+        private readonly string _wtLoginSdk;
 
-        public T145(byte[] guid)
+        public T544(string wtLoginSdk)
         {
-            _guid = guid;
+            _wtLoginSdk = wtLoginSdk;
         }
 
         public override ushort GetTlvCmd()
         {
-            return 0x145;
+            return 0x544;
         }
 
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(_guid, false);
             return builder.GetBytes();
         }
     }

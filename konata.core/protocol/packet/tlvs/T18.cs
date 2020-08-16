@@ -28,7 +28,6 @@ namespace Konata.Protocol.Packet.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_sigVer);
             builder.PushInt16(_pingVersion);
             builder.PushInt32(_ssoVersion);
             builder.PushInt32((int)_appId);

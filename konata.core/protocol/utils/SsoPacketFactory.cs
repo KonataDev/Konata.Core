@@ -11,8 +11,8 @@ namespace Konata.Protocol.Utils
 {
     public static class SsoPacketFactory
     {
-        private static uint _ssoSequence = 0;
-        private static uint _ssoSessionId = 0;
+        private static uint _ssoSequence = 85600;
+        private static uint _ssoSessionId = 0xBCA2DA01;
 
         public static SsoPacket Build(SsoCommand command, OicqRequest request)
         {

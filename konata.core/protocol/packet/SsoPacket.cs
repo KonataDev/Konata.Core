@@ -29,12 +29,12 @@ namespace Konata.Protocol.Packet
             var ssoCommand = SsoServiceCmd.ToString(_ssoCommand);
             var unknownBytes0 = new byte[0];
             var unknownBytes1 = new byte[0];
-            var unknownString = $"||{AppInfo.apkVersionName}.{AppInfo.appRevision}";
+            var unknownString = $"||A{AppInfo.apkVersionName}.{AppInfo.appRevision}";
 
             // 構建頭部包躰
             StreamBuilder builder = new StreamBuilder();
             builder.PushUInt32(_ssoSquence);
-            builder.PushUInt32(AppInfo.appId);
+            builder.PushUInt32(AppInfo.subAppId);
             builder.PushUInt32(AppInfo.subAppId);
             builder.PushHexString("01 00 00 00 00 00 00 00 00 00 01 00", false);
 
@@ -53,7 +53,7 @@ namespace Konata.Protocol.Packet
             builder.PushUInt32((uint)(unknownBytes0.Length + 4));
             builder.PushBytes(unknownBytes0, false);
 
-            builder.PushUInt16((ushort)(unknownString.Length + 4));
+            builder.PushUInt16((ushort)(unknownString.Length + 2));
             builder.PushString(unknownString, false);
 
             builder.PushUInt32((uint)(unknownBytes1.Length + 4));

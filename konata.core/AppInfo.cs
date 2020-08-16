@@ -8,7 +8,7 @@ namespace Konata
 {
     public static class AppInfo
     {
-        public const uint appId = 537063202;
+        public const uint appId = 16;
         public const uint subAppId = 537063202;
         public const int appClientVersion = 0;
         public const string apkPackageName = "com.tencent.mobileqq";
@@ -23,6 +23,11 @@ namespace Konata
             0x52, 0x77, 0x16, 0xF6,
             0xF3, 0x6E, 0xB6, 0x8D
         };
+
+        public static class WtLoginSdk
+        {
+            public const string sdkVersion = "6.0.0.2425";
+        }
 
     }
 }

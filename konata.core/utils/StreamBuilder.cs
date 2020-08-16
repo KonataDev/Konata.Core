@@ -15,7 +15,7 @@ namespace Konata.Utils
             bool needLimitLength, int limitLength = 0)
         {
 
-            if (value == null || value.Length == 0)
+            if (value == null || (value.Length == 0 && !needPrefixLength))
             {
                 return new byte[0];
             }
