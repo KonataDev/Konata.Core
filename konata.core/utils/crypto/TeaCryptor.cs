@@ -4,452 +4,199 @@ namespace Konata.Utils.Crypto
 {
     public class TeaCryptor : ICryptor
     {
-        private long _contextStart;
-        private long _crypt;
-        private long _preCrypt;
-        private bool _header;
-        private byte[] _key = new byte[16];
-        private byte[] _out;
-        private long _padding;
-        private byte[] _plain;
-        private long _pos;
-        private byte[] _prePlain;
-        private Random _random = new Random();
-
-        private byte[] CopyMemory(byte[] arr, int arrIndex, long input)
+        /// <summary>
+        /// Encrypt data.
+        /// </summary>
+        public byte[] Encrypt(byte[] data, byte[] key)
         {
-            if (arrIndex + 4 > arr.Length)
-            {
-                return arr;
-            }
-
-            arr[arrIndex + 3] = (byte)((input & 4278190080u) >> 24);
-            arr[arrIndex + 2] = (byte)((input & 0xFF0000) >> 16);
-            arr[arrIndex + 1] = (byte)((input & 0xFF00) >> 8);
-            arr[arrIndex] = (byte)(input & 0xFF);
-            arr[arrIndex] &= byte.MaxValue;
-            arr[arrIndex + 1] &= byte.MaxValue;
-            arr[arrIndex + 2] &= byte.MaxValue;
-            arr[arrIndex + 3] &= byte.MaxValue;
-            return arr;
-        }
-
-        private long GetUnsignedInt(byte[] arrayIn, int offset, int len)
-        {
-            var num = 0L;
-            var num2 = len <= 8 ? offset + len : offset + 8;
-            for (var i = offset; i < num2; i++)
-            {
-                num <<= 8;
-                num |= (ushort)(arrayIn[i] & 0xFF);
-            }
-
-            return (num & uint.MaxValue) | (num >> 32);
-        }
-
-        private long Rand()
-        {
-            return _random.Next();
-        }
-
-        private byte[] Decipher(byte[] arrayIn, byte[] arrayKey, long offset = 0L)
-        {
-            var arr = new byte[24];
-            var array = new byte[8];
-            if (arrayIn.Length < 8)
-            {
-                return array;
-            }
-
-            if (arrayKey.Length < 16)
-            {
-                return array;
-            }
-
-            var num = 3816266640L;
-            num &= uint.MaxValue;
-            var num2 = 2654435769L;
-            num2 &= uint.MaxValue;
-            var num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
-            var num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
-            var unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
-            var unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
-            var unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
-            var unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
-            for (var i = 1; i <= 16; i++)
-            {
-                num4 -= ((num3 << 4) + unsignedInt3) ^ (num3 + num) ^ ((num3 >> 5) + unsignedInt4);
-                num4 &= uint.MaxValue;
-                num3 -= ((num4 << 4) + unsignedInt) ^ (num4 + num) ^ ((num4 >> 5) + unsignedInt2);
-                num3 &= uint.MaxValue;
-                num -= num2;
-                num &= uint.MaxValue;
-            }
-
-            arr = CopyMemory(arr, 0, num3);
-            arr = CopyMemory(arr, 4, num4);
-            array[0] = arr[3];
-            array[1] = arr[2];
-            array[2] = arr[1];
-            array[3] = arr[0];
-            array[4] = arr[7];
-            array[5] = arr[6];
-            array[6] = arr[5];
-            array[7] = arr[4];
-            return array;
-        }
-
-        private byte[] Encipher(byte[] arrayIn, byte[] arrayKey, long offset = 0L)
-        {
-            var array = new byte[8];
-            var arr = new byte[24];
-            if (arrayIn.Length < 8 || arrayKey.Length < 16)
-            {
-                return array;
-            }
-
-            var num = 0L;
-            var num2 = 2654435769L;
-            num2 &= uint.MaxValue;
-            var num3 = GetUnsignedInt(arrayIn, (int)offset, 4);
-            var num4 = GetUnsignedInt(arrayIn, (int)offset + 4, 4);
-            var unsignedInt = GetUnsignedInt(arrayKey, 0, 4);
-            var unsignedInt2 = GetUnsignedInt(arrayKey, 4, 4);
-            var unsignedInt3 = GetUnsignedInt(arrayKey, 8, 4);
-            var unsignedInt4 = GetUnsignedInt(arrayKey, 12, 4);
-            for (var i = 1; i <= 16; i++)
-            {
-                num += num2;
-                num &= uint.MaxValue;
-                num3 += ((num4 << 4) + unsignedInt) ^ (num4 + num) ^ ((num4 >> 5) + unsignedInt2);
-                num3 &= uint.MaxValue;
-                num4 += ((num3 << 4) + unsignedInt3) ^ (num3 + num) ^ ((num3 >> 5) + unsignedInt4);
-                num4 &= uint.MaxValue;
-            }
-
-            arr = CopyMemory(arr, 0, num3);
-            arr = CopyMemory(arr, 4, num4);
-            array[0] = arr[3];
-            array[1] = arr[2];
-            array[2] = arr[1];
-            array[3] = arr[0];
-            array[4] = arr[7];
-            array[5] = arr[6];
-            array[6] = arr[5];
-            array[7] = arr[4];
-            return array;
-        }
-
-        private void Encrypt8Bytes()
-        {
-            for (_pos = 0L; _pos < 8; _pos++)
-            {
-                if (_header)
-                {
-                    _plain[_pos] = (byte)(_plain[_pos] ^ _prePlain[_pos]);
-                }
-                else
-                {
-                    _plain[_pos] = (byte)(_plain[_pos] ^ _out[_preCrypt + _pos]);
-                }
-            }
-
-            var array = Encipher(_plain, _key);
-            for (var i = 0; i <= 7; i++)
-            {
-                _out[_crypt + i] = array[i];
-            }
-
-            for (_pos = 0L; _pos <= 7; _pos++)
-            {
-                _out[_crypt + _pos] = (byte)(_out[_crypt + _pos] ^ _prePlain[_pos]);
-            }
-
-            _plain.CopyTo(_prePlain, 0);
-            _preCrypt = _crypt;
-            _crypt += 8L;
-            _pos = 0L;
-            _header = false;
-        }
-
-        private bool Decrypt8Bytes(byte[] arrayIn, long offset = 0L)
-        {
-            for (_pos = 0L; _pos <= 7; _pos++)
-            {
-                if (_contextStart + _pos > arrayIn.Length - 1)
-                {
-                    return true;
-                }
-
-                _prePlain[_pos] = (byte)(_prePlain[_pos] ^ arrayIn[offset + _crypt + _pos]);
-            }
-
-            try
-            {
-                _prePlain = Decipher(_prePlain, _key);
-            }
-            catch
-            {
-                return false;
-            }
-
-            var num = _prePlain.Length - 1;
-            _contextStart += 8L;
-            _crypt += 8L;
-            _pos = 0L;
-            return true;
-        }
-
-        public byte[] Encrypt(byte[] arrayIn, byte[] arrayKey, long offset)
-        {
-            _plain = new byte[8];
-            _prePlain = new byte[8];
-            _pos = 1L;
-            _padding = 0L;
-            _crypt = _preCrypt = 0L;
-            _key = arrayKey;
-            _header = true;
-            _pos = 2L;
-            _pos = (arrayIn.Length + 10) % 8;
-            if (_pos != 0)
-            {
-                _pos = 8 - _pos;
-            }
-
-            _out = new byte[arrayIn.Length + _pos + 10];
-            _plain[0] = (byte)((Rand() & 0xF8) | _pos);
-            for (var i = 1; i <= _pos; i++)
-            {
-                _plain[i] = (byte)(Rand() & 0xFF);
-            }
-
-            _pos++;
-            _padding = 1L;
-            while (_padding < 3)
-            {
-                if (_pos < 8)
-                {
-                    _plain[_pos] = (byte)(Rand() & 0xFF);
-                    _padding++;
-                    _pos++;
-                }
-                else if (_pos == 8)
-                {
-                    Encrypt8Bytes();
-                }
-            }
-
-            var num = (int)offset;
-            long num2 = arrayIn.Length;
-            while (num2 > 0)
-            {
-                if (_pos < 8)
-                {
-                    _plain[_pos] = arrayIn[num];
-                    num++;
-                    _pos++;
-                    num2--;
-                }
-                else if (_pos == 8)
-                {
-                    Encrypt8Bytes();
-                }
-            }
-
-            _padding = 1L;
-            while (_padding < 9)
-            {
-                if (_pos < 8)
-                {
-                    _plain[_pos] = 0;
-                    _pos++;
-                    _padding++;
-                }
-                else if (_pos == 8)
-                {
-                    Encrypt8Bytes();
-                }
-            }
-
-            return _out;
-        }
-
-        public byte[] Encrypt(byte[] arrayIn, byte[] arrayKey)
-        {
-            byte[] array = null;
-            var num = 0;
-            while (array == null && num < 2)
-            {
-                try
-                {
-                    array = Encrypt(arrayIn, arrayKey, 0L);
-                }
-                catch
-                {
-                }
-
-                num++;
-            }
-
-            return array;
-        }
-
-        public byte[] Encrypt(byte[] arrayIn, int pos, int len, byte[] arrayKey)
-        {
-            if (arrayIn == null || arrayKey == null)
+            if (data == null || key == null || key.Length < 16)
             {
                 return null;
             }
-
-            byte[] part = new byte[len];
-            Array.Copy(arrayIn, pos, part, 0, len);
-
-            return Encrypt(part, arrayKey);
+            int inputLength = data.Length;
+            int fill = ((8 - ((inputLength + 10) & 7)) & 7) + 2;
+            int length = fill + inputLength + 8;
+            // Thus length must be divisible by 8.
+            //if ((length & 7) != 0 || (length >> 4) == 0)
+            //{
+            //    return null; // Invalid plain data length.
+            //}
+            byte[] plain = new byte[length];
+            byte[] cipher = new byte[length];
+            byte[] plainXorPrev = new byte[8];
+            byte[] tempCipher = new byte[8];
+            // First byte represents to length of fill bytes - 2.
+            plain[0] = (byte)(RandomByte(248) | (fill - 2));
+            for (int i = 1; i <= fill; ++i)
+            {
+                plain[i] = RandomByte();
+            }
+            Buffer.BlockCopy(data, 0, plain, fill + 1, inputLength);
+            // Encrypt data.
+            for (int i = 0; i < length; i += 8)
+            {
+                byte[] plainXor = Xor8(plain, tempCipher, i);
+                tempCipher = Xor8(EnCipher(plainXor, key), plainXorPrev);
+                plainXorPrev = plainXor;
+                Buffer.BlockCopy(tempCipher, 0, cipher, i, 8);
+            }
+            return cipher;
         }
 
-        // Token: 0x06000637 RID: 1591 RVA: 0x00026210 File Offset: 0x00024410
-        public byte[] Decrypt(byte[] inData, byte[] key)
+        /// <summary>
+        /// Decrypt data.
+        /// </summary>
+        public byte[] Decrypt(byte[] data, byte[] key)
         {
-            var result = new byte[0];
-            try
-            {
-                result = Decrypt(inData, key, 0L);
-            }
-            catch
-            {
-            }
-
-            return result;
-        }
-        public byte[] Decrypt(byte[] inData, int pos, int len, byte[] key)
-        {
-            if (inData == null || key == null)
+            if (data == null || key == null || key.Length < 16)
             {
                 return null;
             }
-
-            byte[] part = new byte[len];
-            Array.Copy(inData, pos, part, 0, len);
-
-            return Decrypt(part, key);
+            int length = data.Length;
+            if ((length & 7) != 0 || (length >> 4) == 0)
+            {
+                return null; // Invalid cipher data length.
+            }
+            byte[] plain = new byte[length];
+            byte[] plainSub = new byte[8];
+            // Decrypt data.
+            for (int i = 0; i < length; i += 8)
+            {
+                plainSub = DeCipher(Xor8(data, plainSub, i), key);
+                Buffer.BlockCopy(Xor8(plainSub, data, 0, i - 8), 0, plain, i, 8);
+            }
+            // Verify that the last 7 bytes are 0.
+            for (int i = length - 7; i < length; ++i)
+            {
+                if (plain[i] != 0)
+                {
+                    return null; // Verification failed.
+                }
+            }
+            // Extract valid data.
+            int from = (plain[0] & 7) + 3;
+            byte[] output = new byte[length - from - 7];
+            Buffer.BlockCopy(plain, from, output, 0, output.Length);
+            return output;
         }
 
-        public byte[] Decrypt(byte[] arrayIn, byte[] arrayKey, long offset)
+        /// <summary>
+        /// Encrypt data with default key.
+        /// </summary>
+        public byte[] Encrypt(byte[] data) => Encrypt(data, new byte[16]);
+
+        /// <summary>
+        /// Decrypt data with default key.
+        /// </summary>
+        public byte[] Decrypt(byte[] data) => Decrypt(data, new byte[16]);
+
+        private const long Delta = 2654435769L;
+        private const long SumMax = (Delta << 4) & uint.MaxValue;
+
+        private static readonly Random random = new Random();
+
+        /// <summary>
+        /// Write uint into array (Big-endian).
+        /// </summary>
+        private void WriteUInt32(byte[] data, int index, uint value)
         {
-            var result = new byte[0];
-            if (arrayIn.Length < 16 || arrayIn.Length % 8 != 0)
-            {
-                return result;
-            }
-
-            var array = new byte[offset + 8];
-            arrayKey.CopyTo(_key, 0);
-            _crypt = _preCrypt = 0L;
-            _prePlain = Decipher(arrayIn, arrayKey, offset);
-            _pos = _prePlain[0] & 7;
-            var num = arrayIn.Length - _pos - 10;
-            if (num <= 0)
-            {
-                return result;
-            }
-
-            _out = new byte[num];
-            _preCrypt = 0L;
-            _crypt = 8L;
-            _contextStart = 8L;
-            _pos++;
-            _padding = 1L;
-            while (_padding < 3)
-            {
-                if (_pos < 8)
-                {
-                    _pos++;
-                    _padding++;
-                }
-                else if (_pos == 8)
-                {
-                    for (var i = 0; i < array.Length; i++)
-                    {
-                        array[i] = arrayIn[i];
-                    }
-
-                    if (!Decrypt8Bytes(arrayIn, offset))
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            var num2 = 0L;
-            while (num != 0)
-            {
-                if (_pos < 8)
-                {
-                    _out[num2] = (byte)(array[offset + _preCrypt + _pos] ^ _prePlain[_pos]);
-                    num2++;
-                    num--;
-                    _pos++;
-                }
-                else if (_pos == 8)
-                {
-                    array = arrayIn;
-                    _preCrypt = _crypt - 8;
-                    if (!Decrypt8Bytes(arrayIn, offset))
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            for (_padding = 1L; _padding <= 7; _padding++)
-            {
-                if (_pos < 8)
-                {
-                    if ((array[offset + _preCrypt + _pos] ^ _prePlain[_pos]) != 0)
-                    {
-                        return result;
-                    }
-
-                    _pos++;
-                }
-                else if (_pos == 8)
-                {
-                    for (var i = 0; i < array.Length; i++)
-                    {
-                        array[i] = arrayIn[i];
-                    }
-
-                    _preCrypt = _crypt;
-                    if (!Decrypt8Bytes(arrayIn, offset))
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            return _out;
+            data[index] = (byte)((value >> 24) & 0xFF);
+            data[index + 1] = (byte)((value >> 16) & 0xFF);
+            data[index + 2] = (byte)((value >> 8) & 0xFF);
+            data[index + 3] = (byte)(value & 0xFF);
         }
 
-        public byte[] Encrypt(byte[] data)
+        /// <summary>
+        /// Read uint from array (Big-endian).
+        /// </summary>
+        private uint ReadUInt32(byte[] data, int index) =>
+            ((uint)data[index] << 24) |
+            ((uint)data[index + 1] << 16) |
+            ((uint)data[index + 2] << 8) |
+            data[index + 3];
+
+        /// <summary>
+        /// Get random byte.
+        /// </summary>
+        private byte RandomByte(int max = byte.MaxValue) => (byte)(random.Next() & max);
+
+        /// <summary>
+        /// Xor 8 bytes between 2 arrays.
+        /// </summary>
+        private byte[] Xor8(byte[] a, byte[] b, int ai = 0, int bi = 0)
         {
-            return Encrypt(data, new byte[]
+            if (bi < 0)
             {
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00
-            });
+                return a;
+            }
+            byte[] r = new byte[8];
+            for (int i = 0; i < 8; ++i)
+            {
+                r[i] = (byte)(a[i + ai] ^ b[i + bi]);
+            }
+            return r;
         }
 
-        public byte[] Decrypt(byte[] data)
+        /// <summary>
+        /// TEA encrypt.
+        /// </summary>
+        private byte[] EnCipher(byte[] data, byte[] key)
         {
-            return Decrypt(data, new byte[]
+            byte[] array = new byte[8];
+            //if (input.Length < 8 || key.Length < 16)
+            //{
+            //    return array;
+            //}
+            long sum = 0;
+            long y = ReadUInt32(data, 0);
+            long z = ReadUInt32(data, 4);
+            long a = ReadUInt32(key, 0);
+            long b = ReadUInt32(key, 4);
+            long c = ReadUInt32(key, 8);
+            long d = ReadUInt32(key, 12);
+            for (int i = 0; i < 16; ++i)
             {
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00
-            });
+                sum += Delta;
+                sum &= uint.MaxValue;
+                y += ((z << 4) + a) ^ (z + sum) ^ ((z >> 5) + b);
+                y &= uint.MaxValue;
+                z += ((y << 4) + c) ^ (y + sum) ^ ((y >> 5) + d);
+                z &= uint.MaxValue;
+            }
+            WriteUInt32(array, 0, (uint)y);
+            WriteUInt32(array, 4, (uint)z);
+            return array;
+        }
+
+        /// <summary>
+        /// TEA decrypt.
+        /// </summary>
+        private byte[] DeCipher(byte[] data, byte[] key, long index = 0)
+        {
+            byte[] array = new byte[8];
+            //if (input.Length < 8 || key.Length < 16)
+            //{
+            //    return array;
+            //}
+            long sum = SumMax;
+            long y = ReadUInt32(data, (int)index);
+            long z = ReadUInt32(data, (int)index + 4);
+            long a = ReadUInt32(key, 0);
+            long b = ReadUInt32(key, 4);
+            long c = ReadUInt32(key, 8);
+            long d = ReadUInt32(key, 12);
+            for (int i = 0; i < 16; ++i)
+            {
+                z -= ((y << 4) + c) ^ (y + sum) ^ ((y >> 5) + d);
+                z &= uint.MaxValue;
+                y -= ((z << 4) + a) ^ (z + sum) ^ ((z >> 5) + b);
+                y &= uint.MaxValue;
+                sum -= Delta;
+                sum &= uint.MaxValue;
+            }
+            WriteUInt32(array, 0, (uint)y);
+            WriteUInt32(array, 4, (uint)z);
+            return array;
         }
     }
 }
