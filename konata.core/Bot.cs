@@ -64,7 +64,7 @@ namespace Konata
         }
 
 
-        private void PacketListener(PacketBase packet)
+        private void PacketListener(FromServicePacket packet)
         {
 
         }
