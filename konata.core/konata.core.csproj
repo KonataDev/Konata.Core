@@ -47,6 +47,7 @@
     <Compile Include="protocol\EncryptType.cs" />
     <Compile Include="protocol\LoginType.cs" />
     <Compile Include="protocol\NetworkType.cs" />
+    <Compile Include="protocol\packet\FromServicePacket.cs" />
     <Compile Include="protocol\packet\SsoPacket.cs" />
     <Compile Include="protocol\packet\tlvs\T544.cs" />
     <Compile Include="protocol\packet\tlvs\T545.cs" />

@@ -101,6 +101,7 @@ namespace Konata.Network
                     {
                         _recvLength = 0;
                         _recvStatus = ReceiveStatus.Idle;
+
                         Console.WriteLine(Hex.Bytes2HexStr(_recvBuffer));
                     }
                 }

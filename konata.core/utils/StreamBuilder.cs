@@ -9,7 +9,7 @@ namespace Konata.Utils
     public class StreamBuilder
     {
 
-        private readonly List<byte[]> body = new List<byte[]>();
+        private readonly List<byte[]> _body = new List<byte[]>();
 
         private byte[] ProcessBytes(byte[] value, bool needFlipData, bool needPrefixLength,
             bool needLimitLength, int limitLength = 0)
@@ -51,15 +51,15 @@ namespace Konata.Utils
             PushBytes(new byte[] { value });
         }
 
-        public void PushBool(bool value, int length = 1)
+        public void PushBool(bool value, byte length = 1)
         {
-            if (length < 0 || length > 8)
+            if (length > 8)
                 throw new Exception("do not do that.");
 
             byte[] boolBytes = new byte[length];
             boolBytes[length - 1] = (byte)(value ? 1 : 0);
 
-            PushBytes(new byte[] { (byte)(value ? 1 : 0) });
+            PushBytes(boolBytes);
         }
 
         public void PushInt16(short value)
@@ -95,7 +95,7 @@ namespace Konata.Utils
         public void PushBytes(byte[] value, bool needFlipData = true, bool needPrefixLength = false,
             bool needLimitLength = false, int limitLength = 0)
         {
-            body.Add(ProcessBytes(value, needFlipData, needPrefixLength, needLimitLength, limitLength));
+            _body.Add(ProcessBytes(value, needFlipData, needPrefixLength, needLimitLength, limitLength));
         }
 
         public void PushString(string value, bool needPrefixLength = true, bool needLimitLength = false, int limitLength = 0)
@@ -112,11 +112,11 @@ namespace Konata.Utils
         public byte[] GetBytes()
         {
             byte[] bytes = { };
-            foreach (byte[] element in body)
+            foreach (byte[] element in _body)
             {
                 bytes = bytes.Concat(element).ToArray();
             }
-            body.Clear();
+            _body.Clear();
             return bytes;
         }
 
@@ -130,7 +130,7 @@ namespace Konata.Utils
             get
             {
                 int length = 0;
-                foreach (byte[] element in body)
+                foreach (byte[] element in _body)
                 {
                     length += element.Length;
                 }
@@ -138,7 +138,7 @@ namespace Konata.Utils
             }
         }
 
-        public int Count => body.Count;
+        public int Count => _body.Count;
 
     }
 }
