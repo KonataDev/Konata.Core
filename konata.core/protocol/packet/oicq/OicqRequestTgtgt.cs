@@ -94,7 +94,7 @@ namespace Konata.Protocol.Packet.Oicq
             // tlvs.PushTlv(Tlv.194());
             tlvs.PushTlv(new T191());
             tlvs.PushTlv(new T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
-            tlvs.PushTlv(new T177());
+            tlvs.PushTlv(new T177(AppInfo.WtLoginSdk.buildTime, AppInfo.WtLoginSdk.sdkVersion));
             tlvs.PushTlv(new T516());
             tlvs.PushTlv(new T521());
             tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));

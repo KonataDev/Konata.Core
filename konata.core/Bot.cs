@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using Konata.Network;
 using Konata.Protocol.Packet;
 using Konata.Protocol.Packet.Oicq;
@@ -64,7 +63,7 @@ namespace Konata
         }
 
 
-        private void PacketListener(FromServicePacket packet)
+        private void PacketListener(PacketBase packet)
         {
 
         }
