@@ -7,7 +7,7 @@ namespace Konata.Protocol.Packet.Tlvs
         private readonly long _buildTime;
         private readonly string _sdkVersion;
 
-        public T177(long buildTime = 1577331209, string sdkVersion = "6.0.0.2425")
+        public T177(long buildTime, string sdkVersion)
         {
             _buildTime = buildTime;
             _sdkVersion = sdkVersion;

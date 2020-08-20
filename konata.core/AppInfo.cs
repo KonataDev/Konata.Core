@@ -26,6 +26,7 @@ namespace Konata
 
         public static class WtLoginSdk
         {
+            public const uint buildTime = 1577331209;
             public const string sdkVersion = "6.0.0.2425";
         }
 
