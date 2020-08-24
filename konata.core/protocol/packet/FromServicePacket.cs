@@ -29,14 +29,23 @@ namespace Konata.Protocol.Packet
         {
             StreamReader reader = new StreamReader(data);
 
+            // 跳過頭部長度
             reader.Drop(4);
+
+            // 包類型
             reader.TakeUInt32(out _packetType);
+
+            // 加密類型
             reader.TakeUInt8(out _encryptType);
-            reader.TakeUInt32(out var length);
-            reader.TakeBytes(out _ticket, (int)length - 4);
+
+            // 未知
             reader.Drop(1);
-            reader.TakeUInt32(out length);
+
+            // 賬號字符串
+            reader.TakeUInt32(out var length);
             reader.TakeString(out var uin, (int)length - 4);
+
+            // 剩下的數據
             reader.TakeRemainDecrypedBytes(out var ssoBody, new TeaCryptor(), _encryptKey);
 
             _uin = long.Parse(uin);
