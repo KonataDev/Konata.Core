@@ -12,7 +12,7 @@ namespace Konata.Network
 {
     public class PacketMan
     {
-        public delegate void PacketListener(PacketBase packet);
+        public delegate void PacketListener(FromServicePacket packet);
 
         private enum ReceiveStatus
         {
@@ -102,13 +102,9 @@ namespace Konata.Network
                         _recvLength = 0;
                         _recvStatus = ReceiveStatus.Idle;
 
-                        Console.WriteLine(Hex.Bytes2HexStr(_recvBuffer));
+                        _listener(new FromServicePacket(_recvBuffer));
                     }
                 }
-            }
-            catch (Exception e)
-            {
-
             }
             finally
             {
