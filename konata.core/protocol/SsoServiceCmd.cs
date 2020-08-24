@@ -45,5 +45,22 @@ namespace Konata.Protocol
 
             return attr.Description;
         }
+
+        public static Command TryParse(string cmd)
+        {
+            foreach (var element in typeof(Command).GetFields())
+            {
+                DescriptionAttribute attr
+                    = Attribute.GetCustomAttribute(element, typeof(DescriptionAttribute)) as DescriptionAttribute;
+                if (attr == null)
+                    continue;
+                if (attr.Description == cmd)
+                {
+                    return (Command)element.GetValue(null);
+                }
+            }
+
+            throw new Exception("Try parsing SsoServiceCmd.Command failed.");
+        }
     }
 }

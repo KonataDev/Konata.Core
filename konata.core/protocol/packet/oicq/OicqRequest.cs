@@ -12,5 +12,6 @@ namespace Konata.Protocol.Packet.Oicq
 
         public override byte[] GetBytes() => null;
 
+        public override bool TryParse(byte[] data) => false;
     }
 }
