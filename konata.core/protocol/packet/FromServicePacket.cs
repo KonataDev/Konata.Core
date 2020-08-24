@@ -8,17 +8,17 @@ namespace Konata.Protocol.Packet
     public class FromServicePacket : PacketBase
     {
 
-        protected SsoPacket _packet;
+        public SsoPacket _packet;
 
-        protected byte[] _ticket;
+        public byte[] _ticket;
 
-        protected long _uin;
+        public long _uin;
 
-        protected uint _packetType;
+        public uint _packetType;
 
-        protected byte _encryptType;
+        public byte _encryptType;
 
-        protected byte[] _encryptKey = new byte[16];
+        public byte[] _encryptKey = new byte[16];
 
         public FromServicePacket(byte[] fromServiceBytes)
         {
@@ -44,11 +44,10 @@ namespace Konata.Protocol.Packet
             // 賬號字符串
             reader.TakeUInt32(out var length);
             reader.TakeString(out var uin, (int)length - 4);
+            _uin = long.Parse(uin);
 
             // 剩下的數據
             reader.TakeRemainDecrypedBytes(out var ssoBody, new TeaCryptor(), _encryptKey);
-
-            _uin = long.Parse(uin);
             _packet = new SsoPacket(ssoBody);
 
             return true;

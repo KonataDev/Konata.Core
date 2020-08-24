@@ -7,13 +7,13 @@ namespace Konata.Protocol.Packet
 {
     public class SsoPacket : PacketBase
     {
-        protected uint _ssoSquence;
+        public uint _ssoSquence;
 
-        protected uint _ssoSessionId;
+        public uint _ssoSessionId;
 
-        protected OicqRequest _oicqRequest;
+        public OicqRequest _oicqRequest;
 
-        protected SsoCommand _ssoCommand;
+        public SsoCommand _ssoCommand;
 
         public SsoPacket(byte[] fromServiceBytes)
         {
