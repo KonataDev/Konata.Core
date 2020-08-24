@@ -15,6 +15,11 @@ namespace Konata.Protocol.Packet
 
         public SsoCommand _ssoCommand { get; }
 
+        public SsoPacket(byte[] fromServiceBytes)
+        {
+            TryParse(fromServiceBytes);
+        }
+
         public SsoPacket(uint seq, uint session, SsoCommand command, OicqRequest request)
         {
             _ssoSquence = seq;
@@ -68,6 +73,12 @@ namespace Konata.Protocol.Packet
             builder.PushBytes(ssoRequest, false);
 
             return builder.GetBytes();
+        }
+
+        public override bool TryParse(byte[] data)
+        {
+
+            return true;
         }
     }
 }

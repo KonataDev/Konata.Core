@@ -36,7 +36,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +49,7 @@
     <Compile Include="protocol\NetworkType.cs" />
     <Compile Include="protocol\packet\FromServicePacket.cs" />
     <Compile Include="protocol\packet\SsoPacket.cs" />
+    <Compile Include="protocol\packet\tlvs\T193.cs" />
     <Compile Include="protocol\packet\tlvs\T544.cs" />
     <Compile Include="protocol\packet\tlvs\T545.cs" />
     <Compile Include="protocol\packet\ToServicePacket.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="utils\Hex.cs" />
     <Compile Include="protocol\utils\TlvBuilder.cs" />
     <Compile Include="protocol\utils\TlvPacker.cs" />
+    <Compile Include="utils\StreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="protobuf-net, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">

@@ -11,7 +11,7 @@ namespace Konata.Protocol.Packet
 
         public byte[] GetEncryptedBytes(ICryptor cryptor, byte[] key = null) => cryptor.Encrypt(GetBytes(), key);
 
-        public virtual bool SetBytes(byte[] data) => false;
+        public virtual bool TryParse(byte[] data) => false;
 
         public override string ToString() => Hex.Bytes2HexStr(GetBytes());
 
