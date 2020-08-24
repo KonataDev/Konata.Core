@@ -104,9 +104,7 @@ namespace Konata
             };
 
             var x = new FromServicePacket(data);
-
         }
-
 
         private void PacketListener(FromServicePacket packet)
         {

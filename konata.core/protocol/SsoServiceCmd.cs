@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Konata.Protocol
 {
@@ -60,7 +56,7 @@ namespace Konata.Protocol
                 }
             }
 
-            throw new Exception("Try parsing SsoServiceCmd.Command failed.");
+            throw new Exception($"Parsing SsoServiceCmd.Command failed. cmd => {cmd}");
         }
     }
 }
