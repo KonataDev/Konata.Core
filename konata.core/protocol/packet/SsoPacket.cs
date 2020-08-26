@@ -107,7 +107,7 @@ namespace Konata.Protocol.Packet
 
             // 剩下的數據
             reader.TakeRemainBytes(out var requestBody);
-            return _oicqRequest.TryParse(requestBody);
+            return OicqRequest.TryParse(requestBody, out _oicqRequest);
         }
     }
 }
