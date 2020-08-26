@@ -1,4 +1,4 @@
-﻿using Konata.Utils.Crypto;
+﻿using Konata.Utils.Crypt;
 using Konata.Protocol.Utils;
 
 namespace Konata.Protocol.Packet.Tlvs
