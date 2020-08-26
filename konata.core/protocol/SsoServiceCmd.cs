@@ -21,7 +21,13 @@ namespace Konata.Protocol
             WtLoginName2Uin,
 
             [Description("wtlogin.trans_emp")]
-            WtLoginTransEmp
+            WtLoginTransEmp,
+
+            [Description("CliLogSvc.UploadReq")]
+            CliLogSvcUploadReq,
+
+            [Description("GrayUinPro.Check")]
+            GrayUinProCheck
         }
 
         public static string ToString(Command cmd)

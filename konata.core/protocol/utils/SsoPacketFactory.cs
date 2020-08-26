@@ -19,5 +19,14 @@ namespace Konata.Protocol.Utils
             ++_ssoSequence;
             return new SsoPacket(_ssoSequence, _ssoSessionId, command, request);
         }
+
+        public static SsoPacket TryParse(byte[] data)
+        {
+            var packet = new SsoPacket(data);
+            _ssoSequence = packet._ssoSquence;
+            _ssoSessionId = packet._ssoSessionId;
+
+            return packet;
+        }
     }
 }

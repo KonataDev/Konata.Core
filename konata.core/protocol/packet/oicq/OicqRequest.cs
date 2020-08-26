@@ -12,6 +12,14 @@ namespace Konata.Protocol.Packet.Oicq
 
         public override byte[] GetBytes() => null;
 
-        public override bool TryParse(byte[] data) => false;
+        public static bool TryParse(byte[] data, out OicqRequest request)
+        {
+            Console.WriteLine(Hex.Bytes2HexStr(data));
+
+            request = new OicqRequestCheckImage();
+            return true;
+        }
+
+
     }
 }

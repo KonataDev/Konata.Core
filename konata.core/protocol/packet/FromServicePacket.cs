@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Protocol.Utils;
 using Konata.Utils;
 using Konata.Utils.Crypto;
 using StreamReader = Konata.Utils.StreamReader;
@@ -48,7 +49,7 @@ namespace Konata.Protocol.Packet
 
             // 剩下的數據
             reader.TakeRemainDecrypedBytes(out var ssoBody, new TeaCryptor(), _encryptKey);
-            _packet = new SsoPacket(ssoBody);
+            _packet = SsoPacketFactory.TryParse(ssoBody);
 
             return true;
         }
