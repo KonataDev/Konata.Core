@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konata.Protocol.Packet.Oicq
+namespace Konata.Msf.Packets.Oicq
 {
     public class OicqRequestCheckSms : OicqRequest
     {

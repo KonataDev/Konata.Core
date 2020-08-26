@@ -1,26 +1,26 @@
 ﻿using Konata.Utils;
-using Konata.Utils.Crypto;
+using Konata.Utils.Crypt;
 
 namespace Konata.Protocol.Packet.Tlvs
 {
-    public class T545 : TlvBase
+    public class T187 : TlvBase
     {
-        private readonly string _unknownQiMei;
+        private readonly byte[] _macAddress;
 
-        public T545(string qiMei = "")
+        public T187(byte[] macAddress)
         {
-            _unknownQiMei = qiMei;
+            _macAddress = macAddress;
         }
 
         public override ushort GetTlvCmd()
         {
-            return 0x545;
+            return 0x187;
         }
 
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(_unknownQiMei)), false);
+            builder.PushBytes(new Md5Cryptor().Encrypt(_macAddress));
             return builder.GetBytes();
         }
     }

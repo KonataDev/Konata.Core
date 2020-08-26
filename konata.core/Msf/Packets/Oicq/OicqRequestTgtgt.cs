@@ -4,10 +4,10 @@ using Konata.Protocol.Packet.Tlvs;
 using Konata.Protocol.Protobuf;
 using Konata.Protocol.Utils;
 using Konata.Utils;
-using Konata.Utils.Crypto;
+using Konata.Utils.Crypt;
 using ProtoBuf;
 
-namespace Konata.Protocol.Packet.Oicq
+namespace Konata.Msf.Packets.Oicq
 {
     public class OicqRequestTgtgt : OicqRequest
     {

@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using Konata.Network.Msf;
+using System.Collections.Generic;
 using Konata.Protocol.Packet;
-using Konata.Utils;
 
-namespace Konata.Network
+namespace Konata.Msf.Network
 {
-    public class PacketMan
+    internal class PacketMan
     {
         public delegate void PacketListener(FromServicePacket packet);
 
@@ -21,9 +17,15 @@ namespace Konata.Network
             Stop
         }
 
+        private struct MsfServer
+        {
+            public string url;
+            public ushort port;
+        }
+
         private static MsfServer[] _msfServers =
         {
-           // new MsfServer { url = "127.0.0.1", port = 8080 },
+            new MsfServer { url = "127.0.0.1", port = 8080 },
             new MsfServer { url = "msfwifi.3g.qq.com", port = 8080 },
             new MsfServer { url = "14.215.138.110", port = 8080 },
             new MsfServer { url = "113.96.12.224", port = 8080 },
@@ -47,12 +49,12 @@ namespace Konata.Network
         private byte[] _recvBuffer;
         private ReceiveStatus _recvStatus;
 
-        public PacketMan(PacketListener listener)
+        public PacketMan()
         {
-            _listener = listener;
+            // _listener = listener;
         }
 
-        public void Init()
+        public bool Init()
         {
             _recvBuffer = new byte[2048];
 
@@ -65,6 +67,7 @@ namespace Konata.Network
             //_thread = new Thread(PacketManThread);
             //_thread.Start();
 
+            return true;
         }
 
         public void ShutDown()
@@ -77,7 +80,12 @@ namespace Konata.Network
         public void Emit(PacketBase packet)
         {
             // _packets.Enqueue(packet);
-            _socket.Send(packet.GetBytes());
+            // _socket.Send(packet.GetBytes());
+
+        }
+
+        public void EmitSsoMessage()
+        {
 
         }
 
@@ -102,7 +110,7 @@ namespace Konata.Network
                         _recvLength = 0;
                         _recvStatus = ReceiveStatus.Idle;
 
-                        _listener(new FromServicePacket(_recvBuffer));
+                        // _listener(new FromServicePacket(_recvBuffer));
                     }
                 }
             }

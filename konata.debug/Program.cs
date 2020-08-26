@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Konata;
 using Konata.Protocol.Packet;
 using Konata.Protocol.Packet.Oicq;
@@ -20,8 +21,8 @@ namespace Konata.Debug
             //    "incremental", "fingerprint", "bootid", "androidid",
             //    "baseband", "innerversion");
 
-            Bot bot = new Bot("2051118019", "12345678");
-            bot.Login();
+            Bot bot = new Bot(2051118019, "12345678");
+            var _ = bot.Login();
 
             Console.Read();
         }

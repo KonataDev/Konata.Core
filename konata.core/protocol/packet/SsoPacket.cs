@@ -15,11 +15,6 @@ namespace Konata.Protocol.Packet
 
         public SsoCommand _ssoCommand;
 
-        public SsoPacket(byte[] fromServiceBytes)
-        {
-            TryParse(fromServiceBytes);
-        }
-
         public SsoPacket(uint seq, uint session, SsoCommand command, OicqRequest request)
         {
             _ssoSquence = seq;
@@ -75,39 +70,5 @@ namespace Konata.Protocol.Packet
             return builder.GetBytes();
         }
 
-        public override bool TryParse(byte[] data)
-        {
-
-            StreamReader reader = new StreamReader(data);
-
-            // 跳過頭部長度
-            reader.Drop(4);
-
-            // sso包序號
-            reader.TakeUInt32(out _ssoSquence);
-
-            // 未知4字節 總是0
-            reader.Drop(4);
-
-            // 未知4字節 和 0長數據
-            reader.TakeUInt32(out var length);
-            reader.Drop((int)length - 4);
-
-            // sso指令
-            reader.TakeUInt32(out length);
-            reader.TakeString(out var command, (int)length - 4);
-            _ssoCommand = SsoServiceCmd.TryParse(command);
-
-            // cookie
-            reader.TakeUInt32(out length);
-            reader.TakeUInt32(out _ssoSessionId);
-
-            // 未知4字節 總是0
-            reader.Drop(4);
-
-            // 剩下的數據
-            reader.TakeRemainBytes(out var requestBody);
-            return OicqRequest.TryParse(requestBody, out _oicqRequest);
-        }
     }
 }
