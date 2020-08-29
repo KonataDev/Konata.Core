@@ -1,16 +1,15 @@
 ﻿using System;
-using Konata.Msf.Interfaces;
 
 namespace Konata.Msf.Services.Wtlogin
 {
-    public class Login : IService
+    internal class Login : Service
     {
-        public bool Run(Core core)
+        internal static bool Run(Core core)
         {
             return false;
         }
 
-        public bool Handle(byte[] data, Core core)
+        public static bool Handle(byte[] data, Core core)
         {
             return false;
         }
