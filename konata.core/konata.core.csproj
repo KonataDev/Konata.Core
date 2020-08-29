@@ -43,7 +43,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
-    <Compile Include="Msf\Interfaces\IService.cs" />
+    <Compile Include="Msf\Service.cs" />
     <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Packets\Tlv\T1.cs" />
     <Compile Include="Msf\Packets\Tlv\T100.cs" />
@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device\" />
+    <Folder Include="Msf\Interfaces\" />
     <Folder Include="Msf\Utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
