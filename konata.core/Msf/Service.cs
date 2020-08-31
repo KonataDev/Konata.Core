@@ -1,4 +1,5 @@
 ﻿using System;
+using konata.Msf;
 
 namespace Konata.Msf
 {

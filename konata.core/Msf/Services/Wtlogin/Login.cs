@@ -9,9 +9,22 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        public static bool Handle(byte[] data, Core core)
+        internal static bool Handle(Core core, byte[] data)
         {
             return false;
         }
+
+        internal static bool Request_TGTGT(Core core)
+        {
+
+
+            core._ssoMan.PutPacket();
+
+            return false;
+        }
+
+
+
+
     }
 }

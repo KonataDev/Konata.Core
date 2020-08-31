@@ -91,6 +91,8 @@
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Services\Wtlogin\PushChangeToken.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />
+    <Compile Include="Msf\PacketStream.cs" />
+    <Compile Include="Msf\SsoMan.cs" />
     <Compile Include="protocol\EncryptType.cs" />
     <Compile Include="protocol\LoginType.cs" />
     <Compile Include="protocol\NetworkType.cs" />
@@ -105,14 +107,14 @@
     <Compile Include="protocol\SsoServiceCmd.cs" />
     <Compile Include="protocol\utils\SsoPacketFactory.cs" />
     <Compile Include="protocol\utils\ToServicePacketFactory.cs" />
-    <Compile Include="Utils\Crypt\ICryptor.cs" />
-    <Compile Include="Utils\Crypt\Md5Cryptor.cs" />
-    <Compile Include="Utils\Crypt\TeaCryptor.cs" />
+    <Compile Include="Msf\Utils\Crypt\ICryptor.cs" />
+    <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
+    <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
     <Compile Include="protocol\protobuf\DeviceReport.cs" />
-    <Compile Include="Utils\Guid.cs" />
+    <Compile Include="Msf\Utils\Guid.cs" />
     <Compile Include="Utils\StreamBuilder.cs" />
-    <Compile Include="Utils\Hex.cs" />
+    <Compile Include="Msf\Utils\Hex.cs" />
     <Compile Include="protocol\utils\TlvBuilder.cs" />
     <Compile Include="protocol\utils\TlvPacker.cs" />
     <Compile Include="Utils\StreamReader.cs" />
@@ -152,7 +154,6 @@
   <ItemGroup>
     <Folder Include="Device\" />
     <Folder Include="Msf\Interfaces\" />
-    <Folder Include="Msf\Utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

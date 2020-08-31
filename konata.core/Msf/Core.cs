@@ -1,9 +1,21 @@
 ﻿using System;
-using System.Threading.Tasks;
+using konata.Msf;
 using Konata.Msf.Network;
 
 namespace Konata.Msf
 {
+    //   Mobileqq Service Framework
+
+    //  ++----> SsoMan <---> PacketMan
+    //  ||         +-------+
+    //  ||                 |    
+    //  ||	 +-> Msf.Core  |   
+    //  ||	 |      |      |   
+    //  ||   ++  Service <-+
+    //  ||	  |   /    \
+    //  ++--- WtLogin OnlinePush...etc 
+    //   +----------------+
+
     public delegate void EventDelegate(uint signal);
 
     public class Core
@@ -11,52 +23,52 @@ namespace Konata.Msf
         internal uint _uin;
         internal string _password;
 
-        internal uint _lasterr;
-        internal string _errstr;
+        internal uint _lastError;
+        internal string _lastErrorStr;
 
-        internal PacketMan _pakman;
-        internal EventDelegate _handler;
+        internal SsoMan _ssoMan;
+        internal EventDelegate _eventHandler;
 
         public Core(uint uin, string password)
         {
             _uin = uin;
             _password = password;
 
-            _pakman = new PacketMan();
+            _lastError = 0;
+            _lastErrorStr = "";
 
-            _lasterr = 0;
-            _errstr = "";
+            _ssoMan = new SsoMan();
         }
 
         public bool Connect()
         {
-            return _pakman.Init();
+            return _ssoMan.Initialize();
         }
 
         public bool RegisterDelegate(EventDelegate func)
         {
-            _handler = func;
+            _eventHandler = func;
             return true;
         }
 
         public bool DoLogin()
         {
-            return ServiceRoutine.Run("Wtlogin.Login", this);
+            return ServiceRoutine.Run(this, "Wtlogin.Login", "Request_TGTGT");
         }
 
         internal void EmitError(uint errcode, string errstr)
         {
-            if (_lasterr == 0)
+            if (_lastError == 0)
             {
-                _lasterr = errcode;
-                _errstr = errstr;
+                _lastError = errcode;
+                _lastErrorStr = errstr;
                 SendEvent(1);
             }
         }
 
         private void SendEvent(uint signal)
         {
-            _handler?.Invoke(signal);
+            _eventHandler?.Invoke(signal);
         }
 
     }
