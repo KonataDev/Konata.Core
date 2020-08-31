@@ -54,7 +54,7 @@ namespace Konata.Msf.Network
             // _listener = listener;
         }
 
-        public bool Init()
+        public bool OpenSocket()
         {
             _recvBuffer = new byte[2048];
 
@@ -70,22 +70,17 @@ namespace Konata.Msf.Network
             return true;
         }
 
-        public void ShutDown()
+        public void CloseSocket()
         {
             _socket.Close();
             _recvStatus = ReceiveStatus.Stop;
             // _thread.Join();
         }
 
-        public void Emit(PacketBase packet)
+        public void Emit(SsoPacket packet)
         {
             // _packets.Enqueue(packet);
             // _socket.Send(packet.GetBytes());
-
-        }
-
-        public void EmitSsoMessage()
-        {
 
         }
 

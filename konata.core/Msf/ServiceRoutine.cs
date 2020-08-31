@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Konata.Msf
 {
@@ -10,17 +10,18 @@ namespace Konata.Msf
             return Type.GetType($"Konata.Msf.Services.{name}");
         }
 
-        internal static bool Run(string name, Core core)
+        internal static bool Run(Core core, string name, params object[] args)
         {
             try
             {
                 var type = Get(name);
                 var instance = Activator.CreateInstance(type);
-                return (bool)type.GetMethod("Run").Invoke(instance, new object[] { core });
+                var arguments = new object[] { core }.Concat(args).ToArray();
+                return (bool)type.GetMethod("Run").Invoke(instance, args);
             }
             catch (Exception e)
             {
-                core.EmitError(1, e.StackTrace);
+                ((Core)args[0]).EmitError(1, e.StackTrace);
                 return false;
             }
         }
