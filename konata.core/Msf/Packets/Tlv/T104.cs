@@ -1,6 +1,6 @@
 ﻿using Konata.Utils;
 
-namespace Konata.Protocol.Packet.Tlvs
+namespace Konata.Msf.Packets.Tlvs
 {
     /// <summary>
     /// <TODO>未完成</TODO>
