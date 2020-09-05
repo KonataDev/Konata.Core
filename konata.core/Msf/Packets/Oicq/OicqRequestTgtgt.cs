@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Text;
-using Konata.Protocol.Packet.Tlvs;
-using Konata.Protocol.Protobuf;
-using Konata.Protocol.Utils;
+using Konata.Msf.Packets.Tlvs;
+using Konata.Msf.Packets.Protobuf;
 using Konata.Utils;
 using Konata.Utils.Crypt;
 using ProtoBuf;
@@ -32,7 +31,7 @@ namespace Konata.Msf.Packets.Oicq
             _publicKey = publicKey;
         }
 
-        public override byte[] GetBytes()
+        public byte[] GetBytes()
         {
 
             DeviceReport deviceReport = new DeviceReport

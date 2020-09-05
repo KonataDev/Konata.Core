@@ -1,5 +1,4 @@
 ﻿using System;
-using konata.Msf;
 
 namespace Konata.Msf
 {
@@ -7,6 +6,6 @@ namespace Konata.Msf
     {
         internal static bool Run(Core core) => false;
 
-        internal static bool Handle(byte[] data, Core core) => false;
+        internal static bool Handle(Core core, byte[] data) => false;
     }
 }

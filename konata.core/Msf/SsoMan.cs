@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Msf;
 using Konata.Msf.Network;
 
 namespace konata.Msf
@@ -23,15 +24,37 @@ namespace konata.Msf
             return true;
         }
 
-        internal void PostPacket()
+        internal uint PostPacket()
+        {
+
+
+            return _ssoSeq;
+        }
+
+        internal uint SendSsoMessage(Packet packet)
+        {
+            var ssoPacket = GetSsoHeader();
+            // <TODO> get packet content and create sso packet
+            _pakman.Emit(ssoPacket);
+            return _ssoSeq;
+
+        }
+
+        internal void WaitForMessage(uint ssoSeq)
         {
 
         }
 
-        internal void SendPacket()
+        private Packet GetSsoHeader()
         {
-
+            return new Packet();
         }
+
+        private void HandleSsoMessage(byte[] fromService)
+        {
+            // <TODO> unpack bytes and update fields and pass remain bytes to ServiceRoutine
+        }
+
 
     }
 }

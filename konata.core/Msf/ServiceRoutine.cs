@@ -10,13 +10,13 @@ namespace Konata.Msf
             return Type.GetType($"Konata.Msf.Services.{name}");
         }
 
-        internal static bool Run(Core core, string name, params object[] args)
+        internal static bool Run(Core core, string name, string method, params object[] args)
         {
             try
             {
                 var type = Get(name);
                 var instance = Activator.CreateInstance(type);
-                var arguments = new object[] { core }.Concat(args).ToArray();
+                var arguments = new object[] { core, method }.Concat(args).ToArray();
                 return (bool)type.GetMethod("Run").Invoke(instance, args);
             }
             catch (Exception e)

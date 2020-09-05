@@ -4,7 +4,7 @@ using Konata.Utils;
 using Konata.Utils.Crypt;
 using Guid = Konata.Utils.Guid;
 
-namespace Konata.Protocol.Packet.Tlvs
+namespace Konata.Msf.Packets.Tlvs
 {
     public class T106 : TlvBase
     {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Konata.Protocol.Packet.Tlvs;
 using Konata.Utils;
 using Konata.Utils.Crypt;
 
-namespace Konata.Protocol.Utils
+namespace Konata.Msf.Packets.Tlvs
 {
     public class TlvPacker
     {

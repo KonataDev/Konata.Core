@@ -91,7 +91,7 @@
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Services\Wtlogin\PushChangeToken.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />
-    <Compile Include="Msf\PacketStream.cs" />
+    <Compile Include="Msf\Packet.cs" />
     <Compile Include="Msf\SsoMan.cs" />
     <Compile Include="protocol\EncryptType.cs" />
     <Compile Include="protocol\LoginType.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="Utils\StreamBuilder.cs" />
     <Compile Include="Msf\Utils\Hex.cs" />
     <Compile Include="protocol\utils\TlvBuilder.cs" />
-    <Compile Include="protocol\utils\TlvPacker.cs" />
+    <Compile Include="Msf\Packets\Tlv\TlvPacker.cs" />
     <Compile Include="Utils\StreamReader.cs" />
   </ItemGroup>
   <ItemGroup>

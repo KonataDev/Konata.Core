@@ -1,7 +1,7 @@
 ﻿using Konata.Utils;
 using Konata.Utils.Crypt;
 
-namespace Konata.Protocol.Packet.Tlvs
+namespace Konata.Msf.Packets.Tlvs
 {
     public class T187 : TlvBase
     {

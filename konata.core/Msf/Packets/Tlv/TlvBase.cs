@@ -1,8 +1,8 @@
-﻿using Konata.Utils;
+﻿using System;
 
-namespace Konata.Protocol.Packet.Tlvs
+namespace Konata.Msf.Packets.Tlvs
 {
-    public class TlvBase : PacketBase
+    public class TlvBase : Packet
     {
         /// <summary>
         /// 獲取tlv類型
@@ -16,15 +16,11 @@ namespace Konata.Protocol.Packet.Tlvs
         /// <returns>StreamBuilder</returns>
         public virtual byte[] GetTlvBody() => null;
 
-        public override byte[] GetBytes()
+        public byte[] GetBytes()
         {
-            ushort tlvCmd = GetTlvCmd();
-            byte[] tlvBody = GetTlvBody();
-
-            StreamBuilder builder = new StreamBuilder();
-            builder.PushUInt16(tlvCmd);
-            builder.PushBytes(tlvBody, false, true);
-            return builder.GetBytes();
+            PutUshortBE(GetTlvCmd());
+            PutBytes(GetTlvBody());
+            return base.GetBytes();
         }
     }
 }

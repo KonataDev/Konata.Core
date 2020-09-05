@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using Konata.Protocol.Packet;
+using konata.Msf;
 
 namespace Konata.Msf.Network
 {
@@ -77,11 +78,10 @@ namespace Konata.Msf.Network
             // _thread.Join();
         }
 
-        public void Emit(SsoPacket packet)
+        public void Emit(Packet packet)
         {
             // _packets.Enqueue(packet);
             // _socket.Send(packet.GetBytes());
-
         }
 
         private void OnReceive(IAsyncResult result)
