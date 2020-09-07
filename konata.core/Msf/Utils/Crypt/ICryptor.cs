@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konata.Utils.Crypt
+namespace Konata.Msf.Utils.Crypt
 {
     public interface ICryptor
     {

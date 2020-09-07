@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils.Crypt
+namespace Konata.Msf.Utils.Crypt
 {
     public class TeaCryptor : ICryptor
     {

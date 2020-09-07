@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf
 {
@@ -19,7 +16,6 @@ namespace Konata.Msf
 
         private byte[] _packetBuffer;
         private int _packetLength;
-
 
         /// <summary>
         /// 重新分配緩衝區
@@ -51,10 +47,9 @@ namespace Konata.Msf
         /// </summary>
         /// <param name="data">數據</param>
         /// <param name="endian">字節序</param>
-        private void WriteBytes(byte[] data, Endian endian)
+        private void WriteBytes(byte[] data, uint length, Endian endian = Endian.Big)
         {
             // 分配新的空間
-
             var targetLength = _packetLength + data.Length;
             ResizeArray(ref _packetBuffer, targetLength);
 
@@ -74,12 +69,12 @@ namespace Konata.Msf
 
         public void PutSbyte(sbyte value)
         {
-            WriteBytes(new byte[] { (byte)value }, Endian.Little);
+            WriteBytes(new byte[] { (byte)value }, 1);
         }
 
         public void PutByte(byte value)
         {
-            WriteBytes(new byte[] { value }, Endian.Little);
+            WriteBytes(new byte[] { value }, 1);
         }
 
         /// <summary>
@@ -107,7 +102,10 @@ namespace Konata.Msf
         /// <param name="endian">字节序</param>
         public void PutUshort(ushort value, Endian endian)
         {
-            WriteBytes(new byte[] { (byte)(value >> 8), (byte)(value & 255) }, endian);
+            WriteBytes(new byte[] {
+                (byte)(value >> 8),
+                (byte)(value & 255) },
+                2, endian);
         }
 
         /// <summary>
@@ -135,7 +133,10 @@ namespace Konata.Msf
         /// <param name="endian">字节序</param>
         public void PutShort(short value, Endian endian)
         {
-            WriteBytes(new byte[] { (byte)(value >> 8), (byte)(value & 255) }, endian);
+            WriteBytes(new byte[] {
+                (byte)(value >> 8),
+                (byte)(value & 255) },
+                2, endian);
         }
 
         /// <summary>
@@ -167,7 +168,8 @@ namespace Konata.Msf
                 (byte)(value >> 24),
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
-                (byte)(value & 255) }, endian);
+                (byte)(value & 255) },
+                4, endian);
         }
 
         /// <summary>
@@ -199,7 +201,8 @@ namespace Konata.Msf
                 (byte)(value >> 24),
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
-                (byte)(value & 255) }, endian);
+                (byte)(value & 255) },
+                4, endian);
         }
 
         /// <summary>
@@ -235,7 +238,8 @@ namespace Konata.Msf
                 (byte)((value >> 24) & 255),
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
-                (byte)(value & 255) }, endian);
+                (byte)(value & 255) },
+                8, endian);
         }
 
         /// <summary>
@@ -271,7 +275,8 @@ namespace Konata.Msf
                 (byte)((value >> 24) & 255),
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
-                (byte)(value & 255) }, endian);
+                (byte)(value & 255) },
+                8, endian);
         }
 
         /// <summary>
@@ -296,31 +301,69 @@ namespace Konata.Msf
 
         public void PutBool(bool value, byte length, Endian endian)
         {
-            byte[] array = new byte[length];
+            var data = new byte[length];
             if (value)
             {
-                array[endian == Endian.Little ? length - 1 : 0] = true;
+                data[endian == Endian.Little ? length - 1 : 0] = 1;
             }
-            WriteBytes(array, endian);
+            WriteBytes(data, length, endian);
         }
 
         public void PutString(string value, byte prefixLength = 0, byte limitedLength = 0)
         {
-            var str = Encoding.UTF8.GetBytes(value);
-
+            var data = Encoding.UTF8.GetBytes(value);
+            PutBytes(data, prefixLength, limitedLength); // 把字符串当作byte[]
         }
 
         public void PutBytes(byte[] value, byte prefixLength = 0, byte limitedLength = 0)
         {
-
+            bool prefix = prefixLength > 0; // 是否有前缀
+            bool limited = limitedLength > 0; // 是否限制长度
+            byte[] array; // 处理后的数据
+            if (limited) // 限制长度时，写入数据长度=前缀+限制
+            {
+                array = new byte[prefixLength + limitedLength];
+                int len = value.Length > limitedLength ? limitedLength : value.Length;
+                Buffer.BlockCopy(value, 0, array, prefixLength, len);
+            }
+            else if (prefix) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
+            {
+                array = new byte[prefixLength + value.Length];
+                Buffer.BlockCopy(value, 0, array, prefixLength, value.Length);
+            }
+            else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
+            {
+                WriteBytes(value, (uint)value.Length);
+                return;
+            }
+            if (prefix) // 添加前缀
+            {
+                int minLen = 0; // 表示value的长度需要最少多少字节
+                int valLen = value.Length; // value长度的临时变量
+                while (valLen > 0)
+                {
+                    ++minLen;
+                    valLen >>= 8;
+                }
+                if (minLen > prefixLength)
+                {
+                    return; // value数据太长，前缀无法表示其长度
+                }
+                valLen = value.Length;
+                for (int i = 0, j = prefixLength - 1; i < minLen; ++i, --j)
+                {
+                    array[j] = (byte)(valLen & 255); // 每次取最低一字节从后往前写入，这里规定前缀是大端序
+                    valLen >>= 8;
+                }
+            }
+            WriteBytes(array, (uint)array.Length);
         }
 
-        public void PutEncryptBytes(byte[] value)
+        public void PutEncryptBytes(byte[] value, ICryptor cryptor, byte[] key)
         {
-
+            byte[] data = cryptor.Encrypt(value, key);
+            WriteBytes(data, (uint)data.Length);
         }
-
-
 
         public void PutPacket(Packet value)
         {
@@ -340,9 +383,9 @@ namespace Konata.Msf
         public byte[] GetBytes()
         {
             var data = new byte[_packetLength];
-            Array.Copy(_packetBuffer, data, _packetLength);
+            Buffer.BlockCopy(_packetBuffer, 0, data, 0, _packetLength);
 
-            _packetBuffer = new byte[0];
+            _packetBuffer = null;
             _packetLength = 0;
 
             return data;
