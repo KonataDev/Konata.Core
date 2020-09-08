@@ -58,13 +58,13 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             TlvPacker packer = new TlvPacker();
-            packer.PushTlv(_tlv109);
-            packer.PushTlv(_tlv52d);
-            packer.PushTlv(_tlv124);
-            packer.PushTlv(_tlv128);
-            packer.PushTlv(_tlv148);
-            packer.PushTlv(_tlv153);
-            packer.PushTlv(_tlv16e);
+            packer.PutTlv(_tlv109);
+            packer.PutTlv(_tlv52d);
+            packer.PutTlv(_tlv124);
+            packer.PutTlv(_tlv128);
+            packer.PutTlv(_tlv148);
+            packer.PutTlv(_tlv153);
+            packer.PutTlv(_tlv16e);
             return packer.GetEncryptedPacket(true, new TeaCryptor(), _tgtgKey);
         }
     }
