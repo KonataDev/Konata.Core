@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Text;
+using Konata.Utils;
+using Konata.Msf.Utils.Crypt;
 using Konata.Msf.Packets.Tlvs;
 using Konata.Msf.Packets.Protobuf;
-using Konata.Utils;
-using Konata.Utils.Crypt;
 using ProtoBuf;
 
 namespace Konata.Msf.Packets.Oicq
@@ -53,25 +53,25 @@ namespace Konata.Msf.Packets.Oicq
 
             // 構建 tlv
             TlvPacker tlvs = new TlvPacker();
-            tlvs.PushTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, _uin));
-            tlvs.PushTlv(new T1(_uin, DeviceInfo.Network.Wifi.IpAddress));
-            tlvs.PushTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, _uin,
+            tlvs.PutTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, _uin));
+            tlvs.PutTlv(new T1(_uin, DeviceInfo.Network.Wifi.IpAddress));
+            tlvs.PutTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, _uin,
                 new byte[4], true, passwordMd5, 0, _tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
-            tlvs.PushTlv(new T116(184024956, 66560));
-            tlvs.PushTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
-            tlvs.PushTlv(new T107(0, 0, 0));
-            tlvs.PushTlv(new T142(AppInfo.apkPackageName));
-            tlvs.PushTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
+            tlvs.PutTlv(new T116(184024956, 66560));
+            tlvs.PutTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
+            tlvs.PutTlv(new T107(0, 0, 0));
+            tlvs.PutTlv(new T142(AppInfo.apkPackageName));
+            tlvs.PutTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
                 DeviceInfo.System.OsVersion, DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                 DeviceInfo.Network.Wifi.ApnName, true, true, false, DeviceInfo.Guid, 285212672,
                 DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, _tgtgKey));
-            tlvs.PushTlv(new T145(DeviceInfo.Guid));
-            tlvs.PushTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
+            tlvs.PutTlv(new T145(DeviceInfo.Guid));
+            tlvs.PutTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
             // tlvs.PushTlv(new 166());
-            tlvs.PushTlv(new T154(0));
-            tlvs.PushTlv(new T141(DeviceInfo.Network.Mobile.OperatorName, DeviceInfo.Network.Type, DeviceInfo.Network.Wifi.ApnName));
-            tlvs.PushTlv(new T8());
-            tlvs.PushTlv(new T511(new string[]
+            tlvs.PutTlv(new T154(0));
+            tlvs.PutTlv(new T141(DeviceInfo.Network.Mobile.OperatorName, DeviceInfo.Network.Type, DeviceInfo.Network.Wifi.ApnName));
+            tlvs.PutTlv(new T8());
+            tlvs.PutTlv(new T511(new string[]
             {
                 "office.qq.com",
                 "qun.qq.com",
@@ -88,15 +88,15 @@ namespace Konata.Msf.Packets.Oicq
                 "openmobile.qq.com",
                 "connect.qq.com",
             }));
-            tlvs.PushTlv(new T187(DeviceInfo.Network.Wifi.MacAddress));
-            tlvs.PushTlv(new T188(DeviceInfo.System.AndroidId));
+            tlvs.PutTlv(new T187(DeviceInfo.Network.Wifi.MacAddress));
+            tlvs.PutTlv(new T188(DeviceInfo.System.AndroidId));
             // tlvs.PushTlv(Tlv.194());
-            tlvs.PushTlv(new T191());
-            tlvs.PushTlv(new T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
-            tlvs.PushTlv(new T177(AppInfo.WtLoginSdk.buildTime, AppInfo.WtLoginSdk.sdkVersion));
-            tlvs.PushTlv(new T516());
-            tlvs.PushTlv(new T521());
-            tlvs.PushTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
+            tlvs.PutTlv(new T191());
+            tlvs.PutTlv(new T202(DeviceInfo.Network.Wifi.ApMacAddress, DeviceInfo.Network.Wifi.Ssid));
+            tlvs.PutTlv(new T177(AppInfo.WtLoginSdk.buildTime, AppInfo.WtLoginSdk.sdkVersion));
+            tlvs.PutTlv(new T516());
+            tlvs.PutTlv(new T521());
+            tlvs.PutTlv(new T525(new T536(new byte[] { 0x01, 0x00 })));
             // tlvs.PushTlv(new T544());
             // tlvs.PushTlv(new T545());
 

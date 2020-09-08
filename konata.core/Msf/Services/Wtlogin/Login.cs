@@ -29,7 +29,5 @@ namespace Konata.Msf.Services.Wtlogin
 
             return false;
         }
-
-
     }
 }

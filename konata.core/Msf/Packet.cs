@@ -365,21 +365,38 @@ namespace Konata.Msf
             WriteBytes(data, (uint)data.Length);
         }
 
+        /// <summary>
+        /// 放入 Packet
+        /// </summary>
+        /// <param name="value"></param>
         public void PutPacket(Packet value)
         {
             PutBytes(value.GetBytes());
         }
 
+        /// <summary>
+        /// 放入 Tlv
+        /// </summary>
+        /// <param name="value"></param>
         public void PutTlv(Packet value)
         {
             PutBytes(value.GetBytes());
         }
 
+        /// <summary>
+        /// 從 Packet 讀取
+        /// </summary>
+        /// <param name="packet"></param>
         public void FromPacket(Packet packet)
         {
-
+            _packetBuffer = packet.GetBytes();
+            _packetLength = _packetBuffer.Length;
         }
 
+        /// <summary>
+        /// 獲取打包數據
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetBytes()
         {
             var data = new byte[_packetLength];
@@ -399,5 +416,20 @@ namespace Konata.Msf
             return packet;
         }
 
+        public static Packet operator +(byte[] a, Packet b)
+        {
+            var packet = new Packet();
+            packet.PutBytes(a);
+            packet.PutPacket(b);
+            return packet;
+        }
+
+        public static Packet operator +(Packet a, byte[] b)
+        {
+            var packet = new Packet();
+            packet.PutPacket(a);
+            packet.PutBytes(b);
+            return packet;
+        }
     }
 }

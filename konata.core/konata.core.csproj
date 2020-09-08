@@ -111,7 +111,6 @@
     <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
-    <Compile Include="protocol\protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Utils\Guid.cs" />
     <Compile Include="Utils\StreamBuilder.cs" />
     <Compile Include="Msf\Utils\Hex.cs" />
