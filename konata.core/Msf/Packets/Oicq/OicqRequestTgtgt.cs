@@ -11,14 +11,14 @@ namespace Konata.Msf.Packets.Oicq
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        private long _uin;
+        private uint _uin;
         private string _password;
         private byte[] _tgtgKey;
         private byte[] _randKey;
         private byte[] _shareKey;
         private byte[] _publicKey;
 
-        public OicqRequestTgtgt(long uin, string botPassword, byte[] tgtgKey, byte[] randKey, byte[] shareKey, byte[] publicKey)
+        public OicqRequestTgtgt(uint uin, string botPassword, byte[] tgtgKey, byte[] randKey, byte[] shareKey, byte[] publicKey)
         {
             _cmd = 0x0810;
             _subCmd = 0x09;
@@ -102,35 +102,35 @@ namespace Konata.Msf.Packets.Oicq
 
             // 構建 tlv包
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_subCmd);
-            builder.PushBytes(tlvs.GetPacket(true), false);
+            builder.PutUshortBE(_subCmd);
+            builder.PutBytes(tlvs.GetBytes(true));
             var tlvBody = builder.GetEncryptedBytes(new TeaCryptor(), _shareKey);
 
             // 構建 密鑰
-            builder.PushInt16(0x0101);
-            builder.PushBytes(_randKey, false);
-            builder.PushInt16(0x0102);
-            builder.PushBytes(_publicKey, false, true);
+            builder.PutUshortBE(0x0101);
+            builder.PutBytes(_randKey);
+            builder.PutUshortBE(0x0102);
+            builder.PutBytes(_publicKey, 2);
             var keyBody = builder.GetBytes();
 
             // 構建 oicq_request
             StreamBuilder request = new StreamBuilder();
-            request.PushInt8(0x02); // 頭部 0x02
-            request.PushUInt16((ushort)(27 + 2 + keyBody.Length + tlvBody.Length));
-            request.PushInt16(8001); // 協議版本 1F 41
-            request.PushInt16(_cmd);
-            request.PushInt16(1);
-            request.PushInt32((int)_uin);
-            request.PushInt8(0x03);
-            request.PushUInt8(0x87); // 加密方式id
-            request.PushInt8(0x00); // 永遠0
-            request.PushInt32(2);
-            request.PushInt32(AppInfo.appClientVersion);
-            request.PushInt32(0);
+            request.PutByte(0x02); // 頭部 0x02
+            request.PutUshortBE((ushort)(27 + 2 + keyBody.Length + tlvBody.Length));
+            request.PutUshortBE(8001); // 協議版本 1F 41
+            request.PutUshortBE(_cmd);
+            request.PutUshortBE(1);
+            request.PutUintBE(_uin);
+            request.PutByte(0x03);
+            request.PutByte(0x87); // 加密方式id
+            request.PutByte(0x00); // 永遠0
+            request.PutUintBE(2);
+            request.PutUintBE(AppInfo.appClientVersion);
+            request.PutUintBE(0);
 
-            request.PushBytes(keyBody, false);
-            request.PushBytes(tlvBody, false);
-            request.PushInt8(0x03); // 尾部 0x03
+            request.PutBytes(keyBody);
+            request.PutBytes(tlvBody);
+            request.PutByte(0x03); // 尾部 0x03
 
             return request.GetBytes();
         }
