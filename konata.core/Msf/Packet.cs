@@ -408,6 +408,15 @@ namespace Konata.Msf
             return data;
         }
 
+        /// <summary>
+        /// 獲取打包數據並加密
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetEncryptedBytes(ICryptor cryptor, byte[] cryptKey)
+        {
+            return cryptor.Encrypt(GetBytes(), cryptKey);
+        }
+
         public static Packet operator +(Packet a, Packet b)
         {
             var packet = new Packet();
