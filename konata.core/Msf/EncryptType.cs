@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Protocol
+namespace Konata.Msf
 {
     public enum EncryptType
     {
