@@ -93,9 +93,9 @@
     <Compile Include="Msf\Network\PacketMan.cs" />
     <Compile Include="Msf\Packet.cs" />
     <Compile Include="Msf\SsoMan.cs" />
-    <Compile Include="protocol\EncryptType.cs" />
-    <Compile Include="protocol\LoginType.cs" />
-    <Compile Include="protocol\NetworkType.cs" />
+    <Compile Include="Msf\EncryptType.cs" />
+    <Compile Include="Msf\LoginType.cs" />
+    <Compile Include="Msf\NetworkType.cs" />
     <Compile Include="protocol\packet\FromServicePacket.cs" />
     <Compile Include="protocol\packet\SsoPacket.cs" />
     <Compile Include="protocol\packet\ToServicePacket.cs" />
@@ -152,7 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device\" />
-    <Folder Include="Msf\Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
