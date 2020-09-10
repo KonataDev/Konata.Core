@@ -11,30 +11,14 @@ namespace Konata.Msf.Packets.Oicq
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        private uint _uin;
-        private string _password;
-        private byte[] _tgtgKey;
-        private byte[] _randKey;
-        private byte[] _shareKey;
-        private byte[] _publicKey;
-
-        public OicqRequestTgtgt(uint uin, string botPassword, byte[] tgtgKey, byte[] randKey, byte[] shareKey, byte[] publicKey)
+        public OicqRequestTgtgt(uint uin, string password,
+            byte[] tgtgKey, byte[] randKey, byte[] shareKey, byte[] publicKey)
         {
             _cmd = 0x0810;
             _subCmd = 0x09;
 
-            _uin = uin;
-            _password = botPassword;
-            _tgtgKey = tgtgKey;
-            _randKey = randKey;
-            _shareKey = shareKey;
-            _publicKey = publicKey;
-        }
-
-        public byte[] GetBytes()
-        {
-
-            DeviceReport deviceReport = new DeviceReport
+            // 設備訊息上報
+            var deviceReport = new DeviceReport
             {
                 Bootloader = Encoding.UTF8.GetBytes(DeviceInfo.Build.Bootloader),
                 Version = new byte[0], // Encoding.UTF8.GetBytes(DeviceInfo.System.OsVersion),
@@ -49,14 +33,14 @@ namespace Konata.Msf.Packets.Oicq
             MemoryStream reportData = new MemoryStream();
             Serializer.Serialize(reportData, deviceReport);
 
-            byte[] passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(_password));
+            var passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
 
             // 構建 tlv
             TlvPacker tlvs = new TlvPacker();
-            tlvs.PutTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, _uin));
-            tlvs.PutTlv(new T1(_uin, DeviceInfo.Network.Wifi.IpAddress));
-            tlvs.PutTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, _uin,
-                new byte[4], true, passwordMd5, 0, _tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
+            tlvs.PutTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, uin));
+            tlvs.PutTlv(new T1(uin, DeviceInfo.Network.Wifi.IpAddress));
+            tlvs.PutTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, uin,
+                new byte[4], true, passwordMd5, 0, tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
             tlvs.PutTlv(new T116(184024956, 66560));
             tlvs.PutTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
             tlvs.PutTlv(new T107(0, 0, 0));
@@ -64,7 +48,7 @@ namespace Konata.Msf.Packets.Oicq
             tlvs.PutTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
                 DeviceInfo.System.OsVersion, DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                 DeviceInfo.Network.Wifi.ApnName, true, true, false, DeviceInfo.Guid, 285212672,
-                DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, _tgtgKey));
+                DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, tgtgKey));
             tlvs.PutTlv(new T145(DeviceInfo.Guid));
             tlvs.PutTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
             // tlvs.PushTlv(new 166());
@@ -104,35 +88,32 @@ namespace Konata.Msf.Packets.Oicq
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(_subCmd);
             builder.PutBytes(tlvs.GetBytes(true));
-            var tlvBody = builder.GetEncryptedBytes(new TeaCryptor(), _shareKey);
+            var tlvBody = builder.GetEncryptedBytes(new TeaCryptor(), shareKey);
 
             // 構建 密鑰
             builder.PutUshortBE(0x0101);
-            builder.PutBytes(_randKey);
+            builder.PutBytes(randKey);
             builder.PutUshortBE(0x0102);
-            builder.PutBytes(_publicKey, 2);
+            builder.PutBytes(publicKey, 2);
             var keyBody = builder.GetBytes();
 
             // 構建 oicq_request
-            StreamBuilder request = new StreamBuilder();
-            request.PutByte(0x02); // 頭部 0x02
-            request.PutUshortBE((ushort)(27 + 2 + keyBody.Length + tlvBody.Length));
-            request.PutUshortBE(8001); // 協議版本 1F 41
-            request.PutUshortBE(_cmd);
-            request.PutUshortBE(1);
-            request.PutUintBE(_uin);
-            request.PutByte(0x03);
-            request.PutByte(0x87); // 加密方式id
-            request.PutByte(0x00); // 永遠0
-            request.PutUintBE(2);
-            request.PutUintBE(AppInfo.appClientVersion);
-            request.PutUintBE(0);
+            PutByte(0x02); // 頭部 0x02
+            PutUshortBE((ushort)(27 + 2 + keyBody.Length + tlvBody.Length));
+            PutUshortBE(8001); // 協議版本 1F 41
+            PutUshortBE(_cmd);
+            PutUshortBE(1);
+            PutUintBE(uin);
+            PutByte(0x03);
+            PutByte(0x87); // 加密方式id
+            PutByte(0x00); // 永遠0
+            PutUintBE(2);
+            PutUintBE(AppInfo.appClientVersion);
+            PutUintBE(0);
 
-            request.PutBytes(keyBody);
-            request.PutBytes(tlvBody);
-            request.PutByte(0x03); // 尾部 0x03
-
-            return request.GetBytes();
+            PutBytes(keyBody);
+            PutBytes(tlvBody);
+            PutByte(0x03); // 尾部 0x03
         }
     }
 }
