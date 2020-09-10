@@ -43,6 +43,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
+    <Compile Include="Msf\KeyRing.cs" />
     <Compile Include="Msf\Service.cs" />
     <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Packets\Tlv\T1.cs" />

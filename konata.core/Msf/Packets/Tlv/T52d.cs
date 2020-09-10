@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Text;
-using ProtoBuf;
 using Konata.Utils;
-using Konata.Protocol.Protobuf;
+using Konata.Msf.Packets.Protobuf;
+using ProtoBuf;
 
 namespace Konata.Msf.Packets.Tlvs
 {
@@ -45,7 +45,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(_deviceReportInfo, false);
+            builder.PutBytes(_deviceReportInfo);
             return builder.GetBytes();
         }
     }

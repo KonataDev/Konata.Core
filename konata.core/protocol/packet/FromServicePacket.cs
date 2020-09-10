@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Protocol.Utils;
 using Konata.Utils;
-using Konata.Utils.Crypt;
+using Konata.Msf.Utils.Crypt;
 using StreamReader = Konata.Utils.StreamReader;
 
 namespace Konata.Protocol.Packet

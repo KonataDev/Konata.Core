@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Linq;
 using Konata.Msf;
-using System.Threading.Tasks;
-using Konata.Protocol.Packet;
-using Konata.Protocol.Packet.Oicq;
-using Konata.Protocol.Utils;
-using Konata.Utils;
-using SsoCommand = Konata.Protocol.SsoServiceCmd.Command;
 
 namespace Konata
 {
