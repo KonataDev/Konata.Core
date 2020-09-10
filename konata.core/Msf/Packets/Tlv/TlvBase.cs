@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Tlvs
         /// <returns>StreamBuilder</returns>
         public virtual byte[] GetTlvBody() => null;
 
-        public byte[] GetBytes()
+        public override byte[] GetBytes()
         {
             PutUshortBE(GetTlvCmd());
             PutBytes(GetTlvBody());

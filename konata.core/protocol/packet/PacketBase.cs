@@ -1,6 +1,6 @@
 ﻿using System;
 using Konata.Utils;
-using Konata.Utils.Crypt;
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Protocol.Packet
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Konata.Utils;
-using Konata.Utils.Crypt;
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Protocol.Utils
 {

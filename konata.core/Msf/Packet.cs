@@ -397,7 +397,7 @@ namespace Konata.Msf
         /// 獲取打包數據
         /// </summary>
         /// <returns></returns>
-        public byte[] GetBytes()
+        public virtual byte[] GetBytes()
         {
             var data = new byte[_packetLength];
             Buffer.BlockCopy(_packetBuffer, 0, data, 0, _packetLength);

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
 using Konata.Utils;
-using Konata.Utils.Crypt;
+using Konata.Msf.Utils.Crypt;
 using Guid = Konata.Utils.Guid;
 
 namespace Konata.Msf.Packets.Tlvs
 {
     public class T106 : TlvBase
     {
-        private const short _tgtgtVer = 4;
-        private const int _ssoVer = 6;
+        private const ushort _tgtgtVer = 4;
+        private const uint _ssoVer = 6;
 
-        private readonly long _appId;
-        private readonly long _subAppId;
-        private readonly int _appClientVersion;
-        private readonly long _uin;
+        private readonly uint _appId;
+        private readonly uint _subAppId;
+        private readonly uint _appClientVersion;
+        private readonly uint _uin;
         private readonly byte[] _ipAddress;
         private readonly bool _isSavePassword;
         private readonly byte[] _passwordMd5;
@@ -24,8 +24,8 @@ namespace Konata.Msf.Packets.Tlvs
         private readonly byte[] _guid;
         private readonly LoginType _loginType;
 
-        public T106(long appId, long subAppId, int appClientVersion,
-            long uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
+        public T106(uint appId, uint subAppId, uint appClientVersion,
+            uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
             byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
         {
             _appId = appId;
@@ -50,7 +50,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_tgtgtVer);
+            builder.PutUshort(_tgtgtVer);
             builder.PushInt32(new Random().Next());
             builder.PushInt32(_ssoVer);
             builder.PushInt32((int)_appId);
@@ -62,8 +62,8 @@ namespace Konata.Msf.Packets.Tlvs
             builder.PushBytes(_passwordMd5, false);
             builder.PushBytes(_tgtgKey, false);
             builder.PushInt32(0);
-            builder.PushBool(_isGuidAvailable);
-            builder.PushBytes(_isGuidAvailable ? _guid : Guid.Generate(), false);
+            builder.PutBoolBE(_isGuidAvailable, 2);
+            builder.PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
             builder.PushInt32((int)_subAppId);
             builder.PushInt32((int)_loginType);
             builder.PushString(_uin.ToString());
