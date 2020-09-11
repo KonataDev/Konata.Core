@@ -1,6 +1,7 @@
 ﻿using System;
 using Konata.Msf;
 using Konata.Msf.Network;
+using Konata.Msf.Packets;
 
 namespace konata.Msf
 {
@@ -55,6 +56,10 @@ namespace konata.Msf
             // <TODO> unpack bytes and update fields and pass remain bytes to ServiceRoutine
         }
 
+        private SsoPacket MakeSsoMessage(Packet packet)
+        {
+            return new SsoPacket();
+        }
 
     }
 }

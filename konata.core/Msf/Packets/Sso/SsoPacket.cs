@@ -1,26 +1,25 @@
 ﻿using Konata.Utils;
-using Konata.Protocol.Packet.Oicq;
 
 using SsoCommand = Konata.Protocol.SsoServiceCmd.Command;
 
-namespace Konata.Protocol.Packet
+namespace Konata.Msf.Packets
 {
-    public class SsoPacket : PacketBase
+    public class SsoPacket : Packet
     {
         public uint _ssoSquence;
 
         public uint _ssoSessionId;
 
-        public OicqRequest _oicqRequest;
+        public Packet _packet;
 
         public SsoCommand _ssoCommand;
 
-        public SsoPacket(uint seq, uint session, SsoCommand command, OicqRequest request)
+        public SsoPacket(uint seq, uint session, SsoCommand command, Packet packet)
         {
             _ssoSquence = seq;
             _ssoSessionId = session;
             _ssoCommand = command;
-            _oicqRequest = request;
+            _packet = packet;
         }
 
         public override byte[] GetBytes()
