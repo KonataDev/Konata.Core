@@ -98,16 +98,14 @@
     <Compile Include="Msf\LoginType.cs" />
     <Compile Include="Msf\NetworkType.cs" />
     <Compile Include="protocol\packet\FromServicePacket.cs" />
-    <Compile Include="protocol\packet\SsoPacket.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoPacket.cs" />
     <Compile Include="protocol\packet\ToServicePacket.cs" />
-    <Compile Include="protocol\packet\PacketBase.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestTgtgt.cs" />
     <Compile Include="protocol\SsoServiceCmd.cs" />
     <Compile Include="protocol\utils\SsoPacketFactory.cs" />
-    <Compile Include="protocol\utils\ToServicePacketFactory.cs" />
     <Compile Include="Msf\Utils\Crypt\ICryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
@@ -115,7 +113,6 @@
     <Compile Include="Msf\Utils\Guid.cs" />
     <Compile Include="Utils\StreamBuilder.cs" />
     <Compile Include="Msf\Utils\Hex.cs" />
-    <Compile Include="protocol\utils\TlvBuilder.cs" />
     <Compile Include="Msf\Packets\Tlv\TlvPacker.cs" />
     <Compile Include="Utils\StreamReader.cs" />
   </ItemGroup>
