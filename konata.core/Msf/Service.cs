@@ -4,8 +4,10 @@ namespace Konata.Msf
 {
     internal abstract class Service
     {
-        internal static bool Run(Core core) => false;
+        internal string name;
 
-        internal static bool Handle(Core core, byte[] data) => false;
+        internal abstract bool Run(Core core, string method, params object[] args);
+
+        internal abstract bool Handle(Core core, byte[] data);
     }
 }

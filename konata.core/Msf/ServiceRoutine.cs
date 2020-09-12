@@ -15,9 +15,11 @@ namespace Konata.Msf
             try
             {
                 var type = Get(name);
-                var instance = Activator.CreateInstance(type);
-                var arguments = new object[] { core, method }.Concat(args).ToArray();
-                return (bool)type.GetMethod("Run").Invoke(instance, args);
+                //var instance = Activator.CreateInstance(type);
+                var instance = (Service)type.GetProperty("Instance").GetValue(null);
+                //var arguments = new object[] { core, method }.Concat(args).ToArray();
+                //return (bool)type.GetMethod("Run").Invoke(instance, args);
+                return instance.Run(core, method, args);
             }
             catch (Exception e)
             {

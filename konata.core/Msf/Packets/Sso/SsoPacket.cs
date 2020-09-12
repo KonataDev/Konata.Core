@@ -30,42 +30,42 @@ namespace Konata.Msf.Packets
             var unknownString = $"||A{AppInfo.apkVersionName}.{AppInfo.appRevision}";
 
             // 構建頭部包躰
-            StreamBuilder builder = new StreamBuilder();
-            builder.PushUInt32(_ssoSquence);
-            builder.PushUInt32(AppInfo.subAppId);
-            builder.PushUInt32(AppInfo.subAppId);
-            builder.PushHexString("01 00 00 00 00 00 00 00 00 00 01 00", false);
+            var builder = new StreamBuilder();
+            builder.PutUintBE(_ssoSquence);
+            builder.PutUintBE(AppInfo.subAppId);
+            builder.PutUintBE(AppInfo.subAppId);
+            builder.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
 
-            builder.PushUInt32((uint)(extraData.Length + 4));
-            builder.PushBytes(extraData, false);
+            builder.PutUintBE((uint)(extraData.Length + 4));
+            builder.PutBytes(extraData);
 
-            builder.PushUInt32((uint)(ssoCommand.Length + 4));
-            builder.PushString(ssoCommand, false);
+            builder.PutUintBE((uint)(ssoCommand.Length + 4));
+            builder.PutString(ssoCommand, false);
 
-            builder.PushUInt32((uint)(4 + 4));
-            builder.PushUInt32((uint)_ssoSessionId);
+            builder.PutUintBE((uint)(4 + 4));
+            builder.PutUintBE((uint)_ssoSessionId);
 
-            builder.PushUInt32((uint)(DeviceInfo.System.Imei.Length + 4));
-            builder.PushString(DeviceInfo.System.Imei, false);
+            builder.PutUintBE((uint)(DeviceInfo.System.Imei.Length + 4));
+            builder.PutString(DeviceInfo.System.Imei);
 
-            builder.PushUInt32((uint)(unknownBytes0.Length + 4));
-            builder.PushBytes(unknownBytes0, false);
+            builder.PutUintBE((uint)(unknownBytes0.Length + 4));
+            builder.PutBytes(unknownBytes0);
 
-            builder.PushUInt16((ushort)(unknownString.Length + 2));
-            builder.PushString(unknownString, false);
+            builder.PutUshortBE((ushort)(unknownString.Length + 2));
+            builder.PutString(unknownString);
 
-            builder.PushUInt32((uint)(unknownBytes1.Length + 4));
-            builder.PushBytes(unknownBytes1, false);
+            builder.PutUintBE((uint)(unknownBytes1.Length + 4));
+            builder.PutBytes(unknownBytes1);
 
             // 構建整個包
             var ssoHeader = builder.GetBytes();
-            var ssoRequest = _oicqRequest.GetBytes();
-            builder.PushUInt32((uint)(ssoHeader.Length + 4));
-            builder.PushBytes(ssoHeader, false);
-            builder.PushUInt32((uint)(ssoRequest.Length + 4));
-            builder.PushBytes(ssoRequest, false);
+            var ssoRequest = _packet.GetBytes();
+            PutUintBE((uint)(ssoHeader.Length + 4));
+            PutBytes(ssoHeader);
+            PutUintBE((uint)(ssoRequest.Length + 4));
+            PutBytes(ssoRequest);
 
-            return builder.GetBytes();
+            return base.GetBytes();
         }
 
     }

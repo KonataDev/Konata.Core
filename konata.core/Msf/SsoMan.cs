@@ -25,16 +25,15 @@ namespace konata.Msf
             return true;
         }
 
-        internal uint PostPacket()
+        internal uint PostMessage()
         {
-
 
             return _ssoSeq;
         }
 
-        internal uint SendSsoMessage(Packet packet)
+        internal uint SendMessage(Service service, Packet packet)
         {
-            var ssoPacket = GetSsoHeader();
+            var ssoPacket = new SsoPacket(_ssoSeq, _ssoSession, service.name, packet);
             // <TODO> get packet content and create sso packet
             _pakman.Emit(ssoPacket);
             return _ssoSeq;
@@ -44,11 +43,6 @@ namespace konata.Msf
         internal void WaitForMessage(uint ssoSeq)
         {
 
-        }
-
-        private Packet GetSsoHeader()
-        {
-            return new Packet();
         }
 
         private void HandleSsoMessage(byte[] fromService)
