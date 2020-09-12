@@ -424,6 +424,11 @@ namespace Konata.Msf
             return cryptor.Encrypt(GetBytes(), cryptKey);
         }
 
+        public int Length
+        {
+            get { return _packetLength; }
+        }
+
         public static Packet operator +(Packet a, Packet b)
         {
             var packet = new Packet();
