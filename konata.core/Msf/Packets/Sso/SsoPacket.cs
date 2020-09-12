@@ -1,6 +1,5 @@
-﻿using Konata.Utils;
-
-using SsoCommand = Konata.Protocol.SsoServiceCmd.Command;
+﻿using Konata.Msf;
+using Konata.Utils;
 
 namespace Konata.Msf.Packets
 {
