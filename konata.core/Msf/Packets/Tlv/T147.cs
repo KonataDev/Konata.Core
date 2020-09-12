@@ -4,11 +4,11 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T147 : TlvBase
     {
-        private readonly long _appId;
+        private readonly uint _appId;
         private readonly string _apkVersionName;
         private readonly byte[] _apkSignatureMd5;
 
-        public T147(long appId, string apkVersionName, byte[] apkSignatureMd5)
+        public T147(uint appId, string apkVersionName, byte[] apkSignatureMd5)
         {
             _appId = appId;
             _apkVersionName = apkVersionName;
@@ -23,9 +23,9 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutUintBE((int)_appId);
-            builder.PutString(_apkVersionName, true, true, 32);
-            builder.PutBytes(_apkSignatureMd5, false, true, true, 32);
+            builder.PutUintBE(_appId);
+            builder.PutString(_apkVersionName, 2, 32);
+            builder.PutBytes(_apkSignatureMd5, 2, 32);
             return builder.GetBytes();
         }
     }

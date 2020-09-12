@@ -22,7 +22,7 @@ namespace Konata.Msf.Packets.Tlvs
             builder.PutUInt16((ushort)_domains.Length);
             foreach (string element in _domains)
             {
-                builder.PutInt8(1);
+                builder.PutByte(1);
                 builder.PutString(element);
             }
             return builder.GetBytes();

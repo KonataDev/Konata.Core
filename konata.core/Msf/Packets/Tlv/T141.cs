@@ -25,9 +25,9 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBEBE(_version);
+            builder.PutUshortBE(_version);
             builder.PutString(_simOperatorName);
-            builder.PutUshortBEBE((short)_networkType);
+            builder.PutUshortBE((short)_networkType);
             builder.PutString(_apnName);
             return builder.GetBytes();
         }

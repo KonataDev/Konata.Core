@@ -21,7 +21,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutInt8(1);
+            builder.PutByte(1);
             builder.PutUintBE((int)_buildTime);
             builder.PutString(_sdkVersion);
             return builder.GetBytes();

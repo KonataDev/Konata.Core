@@ -4,17 +4,17 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T107 : TlvBase
     {
-        private readonly short _picType;
-        private readonly sbyte _capType;
-        private readonly short _picSize;
-        private readonly sbyte _retType;
+        private readonly ushort _picType;
+        private readonly byte _capType;
+        private readonly ushort _picSize;
+        private readonly byte _retType;
 
         public T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
         {
-            _picType = (short)picType;
-            _capType = (sbyte)capType;
-            _picSize = (short)picSize;
-            _retType = (sbyte)retType;
+            _picType = (ushort)picType;
+            _capType = (byte)capType;
+            _picSize = (ushort)picSize;
+            _retType = (byte)retType;
         }
 
         public override ushort GetTlvCmd()
@@ -25,10 +25,10 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBEBE(_picType);
-            builder.PutInt8(_capType);
-            builder.PutUshortBEBE(_picSize);
-            builder.PutInt8(_retType);
+            builder.PutUshortBE(_picType);
+            builder.PutByte(_capType);
+            builder.PutUshortBE(_picSize);
+            builder.PutByte(_retType);
             return builder.GetBytes();
         }
     }

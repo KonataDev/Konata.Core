@@ -4,7 +4,7 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T142 : TlvBase
     {
-        private const short _version = 0;
+        private const ushort _version = 0;
 
         private readonly string _apkId;
 
@@ -21,8 +21,8 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBEBE(_version);
-            builder.PutString(_apkId, true, true, 32);
+            builder.PutUshortBE(_version);
+            builder.PutString(_apkId, 2, 32);
             return builder.GetBytes();
         }
     }
