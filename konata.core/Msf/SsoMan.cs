@@ -37,7 +37,6 @@ namespace konata.Msf
             // <TODO> get packet content and create sso packet
             _pakman.Emit(ssoPacket);
             return _ssoSquence;
-
         }
 
         internal void WaitForMessage(uint ssoSeq)
