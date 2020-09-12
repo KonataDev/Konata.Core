@@ -4,9 +4,9 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T154 : TlvBase
     {
-        private readonly int _ssoSequenceId;
+        private readonly uint _ssoSequenceId;
 
-        public T154(int ssoSequenceId)
+        public T154(uint ssoSequenceId)
         {
             _ssoSequenceId = ssoSequenceId;
         }

@@ -4,10 +4,10 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T116 : TlvBase
     {
-        private const sbyte _ver = 0;
+        private const byte _ver = 0;
 
-        private readonly int _bitmap;
-        private readonly int _getSig;
+        private readonly uint _bitmap;
+        private readonly uint _getSig;
         private readonly long[] _subAppIdList;
 
         public T116(int bitmap, int getSig, long[] subAppIdList = null)
@@ -15,8 +15,8 @@ namespace Konata.Msf.Packets.Tlvs
             if (subAppIdList == null)
                 _subAppIdList = new long[] { 1600000226L };
 
-            _bitmap = bitmap;
-            _getSig = getSig;
+            _bitmap = (uint)bitmap;
+            _getSig = (uint)getSig;
         }
 
         public override ushort GetTlvCmd()
@@ -27,13 +27,13 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutInt8(_ver);
+            builder.PutByte(_ver);
             builder.PutUintBE(_bitmap);
             builder.PutUintBE(_getSig);
-            builder.PutInt8((sbyte)_subAppIdList.Length);
+            builder.PutByte((byte)_subAppIdList.Length);
             foreach (long element in _subAppIdList)
             {
-                builder.PutUintBE((int)element);
+                builder.PutUintBE((uint)element);
             }
             return builder.GetBytes();
         }
