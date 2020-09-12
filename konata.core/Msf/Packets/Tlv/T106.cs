@@ -50,24 +50,24 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutUshort(_tgtgtVer);
-            builder.PushInt32(new Random().Next());
-            builder.PushInt32(_ssoVer);
-            builder.PushInt32((int)_appId);
-            builder.PushInt32(_appClientVersion);
-            builder.PushInt64(_uin == 0 ? _salt : _uin);
-            builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PushBytes(_ipAddress);
-            builder.PushBool(_isSavePassword);
-            builder.PushBytes(_passwordMd5, false);
-            builder.PushBytes(_tgtgKey, false);
-            builder.PushInt32(0);
+            builder.PutUshortBE(_tgtgtVer);
+            builder.PutUintBE((uint)new Random().Next());
+            builder.PutUintBE(_ssoVer);
+            builder.PutUintBE(_appId);
+            builder.PutUintBE(_appClientVersion);
+            builder.PutLongBE(_uin == 0 ? _salt : _uin);
+            builder.PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            builder.PutBytes(_ipAddress);
+            builder.PutBoolBE(_isSavePassword, 1);
+            builder.PutBytes(_passwordMd5);
+            builder.PutBytes(_tgtgKey);
+            builder.PutUintBE(0);
             builder.PutBoolBE(_isGuidAvailable, 2);
             builder.PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
-            builder.PushInt32((int)_subAppId);
-            builder.PushInt32((int)_loginType);
-            builder.PushString(_uin.ToString());
-            builder.PushInt16(0);
+            builder.PutUintBE(_subAppId);
+            builder.PutUintBE((uint)_loginType);
+            builder.PutString(_uin.ToString());
+            builder.PutUshortBE(0);
 
             byte[] cryptKey = new Md5Cryptor().Encrypt(_passwordMd5.Concat(BitConverter.GetBytes(_uin).Reverse().ToArray()).ToArray());
 

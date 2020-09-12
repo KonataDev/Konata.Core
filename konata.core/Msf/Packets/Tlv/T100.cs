@@ -4,15 +4,15 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T100 : TlvBase
     {
-        private const short _dbBufVer = 1;
+        private const ushort _dbBufVer = 1;
         private const int _ssoVer = 6;
         private const int _sigmap = 34869472;
 
-        private readonly long _appId;
-        private readonly long _subAppId;
-        private readonly int _appClientVersion;
+        private readonly uint _appId;
+        private readonly uint _subAppId;
+        private readonly uint _appClientVersion;
 
-        public T100(long appId, long subAppId, int appClientVersion)
+        public T100(uint appId, uint subAppId, uint appClientVersion)
         {
             _appId = appId;
             _subAppId = subAppId;
@@ -27,12 +27,12 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_dbBufVer);
-            builder.PushInt32(_ssoVer);
-            builder.PushInt32((int)_appId);
-            builder.PushInt32((int)_subAppId);
-            builder.PushInt32(_appClientVersion);
-            builder.PushInt32(_sigmap);
+            builder.PutUshortBE(_dbBufVer);
+            builder.PutUintBE(_ssoVer);
+            builder.PutUintBE(_appId);
+            builder.PutUintBE(_subAppId);
+            builder.PutUintBE(_appClientVersion);
+            builder.PutUintBE(_sigmap);
             return builder.GetBytes();
         }
     }

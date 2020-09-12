@@ -5,10 +5,10 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T1 : TlvBase
     {
-        private readonly long _uin;
+        private readonly uint _uin;
         private readonly byte[] _ipAddress;
 
-        public T1(long uin, byte[] ipAddress)
+        public T1(uint uin, byte[] ipAddress)
         {
             _uin = uin;
             _ipAddress = ipAddress;
@@ -22,12 +22,12 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(1); // _ip_ver
-            builder.PushInt32(new Random().Next());
-            builder.PushInt32((int)_uin);
-            builder.PushUInt32((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PushBytes(_ipAddress);
-            builder.PushInt16(0);
+            builder.PutUshortBE(1); // _ip_ver
+            builder.PutIntBE(new Random().Next());
+            builder.PutUintBE(_uin);
+            builder.PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            builder.PutBytes(_ipAddress);
+            builder.PutUshortBE(0);
             return builder.GetBytes();
         }
     }

@@ -25,10 +25,10 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_picType);
-            builder.PushInt8(_capType);
-            builder.PushInt16(_picSize);
-            builder.PushInt8(_retType);
+            builder.PutUshortBEBE(_picType);
+            builder.PutInt8(_capType);
+            builder.PutUshortBEBE(_picSize);
+            builder.PutInt8(_retType);
             return builder.GetBytes();
         }
     }

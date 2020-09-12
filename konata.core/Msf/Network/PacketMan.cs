@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
-using Konata.Protocol.Packet;
 using konata.Msf;
 
 namespace Konata.Msf.Network
 {
     internal class PacketMan
     {
-        public delegate void PacketListener(FromServicePacket packet);
+        public delegate void PacketListener(Packet packet);
 
         private enum ReceiveStatus
         {
@@ -39,7 +38,7 @@ namespace Konata.Msf.Network
             new MsfServer { url = "203.205.255.221", port = 8080 },
         };
 
-        private Queue<PacketBase> _packets;
+        private Queue<Packet> _packets;
         private PacketListener _listener;
         private Socket _socket;
         // private Thread _thread;

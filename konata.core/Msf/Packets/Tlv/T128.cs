@@ -32,14 +32,14 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(0);
-            builder.PushBool(_isNewInstall);
-            builder.PushBool(_isGuidAvaliable);
-            builder.PushBool(_isGuidChanged);
-            builder.PushInt32(_guidFlag);
-            builder.PushString(_deviceModel, true, true, 32);
-            builder.PushBytes(_guid, false, true, true, 16);
-            builder.PushString(_deviceBrand, true, true, 16);
+            builder.PutUshortBEBE(0);
+            builder.PutBoolBE(_isNewInstall);
+            builder.PutBoolBE(_isGuidAvaliable);
+            builder.PutBoolBE(_isGuidChanged);
+            builder.PutUintBE(_guidFlag);
+            builder.PutString(_deviceModel, true, true, 32);
+            builder.PutBytes(_guid, false, true, true, 16);
+            builder.PutString(_deviceBrand, true, true, 16);
             return builder.GetBytes();
         }
     }

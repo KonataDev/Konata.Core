@@ -25,7 +25,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(new Md5Cryptor().Encrypt(_androidId));
+            builder.PutBytes(new Md5Cryptor().Encrypt(_androidId));
             return builder.GetBytes();
         }
     }
