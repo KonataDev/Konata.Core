@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Reflection;
 
 namespace Konata.Msf
 {
@@ -16,7 +16,7 @@ namespace Konata.Msf
             {
                 var type = Get(name);
                 //var instance = Activator.CreateInstance(type);
-                var instance = (Service)type.GetProperty("Instance").GetValue(null);
+                var instance = (Service)type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
                 //var arguments = new object[] { core, method }.Concat(args).ToArray();
                 //return (bool)type.GetMethod("Run").Invoke(instance, args);
                 return instance.Run(core, method, args);

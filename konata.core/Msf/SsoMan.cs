@@ -50,7 +50,7 @@ namespace konata.Msf
         /// <returns></returns>
         internal uint SendMessage(Service service, Packet packet)
         {
-            _pakMan.Emit(new SsoPacket(++_ssoSquence, _ssoSession, service.name, packet));
+            _pakMan.Emit(new SsoMessage(++_ssoSquence, _ssoSession, service.name, packet));
             return _ssoSquence;
         }
 
