@@ -27,6 +27,7 @@ namespace Konata.Msf
         internal string _lastErrorStr;
 
         internal SsoMan _ssoMan;
+        internal KeyRing _keyRing;
         internal EventDelegate _eventHandler;
 
         public Core(uint uin, string password)
@@ -38,6 +39,7 @@ namespace Konata.Msf
             _lastErrorStr = "";
 
             _ssoMan = new SsoMan();
+            _keyRing = new KeyRing();
         }
 
         public bool Connect()
