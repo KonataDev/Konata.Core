@@ -11,8 +11,7 @@ namespace Konata.Msf.Packets.Oicq
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        public OicqRequestTgtgt(uint uin, string password,
-            byte[] tgtgKey, byte[] randKey, byte[] shareKey, byte[] publicKey)
+        public OicqRequestTgtgt(uint uin, string password, KeyRing keyring)
         {
             _cmd = 0x0810;
             _subCmd = 0x09;
