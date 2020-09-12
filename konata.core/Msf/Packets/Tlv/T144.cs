@@ -38,7 +38,7 @@ namespace Konata.Msf.Packets.Tlvs
 
         public T144(string androidId, byte[] deviceDevInfo, string osType, string osVersion,
             NetworkType networkType, string networkDetail, string apnName,
-            bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, int guidFlag,
+            bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged, byte[] guid, uint guidFlag,
             string deviceModel, string deviceBrand, byte[] tgtgKey)
         {
             _tlv109 = new T109(androidId);

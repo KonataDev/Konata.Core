@@ -4,9 +4,9 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T516 : TlvBase
     {
-        private readonly int _sourceType;
+        private readonly uint _sourceType;
 
-        public T516(int sourceType = 0)
+        public T516(uint sourceType = 0)
         {
             _sourceType = sourceType;
         }

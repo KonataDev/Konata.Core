@@ -22,8 +22,8 @@ namespace Konata.Msf.Packets.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(0); // _sigVer
-            builder.PutString(_captchaCode);
-            builder.PutBytes(_captchaKey, false, true);
+            builder.PutString(_captchaCode, 2);
+            builder.PutBytes(_captchaKey, 2);
             return builder.GetBytes();
         }
 
