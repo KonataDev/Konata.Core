@@ -6,7 +6,23 @@ namespace Konata.Msf.Services.Wtlogin
 {
     internal class Login : Service
     {
-        internal static bool Run(Core core, string method, params object[] args)
+        private Login() => name = "wtlogin.login";
+
+        private static Login _instance = null;
+
+        internal static Login Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new Login();
+                }
+                return _instance;
+            }
+        }
+
+        internal override bool Run(Core core, string method, params object[] args)
         {
             switch (method)
             {
@@ -15,17 +31,14 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        internal static bool Handle(Core core, byte[] data)
-        {
-            return false;
-        }
+        internal override bool Handle(Core core, byte[] data) => false;
 
-        internal static bool Request_TGTGT(Core core)
+        internal bool Request_TGTGT(Core core)
         {
             var request = new OicqRequestTgtgt(
                 core._uin, core._password, null, null, null, null);
 
-            var seoSeq = core._ssoMan.SendSsoMessage(request);
+            var seoSeq = core._ssoMan.SendMessage(this, request);
 
             return false;
         }

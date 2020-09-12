@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Konata.Utils;
 using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf
@@ -313,6 +314,12 @@ namespace Konata.Msf
         {
             var data = Encoding.UTF8.GetBytes(value);
             PutBytes(data, prefixLength, limitedLength); // 把字符串当作byte[]
+        }
+
+        public void PutHexString(string value, byte prefixLength = 0, byte limitedLength = 0)
+        {
+            var data = Hex.HexStr2Bytes(value);
+            PutBytes(data, prefixLength, limitedLength);
         }
 
         public void PutBytes(byte[] value, byte prefixLength = 0, byte limitedLength = 0)
