@@ -1,5 +1,4 @@
 ﻿using Konata.Msf.Utils.Crypt;
-using Konata.Protocol.Utils;
 
 namespace Konata.Msf.Packets.Tlvs
 {
@@ -65,7 +64,7 @@ namespace Konata.Msf.Packets.Tlvs
             packer.PutTlv(_tlv148);
             packer.PutTlv(_tlv153);
             packer.PutTlv(_tlv16e);
-            return packer.GetEncryptedPacket(true, new TeaCryptor(), _tgtgKey);
+            return packer.GetEncryptedBytes(true, new TeaCryptor(), _tgtgKey);
         }
     }
 }

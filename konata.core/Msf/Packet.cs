@@ -287,7 +287,7 @@ namespace Konata.Msf
         /// <param name="length">占用长度</param>
         public void PutBoolBE(bool value, byte length)
         {
-            PutBool(value, length, Endian.Big);
+            PutBoolBE(value, length, Endian.Big);
         }
 
         /// <summary>
@@ -295,12 +295,12 @@ namespace Konata.Msf
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="length">占用长度</param>
-        public void PutBoolLE(bool value, byte length)
+        public void PutBoolBELE(bool value, byte length)
         {
-            PutBool(value, length, Endian.Little);
+            PutBoolBE(value, length, Endian.Little);
         }
 
-        public void PutBool(bool value, byte length, Endian endian)
+        public void PutBoolBE(bool value, byte length, Endian endian)
         {
             var data = new byte[length];
             if (value)

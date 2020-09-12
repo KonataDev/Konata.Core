@@ -28,13 +28,13 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(_pingVersion);
-            builder.PushInt32(_ssoVersion);
-            builder.PushInt32((int)_appId);
-            builder.PushInt32(_appClientVersion);
-            builder.PushInt32((int)_uin);
-            builder.PushInt16(_alwaysZero);
-            builder.PushInt16(0);
+            builder.PutUshortBEBE(_pingVersion);
+            builder.PutUintBE(_ssoVersion);
+            builder.PutUintBE((int)_appId);
+            builder.PutUintBE(_appClientVersion);
+            builder.PutUintBE((int)_uin);
+            builder.PutUshortBEBE(_alwaysZero);
+            builder.PutUshortBE(0);
             return builder.GetBytes();
         }
     }

@@ -19,7 +19,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt32(_sourceType);
+            builder.PutUintBE(_sourceType);
             return builder.GetBytes();
         }
     }

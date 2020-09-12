@@ -22,8 +22,8 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushBytes(new Md5Cryptor().Encrypt(_wifiBssid), false, true, true, 16);
-            builder.PushString(_wifiSsid, true, true, 32);
+            builder.PutBytes(new Md5Cryptor().Encrypt(_wifiBssid), false, true, true, 16);
+            builder.PutString(_wifiSsid, true, true, 32);
             return builder.GetBytes();
         }
     }

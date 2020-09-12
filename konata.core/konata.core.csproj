@@ -98,7 +98,7 @@
     <Compile Include="Msf\LoginType.cs" />
     <Compile Include="Msf\NetworkType.cs" />
     <Compile Include="Msf\Packets\Sso\SsoPacket.cs" />
-    <Compile Include="protocol\packet\ToServicePacket.cs" />
+    <Compile Include="Msf\Packets\ToServicePacket.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />

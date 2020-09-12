@@ -21,9 +21,9 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PushInt16(0); // _sigVer
-            builder.PushString(_captchaCode);
-            builder.PushBytes(_captchaKey, false, true);
+            builder.PutUshortBE(0); // _sigVer
+            builder.PutString(_captchaCode);
+            builder.PutBytes(_captchaKey, false, true);
             return builder.GetBytes();
         }
 
