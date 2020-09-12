@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using konata.Msf;
+using Konata.Utils;
 
 namespace Konata.Msf.Network
 {
@@ -81,7 +82,7 @@ namespace Konata.Msf.Network
         {
             // _packets.Enqueue(packet);
             // _socket.Send(packet.GetBytes());
-            Console.WriteLine(packet);
+            Console.WriteLine(Hex.Bytes2HexStr(packet.GetBytes()));
         }
 
         private void OnReceive(IAsyncResult result)
