@@ -20,7 +20,7 @@ namespace Konata.Msf.Packets.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(1);
-            builder.PutBytes(_t536.GetBytes(), false);
+            builder.PutBytes(_t536.GetBytes(), 2);
             return builder.GetBytes();
         }
     }

@@ -4,16 +4,16 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T18 : TlvBase
     {
-        private const short _sigVer = 0;
-        private const short _pingVersion = 1;
-        private const short _alwaysZero = 0;
-        private const int _ssoVersion = 1536;
+        private const ushort _sigVer = 0;
+        private const ushort _pingVersion = 1;
+        private const ushort _alwaysZero = 0;
+        private const uint _ssoVersion = 1536;
 
-        private readonly long _appId;
-        private readonly int _appClientVersion;
-        private readonly long _uin;
+        private readonly uint _appId;
+        private readonly uint _appClientVersion;
+        private readonly uint _uin;
 
-        public T18(long appId, int appClientVersion, long uin)
+        public T18(uint appId, uint appClientVersion, uint uin)
         {
             _appId = appId;
             _appClientVersion = appClientVersion;
@@ -30,9 +30,9 @@ namespace Konata.Msf.Packets.Tlvs
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(_pingVersion);
             builder.PutUintBE(_ssoVersion);
-            builder.PutUintBE((int)_appId);
+            builder.PutUintBE(_appId);
             builder.PutUintBE(_appClientVersion);
-            builder.PutUintBE((int)_uin);
+            builder.PutUintBE(_uin);
             builder.PutUshortBE(_alwaysZero);
             builder.PutUshortBE(0);
             return builder.GetBytes();

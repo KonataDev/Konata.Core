@@ -4,10 +4,10 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T521 : TlvBase
     {
-        private readonly int _productType;
-        private readonly short _unknown;
+        private readonly uint _productType;
+        private readonly ushort _unknown;
 
-        public T521(int productType = 0, short unknown = 0)
+        public T521(uint productType = 0, ushort unknown = 0)
         {
             _productType = productType;
             _unknown = unknown;

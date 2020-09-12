@@ -20,7 +20,7 @@ namespace Konata.Msf.Packets.Tlvs
         public override byte[] GetTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
-            builder.PutBytes(new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(_unknownQiMei)), false);
+            builder.PutBytes(new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(_unknownQiMei)), 2);
             return builder.GetBytes();
         }
     }

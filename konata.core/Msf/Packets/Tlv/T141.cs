@@ -4,7 +4,7 @@ namespace Konata.Msf.Packets.Tlvs
 {
     public class T141 : TlvBase
     {
-        private const short _version = 1;
+        private const ushort _version = 1;
 
         private readonly string _apnName;
         private readonly string _simOperatorName;
@@ -26,8 +26,8 @@ namespace Konata.Msf.Packets.Tlvs
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(_version);
-            builder.PutString(_simOperatorName);
-            builder.PutUshortBE((short)_networkType);
+            builder.PutString(_simOperatorName, 2);
+            builder.PutUshortBE((ushort)_networkType);
             builder.PutString(_apnName);
             return builder.GetBytes();
         }
