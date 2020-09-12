@@ -81,6 +81,7 @@ namespace Konata.Msf.Network
         {
             // _packets.Enqueue(packet);
             // _socket.Send(packet.GetBytes());
+            Console.WriteLine(packet);
         }
 
         private void OnReceive(IAsyncResult result)
