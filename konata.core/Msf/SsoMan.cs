@@ -10,7 +10,7 @@ namespace konata.Msf
 
         private PacketMan _pakman;
 
-        private uint _ssoSeq = 85600;
+        private uint _ssoSquence = 85600;
 
         private uint _ssoSession = 0x01DAA2BC;
 
@@ -28,15 +28,15 @@ namespace konata.Msf
         internal uint PostMessage()
         {
 
-            return _ssoSeq;
+            return _ssoSquence;
         }
 
         internal uint SendMessage(Service service, Packet packet)
         {
-            var ssoPacket = new SsoPacket(_ssoSeq, _ssoSession, service.name, packet);
+            var ssoPacket = new SsoPacket(_ssoSquence, _ssoSession, service.name, packet);
             // <TODO> get packet content and create sso packet
             _pakman.Emit(ssoPacket);
-            return _ssoSeq;
+            return _ssoSquence;
 
         }
 
