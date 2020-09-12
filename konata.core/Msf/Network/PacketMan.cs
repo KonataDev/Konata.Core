@@ -82,7 +82,7 @@ namespace Konata.Msf.Network
         {
             // _packets.Enqueue(packet);
             // _socket.Send(packet.GetBytes());
-            Console.WriteLine(Hex.Bytes2HexStr(packet.GetBytes()));
+            Console.WriteLine(packet.ToHexString());
         }
 
         private void OnReceive(IAsyncResult result)

@@ -428,13 +428,10 @@ namespace Konata.Msf
             return data;
         }
 
-        //public override string ToString()
-        //{
-        //    var data = new byte[_packetLength];
-        //    Buffer.BlockCopy(_packetBuffer, 0, data, 0, _packetLength);
-
-        //    return Hex.Bytes2HexStr(data);
-        //}
+        public string ToHexString()
+        {
+            return Hex.Bytes2HexStr(GetBytes());
+        }
 
         /// <summary>
         /// 獲取打包數據並加密
