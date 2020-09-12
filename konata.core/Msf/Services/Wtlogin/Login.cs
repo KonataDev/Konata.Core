@@ -36,7 +36,7 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Request_TGTGT(Core core)
         {
             var request = new OicqRequestTgtgt(
-                core._uin, core._password, null, null, null, null);
+                core._uin, core._password, core._keyRing);
 
             var seoSeq = core._ssoMan.SendMessage(this, request);
 
