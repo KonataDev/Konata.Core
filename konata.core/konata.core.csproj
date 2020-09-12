@@ -43,7 +43,10 @@
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
-    <Compile Include="Msf\KeyRing.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\ECDiffieHellman.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\EllipticCurve.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\Point.cs" />
+    <Compile Include="Msf\Crypto\KeyRing.cs" />
     <Compile Include="Msf\Service.cs" />
     <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Packets\Tlv\T1.cs" />
@@ -94,9 +97,9 @@
     <Compile Include="Msf\Network\PacketMan.cs" />
     <Compile Include="Msf\Packet.cs" />
     <Compile Include="Msf\SsoMan.cs" />
-    <Compile Include="Msf\EncryptType.cs" />
+    <Compile Include="Msf\Crypto\EncryptType.cs" />
     <Compile Include="Msf\LoginType.cs" />
-    <Compile Include="Msf\NetworkType.cs" />
+    <Compile Include="Msf\Network\NetworkType.cs" />
     <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
     <Compile Include="Msf\Packets\ToServicePacket.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
@@ -147,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Device\" />
+    <Folder Include="Msf\Crypto\Tea\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

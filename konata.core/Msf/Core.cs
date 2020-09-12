@@ -1,5 +1,6 @@
 ﻿using System;
 using konata.Msf;
+using Konata.Msf.Crypto;
 using Konata.Msf.Network;
 
 namespace Konata.Msf

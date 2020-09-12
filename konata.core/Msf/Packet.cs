@@ -24,24 +24,23 @@ namespace Konata.Msf
         /// <param name="data">緩衝區</param>
         /// <param name="minLen">最小長度</param>
         /// <returns></returns>
-        private static int ResizeArray(ref byte[] data, int minLen)
-        {
-            int len = minLen >> 10;
-            if ((minLen & 1023) > 0)
-            {
-                ++len;
-            }
-            len <<= 10;
-            if (data == null)
-            {
-                data = new byte[len];
-            }
-            else if (data.Length < minLen)
-            {
-                Array.Resize(ref data, len);
-            }
-            return data.Length;
-        }
+        //private static int ResizeArray(ref byte[] _packetBuffer, int targetLength)
+        //{
+        //    int len = targetLength >> 10;
+        //    if ((targetLength & 1023) > 0)
+        //    {
+        //        ++len;
+        //    }
+        //    len <<= 10;
+        //    if (_packetBuffer == null)
+        //    {
+        //        _packetBuffer = new byte[len];
+        //    }
+        //    else if (_packetBuffer.Length < targetLength)
+        //    {
+        //        Array.Resize(ref _packetBuffer, len);
+        //    }
+        //}
 
         /// <summary>
         /// 寫入數據
@@ -52,7 +51,21 @@ namespace Konata.Msf
         {
             // 分配新的空間
             var targetLength = _packetLength + data.Length;
-            ResizeArray(ref _packetBuffer, targetLength);
+            //ResizeArray(ref _packetBuffer, targetLength);
+            int len = targetLength >> 10;
+            if ((targetLength & 1023) > 0)
+            {
+                ++len;
+            }
+            len <<= 10;
+            if (_packetBuffer == null)
+            {
+                _packetBuffer = new byte[len];
+            }
+            else if (_packetBuffer.Length < targetLength)
+            {
+                Array.Resize(ref _packetBuffer, len);
+            }
 
             // 寫入方向
             var step = endian == Endian.Little ? -1 : 1;
@@ -413,6 +426,11 @@ namespace Konata.Msf
             _packetLength = 0;
 
             return data;
+        }
+
+        public override string ToString()
+        {
+            return Hex.Bytes2HexStr(GetBytes());
         }
 
         /// <summary>

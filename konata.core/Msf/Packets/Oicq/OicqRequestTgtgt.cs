@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using Konata.Utils;
+using Konata.Msf.Crypto;
 using Konata.Msf.Utils.Crypt;
 using Konata.Msf.Packets.Tlvs;
 using Konata.Msf.Packets.Protobuf;
@@ -39,7 +40,7 @@ namespace Konata.Msf.Packets.Oicq
             tlvs.PutTlv(new T18(AppInfo.appId, AppInfo.appClientVersion, uin));
             tlvs.PutTlv(new T1(uin, DeviceInfo.Network.Wifi.IpAddress));
             tlvs.PutTlv(new T106(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, uin,
-                new byte[4], true, passwordMd5, 0, tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
+                new byte[4], true, passwordMd5, 0, keyring._tgtgKey, true, DeviceInfo.Guid, LoginType.Password));
             tlvs.PutTlv(new T116(184024956, 66560));
             tlvs.PutTlv(new T100(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion));
             tlvs.PutTlv(new T107(0, 0, 0));
@@ -47,7 +48,7 @@ namespace Konata.Msf.Packets.Oicq
             tlvs.PutTlv(new T144(DeviceInfo.System.AndroidId, reportData.ToArray(), DeviceInfo.System.Os,
                 DeviceInfo.System.OsVersion, DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                 DeviceInfo.Network.Wifi.ApnName, true, true, false, DeviceInfo.Guid, 285212672,
-                DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, tgtgKey));
+                DeviceInfo.System.ModelName, DeviceInfo.System.Manufacturer, keyring._tgtgKey));
             tlvs.PutTlv(new T145(DeviceInfo.Guid));
             tlvs.PutTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
             // tlvs.PushTlv(new 166());
@@ -87,13 +88,13 @@ namespace Konata.Msf.Packets.Oicq
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(_subCmd);
             builder.PutBytes(tlvs.GetBytes(true));
-            var tlvBody = builder.GetEncryptedBytes(new TeaCryptor(), shareKey);
+            var tlvBody = builder.GetEncryptedBytes(new TeaCryptor(), keyring._shareKey);
 
             // 構建 密鑰
             builder.PutUshortBE(0x0101);
-            builder.PutBytes(randKey);
+            builder.PutBytes(keyring._randKey);
             builder.PutUshortBE(0x0102);
-            builder.PutBytes(publicKey, 2);
+            builder.PutBytes(keyring._defaultPublicKey, 2);
             var keyBody = builder.GetBytes();
 
             // 構建 oicq_request
