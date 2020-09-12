@@ -97,15 +97,12 @@
     <Compile Include="Msf\EncryptType.cs" />
     <Compile Include="Msf\LoginType.cs" />
     <Compile Include="Msf\NetworkType.cs" />
-    <Compile Include="protocol\packet\FromServicePacket.cs" />
     <Compile Include="Msf\Packets\Sso\SsoPacket.cs" />
     <Compile Include="protocol\packet\ToServicePacket.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestTgtgt.cs" />
-    <Compile Include="protocol\SsoServiceCmd.cs" />
-    <Compile Include="protocol\utils\SsoPacketFactory.cs" />
     <Compile Include="Msf\Utils\Crypt\ICryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
