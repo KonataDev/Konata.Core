@@ -10,7 +10,7 @@ namespace Konata.Msf.Services.Wtlogin
 
         private static Login _instance = null;
 
-        internal static Login Instance
+        public static Login Instance
         {
             get
             {

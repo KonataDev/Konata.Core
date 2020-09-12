@@ -3,14 +3,14 @@ using Konata.Utils;
 
 namespace Konata.Msf.Packets
 {
-    public class SsoPacket : Packet
+    public class SsoMessage : Packet
     {
         private Header _header;
         public Packet _packet;
 
         public string _ssoCommand;
 
-        public SsoPacket(uint seq, uint session, string command, Packet packet)
+        public SsoMessage(uint seq, uint session, string command, Packet packet)
         {
             _header = new Header(seq, session, command);
             _packet = packet;
