@@ -3,7 +3,7 @@ using Konata.Msf;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
 
-namespace konata.Msf
+namespace Konata.Msf
 {
     internal class SsoMan
     {
