@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
-using konata.Msf;
-using Konata.Utils;
+using Konata.Msf.Packets;
 
 namespace Konata.Msf.Network
 {
@@ -78,11 +77,17 @@ namespace Konata.Msf.Network
             // _thread.Join();
         }
 
-        public void Emit(Packet packet)
+        public void Emit(uint uin, SsoMessage message)
         {
-            // _packets.Enqueue(packet);
-            // _socket.Send(packet.GetBytes());
-            Console.WriteLine(packet.ToHexString());
+            var serviceMsg = new ToServiceMessage(10, 2, uin, message);
+
+            Console.WriteLine(serviceMsg.ToHexString());
+            // OnSend(serviceMsg.GetBytes());
+        }
+
+        private void OnSend(byte[] data)
+        {
+            // _socket.Send(serviceMsg.GetBytes());
         }
 
         private void OnReceive(IAsyncResult result)

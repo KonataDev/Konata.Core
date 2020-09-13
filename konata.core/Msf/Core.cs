@@ -39,7 +39,7 @@ namespace Konata.Msf
             _lastError = 0;
             _lastErrorStr = "";
 
-            _ssoMan = new SsoMan();
+            _ssoMan = new SsoMan(this);
             _keyRing = new KeyRing();
         }
 

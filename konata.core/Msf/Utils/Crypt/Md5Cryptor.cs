@@ -15,6 +15,9 @@ namespace Konata.Msf.Utils.Crypt
             return MD5.Create().ComputeHash(data);
         }
 
-        public byte[] Encrypt(byte[] data, byte[] key) => null;
+        public byte[] Encrypt(byte[] data, byte[] key)
+        {
+            return MD5.Create().ComputeHash(data);
+        }
     }
 }
