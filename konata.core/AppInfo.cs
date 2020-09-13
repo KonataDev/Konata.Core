@@ -10,7 +10,7 @@ namespace Konata
     {
         public const uint appId = 16;
         public const uint subAppId = 537063202;
-        public const int appClientVersion = 0;
+        public const uint appClientVersion = 0;
         public const string apkPackageName = "com.tencent.mobileqq";
         public const string apkVersionName = "8.2.7";
         public const string appBuildVer = "8.2.7.4395";
