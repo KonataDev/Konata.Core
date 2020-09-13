@@ -22,20 +22,18 @@ namespace Konata.Msf.Packets.Tlvs
 
         public override void PutTlvCmd()
         {
-            return 0x18;
+            PutUshortBE(0x18);
         }
 
         public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(_pingVersion);
-            builder.PutUintBE(_ssoVersion);
-            builder.PutUintBE(_appId);
-            builder.PutUintBE(_appClientVersion);
-            builder.PutUintBE(_uin);
-            builder.PutUshortBE(_alwaysZero);
-            builder.PutUshortBE(0);
-            return builder.GetBytes();
+            PutUshortBE(_pingVersion);
+            PutUintBE(_ssoVersion);
+            PutUintBE(_appId);
+            PutUintBE(_appClientVersion);
+            PutUintBE(_uin);
+            PutUshortBE(_alwaysZero);
+            PutUshortBE(0);
         }
     }
 }
