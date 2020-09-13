@@ -7,14 +7,16 @@ namespace konata.Msf
 {
     internal class SsoMan
     {
+        private Core _msfCore;
         private PacketMan _pakMan;
 
         private uint _ssoSquence;
 
         private uint _ssoSession;
 
-        internal SsoMan()
+        internal SsoMan(Core core)
         {
+            _msfCore = core;
             _pakMan = new PacketMan();
         }
 
@@ -50,7 +52,8 @@ namespace konata.Msf
         /// <returns></returns>
         internal uint SendMessage(Service service, Packet packet)
         {
-            _pakMan.Emit(new SsoMessage(++_ssoSquence, _ssoSession, service.name, packet));
+            _pakMan.Emit(_msfCore._uin, 
+                new SsoMessage(++_ssoSquence, _ssoSession, service.name, packet));
             return _ssoSquence;
         }
 
