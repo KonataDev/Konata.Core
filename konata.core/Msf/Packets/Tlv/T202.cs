@@ -1,5 +1,4 @@
-﻿using Konata.Utils;
-using Konata.Msf.Utils.Crypt;
+﻿using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Tlvs
 {
@@ -16,15 +15,13 @@ namespace Konata.Msf.Packets.Tlvs
 
         public override void PutTlvCmd()
         {
-            return 0x202;
+            PutUshortBE(0x0202);
         }
 
         public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutBytes(new Md5Cryptor().Encrypt(_wifiBssid), 2, 16);
-            builder.PutString(_wifiSsid, 2, 32);
-            return builder.GetBytes();
+            PutEncryptedBytes(_wifiBssid, new Md5Cryptor(), null, 2, 16);
+            PutString(_wifiSsid, 2, 32);
         }
     }
 }

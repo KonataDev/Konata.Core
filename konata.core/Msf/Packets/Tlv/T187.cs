@@ -19,7 +19,7 @@ namespace Konata.Msf.Packets.Tlvs
 
         public override void PutTlvBody()
         {
-            PutEncryptBytes(_macAddress, new Md5Cryptor(), null);
+            PutEncryptedBytes(_macAddress, new Md5Cryptor(), null);
         }
     }
 }

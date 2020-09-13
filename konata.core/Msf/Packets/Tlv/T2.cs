@@ -15,17 +15,14 @@ namespace Konata.Msf.Packets.Tlvs
 
         public override void PutTlvCmd()
         {
-            return 0x02;
+            PutUshortBE(0x0002);
         }
 
         public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(0); // _sigVer
-            builder.PutString(_captchaCode, 2);
-            builder.PutBytes(_captchaKey, 2);
-            return builder.GetBytes();
+            PutUshortBE(0); // _sigVer
+            PutString(_captchaCode, 2);
+            PutBytes(_captchaKey, 2);
         }
-
     }
 }
