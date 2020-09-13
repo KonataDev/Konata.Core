@@ -14,21 +14,19 @@ namespace Konata.Msf.Packets.Tlvs
             _ipAddress = ipAddress;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x01;
+            PutUshortBE(0x0001);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(1); // _ip_ver
-            builder.PutIntBE(new Random().Next());
-            builder.PutUintBE(_uin);
-            builder.PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PutBytes(_ipAddress);
-            builder.PutUshortBE(0);
-            return builder.GetBytes();
+            PutUshortBE(1); // _ip_ver
+            PutIntBE(new Random().Next());
+            PutUintBE(_uin);
+            PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            PutBytes(_ipAddress);
+            PutUshortBE(0);
         }
     }
 }

@@ -17,19 +17,17 @@ namespace Konata.Msf.Packets.Tlvs
             _retType = (byte)retType;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x107;
+            PutUshortBE(0x107);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(_picType);
-            builder.PutByte(_capType);
-            builder.PutUshortBE(_picSize);
-            builder.PutByte(_retType);
-            return builder.GetBytes();
+            PutUshortBE(_picType);
+            PutByte(_capType);
+            PutUshortBE(_picSize);
+            PutByte(_retType);
         }
     }
 }

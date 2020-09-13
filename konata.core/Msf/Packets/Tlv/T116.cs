@@ -19,12 +19,12 @@ namespace Konata.Msf.Packets.Tlvs
             _getSig = (uint)getSig;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x116;
+            PutUshortBE(0x116);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutByte(_ver);
@@ -35,7 +35,8 @@ namespace Konata.Msf.Packets.Tlvs
             {
                 builder.PutUintBE((uint)element);
             }
-            return builder.GetBytes();
+
+            PutBytes(builder.GetBytes());
         }
     }
 }

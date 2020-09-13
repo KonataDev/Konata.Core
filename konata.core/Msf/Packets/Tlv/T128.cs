@@ -24,23 +24,21 @@ namespace Konata.Msf.Packets.Tlvs
             _deviceBrand = deviceBrand;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x128;
+            PutUshortBE(0x128);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(0);
-            builder.PutBoolBE(_isNewInstall,1);
-            builder.PutBoolBE(_isGuidAvaliable, 1);
-            builder.PutBoolBE(_isGuidChanged, 1);
-            builder.PutUintBE(_guidFlag);
-            builder.PutString(_deviceModel,2, 32);
-            builder.PutBytes(_guid, 2, 16);
-            builder.PutString(_deviceBrand, 2, 16);
-            return builder.GetBytes();
+            PutUshortBE(0);
+            PutBoolBE(_isNewInstall,1);
+            PutBoolBE(_isGuidAvaliable, 1);
+            PutBoolBE(_isGuidChanged, 1);
+            PutUintBE(_guidFlag);
+            PutString(_deviceModel,2, 32);
+            PutBytes(_guid, 2, 16);
+            PutString(_deviceBrand, 2, 16);
         }
     }
 }

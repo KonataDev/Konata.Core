@@ -49,12 +49,12 @@ namespace Konata.Msf.Packets.Tlvs
             _tgtgKey = tgtgKey;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x144;
+            PutUshortBE(0x144);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             TlvPacker packer = new TlvPacker();
             packer.PutTlv(_tlv109);
@@ -64,7 +64,8 @@ namespace Konata.Msf.Packets.Tlvs
             packer.PutTlv(_tlv148);
             packer.PutTlv(_tlv153);
             packer.PutTlv(_tlv16e);
-            return packer.GetEncryptedBytes(true, new TeaCryptor(), _tgtgKey);
+
+            PutEncryptBytes(packer.GetBytes(true), new TeaCryptor(), _tgtgKey);
         }
     }
 }

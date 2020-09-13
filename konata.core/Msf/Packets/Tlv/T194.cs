@@ -14,12 +14,12 @@ namespace Konata.Msf.Packets.Tlvs
             _imsi = imsi;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x194;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(_imsi).ToArray()), 2);

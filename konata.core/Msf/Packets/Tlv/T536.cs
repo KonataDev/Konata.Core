@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Tlvs
             _loginExtraData = loginExtraData;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x536;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(_loginExtraData, 2);

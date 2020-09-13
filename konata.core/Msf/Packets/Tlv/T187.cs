@@ -12,12 +12,12 @@ namespace Konata.Msf.Packets.Tlvs
             _macAddress = macAddress;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x187;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(new Md5Cryptor().Encrypt(_macAddress));

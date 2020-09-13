@@ -13,17 +13,15 @@ namespace Konata.Msf.Packets.Tlvs
             _apkId = apkId;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x142;
+            PutUshortBE(0x142);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(_version);
-            builder.PutString(_apkId, 2, 32);
-            return builder.GetBytes();
+            PutUshortBE(_version);
+            PutString(_apkId, 2, 32);
         }
     }
 }

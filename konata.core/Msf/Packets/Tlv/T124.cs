@@ -22,21 +22,19 @@ namespace Konata.Msf.Packets.Tlvs
             _address = "";
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x124;
+            PutUshortBE(0x124);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutString(_osType, 2, 16);
-            builder.PutString(_osVersion, 2, 16);
-            builder.PutUshortBE((ushort)_networkType);
-            builder.PutString(_networkDetail, 2, 16);
-            builder.PutString(_address, 2, 32);
-            builder.PutString(_apnName, 2, 16);
-            return builder.GetBytes();
+            PutString(_osType, 2, 16);
+            PutString(_osVersion, 2, 16);
+            PutUshortBE((ushort)_networkType);
+            PutString(_networkDetail, 2, 16);
+            PutString(_address, 2, 32);
+            PutString(_apnName, 2, 16);
         }
     }
 }

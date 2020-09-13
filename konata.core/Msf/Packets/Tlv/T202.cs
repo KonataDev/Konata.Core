@@ -14,12 +14,12 @@ namespace Konata.Msf.Packets.Tlvs
             _wifiSsid = wifiSsid;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x202;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(new Md5Cryptor().Encrypt(_wifiBssid), 2, 16);

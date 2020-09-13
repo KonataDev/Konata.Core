@@ -37,12 +37,12 @@ namespace Konata.Msf.Packets.Tlvs
             _deviceReportInfo = stream.ToArray();
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x52d;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(_deviceReportInfo);

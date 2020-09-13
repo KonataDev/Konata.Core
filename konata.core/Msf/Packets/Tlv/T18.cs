@@ -20,12 +20,12 @@ namespace Konata.Msf.Packets.Tlvs
             _uin = uin;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x18;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(_pingVersion);
