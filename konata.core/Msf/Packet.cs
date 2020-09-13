@@ -379,10 +379,17 @@ namespace Konata.Msf
             WriteBytes(array, (uint)array.Length);
         }
 
-        public void PutEncryptBytes(byte[] value, ICryptor cryptor, byte[] key)
+        public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
         {
-            byte[] data = cryptor.Encrypt(value, key);
+            byte[] data = cryptor.Encrypt(value, cryptKey);
             WriteBytes(data, (uint)data.Length);
+        }
+
+        public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey,
+            byte prefixLength = 0, byte limitedLength = 0)
+        {
+            byte[] data = cryptor.Encrypt(value, cryptKey);
+            PutBytes(data, prefixLength, limitedLength);
         }
 
         /// <summary>
@@ -392,6 +399,15 @@ namespace Konata.Msf
         public void PutPacket(Packet value)
         {
             PutBytes(value.GetBytes());
+        }
+
+        /// <summary>
+        /// 加密 Packet 放入
+        /// </summary>
+        /// <param name="value"></param>
+        public void PutEncryptedPacket(Packet value, ICryptor cryptor, byte[] cryptKey)
+        {
+            PutEncryptedBytes(value.GetBytes(), cryptor, cryptKey);
         }
 
         /// <summary>
