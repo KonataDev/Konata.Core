@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Tlvs
             _isRooted = isRooted;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x153;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBoolBE(_isRooted, 2);

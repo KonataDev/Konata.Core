@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Tlvs
             _unknownK = unknownK;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x191;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutByte((byte)_unknownK);

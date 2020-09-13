@@ -12,12 +12,12 @@ namespace Konata.Msf.Packets.Tlvs
             _unknownQiMei = qiMei;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x545;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(_unknownQiMei)), 2);

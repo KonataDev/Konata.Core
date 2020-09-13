@@ -14,12 +14,12 @@ namespace Konata.Msf.Packets.Tlvs
             _wtLoginSdk = wtLoginSdk;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x544;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             return builder.GetBytes();

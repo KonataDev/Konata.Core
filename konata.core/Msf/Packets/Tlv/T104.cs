@@ -15,15 +15,14 @@ namespace Konata.Msf.Packets.Tlvs
             _sigSession = sigSession;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x104;
+            PutUshortBE(0x104);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            return builder.GetBytes();
+
         }
     }
 }

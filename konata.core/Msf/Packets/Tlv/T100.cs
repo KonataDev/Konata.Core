@@ -19,21 +19,19 @@ namespace Konata.Msf.Packets.Tlvs
             _appClientVersion = appClientVersion;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
-            return 0x100;
+            PutUshortBE(0x100);
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(_dbBufVer);
-            builder.PutUintBE(_ssoVer);
-            builder.PutUintBE(_appId);
-            builder.PutUintBE(_subAppId);
-            builder.PutUintBE(_appClientVersion);
-            builder.PutUintBE(_sigmap);
-            return builder.GetBytes();
+            PutUshortBE(_dbBufVer);
+            PutUintBE(_ssoVer);
+            PutUintBE(_appId);
+            PutUintBE(_subAppId);
+            PutUintBE(_appClientVersion);
+            PutUintBE(_sigmap);
         }
     }
 }

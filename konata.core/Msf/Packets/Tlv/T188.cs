@@ -17,12 +17,12 @@ namespace Konata.Msf.Packets.Tlvs
             _androidId = Hex.HexStr2Bytes(androidId);
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x188;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutBytes(new Md5Cryptor().Encrypt(_androidId));

@@ -13,12 +13,12 @@ namespace Konata.Msf.Packets.Tlvs
             _captchaKey = captchaKey;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x02;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutUshortBE(0); // _sigVer

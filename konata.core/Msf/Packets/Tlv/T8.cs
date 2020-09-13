@@ -16,12 +16,12 @@ namespace Konata.Msf.Packets.Tlvs
             _timeZoneOffset = timeZoneOffset;
         }
 
-        public override ushort GetTlvCmd()
+        public override void PutTlvCmd()
         {
             return 0x08;
         }
 
-        public override byte[] GetTlvBody()
+        public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
             builder.PutShortBE(_timeZoneVer);
