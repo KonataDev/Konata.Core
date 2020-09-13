@@ -24,7 +24,7 @@ namespace Konata.Msf.Packets.Tlvs
 
         public override void PutTlvBody()
         {
-            PutEncryptBytes(_androidId, new Md5Cryptor(), null);
+            PutEncryptedBytes(_androidId, new Md5Cryptor(), null);
         }
     }
 }

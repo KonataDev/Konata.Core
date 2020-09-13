@@ -65,7 +65,7 @@ namespace Konata.Msf.Packets.Tlvs
             packer.PutTlv(_tlv153);
             packer.PutTlv(_tlv16e);
 
-            PutEncryptBytes(packer.GetBytes(true), new TeaCryptor(), _tgtgKey);
+            PutEncryptedBytes(packer.GetBytes(true), new TeaCryptor(), _tgtgKey);
         }
     }
 }

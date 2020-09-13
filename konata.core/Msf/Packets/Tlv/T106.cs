@@ -69,7 +69,7 @@ namespace Konata.Msf.Packets.Tlvs
             builder.PutString(_uin.ToString());
             builder.PutUshortBE(0);
 
-            PutEncryptBytes(builder.GetBytes(), new TeaCryptor(), GetCryptKey());
+            PutEncryptedBytes(builder.GetBytes(), new TeaCryptor(), GetCryptKey());
         }
 
         private byte[] GetCryptKey()
