@@ -1,6 +1,6 @@
 ﻿using Konata.Utils;
 
-namespace Konata.Msf.Packets.Tlvs
+namespace Konata.Msf.Packets.Tlv
 {
     /// <summary>
     /// 未完成

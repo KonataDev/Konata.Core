@@ -4,7 +4,7 @@ using Konata.Utils;
 using Konata.Msf.Packets.Protobuf;
 using ProtoBuf;
 
-namespace Konata.Msf.Packets.Tlvs
+namespace Konata.Msf.Packets.Tlv
 {
     public class T52d : TlvBase
     {
