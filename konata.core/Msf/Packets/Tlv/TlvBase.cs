@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Msf.Packets.Tlvs
+namespace Konata.Msf.Packets.Tlv
 {
     public class TlvBase : Packet
     {

@@ -3,7 +3,7 @@ using System.Text;
 using Konata.Utils;
 using Konata.Msf.Crypto;
 using Konata.Msf.Utils.Crypt;
-using Konata.Msf.Packets.Tlvs;
+using Konata.Msf.Packets.Tlv;
 using Konata.Msf.Packets.Protobuf;
 using ProtoBuf;
 
