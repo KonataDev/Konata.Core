@@ -41,12 +41,10 @@ namespace Konata.Msf.Packets.Tlv
             _guid = guid;
             _loginType = loginType;
         }
-
         public override void PutTlvCmd()
         {
             PutUshortBE(0x0106);
         }
-
         public override void PutTlvBody()
         {
             StreamBuilder builder = new StreamBuilder();
@@ -74,10 +72,10 @@ namespace Konata.Msf.Packets.Tlv
 
         private byte[] GetCryptKey()
         {
-            return new Md5Cryptor().Encrypt(
-                _passwordMd5.Concat(
-                    BitConverter.GetBytes(_uin).Reverse().ToArray())
-                .ToArray());
+            var cryptor = new Md5Cryptor();
+            return cryptor.Encrypt(_passwordMd5
+                .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
+                .Concat(BitConverter.GetBytes(_uin).Reverse()).ToArray());
         }
     }
 }
