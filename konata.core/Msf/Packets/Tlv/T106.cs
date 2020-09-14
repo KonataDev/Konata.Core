@@ -72,8 +72,7 @@ namespace Konata.Msf.Packets.Tlv
 
         private byte[] GetCryptKey()
         {
-            var cryptor = new Md5Cryptor();
-            return cryptor.Encrypt(_passwordMd5
+            return new Md5Cryptor().Encrypt(_passwordMd5
                 .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
                 .Concat(BitConverter.GetBytes(_uin).Reverse()).ToArray());
         }
