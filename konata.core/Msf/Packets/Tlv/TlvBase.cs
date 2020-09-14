@@ -25,7 +25,10 @@ namespace Konata.Msf.Packets.Tlv
         public override byte[] GetBytes()
         {
             PutTlvCmd();
+            EnterBarrier(2, Endian.Big);
             PutTlvBody();
+            LeaveBarrier();
+
             return base.GetBytes();
         }
     }

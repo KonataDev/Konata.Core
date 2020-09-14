@@ -356,24 +356,11 @@ namespace Konata.Msf
                 WriteBytes(value, (uint)value.Length);
                 return;
             }
-            if (prefix) // 添加前缀
+            if (prefix) // 添加前缀，使用大端序
             {
-                int minLen = 0; // 表示value的长度需要最少多少字节
-                int valLen = value.Length; // value长度的临时变量
-                while (valLen > 0)
+                if (!InsertLength(array, value.Length, prefixLength))
                 {
-                    ++minLen;
-                    valLen >>= 8;
-                }
-                if (minLen > prefixLength)
-                {
-                    return; // value数据太长，前缀无法表示其长度
-                }
-                valLen = value.Length;
-                for (int i = 0, j = prefixLength - 1; i < minLen; ++i, --j)
-                {
-                    array[j] = (byte)(valLen & 255); // 每次取最低一字节从后往前写入，这里规定前缀是大端序
-                    valLen >>= 8;
+                    return; // 给定的prefixLength不够填充value.Length，终止写入
                 }
             }
             WriteBytes(array, (uint)array.Length);
@@ -485,6 +472,56 @@ namespace Konata.Msf
             packet.PutPacket(a);
             packet.PutBytes(b);
             return packet;
+        }
+
+        protected void EnterBarrier(int lengthSize, Endian endian)
+        {
+            _barPos = _packetLength;
+            _lenSize = lengthSize;
+            _barLenEndian = endian;
+            PutBytes(new byte[lengthSize]);
+        }
+
+        protected void LeaveBarrier()
+        {
+            InsertLength(_packetBuffer, _packetLength - _barPos - _lenSize, _lenSize, _barPos, _barLenEndian);
+        }
+
+        private int _barPos;
+        private int _lenSize;
+        private Endian _barLenEndian;
+
+        private static bool InsertLength(byte[] array, int value, int size, int offset = 0, Endian endian = Endian.Big)
+        {
+            int minLen = 0; // 表示value需要最少多少字节
+            int valLen = value; // 计算value各字节数值的临时变量
+            while (valLen > 0)
+            {
+                ++minLen;
+                valLen >>= 8;
+            }
+            if (minLen > size)
+            {
+                return false; // value数据太长，前缀无法表示其长度
+            }
+            valLen = value;
+            if (endian == Endian.Big)
+            {
+                for (int i = 0, j = size - 1; i < minLen; ++i, --j)
+                {
+                    array[j + offset] = (byte)(valLen & 255); // 每次取最低一字节从后往前写入
+                    valLen >>= 8;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < minLen; ++i)
+                {
+                    array[i + offset] = (byte)(valLen & 255); // 每次取最低一字节从前往后写入
+                    valLen >>= 8;
+                }
+            }
+            return true;
         }
     }
 }
