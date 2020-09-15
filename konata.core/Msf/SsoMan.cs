@@ -50,7 +50,7 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint PostMessage(Service service, Packet packet)
         {
-            return PostMessage(service, packet);
+            return PostMessage(service, packet, GetNewSequence());
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint SendMessage(Service service, Packet packet)
         {
-            return SendMessage(service, packet);
+            return SendMessage(service, packet, GetNewSequence());
         }
 
         /// <summary>
