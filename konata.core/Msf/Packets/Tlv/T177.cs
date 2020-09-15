@@ -22,7 +22,7 @@ namespace Konata.Msf.Packets.Tlv
         {
             PutByte(1);
             PutUintBE(_buildTime);
-            PutString(_sdkVersion);
+            PutString(_sdkVersion, 2);
         }
     }
 }
