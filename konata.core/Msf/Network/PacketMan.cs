@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using Konata.Msf.Packets;
+using Konata.Utils;
 
 namespace Konata.Msf.Network
 {
@@ -25,7 +26,7 @@ namespace Konata.Msf.Network
 
         private static MsfServer[] _msfServers =
         {
-            new MsfServer { url = "127.0.0.1", port = 8080 },
+           // new MsfServer { url = "127.0.0.1", port = 8080 },
             new MsfServer { url = "msfwifi.3g.qq.com", port = 8080 },
             new MsfServer { url = "14.215.138.110", port = 8080 },
             new MsfServer { url = "113.96.12.224", port = 8080 },
@@ -80,14 +81,15 @@ namespace Konata.Msf.Network
         public void Emit(uint uin, SsoMessage message)
         {
             var serviceMsg = new ToServiceMessage(10, 2, uin, message);
+            var data = serviceMsg.GetBytes();
 
-            Console.WriteLine(serviceMsg.ToHexString());
-            // OnSend(serviceMsg.GetBytes());
+            OnSend(data);
+            Console.WriteLine($"Send =>\n{Hex.Bytes2HexStr(data)}\n");
         }
 
         private void OnSend(byte[] data)
         {
-            // _socket.Send(serviceMsg.GetBytes());
+            _socket.Send(data);
         }
 
         private void OnReceive(IAsyncResult result)
@@ -111,7 +113,7 @@ namespace Konata.Msf.Network
                         _recvLength = 0;
                         _recvStatus = ReceiveStatus.Idle;
 
-                        // _listener(new FromServicePacket(_recvBuffer));
+                        OnPacket(_recvBuffer);
                     }
                 }
             }
@@ -119,7 +121,11 @@ namespace Konata.Msf.Network
             {
                 _socket.BeginReceive(_recvBuffer, _recvLength, _recvBuffer.Length - _recvLength, SocketFlags.None, OnReceive, null);
             }
+        }
 
+        private void OnPacket(byte[] fromServer)
+        {
+            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(fromServer)}\n");
         }
     }
 }
