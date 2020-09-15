@@ -60,11 +60,11 @@ namespace Konata.Msf.Packets.Tlv
             builder.PutBytes(_passwordMd5);
             builder.PutBytes(_tgtgKey);
             builder.PutUintBE(0);
-            builder.PutBoolBE(_isGuidAvailable, 2);
+            builder.PutBoolBE(_isGuidAvailable, 1);
             builder.PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
             builder.PutUintBE(_subAppId);
             builder.PutUintBE((uint)_loginType);
-            builder.PutString(_uin.ToString());
+            builder.PutString(_uin.ToString(), 2);
             builder.PutUshortBE(0);
 
             PutEncryptedBytes(builder.GetBytes(), new TeaCryptor(), GetCryptKey());
