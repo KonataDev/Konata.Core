@@ -47,6 +47,7 @@
     <Compile Include="Msf\Crypto\Ecdh\EllipticCurve.cs" />
     <Compile Include="Msf\Crypto\Ecdh\Point.cs" />
     <Compile Include="Msf\Crypto\KeyRing.cs" />
+    <Compile Include="Msf\Packets\FromServiceMsg.cs" />
     <Compile Include="Msf\Service.cs" />
     <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Packets\Tlv\T1.cs" />
