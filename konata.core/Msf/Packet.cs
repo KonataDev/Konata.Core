@@ -342,6 +342,7 @@ namespace Konata.Msf
             byte[] array; // 处理后的数据
             if (limited) // 限制长度时，写入数据长度=前缀+限制
             {
+                limitedLength = (byte)value.Length;
                 array = new byte[prefixLength + limitedLength];
                 int len = value.Length > limitedLength ? limitedLength : value.Length;
                 Buffer.BlockCopy(value, 0, array, prefixLength, len);
