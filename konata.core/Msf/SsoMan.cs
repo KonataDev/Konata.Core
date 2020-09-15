@@ -17,7 +17,7 @@ namespace Konata.Msf
         internal SsoMan(Core core)
         {
             _msfCore = core;
-            _pakMan = new PacketMan();
+            _pakMan = new PacketMan(this);
         }
 
         /// <summary>
@@ -62,8 +62,10 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint PostMessage(Service service, Packet packet, uint ssoSequence)
         {
-            _pakMan.Emit(_msfCore._uin,
-                new SsoMessage(ssoSequence, _ssoSession, service.name, packet));
+            var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, packet);
+            var toService = new ToServiceMessage(10, 2, _msfCore._uin, ssoMessage);
+
+            _pakMan.Emit(toService);
             return ssoSequence;
         }
 
@@ -103,9 +105,24 @@ namespace Konata.Msf
         /// 處理來自伺服器發送的SSO訊息, 並派遣到對應的服務路由
         /// </summary>
         /// <param name="fromService"></param>
-        private void HandleSsoMessage(byte[] fromService)
+        internal void OnSsoMessage(SsoMessage ssoMessage)
         {
-            // <TODO> unpack bytes and update fields and pass remain bytes to ServiceRoutine
+            Console.WriteLine($"  [ssoMessage] ssoSeq =>\n{ssoMessage._header._ssoSequence}\n");
+            Console.WriteLine($"  [ssoMessage] ssoSession =>\n{ssoMessage._header._ssoSession}\n");
+            Console.WriteLine($"  [ssoMessage] ssoCommand =>\n{ssoMessage._header._ssoCommand}\n");
+
+            _ssoSquence = ssoMessage._header._ssoSequence;
+            _ssoSession = ssoMessage._header._ssoSession;
+
+            try
+            {
+                ServiceRoutine.Run(_msfCore, ssoMessage._header._ssoCommand, "Handle", ssoMessage);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unknown message.\n{e.StackTrace}");
+            }
+
         }
     }
 }
