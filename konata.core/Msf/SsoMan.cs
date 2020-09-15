@@ -34,6 +34,15 @@ namespace Konata.Msf
         }
 
         /// <summary>
+        /// 獲取新的SSO序列
+        /// </summary>
+        /// <returns></returns>
+        internal uint GetNewSequence()
+        {
+            return ++_ssoSquence;
+        }
+
+        /// <summary>
         /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
         /// </summary>
         /// <param name="service">服務名</param>
@@ -41,7 +50,21 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint PostMessage(Service service, Packet packet)
         {
-            return _ssoSquence++;
+            return PostMessage(service, packet);
+        }
+
+        /// <summary>
+        /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
+        /// </summary>
+        /// <param name="service">服務名</param>
+        /// <param name="packet">請求數據</param>
+        /// <param name="ssoSequence">SSO序列號</param>
+        /// <returns></returns>
+        internal uint PostMessage(Service service, Packet packet, uint ssoSequence)
+        {
+            _pakMan.Emit(_msfCore._uin,
+                new SsoMessage(ssoSequence, _ssoSession, service.name, packet));
+            return ssoSequence;
         }
 
         /// <summary>
@@ -52,9 +75,19 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint SendMessage(Service service, Packet packet)
         {
-            _pakMan.Emit(_msfCore._uin, 
-                new SsoMessage(++_ssoSquence, _ssoSession, service.name, packet));
-            return _ssoSquence;
+            return SendMessage(service, packet);
+        }
+
+        /// <summary>
+        /// 發送SSO訊息至伺服器。本接口會阻塞等待。
+        /// </summary>
+        /// <param name="service">服務名</param>
+        /// <param name="packet">請求數據</param>
+        /// <param name="ssoSequence">SSO序列號</param>
+        /// <returns></returns>
+        internal uint SendMessage(Service service, Packet packet, uint ssoSequence)
+        {
+            return 0;
         }
 
         /// <summary>
