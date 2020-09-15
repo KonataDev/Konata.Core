@@ -12,7 +12,7 @@ namespace Konata.Msf.Packets.Oicq
     public class OicqRequestTgtgt : OicqRequest
     {
 
-        public OicqRequestTgtgt(uint uin, string password, KeyRing keyring)
+        public OicqRequestTgtgt(uint uin, string password, uint ssoseq, KeyRing keyring)
         {
             _cmd = 0x0810;
             _subCmd = 0x09;
@@ -52,7 +52,7 @@ namespace Konata.Msf.Packets.Oicq
             tlvs.PutTlv(new T145(DeviceInfo.Guid));
             tlvs.PutTlv(new T147(AppInfo.appId, AppInfo.apkVersionName, AppInfo.apkSignature));
             // tlvs.PushTlv(new 166());
-            tlvs.PutTlv(new T154(0));
+            tlvs.PutTlv(new T154(ssoseq));
             tlvs.PutTlv(new T141(DeviceInfo.Network.Mobile.OperatorName, DeviceInfo.Network.Type, DeviceInfo.Network.Wifi.ApnName));
             tlvs.PutTlv(new T8());
             tlvs.PutTlv(new T511(new string[]
