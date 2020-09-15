@@ -18,7 +18,7 @@ namespace Konata.Msf.Packets.Tlv
 
         public override void PutTlvBody()
         {
-            PutString(_deviceName, 2);
+            PutString(_deviceName);
         }
     }
 }
