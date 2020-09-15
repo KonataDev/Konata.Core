@@ -6,9 +6,12 @@ namespace Konata.Msf.Services.Wtlogin
 {
     internal class Login : Service
     {
-        private Login() => name = "wtlogin.login";
-
         private static Login _instance = null;
+
+        private Login()
+        {
+            name = "wtlogin.login";
+        }
 
         public static Login Instance
         {
