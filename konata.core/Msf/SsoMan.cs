@@ -10,7 +10,7 @@ namespace Konata.Msf
         private Core _msfCore;
         private PacketMan _pakMan;
 
-        private uint _ssoSquence;
+        private uint _ssoSequence;
 
         private uint _ssoSession;
 
@@ -26,7 +26,7 @@ namespace Konata.Msf
         /// <returns></returns>
         internal bool Initialize()
         {
-            _ssoSquence = 85600;
+            _ssoSequence = 85600;
             _ssoSession = 0x01DAA2BC;
 
             _pakMan.OpenSocket();
@@ -39,7 +39,7 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint GetNewSequence()
         {
-            return ++_ssoSquence;
+            return ++_ssoSequence;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Konata.Msf
             Console.WriteLine($"  [ssoMessage] ssoSession =>\n{ssoMessage._header._ssoSession}\n");
             Console.WriteLine($"  [ssoMessage] ssoCommand =>\n{ssoMessage._header._ssoCommand}\n");
 
-            _ssoSquence = ssoMessage._header._ssoSequence;
+            _ssoSequence = ssoMessage._header._ssoSequence;
             _ssoSession = ssoMessage._header._ssoSession;
 
             try
