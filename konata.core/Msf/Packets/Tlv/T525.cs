@@ -19,7 +19,8 @@ namespace Konata.Msf.Packets.Tlv
         public override void PutTlvBody()
         {
             PutUshortBE(1);
-            PutBytes(_t536.GetBytes(), 2);
+            PutBytes(_t536.GetBytes());
+            // PutBytes(new byte[] { 0x00, 0x01, 0x05, 0x36, 0x00, 0x02, 0x01, 0x00 });
         }
     }
 }
