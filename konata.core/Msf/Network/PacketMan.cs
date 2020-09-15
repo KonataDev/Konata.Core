@@ -84,12 +84,12 @@ namespace Konata.Msf.Network
             var data = serviceMsg.GetBytes();
 
             OnSend(data);
-            Console.WriteLine($"Send =>\n{Hex.Bytes2HexStr(data)}\n");
         }
 
         private void OnSend(byte[] data)
         {
             _socket.Send(data);
+            Console.WriteLine($"Send =>\n{Hex.Bytes2HexStr(data)}\n");
         }
 
         private void OnReceive(IAsyncResult result)
