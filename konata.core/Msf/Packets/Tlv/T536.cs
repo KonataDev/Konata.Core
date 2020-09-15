@@ -18,7 +18,7 @@ namespace Konata.Msf.Packets.Tlv
 
         public override void PutTlvBody()
         {
-            PutBytes(_loginExtraData, 2);
+            PutBytes(_loginExtraData);
         }
     }
 }
