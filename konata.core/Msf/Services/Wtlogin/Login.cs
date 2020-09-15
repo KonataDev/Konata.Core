@@ -34,7 +34,7 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        internal override bool Handle(Core core, string method, params object[] args)
+        internal override bool Handle(Core core, params object[] args)
         {
             return false;
         }
