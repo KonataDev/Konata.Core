@@ -34,7 +34,10 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        internal override bool Handle(Core core, byte[] data) => false;
+        internal override bool Handle(Core core, string method, params object[] args)
+        {
+            return false;
+        }
 
         internal bool Request_TGTGT(Core core)
         {

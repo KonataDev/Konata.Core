@@ -18,6 +18,16 @@ namespace Konata.Msf
         private byte[] _packetBuffer;
         private int _packetLength;
 
+        public Packet()
+        {
+
+        }
+
+        public Packet(byte[] data)
+        {
+            WriteBytes(data, (uint)data.Length);
+        }
+
         /// <summary>
         /// 重新分配緩衝區
         /// </summary>

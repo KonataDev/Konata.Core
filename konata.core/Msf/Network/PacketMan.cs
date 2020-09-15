@@ -9,8 +9,6 @@ namespace Konata.Msf.Network
 {
     internal class PacketMan
     {
-        public delegate void PacketListener(Packet packet);
-
         private enum ReceiveStatus
         {
             Idle,
@@ -26,7 +24,7 @@ namespace Konata.Msf.Network
 
         private static MsfServer[] _msfServers =
         {
-           // new MsfServer { url = "127.0.0.1", port = 8080 },
+            new MsfServer { url = "127.0.0.1", port = 8080 },
             new MsfServer { url = "msfwifi.3g.qq.com", port = 8080 },
             new MsfServer { url = "14.215.138.110", port = 8080 },
             new MsfServer { url = "113.96.12.224", port = 8080 },
@@ -39,10 +37,8 @@ namespace Konata.Msf.Network
             new MsfServer { url = "203.205.255.221", port = 8080 },
         };
 
-        private Queue<Packet> _packets;
-        private PacketListener _listener;
+        private SsoMan _ssoMan;
         private Socket _socket;
-        // private Thread _thread;
 
         private int _packetLength;
 
@@ -50,9 +46,9 @@ namespace Konata.Msf.Network
         private byte[] _recvBuffer;
         private ReceiveStatus _recvStatus;
 
-        public PacketMan()
+        public PacketMan(SsoMan ssoMan)
         {
-            // _listener = listener;
+            _ssoMan = ssoMan;
         }
 
         public bool OpenSocket()
@@ -78,12 +74,9 @@ namespace Konata.Msf.Network
             // _thread.Join();
         }
 
-        public void Emit(uint uin, SsoMessage message)
+        public void Emit(ToServiceMessage message)
         {
-            var serviceMsg = new ToServiceMessage(10, 2, uin, message);
-            var data = serviceMsg.GetBytes();
-
-            OnSend(data);
+            OnSend(message.GetBytes());
         }
 
         private void OnSend(byte[] data)
@@ -123,9 +116,18 @@ namespace Konata.Msf.Network
             }
         }
 
-        private void OnPacket(byte[] fromServer)
+        private void OnPacket(byte[] data)
         {
-            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(fromServer)}\n");
+            var serviceMessage = new FromServiceMsg(data);
+            var ssoMessage = new SsoMessage(serviceMessage.GetBytes());
+
+            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}\n");
+            Console.WriteLine($"  [ToService] len =>\n{serviceMessage._length}\n");
+            Console.WriteLine($"  [ToService] packetType =>\n{serviceMessage._packetType}\n");
+            Console.WriteLine($"  [ToService] encryptType =>\n{serviceMessage._encryptType}\n");
+            Console.WriteLine($"  [ToService] uinString =>\n{serviceMessage._uinString}\n");
+
+            _ssoMan.OnSsoMessage(ssoMessage);
         }
     }
 }
