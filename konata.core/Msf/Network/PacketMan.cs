@@ -118,7 +118,7 @@ namespace Konata.Msf.Network
 
         private void OnPacket(byte[] data)
         {
-            var serviceMessage = new FromServiceMsg(data);
+            var serviceMessage = new FromServiceMessage(data);
             var ssoMessage = new SsoMessage(serviceMessage.GetBytes());
 
             Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}\n");
