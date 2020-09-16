@@ -15,53 +15,45 @@ namespace Konata.Msf
             Little
         }
 
+        public enum RWFlag
+        {
+            Read,
+            Write,
+            //ReadAndWrite
+        }
+
         private byte[] _packetBuffer;
         private int _packetLength;
 
+        private RWFlag _flag;
+
         public Packet()
         {
-
+            _flag = RWFlag.Write;
         }
 
         public Packet(byte[] data)
         {
-            WriteBytes(data, (uint)data.Length);
+            _flag = RWFlag.Read;
+
+            _packetBuffer = new byte[data.Length];
+            Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
         }
 
-        /// <summary>
-        /// 重新分配緩衝區
-        /// </summary>
-        /// <param name="data">緩衝區</param>
-        /// <param name="minLen">最小長度</param>
-        /// <returns></returns>
-        //private static int ResizeArray(ref byte[] _packetBuffer, int targetLength)
-        //{
-        //    int len = targetLength >> 10;
-        //    if ((targetLength & 1023) > 0)
-        //    {
-        //        ++len;
-        //    }
-        //    len <<= 10;
-        //    if (_packetBuffer == null)
-        //    {
-        //        _packetBuffer = new byte[len];
-        //    }
-        //    else if (_packetBuffer.Length < targetLength)
-        //    {
-        //        Array.Resize(ref _packetBuffer, len);
-        //    }
-        //}
+        public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
+        {
+
+        }
 
         /// <summary>
         /// 寫入數據
         /// </summary>
         /// <param name="data">數據</param>
         /// <param name="endian">字節序</param>
-        private void WriteBytes(byte[] data, uint length, Endian endian = Endian.Big)
+        private void WriteBytes(byte[] data, Endian endian = Endian.Big)
         {
             // 分配新的空間
             var targetLength = _packetLength + data.Length;
-            //ResizeArray(ref _packetBuffer, targetLength);
             int len = targetLength >> 10;
             if ((targetLength & 1023) > 0)
             {
@@ -77,14 +69,27 @@ namespace Konata.Msf
                 Array.Resize(ref _packetBuffer, len);
             }
 
-            // 寫入方向
-            var step = endian == Endian.Little ? -1 : 1;
-            var position = step == -1 ? targetLength - 1 : _packetLength;
+            //// 寫入方向
+            //var step = endian == Endian.Little ? -1 : 1;
+            //var position = step == -1 ? targetLength - 1 : _packetLength;
+
+            //// 寫入數據
+            //for (int i = 0; i < data.Length; ++i, position += step)
+            //{
+            //    _packetBuffer[position] = data[i];
+            //}
 
             // 寫入數據
-            for (int i = 0; i < data.Length; ++i, position += step)
+            if (endian == Endian.Big)
             {
-                _packetBuffer[position] = data[i];
+                Buffer.BlockCopy(data, 0, _packetBuffer, _packetLength, data.Length);
+            }
+            else
+            {
+                for (int i = 0, j = targetLength - 1; i < data.Length; ++i, --j)
+                {
+                    _packetBuffer[j] = data[i];
+                }
             }
 
             // 更新長度
@@ -93,12 +98,12 @@ namespace Konata.Msf
 
         public void PutSbyte(sbyte value)
         {
-            WriteBytes(new byte[] { (byte)value }, 1);
+            WriteBytes(new byte[] { (byte)value });
         }
 
         public void PutByte(byte value)
         {
-            WriteBytes(new byte[] { value }, 1);
+            WriteBytes(new byte[] { value });
         }
 
         /// <summary>
@@ -129,7 +134,7 @@ namespace Konata.Msf
             WriteBytes(new byte[] {
                 (byte)(value >> 8),
                 (byte)(value & 255) },
-                2, endian);
+                endian);
         }
 
         /// <summary>
@@ -160,7 +165,7 @@ namespace Konata.Msf
             WriteBytes(new byte[] {
                 (byte)(value >> 8),
                 (byte)(value & 255) },
-                2, endian);
+                endian);
         }
 
         /// <summary>
@@ -193,7 +198,7 @@ namespace Konata.Msf
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
                 (byte)(value & 255) },
-                4, endian);
+                endian);
         }
 
         /// <summary>
@@ -226,7 +231,7 @@ namespace Konata.Msf
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
                 (byte)(value & 255) },
-                4, endian);
+                endian);
         }
 
         /// <summary>
@@ -263,7 +268,7 @@ namespace Konata.Msf
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
                 (byte)(value & 255) },
-                8, endian);
+                endian);
         }
 
         /// <summary>
@@ -300,7 +305,7 @@ namespace Konata.Msf
                 (byte)((value >> 16) & 255),
                 (byte)((value >> 8) & 255),
                 (byte)(value & 255) },
-                8, endian);
+                endian);
         }
 
         /// <summary>
@@ -310,7 +315,7 @@ namespace Konata.Msf
         /// <param name="length">占用长度</param>
         public void PutBoolBE(bool value, byte length)
         {
-            PutBoolBE(value, length, Endian.Big);
+            PutBool(value, length, Endian.Big);
         }
 
         /// <summary>
@@ -318,19 +323,19 @@ namespace Konata.Msf
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="length">占用长度</param>
-        public void PutBoolBELE(bool value, byte length)
+        public void PutBoolLE(bool value, byte length)
         {
-            PutBoolBE(value, length, Endian.Little);
+            PutBool(value, length, Endian.Little);
         }
 
-        public void PutBoolBE(bool value, byte length, Endian endian)
+        public void PutBool(bool value, byte length, Endian endian)
         {
             var data = new byte[length];
             if (value)
             {
                 data[endian == Endian.Little ? length - 1 : 0] = 1;
             }
-            WriteBytes(data, length, endian);
+            WriteBytes(data, endian);
         }
 
         public void PutString(string value, byte prefixLength = 0, byte limitedLength = 0)
@@ -364,7 +369,7 @@ namespace Konata.Msf
             }
             else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
             {
-                WriteBytes(value, (uint)value.Length);
+                WriteBytes(value);
                 return;
             }
             if (prefix) // 添加前缀，使用大端序
@@ -374,13 +379,13 @@ namespace Konata.Msf
                     return; // 给定的prefixLength不够填充value.Length，终止写入
                 }
             }
-            WriteBytes(array, (uint)array.Length);
+            WriteBytes(array);
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
         {
             byte[] data = cryptor.Encrypt(value, cryptKey);
-            WriteBytes(data, (uint)data.Length);
+            WriteBytes(data);
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey,
@@ -417,14 +422,165 @@ namespace Konata.Msf
             PutBytes(value.GetBytes());
         }
 
-        /// <summary>
-        /// 從 Packet 讀取
-        /// </summary>
-        /// <param name="packet"></param>
-        public void FromPacket(Packet packet)
+        public sbyte TakeSbyte(out sbyte value)
         {
-            _packetBuffer = packet.GetBytes();
-            _packetLength = _packetBuffer.Length;
+            throw new NotImplementedException();
+        }
+
+        public byte TakeByte(out byte value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ushort TakeUshortBE(out ushort value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ushort TakeUshortLE(out ushort value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ushort TakeUshort(out ushort value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short TakeShortBE(out short value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short TakeShortLE(out short value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short TakeShort(out short value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int TakeIntBE(out int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int TakeIntLE(out int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int TakeInt(out int value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint TakeUintBE(out uint value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint TakeUintLE(out uint value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public uint TakeUint(out uint value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long TakeLongBE(out long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long TakeLongLE(out long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long TakeLong(out long value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ulong TakeUlongBE(out ulong value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ulong TakeUlongLE(out ulong value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ulong TakeUlong(out ulong value, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TakeBoolBE(out bool value, byte length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TakeBoolLE(out bool value, byte length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TakeBool(out bool value, byte length, Endian endian)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string TakeString(out string value, uint length, byte prefixLength = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string TakeHexString(out string value, uint length, byte prefixLength = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] TakeBytes(out byte[] value, uint length, byte prefixLength = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] TakeDecryptedBytes(out byte[] value, ICryptor cryptor, byte[] cryptKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] TakeDecryptedBytes(out byte[] value, ICryptor cryptor, byte[] cryptKey,
+            byte prefixLength = 0, byte limitedLength = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        //public Packet TakePacket(out Packet value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public Packet TakeDecryptedPacket(out Packet value, ICryptor cryptor, byte[] cryptKey)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public Packet TakeTlv(out Packet value)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void EatBytes(int count)
+        {
+
         }
 
         /// <summary>

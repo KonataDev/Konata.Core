@@ -14,9 +14,10 @@ namespace Konata.Msf.Packets
             _packet = packet;
         }
 
-        public SsoMessage(byte[] data)
+        public SsoMessage(byte[] data, byte[] cryptKey)
+            : base(data, new TeaCryptor(), cryptKey)
         {
-            _header = new Header(data);
+            _header = new Header(GetBytes());
             _packet = new Packet(_header.GetBytes());
         }
 
@@ -32,10 +33,10 @@ namespace Konata.Msf.Packets
 
         public class Header : Packet
         {
-            private static readonly byte[] _extraData = { };
-            private static readonly byte[] _unknownBytes0 = { };
-            private static readonly byte[] _unknownBytes1 = { };
-            private static readonly string _unknownString = $"||A{AppInfo.apkVersionName}.{AppInfo.appRevision}";
+            private readonly byte[] _extraData = { };
+            private readonly byte[] _unknownBytes0 = { };
+            private readonly byte[] _unknownBytes1 = { };
+            private readonly string _unknownString = $"||A{AppInfo.apkVersionName}.{AppInfo.appRevision}";
 
             public readonly uint _ssoSequence;
             public readonly uint _ssoSession;
@@ -50,7 +51,16 @@ namespace Konata.Msf.Packets
 
             public Header(byte[] data)
             {
+                EatBytes(4);
+                TakeUintBE(out _ssoSequence);
 
+                TakeBytes(out _extraData, TakeUintBE() - 4);
+                TakeString(out _ssoCommand, TakeUintBE() - 4);
+
+                EatBytes(4);
+                TakeUintBE(out _ssoSession);
+
+                EatBytes(4);
             }
 
             public override byte[] GetBytes()
