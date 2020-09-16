@@ -105,14 +105,16 @@ namespace Konata.Msf
         /// 處理來自伺服器發送的SSO訊息, 並派遣到對應的服務路由
         /// </summary>
         /// <param name="fromService"></param>
-        internal void OnSsoMessage(SsoMessage ssoMessage)
+        internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
-            Console.WriteLine($"  [ssoMessage] ssoSeq =>\n{ssoMessage._header._ssoSequence}\n");
-            Console.WriteLine($"  [ssoMessage] ssoSession =>\n{ssoMessage._header._ssoSession}\n");
-            Console.WriteLine($"  [ssoMessage] ssoCommand =>\n{ssoMessage._header._ssoCommand}\n");
+            var ssoMessage = new SsoMessage(fromService.GetBytes(), _msfCore._keyRing._zeroKey);
 
             _ssoSequence = ssoMessage._header._ssoSequence;
             _ssoSession = ssoMessage._header._ssoSession;
+
+            Console.WriteLine($"  [ssoMessage] ssoSeq =>\n{ssoMessage._header._ssoSequence}\n");
+            Console.WriteLine($"  [ssoMessage] ssoSession =>\n{ssoMessage._header._ssoSession}\n");
+            Console.WriteLine($"  [ssoMessage] ssoCommand =>\n{ssoMessage._header._ssoCommand}\n");
 
             try
             {
