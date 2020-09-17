@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "konata.core", "konata.core\konata.core.csproj", "{47052D6B-7E37-4CD2-8658-102BEDCE394D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{47052D6B-7E37-4CD2-8658-102BEDCE394D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "konata.debug", "konata.debug\konata.debug.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Debug", "konata.debug\Konata.Debug.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
