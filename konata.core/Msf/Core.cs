@@ -56,7 +56,7 @@ namespace Konata.Msf
 
         public bool DoLogin()
         {
-            return ServiceRoutine.Run(this, "Wtlogin.Login", "Request_TGTGT");
+            return Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
         }
 
         internal void EmitError(uint errcode, string errstr)

@@ -118,7 +118,7 @@ namespace Konata.Msf
 
             try
             {
-                ServiceRoutine.Run(_msfCore, ssoMessage._header._ssoCommand, "Handle", ssoMessage);
+                Service.Handle(_msfCore, ssoMessage._header._ssoCommand, ssoMessage);
             }
             catch (Exception e)
             {

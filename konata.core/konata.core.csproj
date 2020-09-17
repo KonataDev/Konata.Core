@@ -91,7 +91,8 @@
     <Compile Include="Msf\Packets\Tlv\T545.cs" />
     <Compile Include="Msf\Packets\Tlv\T8.cs" />
     <Compile Include="Msf\Packets\Tlv\TlvBase.cs" />
-    <Compile Include="Msf\ServiceRoutine.cs" />
+    <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
+    <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
     <Compile Include="Msf\Services\Wtlogin\ExchangeEmp.cs" />
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Services\Wtlogin\PushChangeToken.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
+    <Compile Include="Utils\BufferIO.cs" />
     <Compile Include="Utils\Guid.cs" />
     <Compile Include="Utils\StreamBuilder.cs" />
     <Compile Include="Utils\Hex.cs" />
