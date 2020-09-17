@@ -1,4 +1,5 @@
 ﻿using Konata.Msf;
+using Konata.Msf.Utils.Crypt;
 using Konata.Utils;
 
 namespace Konata.Msf.Packets
@@ -49,13 +50,13 @@ namespace Konata.Msf.Packets
                 _ssoCommand = command;
             }
 
-            public Header(byte[] data)
+            public Header(byte[] data) : base(data)
             {
                 EatBytes(4);
                 TakeUintBE(out _ssoSequence);
 
-                TakeBytes(out _extraData, TakeUintBE() - 4);
-                TakeString(out _ssoCommand, TakeUintBE() - 4);
+                TakeBytes(out _extraData, Prefix.Uint16 | Prefix.WithPrefix);
+                TakeString(out _ssoCommand, Prefix.Uint16 | Prefix.WithPrefix);
 
                 EatBytes(4);
                 TakeUintBE(out _ssoSession);
