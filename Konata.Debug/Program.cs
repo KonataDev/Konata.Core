@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Konata;
+using Konata.Msf.Packets.Tlv;
 using Konata.Utils;
 
 namespace Konata.Debug
@@ -9,13 +9,12 @@ namespace Konata.Debug
     {
         public static void Main()
         {
-            byte[] output = { };
-
             Bot bot = new Bot(2051118019, "12345678");
-            var _ = bot.Login();
+            bot.Login();
 
+            // var output = new T18(AppInfo.appId, AppInfo.appClientVersion, 2051118019);
+            // Console.WriteLine(output.ToHexString());
             Console.Read();
         }
     }
-
 }

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>konata.debug</RootNamespace>
-    <AssemblyName>konata.debug</AssemblyName>
+    <RootNamespace>Konata.Debug</RootNamespace>
+    <AssemblyName>Konata.Debug</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -41,7 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\konata.core\konata.core.csproj">
       <Project>{47052d6b-7e37-4cd2-8658-102bedce394d}</Project>
-      <Name>konata.core</Name>
+      <Name>Konata.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
