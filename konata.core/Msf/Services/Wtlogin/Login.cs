@@ -6,26 +6,13 @@ namespace Konata.Msf.Services.Wtlogin
 {
     internal class Login : Service
     {
-        private static Login _instance = null;
 
-        private Login()
+        static Login()
         {
-            name = "wtlogin.login";
+            Register("wtlogin.login", new Login());
         }
 
-        public static Login Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new Login();
-                }
-                return _instance;
-            }
-        }
-
-        internal override bool Run(Core core, string method, params object[] args)
+        protected override bool OnRun(Core core, string method, params object[] args)
         {
             switch (method)
             {
@@ -34,11 +21,18 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        internal override bool Handle(Core core, params object[] args)
+        protected override bool OnHandle(Core core, params object[] args)
         {
+            var data = ((Packet)args[0]).GetBytes();
+
+
             return false;
         }
 
+        /// <summary>
+        /// 請求 OicqRequestTgtgt
+        /// </summary>
+        /// <param name="core"></param>
         internal bool Request_TGTGT(Core core)
         {
             var sequence = core._ssoMan.GetNewSequence();
@@ -48,7 +42,32 @@ namespace Konata.Msf.Services.Wtlogin
 
             core._ssoMan.PostMessage(this, request);
 
+            return true;
+        }
+
+        /// <summary>
+        /// 請求 OicqCheckImage
+        /// </summary>
+        /// <param name="core"></param>
+        internal bool Request_CheckImage(Core core)
+        {
+            var sequence = core._ssoMan.GetNewSequence();
+
+            var request = new OicqRequestCheckImage();
+
+            core._ssoMan.PostMessage(this, request);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 處理 OicqTGTGT
+        /// </summary>
+        /// <param name="core"></param>
+        internal bool Handle_TGTGT(Core core)
+        {
             return false;
         }
+
     }
 }
