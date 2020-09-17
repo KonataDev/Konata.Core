@@ -7,17 +7,17 @@ namespace Konata.Utils
     {
         public static Endian DefaultEndian { get; set; } = BitConverter.IsLittleEndian ? Endian.Little : Endian.Big;
 
-        public static byte[] BoolToBytes(bool value, int length, Endian endian)
+        public static byte[] BoolToBytes(bool value, uint length, Endian endian)
         {
             return endian == Endian.Little ? BoolToBytesLE(value, length) : BoolToBytesBE(value, length);
         }
 
-        public static byte[] BoolToBytes(bool value, int length)
+        public static byte[] BoolToBytes(bool value, uint length)
         {
             return BoolToBytes(value, length, DefaultEndian);
         }
 
-        public static byte[] BoolToBytesLE(bool value, int length)
+        public static byte[] BoolToBytesLE(bool value, uint length)
         {
             byte[] result = new byte[length];
             if (value)
@@ -27,7 +27,7 @@ namespace Konata.Utils
             return result;
         }
 
-        public static byte[] BoolToBytesBE(bool value, int length)
+        public static byte[] BoolToBytesBE(bool value, uint length)
         {
             byte[] result = new byte[length];
             if (value)
@@ -295,135 +295,231 @@ namespace Konata.Utils
             };
         }
 
-        public static bool BytesToBool(byte[] buffer, int startIndex, int length, Endian endian)
+        public static byte[] IntToBytes(long value, uint length, Endian endian)
+        {
+            switch (length)
+            {
+            case 1: return Int8ToBytes((sbyte)value);
+            case 2: return Int16ToBytes((short)value, endian);
+            case 4: return Int32ToBytes((int)value, endian);
+            case 8: return Int64ToBytes(value, endian);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] IntToBytes(long value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return Int8ToBytes((sbyte)value);
+            case 2: return Int16ToBytes((short)value);
+            case 4: return Int32ToBytes((int)value);
+            case 8: return Int64ToBytes(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] IntToBytesLE(long value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return Int8ToBytes((sbyte)value);
+            case 2: return Int16ToBytesLE((short)value);
+            case 4: return Int32ToBytesLE((int)value);
+            case 8: return Int64ToBytesLE(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] IntToBytesBE(long value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return Int8ToBytes((sbyte)value);
+            case 2: return Int16ToBytesBE((short)value);
+            case 4: return Int32ToBytesBE((int)value);
+            case 8: return Int64ToBytesBE(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] UIntToBytes(ulong value, uint length, Endian endian)
+        {
+            switch (length)
+            {
+            case 1: return UInt8ToBytes((byte)value);
+            case 2: return UInt16ToBytes((ushort)value, endian);
+            case 4: return UInt32ToBytes((uint)value, endian);
+            case 8: return UInt64ToBytes(value, endian);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] UIntToBytes(ulong value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return UInt8ToBytes((byte)value);
+            case 2: return UInt16ToBytes((ushort)value);
+            case 4: return UInt32ToBytes((uint)value);
+            case 8: return UInt64ToBytes(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] UIntToBytesLE(ulong value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return UInt8ToBytes((byte)value);
+            case 2: return UInt16ToBytesLE((ushort)value);
+            case 4: return UInt32ToBytesLE((uint)value);
+            case 8: return UInt64ToBytesLE(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] UIntToBytesBE(ulong value, uint length)
+        {
+            switch (length)
+            {
+            case 1: return UInt8ToBytes((byte)value);
+            case 2: return UInt16ToBytesBE((ushort)value);
+            case 4: return UInt32ToBytesBE((uint)value);
+            case 8: return UInt64ToBytesBE(value);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static bool BytesToBool(byte[] buffer, uint startIndex, uint length, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToBoolLE(buffer, startIndex, length) :
                 BytesToBoolBE(buffer, startIndex, length);
         }
 
-        public static bool BytesToBool(byte[] buffer, int startIndex, int length)
+        public static bool BytesToBool(byte[] buffer, uint startIndex, uint length)
         {
             return BytesToBool(buffer, startIndex, length, DefaultEndian);
         }
 
-        public static bool BytesToBoolLE(byte[] buffer, int startIndex, int length)
+        public static bool BytesToBoolLE(byte[] buffer, uint startIndex, uint length)
         {
             return buffer[startIndex] > 0;
         }
 
-        public static bool BytesToBoolBE(byte[] buffer, int startIndex, int length)
+        public static bool BytesToBoolBE(byte[] buffer, uint startIndex, uint length)
         {
             return buffer[startIndex + length - 1] > 0;
         }
 
         [Obsolete]
-        public static sbyte BytesToInt8(byte[] buffer, int startIndex, Endian endian)
+        public static sbyte BytesToInt8(byte[] buffer, uint startIndex, Endian endian)
         {
             return (sbyte)buffer[startIndex];
         }
 
-        public static sbyte BytesToInt8(byte[] buffer, int startIndex)
-        {
-            return (sbyte)buffer[startIndex];
-        }
-
-        [Obsolete]
-        public static sbyte BytesToInt8LE(byte[] buffer, int startIndex)
+        public static sbyte BytesToInt8(byte[] buffer, uint startIndex)
         {
             return (sbyte)buffer[startIndex];
         }
 
         [Obsolete]
-        public static sbyte BytesToInt8BE(byte[] buffer, int startIndex)
+        public static sbyte BytesToInt8LE(byte[] buffer, uint startIndex)
         {
             return (sbyte)buffer[startIndex];
         }
 
         [Obsolete]
-        public static byte BytesToUInt8(byte[] buffer, int startIndex, Endian endian)
+        public static sbyte BytesToInt8BE(byte[] buffer, uint startIndex)
+        {
+            return (sbyte)buffer[startIndex];
+        }
+
+        [Obsolete]
+        public static byte BytesToUInt8(byte[] buffer, uint startIndex, Endian endian)
         {
             return buffer[startIndex];
         }
 
-        public static byte BytesToUInt8(byte[] buffer, int startIndex)
+        public static byte BytesToUInt8(byte[] buffer, uint startIndex)
         {
             return buffer[startIndex];
         }
 
         [Obsolete]
-        public static byte BytesToUInt8LE(byte[] buffer, int startIndex)
+        public static byte BytesToUInt8LE(byte[] buffer, uint startIndex)
         {
             return buffer[startIndex];
         }
 
         [Obsolete]
-        public static byte BytesToUInt8BE(byte[] buffer, int startIndex)
+        public static byte BytesToUInt8BE(byte[] buffer, uint startIndex)
         {
             return buffer[startIndex];
         }
 
-        public static short BytesToInt16(byte[] buffer, int startIndex, Endian endian)
+        public static short BytesToInt16(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToInt16LE(buffer, startIndex) :
                 BytesToInt16BE(buffer, startIndex);
         }
 
-        public static short BytesToInt16(byte[] buffer, int startIndex)
+        public static short BytesToInt16(byte[] buffer, uint startIndex)
         {
             return BytesToInt16(buffer, startIndex, DefaultEndian);
         }
 
-        public static short BytesToInt16LE(byte[] buffer, int startIndex)
+        public static short BytesToInt16LE(byte[] buffer, uint startIndex)
         {
             return (short)(buffer[startIndex] |
                 (buffer[startIndex + 1] << 8));
         }
 
-        public static short BytesToInt16BE(byte[] buffer, int startIndex)
+        public static short BytesToInt16BE(byte[] buffer, uint startIndex)
         {
             return (short)((buffer[startIndex] << 8) |
                 buffer[startIndex + 1]);
         }
 
-        public static ushort BytesToUInt16(byte[] buffer, int startIndex, Endian endian)
+        public static ushort BytesToUInt16(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToUInt16LE(buffer, startIndex) :
                 BytesToUInt16BE(buffer, startIndex);
         }
 
-        public static ushort BytesToUInt16(byte[] buffer, int startIndex)
+        public static ushort BytesToUInt16(byte[] buffer, uint startIndex)
         {
             return BytesToUInt16(buffer, startIndex, DefaultEndian);
         }
 
-        public static ushort BytesToUInt16LE(byte[] buffer, int startIndex)
+        public static ushort BytesToUInt16LE(byte[] buffer, uint startIndex)
         {
             return (ushort)(buffer[startIndex] |
                 (buffer[startIndex + 1] << 8));
         }
 
-        public static ushort BytesToUInt16BE(byte[] buffer, int startIndex)
+        public static ushort BytesToUInt16BE(byte[] buffer, uint startIndex)
         {
             return (ushort)((buffer[startIndex] << 8) |
                 buffer[startIndex + 1]);
         }
 
-        public static int BytesToInt32(byte[] buffer, int startIndex, Endian endian)
+        public static int BytesToInt32(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToInt32LE(buffer, startIndex) :
                 BytesToInt32BE(buffer, startIndex);
         }
 
-        public static int BytesToInt32(byte[] buffer, int startIndex)
+        public static int BytesToInt32(byte[] buffer, uint startIndex)
         {
             return BytesToInt32(buffer, startIndex, DefaultEndian);
         }
 
-        public static int BytesToInt32LE(byte[] buffer, int startIndex)
+        public static int BytesToInt32LE(byte[] buffer, uint startIndex)
         {
             return buffer[startIndex] |
                 (buffer[startIndex + 1] << 8) |
@@ -431,7 +527,7 @@ namespace Konata.Utils
                 (buffer[startIndex + 3] << 24);
         }
 
-        public static int BytesToInt32BE(byte[] buffer, int startIndex)
+        public static int BytesToInt32BE(byte[] buffer, uint startIndex)
         {
             return (buffer[startIndex] << 24) |
                 (buffer[startIndex + 1] << 16) |
@@ -439,19 +535,19 @@ namespace Konata.Utils
                 buffer[startIndex + 3];
         }
 
-        public static uint BytesToUInt32(byte[] buffer, int startIndex, Endian endian)
+        public static uint BytesToUInt32(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToUInt32LE(buffer, startIndex) :
                 BytesToUInt32BE(buffer, startIndex);
         }
 
-        public static uint BytesToUInt32(byte[] buffer, int startIndex)
+        public static uint BytesToUInt32(byte[] buffer, uint startIndex)
         {
             return BytesToUInt32(buffer, startIndex, DefaultEndian);
         }
 
-        public static uint BytesToUInt32LE(byte[] buffer, int startIndex)
+        public static uint BytesToUInt32LE(byte[] buffer, uint startIndex)
         {
             return (uint)(buffer[startIndex] |
                 (buffer[startIndex + 1] << 8) |
@@ -459,7 +555,7 @@ namespace Konata.Utils
                 (buffer[startIndex + 3] << 24));
         }
 
-        public static uint BytesToUInt32BE(byte[] buffer, int startIndex)
+        public static uint BytesToUInt32BE(byte[] buffer, uint startIndex)
         {
             return (uint)((buffer[startIndex] << 24) |
                 (buffer[startIndex + 1] << 16) |
@@ -467,19 +563,19 @@ namespace Konata.Utils
                 buffer[startIndex + 3]);
         }
 
-        public static long BytesToInt64(byte[] buffer, int startIndex, Endian endian)
+        public static long BytesToInt64(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToInt64LE(buffer, startIndex) :
                 BytesToInt64BE(buffer, startIndex);
         }
 
-        public static long BytesToInt64(byte[] buffer, int startIndex)
+        public static long BytesToInt64(byte[] buffer, uint startIndex)
         {
             return BytesToInt64(buffer, startIndex, DefaultEndian);
         }
 
-        public static long BytesToInt64LE(byte[] buffer, int startIndex)
+        public static long BytesToInt64LE(byte[] buffer, uint startIndex)
         {
             uint low = (uint)(buffer[startIndex] |
                 (buffer[startIndex + 1] << 8) |
@@ -492,7 +588,7 @@ namespace Konata.Utils
             return ((long)high << 32) | low;
         }
 
-        public static long BytesToInt64BE(byte[] buffer, int startIndex)
+        public static long BytesToInt64BE(byte[] buffer, uint startIndex)
         {
             uint high = (uint)((buffer[startIndex] << 24) |
                 (buffer[startIndex + 1] << 16) |
@@ -505,19 +601,19 @@ namespace Konata.Utils
             return ((long)high << 32) | low;
         }
 
-        public static ulong BytesToUInt64(byte[] buffer, int startIndex, Endian endian)
+        public static ulong BytesToUInt64(byte[] buffer, uint startIndex, Endian endian)
         {
             return endian == Endian.Little ?
                 BytesToUInt64LE(buffer, startIndex) :
                 BytesToUInt64BE(buffer, startIndex);
         }
 
-        public static ulong BytesToUInt64(byte[] buffer, int startIndex)
+        public static ulong BytesToUInt64(byte[] buffer, uint startIndex)
         {
             return BytesToUInt64(buffer, startIndex, DefaultEndian);
         }
 
-        public static ulong BytesToUInt64LE(byte[] buffer, int startIndex)
+        public static ulong BytesToUInt64LE(byte[] buffer, uint startIndex)
         {
             uint low = (uint)(buffer[startIndex] |
                 (buffer[startIndex + 1] << 8) |
@@ -530,7 +626,7 @@ namespace Konata.Utils
             return ((ulong)high << 32) | low;
         }
 
-        public static ulong BytesToUInt64BE(byte[] buffer, int startIndex)
+        public static ulong BytesToUInt64BE(byte[] buffer, uint startIndex)
         {
             uint high = (uint)((buffer[startIndex] << 24) |
                 (buffer[startIndex + 1] << 16) |
@@ -541,6 +637,102 @@ namespace Konata.Utils
                 (buffer[startIndex + 6] << 8) |
                 buffer[startIndex + 7]);
             return ((ulong)high << 32) | low;
+        }
+
+        public static long BytesToInt(byte[] buffer, uint startIndex, uint length, Endian endian)
+        {
+            switch (length)
+            {
+            case 1: return BytesToInt8(buffer, startIndex);
+            case 2: return BytesToInt16(buffer, startIndex, endian);
+            case 4: return BytesToInt32(buffer, startIndex, endian);
+            case 8: return BytesToInt64(buffer, startIndex, endian);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static long BytesToInt(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToInt8(buffer, startIndex);
+            case 2: return BytesToInt16(buffer, startIndex);
+            case 4: return BytesToInt32(buffer, startIndex);
+            case 8: return BytesToInt64(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static long BytesToIntLE(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToInt8(buffer, startIndex);
+            case 2: return BytesToInt16LE(buffer, startIndex);
+            case 4: return BytesToInt32LE(buffer, startIndex);
+            case 8: return BytesToInt64LE(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static long BytesToIntBE(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToInt8(buffer, startIndex);
+            case 2: return BytesToInt16BE(buffer, startIndex);
+            case 4: return BytesToInt32BE(buffer, startIndex);
+            case 8: return BytesToInt64BE(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static ulong BytesToUInt(byte[] buffer, uint startIndex, uint length, Endian endian)
+        {
+            switch (length)
+            {
+            case 1: return BytesToUInt8(buffer, startIndex);
+            case 2: return BytesToUInt16(buffer, startIndex, endian);
+            case 4: return BytesToUInt32(buffer, startIndex, endian);
+            case 8: return BytesToUInt64(buffer, startIndex, endian);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static ulong BytesToUInt(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToUInt8(buffer, startIndex);
+            case 2: return BytesToUInt16(buffer, startIndex);
+            case 4: return BytesToUInt32(buffer, startIndex);
+            case 8: return BytesToUInt64(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static ulong BytesToUIntLE(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToUInt8(buffer, startIndex);
+            case 2: return BytesToUInt16LE(buffer, startIndex);
+            case 4: return BytesToUInt32LE(buffer, startIndex);
+            case 8: return BytesToUInt64LE(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static ulong BytesToUIntBE(byte[] buffer, uint startIndex, uint length)
+        {
+            switch (length)
+            {
+            case 1: return BytesToUInt8(buffer, startIndex);
+            case 2: return BytesToUInt16BE(buffer, startIndex);
+            case 4: return BytesToUInt32BE(buffer, startIndex);
+            case 8: return BytesToUInt64BE(buffer, startIndex);
+            default: throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
