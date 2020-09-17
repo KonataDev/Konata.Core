@@ -2,6 +2,7 @@
 using System.Text;
 using Konata.Utils;
 using Konata.Msf.Utils.Crypt;
+using System.IO;
 
 namespace Konata.Msf
 {
@@ -17,12 +18,13 @@ namespace Konata.Msf
 
         public enum Prefix
         {
-            Uint8 = 1, // 前綴類型
+            None = 0, // 前綴類型
+            Uint8 = 1,
             Uint16 = 2,
             Uint32 = 4,
 
-            LengthOnly = 1024, // 只包括數據長度
-            WithPrefix = 2048,  // 包括數據長度和前綴長度
+            LengthOnly = 64, // 只包括數據長度
+            WithPrefix = 128,  // 包括數據長度和前綴長度
         }
 
         public enum ReadWrite
@@ -31,11 +33,10 @@ namespace Konata.Msf
             Write,
             //ReadAndWrite
         }
+        private ReadWrite _flag;
 
         private byte[] _packetBuffer;
         private int _packetLength;
-
-        private ReadWrite _flag;
 
         public Packet()
         {
@@ -45,6 +46,8 @@ namespace Konata.Msf
         public Packet(byte[] data)
         {
             _flag = ReadWrite.Read;
+            _pos = 0;
+            _eob = false;
 
             _packetBuffer = new byte[data.Length];
             Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
@@ -117,37 +120,6 @@ namespace Konata.Msf
         }
 
         /// <summary>
-        /// 以 Big Endian 字节序, 放入 ushort 
-        /// </summary>
-        /// <param name="value">值</param>
-        public void PutUshortBE(ushort value)
-        {
-            PutUshort(value, Endian.Big);
-        }
-
-        /// <summary>
-        /// 以 Little Endian 字节序, 放入 ushort 
-        /// </summary>
-        /// <param name="value">值</param>
-        public void PutUshortLE(ushort value)
-        {
-            PutUshort(value, Endian.Little);
-        }
-
-        /// <summary>
-        /// 放入 ushort 
-        /// </summary>
-        /// <param name="value">值</param>
-        /// <param name="endian">字节序</param>
-        public void PutUshort(ushort value, Endian endian)
-        {
-            WriteBytes(new byte[] {
-                (byte)(value >> 8),
-                (byte)(value & 255) },
-                endian);
-        }
-
-        /// <summary>
         /// 以 Big Endian 字节序, 放入 short 
         /// </summary>
         /// <param name="value">值</param>
@@ -171,6 +143,37 @@ namespace Konata.Msf
         /// <param name="value">值</param>
         /// <param name="endian">字节序</param>
         public void PutShort(short value, Endian endian)
+        {
+            WriteBytes(new byte[] {
+                (byte)(value >> 8),
+                (byte)(value & 255) },
+                endian);
+        }
+
+        /// <summary>
+        /// 以 Big Endian 字节序, 放入 ushort 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutUshortBE(ushort value)
+        {
+            PutUshort(value, Endian.Big);
+        }
+
+        /// <summary>
+        /// 以 Little Endian 字节序, 放入 ushort 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutUshortLE(ushort value)
+        {
+            PutUshort(value, Endian.Little);
+        }
+
+        /// <summary>
+        /// 放入 ushort 
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="endian">字节序</param>
+        public void PutUshort(ushort value, Endian endian)
         {
             WriteBytes(new byte[] {
                 (byte)(value >> 8),
@@ -432,119 +435,253 @@ namespace Konata.Msf
             PutBytes(value.GetBytes());
         }
 
+        private int _pos;
+        private bool _eob;
+
+        private bool CheckAvailable(int length = 0)
+        {
+            return !_eob && _pos + length <= _packetLength;
+        }
+
+        private void UpdatePosition(int length = 0)
+        {
+            _pos += length;
+            if (_pos == _packetLength)
+            {
+                _eob = true;
+            }
+        }
+
         public sbyte TakeSbyte(out sbyte value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(1))
+            {
+                value = (sbyte)_packetBuffer[_pos];
+                UpdatePosition(1);
+                return value;
+            }
+            throw new IOException();
         }
 
         public byte TakeByte(out byte value)
         {
-            throw new NotImplementedException();
-        }
-
-        public ushort TakeUshortBE(out ushort value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ushort TakeUshortLE(out ushort value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ushort TakeUshort(out ushort value, Endian endian)
-        {
-            throw new NotImplementedException();
+            if (CheckAvailable(1))
+            {
+                value = _packetBuffer[_pos];
+                UpdatePosition(1);
+                return value;
+            }
+            throw new IOException();
         }
 
         public short TakeShortBE(out short value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(2))
+            {
+                value = (short)((_packetBuffer[_pos] << 8) | _packetBuffer[_pos + 1]);
+                UpdatePosition(2);
+                return value;
+            }
+            throw new IOException();
         }
 
         public short TakeShortLE(out short value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(2))
+            {
+                value = (short)((_packetBuffer[_pos + 1] << 8) | _packetBuffer[_pos]);
+                UpdatePosition(2);
+                return value;
+            }
+            throw new IOException();
         }
 
         public short TakeShort(out short value, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeShortBE(out value) : TakeShortLE(out value);
+        }
+
+        public ushort TakeUshortBE(out ushort value)
+        {
+            if (CheckAvailable(2))
+            {
+                value = (ushort)((_packetBuffer[_pos] << 8) | _packetBuffer[_pos + 1]);
+                UpdatePosition(2);
+                return value;
+            }
+            throw new IOException();
+        }
+
+        public ushort TakeUshortLE(out ushort value)
+        {
+            if (CheckAvailable(2))
+            {
+                value = (ushort)((_packetBuffer[_pos + 1] << 8) | _packetBuffer[_pos]);
+                UpdatePosition(2);
+                return value;
+            }
+            throw new IOException();
+        }
+
+        public ushort TakeUshort(out ushort value, Endian endian)
+        {
+            return endian == Endian.Big ? TakeUshortBE(out value) : TakeUshortLE(out value);
         }
 
         public int TakeIntBE(out int value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(4))
+            {
+                value = (_packetBuffer[_pos] << 24) |
+                    (_packetBuffer[_pos + 1] << 16) |
+                    (_packetBuffer[_pos + 2] << 8) |
+                    _packetBuffer[_pos + 3];
+                UpdatePosition(4);
+                return value;
+            }
+            throw new IOException();
         }
 
         public int TakeIntLE(out int value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(4))
+            {
+                value = (_packetBuffer[_pos + 3] << 24) |
+                    (_packetBuffer[_pos + 2] << 16) |
+                    (_packetBuffer[_pos + 1] << 8) |
+                    _packetBuffer[_pos];
+                UpdatePosition(4);
+                return value;
+            }
+            throw new IOException();
         }
 
         public int TakeInt(out int value, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeIntBE(out value) : TakeIntLE(out value);
         }
 
         public uint TakeUintBE(out uint value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(4))
+            {
+                value = (uint)((_packetBuffer[_pos] << 24) |
+                    (_packetBuffer[_pos + 1] << 16) |
+                    (_packetBuffer[_pos + 2] << 8) |
+                    _packetBuffer[_pos + 3]);
+                UpdatePosition(4);
+                return value;
+            }
+            throw new IOException();
         }
 
         public uint TakeUintLE(out uint value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(4))
+            {
+                value = (uint)((_packetBuffer[_pos + 3] << 24) |
+                    (_packetBuffer[_pos + 2] << 16) |
+                    (_packetBuffer[_pos + 1] << 8) |
+                    _packetBuffer[_pos]);
+                UpdatePosition(4);
+                return value;
+            }
+            throw new IOException();
         }
 
         public uint TakeUint(out uint value, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeUintBE(out value) : TakeUintLE(out value);
         }
 
         public long TakeLongBE(out long value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(8))
+            {
+                long high = (_packetBuffer[_pos] << 24) |
+                   (_packetBuffer[_pos + 1] << 16) |
+                   (_packetBuffer[_pos + 2] << 8) |
+                   _packetBuffer[_pos + 3];
+                value = (_packetBuffer[_pos + 4] << 24) |
+                   (_packetBuffer[_pos + 5] << 16) |
+                   (_packetBuffer[_pos + 6] << 8) |
+                   _packetBuffer[_pos + 7];
+                value |= high << 32;
+                UpdatePosition(4);
+                UpdatePosition(8);
+                return value;
+            }
+            throw new IOException();
         }
 
         public long TakeLongLE(out long value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(8))
+            {
+                throw new NotImplementedException();
+                UpdatePosition(8);
+                return value;
+            }
+            throw new IOException();
         }
 
         public long TakeLong(out long value, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeLongBE(out value) : TakeLongLE(out value);
         }
 
         public ulong TakeUlongBE(out ulong value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(8))
+            {
+                throw new NotImplementedException();
+                UpdatePosition(8);
+                return value;
+            }
+            throw new IOException();
         }
 
         public ulong TakeUlongLE(out ulong value)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(8))
+            {
+                throw new NotImplementedException();
+                UpdatePosition(8);
+                return value;
+            }
+            throw new IOException();
         }
 
         public ulong TakeUlong(out ulong value, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeUlongBE(out value) : TakeUlongLE(out value);
         }
 
         public bool TakeBoolBE(out bool value, byte length)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(length))
+            {
+                throw new NotImplementedException();
+                UpdatePosition(length);
+                return value;
+            }
+            throw new IOException();
         }
 
         public bool TakeBoolLE(out bool value, byte length)
         {
-            throw new NotImplementedException();
+            if (CheckAvailable(length))
+            {
+                throw new NotImplementedException();
+                UpdatePosition(length);
+                return value;
+            }
+            throw new IOException();
         }
 
         public bool TakeBool(out bool value, byte length, Endian endian)
         {
-            throw new NotImplementedException();
+            return endian == Endian.Big ? TakeBoolBE(out value, length) : TakeBoolLE(out value, length);
         }
 
         public string TakeString(out string value, Prefix prefixFlag)
