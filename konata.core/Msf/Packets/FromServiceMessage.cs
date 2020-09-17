@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets
             TakeUintBE(out _packetType);
             TakeByte(out _encryptType);
             TakeByte(out _unknownZero);
-            TakeString(out _uinString, 4);
+            TakeString(out _uinString, Prefix.Uint32 | Prefix.LengthOnly);
         }
     }
 }

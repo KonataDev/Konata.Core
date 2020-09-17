@@ -15,7 +15,17 @@ namespace Konata.Msf
             Little
         }
 
-        public enum RWFlag
+        public enum Prefix
+        {
+            Uint8 = 1, // 前綴類型
+            Uint16 = 2,
+            Uint32 = 4,
+
+            LengthOnly = 1024, // 只包括數據長度
+            WithPrefix = 2048,  // 包括數據長度和前綴長度
+        }
+
+        public enum ReadWrite
         {
             Read,
             Write,
@@ -25,16 +35,16 @@ namespace Konata.Msf
         private byte[] _packetBuffer;
         private int _packetLength;
 
-        private RWFlag _flag;
+        private ReadWrite _flag;
 
         public Packet()
         {
-            _flag = RWFlag.Write;
+            _flag = ReadWrite.Write;
         }
 
         public Packet(byte[] data)
         {
-            _flag = RWFlag.Read;
+            _flag = ReadWrite.Read;
 
             _packetBuffer = new byte[data.Length];
             Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
@@ -42,7 +52,7 @@ namespace Konata.Msf
 
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
         {
-
+            _flag = ReadWrite.Read;
         }
 
         /// <summary>
@@ -537,18 +547,19 @@ namespace Konata.Msf
             throw new NotImplementedException();
         }
 
-        public string TakeString(out string value, uint length, byte prefixLength = 0)
+        public string TakeString(out string value, Prefix prefixFlag)
         {
             throw new NotImplementedException();
         }
 
-        public string TakeHexString(out string value, uint length, byte prefixLength = 0)
+        public string TakeHexString(out string value, Prefix prefixFlag)
         {
             throw new NotImplementedException();
         }
 
-        public byte[] TakeBytes(out byte[] value, uint length, byte prefixLength = 0)
+        public byte[] TakeBytes(out byte[] value, Prefix prefixFlag)
         {
+            // take all bytes when prefixLength equals zero.
             throw new NotImplementedException();
         }
 
