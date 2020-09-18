@@ -93,11 +93,10 @@
     <Compile Include="Msf\Packets\Tlv\TlvBase.cs" />
     <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
     <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
-    <Compile Include="Msf\Services\Wtlogin\ExchangeEmp.cs" />
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
-    <Compile Include="Msf\Services\Wtlogin\PushChangeToken.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />
     <Compile Include="Msf\Packet.cs" />
+    <Compile Include="Msf\ServiceTouch.cs" />
     <Compile Include="Msf\SsoMan.cs" />
     <Compile Include="Msf\Crypto\EncryptType.cs" />
     <Compile Include="Msf\LoginType.cs" />
@@ -156,4 +155,8 @@
     <Folder Include="Msf\Crypto\Tea\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">$(ProjectDir)prebuild.scanservice.bat --out $(ProjectDir)</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">sh $(ProjectDir)prebuild.scanservice.sh --out $(ProjectDir)</PreBuildEvent>
+  </PropertyGroup>
 </Project>

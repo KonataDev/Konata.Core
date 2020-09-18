@@ -5,10 +5,12 @@ namespace Konata.Msf.Services.GrayUinPro
 {
     internal class Check : Service
     {
-        static Check()
+        private Check()
         {
-            Register("GrayUinPro.Check", new Check());
+            Register("GrayUinPro.Check", this);
         }
+
+        public static Service Instance { get; } = new Check();
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {
