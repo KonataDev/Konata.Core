@@ -10,3 +10,6 @@ bin/
 .idea
 
 .editorconfig
+
+# auto generated code
+/Konata.Core/Msf/ServiceTouch.cs

@@ -6,11 +6,12 @@ namespace Konata.Msf.Services.Wtlogin
 {
     internal class Login : Service
     {
-
-        static Login()
+        private Login()
         {
-            Register("wtlogin.login", new Login());
+            Register("wtlogin.login", this);
         }
+
+        public static Service Instance { get; } = new Login();
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {

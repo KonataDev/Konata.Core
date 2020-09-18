@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Konata.Msf
 {
     using Routine = Dictionary<string, Service>;
 
-    internal abstract class Service
+    internal abstract partial class Service
     {
         private static readonly Routine map = new Routine();
+        private static readonly bool touch = TouchServices();
 
         /// <summary>
         /// 拉起指定的服務並開始執行特定任務
@@ -78,7 +78,7 @@ namespace Konata.Msf
         protected static void Register(string name, Service service)
         {
             service.name = name;
-            map.Add(name, service);
+            map.Add(name.ToLower(), service);
         }
     }
 }
