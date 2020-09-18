@@ -39,7 +39,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\konata.core\konata.core.csproj">
+    <ProjectReference Include="..\Konata.Core\Konata.Core.csproj">
       <Project>{47052d6b-7e37-4cd2-8658-102bedce394d}</Project>
       <Name>Konata.Core</Name>
     </ProjectReference>
