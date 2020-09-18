@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{47052D6B-7E37-4CD2-8658-102BEDCE394D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>konata</RootNamespace>
+    <RootNamespace>Konata</RootNamespace>
     <AssemblyName>Konata.Core</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Packages.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
