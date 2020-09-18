@@ -1,0 +1,19 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore the nuget packages
+        run: nuget restore
+
+      - name: Build the project
+        run: msbuild
