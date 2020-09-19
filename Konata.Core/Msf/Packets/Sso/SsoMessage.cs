@@ -1,5 +1,7 @@
 ﻿using Konata.Msf;
 using Konata.Msf.Utils.Crypt;
+using Konata.Utils;
+using System;
 
 namespace Konata.Msf.Packets
 {
@@ -22,8 +24,10 @@ namespace Konata.Msf.Packets
         public SsoMessage(byte[] data, byte[] cryptKey) :
             base(data, TeaCryptor.Instance, cryptKey)
         {
+            Console.WriteLine("\n");
+            Console.WriteLine(Hex.Bytes2HexStr(data));
             _header = new Header(GetBytes());
-            _packet = new Packet(_header.GetBytes());
+            _packet = new Packet(_header.TakeAllBytes(out byte[] _));
         }
 
         public class Header : Packet

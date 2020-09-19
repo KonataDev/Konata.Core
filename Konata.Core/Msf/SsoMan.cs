@@ -107,7 +107,7 @@ namespace Konata.Msf
         /// <param name="fromService"></param>
         internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
-            var ssoMessage = new SsoMessage(fromService.GetBytes(), _msfCore._keyRing._zeroKey);
+            var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _), _msfCore._keyRing._zeroKey);
 
             _ssoSequence = ssoMessage._header._ssoSequence;
             _ssoSession = ssoMessage._header._ssoSession;
