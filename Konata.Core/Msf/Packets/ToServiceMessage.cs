@@ -10,7 +10,7 @@ namespace Konata.Msf.Packets
 
         public ToServiceMessage(uint packetType, uint encryptType, uint uin, Packet packet)
         {
-            _body = new Body(packet, new TeaCryptor(), new byte[16]);
+            _body = new Body(packet, TeaCryptor.Instance, new byte[16]);
             _header = new Header(packetType, encryptType, new byte[0], uin.ToString());
 
             PutUintBE((uint)(_header.Length + _body.Length + 4));
@@ -39,7 +39,7 @@ namespace Konata.Msf.Packets
         {
             public Body(Packet packet, ICryptor cryptor, byte[] cryptKey)
             {
-                PutEncryptedPacket(packet, cryptor, cryptKey);
+                PutPacketEncrypted(packet, cryptor, cryptKey);
             }
         }
     }

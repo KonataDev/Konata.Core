@@ -8,7 +8,11 @@ namespace Konata.Msf
     internal abstract partial class Service
     {
         private static readonly Routine map = new Routine();
-        private static readonly bool touch = TouchServices();
+
+        static Service()
+        {
+            TouchServices();
+        }
 
         /// <summary>
         /// 拉起指定的服務並開始執行特定任務
