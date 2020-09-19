@@ -8,7 +8,7 @@ namespace Konata.Msf.Packets
         public Header _header;
         public Packet _packet;
 
-        public SsoMessage(uint seq, uint session, string command, Packet packet)
+        public SsoMessage(uint seq, uint session, string command, Packet packet) : base()
         {
             _header = new Header(seq, session, command);
             _packet = packet;
@@ -19,8 +19,8 @@ namespace Konata.Msf.Packets
             PutPacket(_packet);
         }
 
-        public SsoMessage(byte[] data, byte[] cryptKey)
-            : base(data, new TeaCryptor(), cryptKey)
+        public SsoMessage(byte[] data, byte[] cryptKey) :
+            base(data, TeaCryptor.Instance, cryptKey)
         {
             _header = new Header(GetBytes());
             _packet = new Packet(_header.GetBytes());
@@ -37,7 +37,7 @@ namespace Konata.Msf.Packets
             public readonly uint _ssoSession;
             public readonly string _ssoCommand;
 
-            public Header(uint ssoSequence, uint ssoSession, string ssoCommand)
+            public Header(uint ssoSequence, uint ssoSession, string ssoCommand) : base()
             {
                 _ssoSequence = ssoSequence;
                 _ssoSession = ssoSession;
