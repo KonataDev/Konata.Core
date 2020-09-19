@@ -24,8 +24,6 @@ namespace Konata.Msf.Packets
         public SsoMessage(byte[] data, byte[] cryptKey) :
             base(data, TeaCryptor.Instance, cryptKey)
         {
-            Console.WriteLine("\n");
-            Console.WriteLine(Hex.Bytes2HexStr(data));
             _header = new Header(GetBytes());
             _packet = new Packet(_header.TakeAllBytes(out byte[] _));
         }
@@ -79,8 +77,10 @@ namespace Konata.Msf.Packets
                 EatBytes(4);
                 TakeUintBE(out _ssoSequence);
 
-                TakeBytes(out _extraData, Prefix.Uint16 | Prefix.WithPrefix);
-                TakeString(out _ssoCommand, Prefix.Uint16 | Prefix.WithPrefix);
+                EatBytes(4);
+
+                TakeBytes(out _extraData, Prefix.Uint32 | Prefix.WithPrefix);
+                TakeString(out _ssoCommand, Prefix.Uint32 | Prefix.WithPrefix);
 
                 EatBytes(4);
                 TakeUintBE(out _ssoSession);
