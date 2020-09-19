@@ -49,13 +49,17 @@ namespace Konata.Msf
             _flag = ReadWrite.Read;
 
             _packetBuffer = new byte[data.Length];
+            _packetLength = (uint)data.Length;
             Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
         }
 
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
         {
+            _pos = 0;
             _flag = ReadWrite.Read;
-            //
+
+            _packetBuffer = cryptor.Decrypt(data, cryptKey);
+            _packetLength = (uint)_packetBuffer.Length;
         }
 
         #region PutMethods 放入數據 此方法組會增長緩衝區
@@ -566,7 +570,7 @@ namespace Konata.Msf
             switch (preLen)
             {
             case 0: // Read to end.
-                length = (uint)(_packetLength - _pos);
+                length = _packetLength - _pos;
                 break;
             case 1:
             case 2:
@@ -605,6 +609,14 @@ namespace Konata.Msf
             return value = cryptor.Decrypt(TakeBytes(out var _, prefixFlag), cryptKey);
         }
 
+        public byte[] TakeAllBytes(out byte[] value)
+        {
+            value = new byte[_packetLength - _pos];
+            Buffer.BlockCopy(_packetBuffer, (int)_pos, value, 0, value.Length);
+            _pos = _packetLength;
+            return value;
+        }
+
         /// <summary>
         /// 吃掉數據 φ(゜▽゜*)♪
         /// </summary>
@@ -624,10 +636,13 @@ namespace Konata.Msf
         /// <returns></returns>
         public byte[] GetBytes()
         {
-            var data = new byte[_packetLength];
-            Buffer.BlockCopy(_packetBuffer, 0, data, 0, (int)_packetLength);
-
-            return data;
+            if (_packetLength > 0)
+            {
+                var data = new byte[_packetLength];
+                Buffer.BlockCopy(_packetBuffer, 0, data, 0, (int)_packetLength);
+                return data;
+            }
+            return new byte[0];
         }
 
         /// <summary>
