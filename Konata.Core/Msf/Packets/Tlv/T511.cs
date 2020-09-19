@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T511(string[] domains) : base()
         {
             _domains = domains;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

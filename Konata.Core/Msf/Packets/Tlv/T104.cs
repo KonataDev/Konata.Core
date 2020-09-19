@@ -13,6 +13,7 @@ namespace Konata.Msf.Packets.Tlv
         public T104(string sigSession) : base()
         {
             _sigSession = sigSession;
+
             PackGeneric();
         }
 

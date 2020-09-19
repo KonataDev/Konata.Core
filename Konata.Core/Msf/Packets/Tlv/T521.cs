@@ -11,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         {
             _productType = productType;
             _unknown = unknown;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

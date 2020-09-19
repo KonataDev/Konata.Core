@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T318(byte[] tgtQr) : base()
         {
             _tgtQr = tgtQr;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

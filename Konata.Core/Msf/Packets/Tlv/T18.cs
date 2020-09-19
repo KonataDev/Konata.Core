@@ -18,6 +18,8 @@ namespace Konata.Msf.Packets.Tlv
             _appId = appId;
             _appClientVersion = appClientVersion;
             _uin = uin;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

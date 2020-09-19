@@ -17,6 +17,7 @@ namespace Konata.Msf.Packets.Tlv
             _appId = appId;
             _subAppId = subAppId;
             _appClientVersion = appClientVersion;
+
             PackGeneric();
         }
 

@@ -22,6 +22,8 @@ namespace Konata.Msf.Packets.Tlv
             _guidFlag = guidFlag;
             _deviceModel = deviceModel;
             _deviceBrand = deviceBrand;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

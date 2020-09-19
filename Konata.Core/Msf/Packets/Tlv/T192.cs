@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T192(string url) : base()
         {
             _url = url;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

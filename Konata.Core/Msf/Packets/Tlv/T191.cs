@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T191(int unknownK = 0x82) : base()
         {
             _unknownK = unknownK;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

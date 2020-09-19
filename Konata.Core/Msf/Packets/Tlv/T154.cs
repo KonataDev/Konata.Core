@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T154(uint ssoSequenceId) : base()
         {
             _ssoSequenceId = ssoSequenceId;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

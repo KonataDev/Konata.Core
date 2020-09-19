@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T516(uint sourceType = 0) : base()
         {
             _sourceType = sourceType;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

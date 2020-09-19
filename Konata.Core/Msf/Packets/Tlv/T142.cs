@@ -11,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         public T142(string apkId) : base()
         {
             _apkId = apkId;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

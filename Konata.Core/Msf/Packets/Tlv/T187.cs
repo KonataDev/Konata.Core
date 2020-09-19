@@ -10,6 +10,8 @@ namespace Konata.Msf.Packets.Tlv
         public T187(byte[] macAddress) : base()
         {
             _macAddress = macAddress;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

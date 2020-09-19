@@ -41,7 +41,7 @@ namespace Konata.Msf.Packets.Tlv
             _guid = guid;
             _loginType = loginType;
 
-            PackEncrypted(new TeaCryptor(), GetCryptKey());
+            PackEncrypted(TeaCryptor.Instance, GetCryptKey());
         }
 
         public override void PutTlvCmd()

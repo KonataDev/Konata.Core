@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T16e(string deviceName) : base()
         {
             _deviceName = deviceName;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -15,6 +15,8 @@ namespace Konata.Msf.Packets.Tlv
             _capType = (byte)capType;
             _picSize = (ushort)picSize;
             _retType = (byte)retType;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

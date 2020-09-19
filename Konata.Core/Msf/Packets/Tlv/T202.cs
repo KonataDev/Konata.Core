@@ -11,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         {
             _wifiBssid = wifiBssid;
             _wifiSsid = wifiSsid;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T153(bool isRooted) : base()
         {
             _isRooted = isRooted;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

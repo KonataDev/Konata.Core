@@ -11,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         {
             _captchaCode = captchaCode;
             _captchaKey = captchaKey;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

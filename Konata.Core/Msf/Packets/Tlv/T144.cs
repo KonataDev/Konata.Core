@@ -24,9 +24,12 @@ namespace Konata.Msf.Packets.Tlv
             _tlv153 = tlv153;
             _tlv16e = tlv16e;
             _tgtgKey = tgtgKey;
+
+            PackEncrypted(TeaCryptor.Instance, _tgtgKey);
         }
 
-        public T144(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128, T16e tlv16e, byte[] tgtgKey)
+        public T144(T109 tlv109, T52d tlv52d, T124 tlv124,
+            T128 tlv128, T16e tlv16e, byte[] tgtgKey) : base()
         {
             _tlv109 = tlv109;
             _tlv52d = tlv52d;
@@ -34,6 +37,8 @@ namespace Konata.Msf.Packets.Tlv
             _tlv128 = tlv128;
             _tlv16e = tlv16e;
             _tgtgKey = tgtgKey;
+
+            PackEncrypted(TeaCryptor.Instance, _tgtgKey);
         }
 
         public T144(string androidId, byte[] deviceDevInfo, string osType, string osVersion,
@@ -47,6 +52,8 @@ namespace Konata.Msf.Packets.Tlv
             _tlv124 = new T124(osType, osVersion, networkType, networkDetail, apnName);
             _tlv128 = new T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand);
             _tgtgKey = tgtgKey;
+
+            PackEncrypted(TeaCryptor.Instance, _tgtgKey);
         }
 
         public override void PutTlvCmd()
@@ -65,7 +72,7 @@ namespace Konata.Msf.Packets.Tlv
             packer.PutTlv(_tlv153);
             packer.PutTlv(_tlv16e);
 
-            PutEncryptedBytes(packer.GetBytes(true), new TeaCryptor(), _tgtgKey);
+            PutBytes(packer.GetBytes(true));
         }
     }
 }

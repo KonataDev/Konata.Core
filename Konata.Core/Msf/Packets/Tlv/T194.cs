@@ -10,6 +10,8 @@ namespace Konata.Msf.Packets.Tlv
         public T194(string imsi) : base()
         {
             _imsi = Encoding.UTF8.GetBytes(imsi);
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()
