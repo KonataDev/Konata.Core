@@ -157,6 +157,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">$(ProjectDir)prebuild.scanservice.bat --out $(ProjectDir)</PreBuildEvent>
-    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">sh $(ProjectDir)prebuild.scanservice.sh --out $(ProjectDir)</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">bash $(ProjectDir)prebuild.scanservice.sh --out $(ProjectDir)</PreBuildEvent>
   </PropertyGroup>
 </Project>

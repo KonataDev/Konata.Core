@@ -1,7 +1,7 @@
 #!bin/bash
 
 SOURCE=$2
-TARGET=$SOURCE"Msf/ServiceTouch.cs"
+TARGET=${SOURCE}Msf/ServiceTouch.cs
 echo [PreBuild.ScanService] $TARGET
 
 # Remove old file.
@@ -22,12 +22,26 @@ namespace Konata.Msf
     {
         static bool TouchServices()
         {
+		    Service instance;
+_EOF_
 
+# Write classes to.
+while IFS= read -d $'\0' -r file ; do
+    CLASS=("$file")
+	CLASS=${CLASS//*Msf\// }
+	CLASS=${CLASS//\.cs/}
+	CLASS=${CLASS//\//.}
+	CLASS=${CLASS// /}
+	cat >> $TARGET << _EOF_
+	        instance = $CLASS.Instance;
+_EOF_
+done < <(find ${SOURCE}Msf/Services/ -type f -name "*.cs" -print0)
+
+cat >> $TARGET << _EOF_
             return true;
         }
     }
 }
-
 _EOF_
 
 echo [PreBuild.ScanService] Success.
