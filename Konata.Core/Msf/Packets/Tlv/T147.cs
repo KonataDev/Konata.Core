@@ -8,7 +8,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _apkVersionName;
         private readonly byte[] _apkSignatureMd5;
 
-        public T147(uint appId, string apkVersionName, byte[] apkSignatureMd5)
+        public T147(uint appId, string apkVersionName, byte[] apkSignatureMd5) : base()
         {
             _appId = appId;
             _apkVersionName = apkVersionName;

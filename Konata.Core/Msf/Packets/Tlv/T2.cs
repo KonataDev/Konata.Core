@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _captchaCode;
         private readonly byte[] _captchaKey;
 
-        public T2(string captchaCode, byte[] captchaKey)
+        public T2(string captchaCode, byte[] captchaKey) : base()
         {
             _captchaCode = captchaCode;
             _captchaKey = captchaKey;

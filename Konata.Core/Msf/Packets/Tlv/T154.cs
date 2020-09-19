@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly uint _ssoSequenceId;
 
-        public T154(uint ssoSequenceId)
+        public T154(uint ssoSequenceId) : base()
         {
             _ssoSequenceId = ssoSequenceId;
         }

@@ -9,7 +9,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly short _timeZoneVer;
         private readonly short _timeZoneOffset;
 
-        public T8(int localId = 2052, short timeZoneVer = 0, short timeZoneOffset = 0)
+        public T8(int localId = 2052, short timeZoneVer = 0, short timeZoneOffset = 0) : base()
         {
             _localId = localId;
             _timeZoneVer = timeZoneVer;

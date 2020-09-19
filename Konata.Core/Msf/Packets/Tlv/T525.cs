@@ -6,9 +6,10 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly T536 _t536;
 
-        public T525(T536 t536)
+        public T525(T536 t536) : base()
         {
             _t536 = t536;
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

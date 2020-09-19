@@ -10,13 +10,14 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _deviceReportInfo;
 
-        public T52d(byte[] deviceReportInfo)
+        public T52d(byte[] deviceReportInfo) : base()
         {
             _deviceReportInfo = deviceReportInfo;
+            PackGeneric();
         }
 
         public T52d(string bootLoader, string version, string codeName, string incremental,
-            string fingerprint, string bootId, string androidId, string baseBand, string innerVersion)
+            string fingerprint, string bootId, string androidId, string baseBand, string innerVersion):base()
         {
             DeviceReport report = new DeviceReport
             {
@@ -35,6 +36,7 @@ namespace Konata.Msf.Packets.Tlv
             Serializer.Serialize(stream, report);
 
             _deviceReportInfo = stream.ToArray();
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

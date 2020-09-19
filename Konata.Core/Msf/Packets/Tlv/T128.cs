@@ -13,7 +13,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _deviceBrand;
 
         public T128(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
-            byte[] guid, uint guidFlag, string deviceModel, string deviceBrand)
+            byte[] guid, uint guidFlag, string deviceModel, string deviceBrand) : base()
         {
             _isNewInstall = isNewInstall;
             _isGuidAvaliable = isGuidAvaliable;

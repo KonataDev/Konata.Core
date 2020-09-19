@@ -13,7 +13,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly uint _appClientVersion;
         private readonly uint _uin;
 
-        public T18(uint appId, uint appClientVersion, uint uin)
+        public T18(uint appId, uint appClientVersion, uint uin) : base()
         {
             _appId = appId;
             _appClientVersion = appClientVersion;

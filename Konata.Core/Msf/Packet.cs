@@ -55,6 +55,7 @@ namespace Konata.Msf
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
         {
             _flag = ReadWrite.Read;
+            //
         }
 
         #region PutMethods 放入數據 此方法組會增長緩衝區
@@ -651,6 +652,12 @@ namespace Konata.Msf
 
         #region BarrierMethods 屏障方法會計算PutMethods放入數據的長度 並寫到它們的前面
 
+        private bool _barEnc = false;
+        private byte[] _barEncBuffer;
+        private uint _barEncLength;
+        private ICryptor _barEncCryptor;
+        private byte[] _barEncKey;
+
         /// <summary>
         /// [進入屏障] 在這之後透過 PutMethods 方法組放入的數據將被計算長度
         /// </summary>
@@ -664,11 +671,35 @@ namespace Konata.Msf
             PutBytes(new byte[lengthSize]);
         }
 
+        protected void EnterBarrierEncrypted(int lengthSize, Endian endian, ICryptor cryptor, byte[] cryptKey)
+        {
+            EnterBarrier(lengthSize, endian);
+            _barEnc = true;
+            _barEncBuffer = _packetBuffer;
+            _barEncLength = _packetLength;
+            _barEncCryptor = cryptor;
+            _barEncKey = cryptKey;
+            _packetBuffer = null;
+            _packetLength = 0;
+        }
+
         /// <summary>
         /// [離開屏障] 會立即在加入的數據前寫入長度
         /// </summary>
         protected void LeaveBarrier()
         {
+            if (_barEnc)
+            {
+                byte[] enc = GetEncryptedBytes(_barEncCryptor, _barEncKey);
+                _packetBuffer = _barEncBuffer;
+                _packetLength = _barEncLength;
+                PutBytes(enc);
+                _barEnc = false;
+                _barEncBuffer = null;
+                _barEncLength = 0;
+                _barEncCryptor = null;
+                _barEncKey = null;
+            }
             InsertPrefix(_packetBuffer, _packetLength - _barPos - _lenSize,
                 _lenSize, _barPos, _barLenEndian);
         }
@@ -713,11 +744,6 @@ namespace Konata.Msf
         private bool CheckAvailable(uint length = 0)
         {
             return _pos + length <= _packetLength;
-        }
-
-        private void UpdatePosition(uint length = 0)
-        {
-            _pos += length;
         }
 
         private int _barPos;

@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly uint _sourceType;
 
-        public T516(uint sourceType = 0)
+        public T516(uint sourceType = 0) : base()
         {
             _sourceType = sourceType;
         }

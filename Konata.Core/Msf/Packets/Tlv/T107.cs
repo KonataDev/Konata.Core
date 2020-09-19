@@ -9,7 +9,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly ushort _picSize;
         private readonly byte _retType;
 
-        public T107(int picType, int capType = 0, int picSize = 0, int retType = 1)
+        public T107(int picType, int capType = 0, int picSize = 0, int retType = 1) : base()
         {
             _picType = (ushort)picType;
             _capType = (byte)capType;

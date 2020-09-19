@@ -1,9 +1,26 @@
-﻿using System;
+﻿using Konata.Msf.Utils.Crypt;
+using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class TlvBase : Packet
+    public abstract class TlvBase : Packet
     {
+        protected void PackGeneric()
+        {
+            PutTlvCmd();
+            EnterBarrier(2, Endian.Big);
+            PutTlvBody();
+            LeaveBarrier();
+        }
+
+        protected void PackEncrypted(ICryptor cryptor, byte[] cryptKey)
+        {
+            PutTlvCmd();
+            EnterBarrierEncrypted(2, Endian.Big, cryptor, cryptKey);
+            PutTlvBody();
+            LeaveBarrier();
+        }
+
         /// <summary>
         /// 寫入tlv類型
         /// </summary>
@@ -20,16 +37,6 @@ namespace Konata.Msf.Packets.Tlv
         public virtual void PutTlvBody()
         {
             // DO Nothing Here.
-        }
-
-        public override byte[] GetBytes()
-        {
-            PutTlvCmd();
-            EnterBarrier(2, Endian.Big);
-            PutTlvBody();
-            LeaveBarrier();
-
-            return base.GetBytes();
         }
     }
 }

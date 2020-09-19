@@ -12,7 +12,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _appSignature;
 
         public T148(string appName, uint ssoVersion, uint appId, uint subAppId,
-            string appVersion, string appSignature)
+            string appVersion, string appSignature) : base()
         {
             _appName = appName;
             _ssoVersion = ssoVersion;

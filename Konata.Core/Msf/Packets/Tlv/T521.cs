@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly uint _productType;
         private readonly ushort _unknown;
 
-        public T521(uint productType = 0, ushort unknown = 0)
+        public T521(uint productType = 0, ushort unknown = 0) : base()
         {
             _productType = productType;
             _unknown = unknown;

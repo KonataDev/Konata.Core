@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _tgtQr;
 
-        public T318(byte[] tgtQr)
+        public T318(byte[] tgtQr) : base()
         {
             _tgtQr = tgtQr;
         }

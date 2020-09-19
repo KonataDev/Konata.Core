@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly uint _buildTime;
         private readonly string _sdkVersion;
 
-        public T177(uint buildTime, string sdkVersion)
+        public T177(uint buildTime, string sdkVersion) : base()
         {
             _buildTime = buildTime;
             _sdkVersion = sdkVersion;
