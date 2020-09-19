@@ -14,7 +14,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly byte[] _tgtgKey;
 
         public T144(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128,
-            T148 tlv148, T153 tlv153, T16e tlv16e, byte[] tgtgKey)
+            T148 tlv148, T153 tlv153, T16e tlv16e, byte[] tgtgKey) : base()
         {
             _tlv109 = tlv109;
             _tlv52d = tlv52d;

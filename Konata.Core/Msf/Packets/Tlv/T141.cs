@@ -10,7 +10,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _simOperatorName;
         private readonly NetworkType _networkType;
 
-        public T141(string simOperatorName, NetworkType networkType, string apnName)
+        public T141(string simOperatorName, NetworkType networkType, string apnName) : base()
         {
             _simOperatorName = simOperatorName;
             _networkType = networkType;

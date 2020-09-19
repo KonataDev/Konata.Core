@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _imsi;
 
-        public T194(string imsi)
+        public T194(string imsi) : base()
         {
             _imsi = Encoding.UTF8.GetBytes(imsi);
         }

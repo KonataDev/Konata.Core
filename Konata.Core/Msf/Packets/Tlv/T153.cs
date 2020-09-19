@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly bool _isRooted;
 
-        public T153(bool isRooted)
+        public T153(bool isRooted) : base()
         {
             _isRooted = isRooted;
         }

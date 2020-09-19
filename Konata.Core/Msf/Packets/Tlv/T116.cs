@@ -10,7 +10,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly uint _getSig;
         private readonly long[] _subAppIdList;
 
-        public T116(int bitmap, int getSig, long[] subAppIdList = null)
+        public T116(int bitmap, int getSig, long[] subAppIdList = null) : base()
         {
             if (subAppIdList == null)
                 _subAppIdList = new long[] { 1600000226L };

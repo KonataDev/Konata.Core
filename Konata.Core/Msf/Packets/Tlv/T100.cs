@@ -12,11 +12,12 @@ namespace Konata.Msf.Packets.Tlv
         private readonly uint _subAppId;
         private readonly uint _appClientVersion;
 
-        public T100(uint appId, uint subAppId, uint appClientVersion)
+        public T100(uint appId, uint subAppId, uint appClientVersion) : base()
         {
             _appId = appId;
             _subAppId = subAppId;
             _appClientVersion = appClientVersion;
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

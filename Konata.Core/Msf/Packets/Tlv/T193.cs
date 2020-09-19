@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _ticket;
 
-        public T193(string ticket)
+        public T193(string ticket) : base()
         {
             _ticket = ticket;
         }

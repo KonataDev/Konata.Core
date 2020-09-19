@@ -6,9 +6,10 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _loginExtraData;
 
-        public T536(byte[] loginExtraData)
+        public T536(byte[] loginExtraData) : base()
         {
             _loginExtraData = loginExtraData;
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

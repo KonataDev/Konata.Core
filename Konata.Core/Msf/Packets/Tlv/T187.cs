@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _macAddress;
 
-        public T187(byte[] macAddress)
+        public T187(byte[] macAddress) : base()
         {
             _macAddress = macAddress;
         }

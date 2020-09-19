@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly int _unknownK;
 
-        public T191(int unknownK = 0x82)
+        public T191(int unknownK = 0x82) : base()
         {
             _unknownK = unknownK;
         }

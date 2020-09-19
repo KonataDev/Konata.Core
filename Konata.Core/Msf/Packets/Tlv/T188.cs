@@ -7,12 +7,12 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _androidId;
 
-        public T188(byte[] androidId)
+        public T188(byte[] androidId) : base()
         {
             _androidId = androidId;
         }
 
-        public T188(string androidId)
+        public T188(string androidId) : base()
         {
             _androidId = Hex.HexStr2Bytes(androidId);
         }

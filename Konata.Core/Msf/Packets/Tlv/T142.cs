@@ -8,7 +8,7 @@ namespace Konata.Msf.Packets.Tlv
 
         private readonly string _apkId;
 
-        public T142(string apkId)
+        public T142(string apkId) : base()
         {
             _apkId = apkId;
         }

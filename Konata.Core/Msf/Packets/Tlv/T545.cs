@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _unknownQiMei;
 
-        public T545(string qiMei = "")
+        public T545(string qiMei = "") : base()
         {
             _unknownQiMei = Hex.HexStr2Bytes(qiMei);
         }

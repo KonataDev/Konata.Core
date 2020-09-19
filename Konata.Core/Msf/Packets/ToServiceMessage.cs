@@ -12,15 +12,10 @@ namespace Konata.Msf.Packets
         {
             _body = new Body(packet, new TeaCryptor(), new byte[16]);
             _header = new Header(packetType, encryptType, new byte[0], uin.ToString());
-        }
 
-        public override byte[] GetBytes()
-        {
             PutUintBE((uint)(_header.Length + _body.Length + 4));
             PutPacket(_header);
             PutPacket(_body);
-
-            return base.GetBytes();
         }
 
         private class Header : Packet

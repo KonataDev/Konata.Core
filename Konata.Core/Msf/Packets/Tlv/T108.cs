@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _ksid;
 
-        public T108(byte[] ksid)
+        public T108(byte[] ksid) : base()
         {
             _ksid = ksid;
         }

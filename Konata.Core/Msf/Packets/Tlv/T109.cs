@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _osType;
 
-        public T109(string osType)
+        public T109(string osType) : base()
         {
             _osType = osType;
         }

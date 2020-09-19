@@ -7,7 +7,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly byte[] _wifiBssid;
         private readonly string _wifiSsid;
 
-        public T202(byte[] wifiBssid, string wifiSsid)
+        public T202(byte[] wifiBssid, string wifiSsid) : base()
         {
             _wifiBssid = wifiBssid;
             _wifiSsid = wifiSsid;
