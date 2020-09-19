@@ -12,6 +12,7 @@ namespace Konata.Msf.Packets.Tlv
         public T544(string wtLoginSdk) : base()
         {
             _wtLoginSdk = wtLoginSdk;
+
             PackGeneric();
         }
 

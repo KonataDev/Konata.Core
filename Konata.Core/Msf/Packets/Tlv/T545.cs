@@ -10,6 +10,8 @@ namespace Konata.Msf.Packets.Tlv
         public T545(string qiMei = "") : base()
         {
             _unknownQiMei = Hex.HexStr2Bytes(qiMei);
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

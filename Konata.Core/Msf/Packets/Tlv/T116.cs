@@ -13,10 +13,14 @@ namespace Konata.Msf.Packets.Tlv
         public T116(int bitmap, int getSig, long[] subAppIdList = null) : base()
         {
             if (subAppIdList == null)
+            {
                 _subAppIdList = new long[] { 1600000226L };
+            }
 
             _bitmap = (uint)bitmap;
             _getSig = (uint)getSig;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -9,6 +9,7 @@ namespace Konata.Msf.Packets.Tlv
         public T536(byte[] loginExtraData) : base()
         {
             _loginExtraData = loginExtraData;
+
             PackGeneric();
         }
 

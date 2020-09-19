@@ -15,6 +15,8 @@ namespace Konata.Msf.Packets.Tlv
             _simOperatorName = simOperatorName;
             _networkType = networkType;
             _apnName = apnName;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -10,6 +10,8 @@ namespace Konata.Msf.Packets.Tlv
         public T193(string ticket) : base()
         {
             _ticket = ticket;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

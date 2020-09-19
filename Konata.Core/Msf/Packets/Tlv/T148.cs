@@ -20,6 +20,8 @@ namespace Konata.Msf.Packets.Tlv
             _subAppId = subAppId;
             _appVersion = appVersion;
             _appSignature = appSignature;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

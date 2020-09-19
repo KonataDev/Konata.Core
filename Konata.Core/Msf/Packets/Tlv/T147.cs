@@ -13,6 +13,8 @@ namespace Konata.Msf.Packets.Tlv
             _appId = appId;
             _apkVersionName = apkVersionName;
             _apkSignatureMd5 = apkSignatureMd5;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

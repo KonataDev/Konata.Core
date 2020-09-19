@@ -9,6 +9,7 @@ namespace Konata.Msf.Packets.Tlv
         public T525(T536 t536) : base()
         {
             _t536 = t536;
+
             PackGeneric();
         }
 

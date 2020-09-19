@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T145(byte[] guid) : base()
         {
             _guid = guid;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

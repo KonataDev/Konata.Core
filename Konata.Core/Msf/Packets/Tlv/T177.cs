@@ -11,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         {
             _buildTime = buildTime;
             _sdkVersion = sdkVersion;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T109(string osType) : base()
         {
             _osType = osType;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

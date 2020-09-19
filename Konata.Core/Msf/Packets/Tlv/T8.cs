@@ -14,6 +14,8 @@ namespace Konata.Msf.Packets.Tlv
             _localId = localId;
             _timeZoneVer = timeZoneVer;
             _timeZoneOffset = timeZoneOffset;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

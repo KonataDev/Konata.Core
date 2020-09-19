@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T108(byte[] ksid) : base()
         {
             _ksid = ksid;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

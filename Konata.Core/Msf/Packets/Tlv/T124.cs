@@ -20,6 +20,8 @@ namespace Konata.Msf.Packets.Tlv
             _networkDetail = networkDetail;
             _apnName = apnName;
             _address = "";
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

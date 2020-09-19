@@ -9,6 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public T166(int imgType) : base()
         {
             _imgType = imgType;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

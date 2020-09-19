@@ -10,11 +10,15 @@ namespace Konata.Msf.Packets.Tlv
         public T188(byte[] androidId) : base()
         {
             _androidId = androidId;
+
+            PackGeneric();
         }
 
         public T188(string androidId) : base()
         {
             _androidId = Hex.HexStr2Bytes(androidId);
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()
