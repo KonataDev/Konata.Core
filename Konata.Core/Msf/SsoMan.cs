@@ -112,9 +112,9 @@ namespace Konata.Msf
             _ssoSequence = ssoMessage._header._ssoSequence;
             _ssoSession = ssoMessage._header._ssoSession;
 
-            Console.WriteLine($"  [ssoMessage] ssoSeq =>\n{ssoMessage._header._ssoSequence}\n");
-            Console.WriteLine($"  [ssoMessage] ssoSession =>\n{ssoMessage._header._ssoSession}\n");
-            Console.WriteLine($"  [ssoMessage] ssoCommand =>\n{ssoMessage._header._ssoCommand}\n");
+            Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
+            Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
+            Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
 
             try
             {
