@@ -120,11 +120,11 @@ namespace Konata.Msf.Network
         {
             var serviceMessage = new FromServiceMessage(data);
 
-            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}\n");
-            Console.WriteLine($"  [ToService] len =>\n{serviceMessage._length}\n");
-            Console.WriteLine($"  [ToService] packetType =>\n{serviceMessage._packetType}\n");
-            Console.WriteLine($"  [ToService] encryptType =>\n{serviceMessage._encryptType}\n");
-            Console.WriteLine($"  [ToService] uinString =>\n{serviceMessage._uinString}\n");
+            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}");
+            Console.WriteLine($"  [ToService] len => {serviceMessage._length}");
+            Console.WriteLine($"  [ToService] packetType => {serviceMessage._packetType}");
+            Console.WriteLine($"  [ToService] encryptType => {serviceMessage._encryptType}");
+            Console.WriteLine($"  [ToService] uinString => {serviceMessage._uinString}");
 
             _ssoMan.OnFromServiceMessage(serviceMessage);
         }
