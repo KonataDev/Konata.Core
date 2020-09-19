@@ -2,8 +2,12 @@
 
 namespace Konata.Msf.Utils.Crypt
 {
-    public class TeaCryptor : ICryptor
+    public sealed class TeaCryptor : ICryptor
     {
+        public static TeaCryptor Instance { get; } = new TeaCryptor();
+
+        private TeaCryptor() { }
+
         /// <summary>
         /// Encrypt data.
         /// </summary>
