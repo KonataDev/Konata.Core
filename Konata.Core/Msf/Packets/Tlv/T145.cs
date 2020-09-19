@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly byte[] _guid;
 
-        public T145(byte[] guid)
+        public T145(byte[] guid) : base()
         {
             _guid = guid;
         }

@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly int _imgType;
 
-        public T166(int imgType)
+        public T166(int imgType) : base()
         {
             _imgType = imgType;
         }

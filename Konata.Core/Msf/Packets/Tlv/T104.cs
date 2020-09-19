@@ -10,9 +10,10 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _sigSession;
 
-        public T104(string sigSession)
+        public T104(string sigSession) : base()
         {
             _sigSession = sigSession;
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string[] _domains;
 
-        public T511(string[] domains)
+        public T511(string[] domains) : base()
         {
             _domains = domains;
         }

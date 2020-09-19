@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _url;
 
-        public T192(string url)
+        public T192(string url) : base()
         {
             _url = url;
         }

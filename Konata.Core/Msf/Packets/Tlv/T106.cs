@@ -26,7 +26,7 @@ namespace Konata.Msf.Packets.Tlv
 
         public T106(uint appId, uint subAppId, uint appClientVersion,
             uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
-            byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType)
+            byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType) : base()
         {
             _appId = appId;
             _subAppId = subAppId;
@@ -40,34 +40,35 @@ namespace Konata.Msf.Packets.Tlv
             _isGuidAvailable = isGuidAvailable;
             _guid = guid;
             _loginType = loginType;
+
+            PackEncrypted(new TeaCryptor(), GetCryptKey());
         }
+
         public override void PutTlvCmd()
         {
             PutUshortBE(0x0106);
         }
+
         public override void PutTlvBody()
         {
-            StreamBuilder builder = new StreamBuilder();
-            builder.PutUshortBE(_tgtgtVer);
-            builder.PutUintBE((uint)new Random().Next());
-            builder.PutUintBE(_ssoVer);
-            builder.PutUintBE(_appId);
-            builder.PutUintBE(_appClientVersion);
-            builder.PutLongBE(_uin == 0 ? _salt : _uin);
-            builder.PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            builder.PutBytes(_ipAddress);
-            builder.PutBoolBE(_isSavePassword, 1);
-            builder.PutBytes(_passwordMd5);
-            builder.PutBytes(_tgtgKey);
-            builder.PutUintBE(0);
-            builder.PutBoolBE(_isGuidAvailable, 1);
-            builder.PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
-            builder.PutUintBE(_subAppId);
-            builder.PutUintBE((uint)_loginType);
-            builder.PutString(_uin.ToString(), 2);
-            builder.PutUshortBE(0);
-
-            PutEncryptedBytes(builder.GetBytes(), new TeaCryptor(), GetCryptKey());
+            PutUshortBE(_tgtgtVer);
+            PutUintBE((uint)new Random().Next());
+            PutUintBE(_ssoVer);
+            PutUintBE(_appId);
+            PutUintBE(_appClientVersion);
+            PutLongBE(_uin == 0 ? _salt : _uin);
+            PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            PutBytes(_ipAddress);
+            PutBoolBE(_isSavePassword, 1);
+            PutBytes(_passwordMd5);
+            PutBytes(_tgtgKey);
+            PutUintBE(0);
+            PutBoolBE(_isGuidAvailable, 1);
+            PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
+            PutUintBE(_subAppId);
+            PutUintBE((uint)_loginType);
+            PutString(_uin.ToString(), 2);
+            PutUshortBE(0);
         }
 
         private byte[] GetCryptKey()

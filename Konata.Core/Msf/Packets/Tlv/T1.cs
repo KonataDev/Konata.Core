@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Utils;
 
 namespace Konata.Msf.Packets.Tlv
 {
@@ -12,6 +11,8 @@ namespace Konata.Msf.Packets.Tlv
         {
             _uin = uin;
             _ipAddress = ipAddress;
+
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

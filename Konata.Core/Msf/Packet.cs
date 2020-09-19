@@ -6,10 +6,8 @@ using System.IO;
 
 namespace Konata.Msf
 {
-
     public class Packet
     {
-
         public enum Endian
         {
             Big,
@@ -29,14 +27,16 @@ namespace Konata.Msf
 
         public enum ReadWrite
         {
-            Read,
             Write,
+            Read,
             //ReadAndWrite
         }
-        private ReadWrite _flag;
 
+        private ReadWrite _flag;
         private byte[] _packetBuffer;
         private int _packetLength;
+        private static readonly IOException _bufferErr = 
+            new IOException("Insufficient buffer space.");
 
         public Packet()
         {
@@ -45,8 +45,8 @@ namespace Konata.Msf
 
         public Packet(byte[] data)
         {
-            _flag = ReadWrite.Read;
             _pos = 0;
+            _flag = ReadWrite.Read;
 
             _packetBuffer = new byte[data.Length];
             Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
@@ -55,38 +55,10 @@ namespace Konata.Msf
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
         {
             _flag = ReadWrite.Read;
+            //
         }
 
-        /// <summary>
-        /// 寫入數據
-        /// </summary>
-        /// <param name="data">數據</param>
-        /// 
-        private void WriteBytes(byte[] data)
-        {
-            // 分配新的空間
-            var targetLength = _packetLength + data.Length;
-            int len = targetLength >> 10;
-            if ((targetLength & 1023) > 0)
-            {
-                ++len;
-            }
-            len <<= 10;
-            if (_packetBuffer == null)
-            {
-                _packetBuffer = new byte[len];
-            }
-            else if (_packetBuffer.Length < targetLength)
-            {
-                Array.Resize(ref _packetBuffer, len);
-            }
-
-            // 寫入數據
-            Buffer.BlockCopy(data, 0, _packetBuffer, _packetLength, data.Length);
-
-            // 更新長度
-            _packetLength = targetLength;
-        }
+        #region PutMethods 放入數據 此方法組會增長緩衝區
 
         public void PutSbyte(sbyte value)
         {
@@ -374,19 +346,9 @@ namespace Konata.Msf
         }
 
         private uint _pos;
+        #endregion
 
-        private bool CheckAvailable(uint length = 0)
-        {
-            return _pos + length <= _packetLength;
-        }
-
-        private void UpdatePosition(uint length = 0)
-        {
-            _pos += length;
-        }
-
-        private static readonly IOException _bufferErr = new IOException("Insufficient buffer space.");
-
+        #region TakeMethods 拿走數據 此方法組會縮短緩衝區
         public long TakeSigned(out long value, uint length, Endian endian = Endian.Big)
         {
             if (CheckAvailable(length))
@@ -550,7 +512,7 @@ namespace Konata.Msf
 
         public ulong TakeUlong(out ulong value, Endian endian)
         {
-            return value = TakeUnsigned(out ulong _, 8,endian);
+            return value = TakeUnsigned(out ulong _, 8, endian);
         }
 
         public bool TakeBoolBE(out bool value, byte length)
@@ -603,29 +565,29 @@ namespace Konata.Msf
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-            case 0: // Read to end.
-                length = (uint)(_packetLength - _pos);
-                break;
-            case 1:
-            case 2:
-            case 4:
-                if (CheckAvailable(preLen))
-                {
-                    length = (uint)BufferIO.BytesToUIntBE(_packetBuffer, _pos, preLen);
-                    _pos += preLen;
-                    if (reduce)
-                    {
-                        if (length < preLen)
-                        {
-                            throw new IOException("Data length is less than prefix length.");
-                        }
-                        length -= preLen;
-                    }
+                case 0: // Read to end.
+                    length = (uint)(_packetLength - _pos);
                     break;
-                }
-                throw _bufferErr;
-            default:
-                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                case 1:
+                case 2:
+                case 4:
+                    if (CheckAvailable(preLen))
+                    {
+                        length = (uint)BufferIO.BytesToUIntBE(_packetBuffer, _pos, preLen);
+                        _pos += preLen;
+                        if (reduce)
+                        {
+                            if (length < preLen)
+                            {
+                                throw new IOException("Data length is less than prefix length.");
+                            }
+                            length -= preLen;
+                        }
+                        break;
+                    }
+                    throw _bufferErr;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
             if (CheckAvailable(length))
             {
@@ -643,29 +605,29 @@ namespace Konata.Msf
             return value = cryptor.Decrypt(TakeBytes(out var _, prefixFlag), cryptKey);
         }
 
+        /// <summary>
+        /// 吃掉數據 φ(゜▽゜*)♪
+        /// </summary>
+        /// <param name="length"></param>
         public void EatBytes(uint length)
         {
             _pos += length;
         }
 
+        #endregion
+
+        #region GetMethods 獲取數據 此方法組不會對緩衝區造成影響
+
         /// <summary>
         /// 獲取打包數據
         /// </summary>
         /// <returns></returns>
-        public virtual byte[] GetBytes()
+        public byte[] GetBytes()
         {
             var data = new byte[_packetLength];
             Buffer.BlockCopy(_packetBuffer, 0, data, 0, _packetLength);
 
-            _packetBuffer = null;
-            _packetLength = 0;
-
             return data;
-        }
-
-        public string ToHexString()
-        {
-            return Hex.Bytes2HexStr(GetBytes());
         }
 
         /// <summary>
@@ -677,35 +639,30 @@ namespace Konata.Msf
             return cryptor.Encrypt(GetBytes(), cryptKey);
         }
 
-        public int Length
+        /// <summary>
+        /// 到字符串
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
-            get { return _packetLength; }
+            return Hex.Bytes2HexStr(GetBytes());
         }
 
-        public static Packet operator +(Packet a, Packet b)
-        {
-            var packet = new Packet();
-            packet.PutPacket(a);
-            packet.PutPacket(b);
-            return packet;
-        }
+        #endregion
 
-        public static Packet operator +(byte[] a, Packet b)
-        {
-            var packet = new Packet();
-            packet.PutBytes(a);
-            packet.PutPacket(b);
-            return packet;
-        }
+        #region BarrierMethods 屏障方法會計算PutMethods放入數據的長度 並寫到它們的前面
 
-        public static Packet operator +(Packet a, byte[] b)
-        {
-            var packet = new Packet();
-            packet.PutPacket(a);
-            packet.PutBytes(b);
-            return packet;
-        }
+        private bool _barEnc = false;
+        private byte[] _barEncBuffer;
+        private uint _barEncLength;
+        private ICryptor _barEncCryptor;
+        private byte[] _barEncKey;
 
+        /// <summary>
+        /// [進入屏障] 在這之後透過 PutMethods 方法組放入的數據將被計算長度
+        /// </summary>
+        /// <param name="lengthSize"></param>
+        /// <param name="endian"></param>
         protected void EnterBarrier(int lengthSize, Endian endian)
         {
             _barPos = _packetLength;
@@ -714,9 +671,79 @@ namespace Konata.Msf
             PutBytes(new byte[lengthSize]);
         }
 
+        protected void EnterBarrierEncrypted(int lengthSize, Endian endian, ICryptor cryptor, byte[] cryptKey)
+        {
+            EnterBarrier(lengthSize, endian);
+            _barEnc = true;
+            _barEncBuffer = _packetBuffer;
+            _barEncLength = _packetLength;
+            _barEncCryptor = cryptor;
+            _barEncKey = cryptKey;
+            _packetBuffer = null;
+            _packetLength = 0;
+        }
+
+        /// <summary>
+        /// [離開屏障] 會立即在加入的數據前寫入長度
+        /// </summary>
         protected void LeaveBarrier()
         {
-            InsertPrefix(_packetBuffer, _packetLength - _barPos - _lenSize, _lenSize, _barPos, _barLenEndian);
+            if (_barEnc)
+            {
+                byte[] enc = GetEncryptedBytes(_barEncCryptor, _barEncKey);
+                _packetBuffer = _barEncBuffer;
+                _packetLength = _barEncLength;
+                PutBytes(enc);
+                _barEnc = false;
+                _barEncBuffer = null;
+                _barEncLength = 0;
+                _barEncCryptor = null;
+                _barEncKey = null;
+            }
+            InsertPrefix(_packetBuffer, _packetLength - _barPos - _lenSize,
+                _lenSize, _barPos, _barLenEndian);
+        }
+
+        #endregion
+
+        public int Length
+        {
+            get { return _packetLength; }
+        }
+
+        /// <summary>
+        /// 寫入數據
+        /// </summary>
+        /// <param name="data">數據</param>
+        private void WriteBytes(byte[] data)
+        {
+            // 分配新的空間
+            var targetLength = _packetLength + data.Length;
+            int len = targetLength >> 10;
+            if ((targetLength & 1023) > 0)
+            {
+                ++len;
+            }
+            len <<= 10;
+            if (_packetBuffer == null)
+            {
+                _packetBuffer = new byte[len];
+            }
+            else if (_packetBuffer.Length < targetLength)
+            {
+                Array.Resize(ref _packetBuffer, len);
+            }
+
+            // 寫入數據
+            Buffer.BlockCopy(data, 0, _packetBuffer, _packetLength, data.Length);
+
+            // 更新長度
+            _packetLength = targetLength;
+        }
+
+        private bool CheckAvailable(uint length = 0)
+        {
+            return _pos + length <= _packetLength;
         }
 
         private int _barPos;
@@ -755,5 +782,31 @@ namespace Konata.Msf
             }
             return true;
         }
+
+        #region Operators
+        public static Packet operator +(Packet a, Packet b)
+        {
+            var packet = new Packet();
+            packet.PutPacket(a);
+            packet.PutPacket(b);
+            return packet;
+        }
+
+        public static Packet operator +(byte[] a, Packet b)
+        {
+            var packet = new Packet();
+            packet.PutBytes(a);
+            packet.PutPacket(b);
+            return packet;
+        }
+
+        public static Packet operator +(Packet a, byte[] b)
+        {
+            var packet = new Packet();
+            packet.PutPacket(a);
+            packet.PutBytes(b);
+            return packet;
+        }
+        #endregion
     }
 }

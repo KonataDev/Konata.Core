@@ -1,6 +1,5 @@
 ﻿using Konata.Msf;
 using Konata.Msf.Utils.Crypt;
-using Konata.Utils;
 
 namespace Konata.Msf.Packets
 {
@@ -13,6 +12,11 @@ namespace Konata.Msf.Packets
         {
             _header = new Header(seq, session, command);
             _packet = packet;
+
+            PutUintBE((uint)(_header.Length + 4));
+            PutPacket(_header);
+            PutUintBE((uint)(_packet.Length + 4));
+            PutPacket(_packet);
         }
 
         public SsoMessage(byte[] data, byte[] cryptKey)
@@ -20,16 +24,6 @@ namespace Konata.Msf.Packets
         {
             _header = new Header(GetBytes());
             _packet = new Packet(_header.GetBytes());
-        }
-
-        public override byte[] GetBytes()
-        {
-            PutUintBE((uint)(_header.Length + 4));
-            PutPacket(_header);
-            PutUintBE((uint)(_packet.Length + 4));
-            PutPacket(_packet);
-
-            return base.GetBytes();
         }
 
         public class Header : Packet
@@ -43,29 +37,12 @@ namespace Konata.Msf.Packets
             public readonly uint _ssoSession;
             public readonly string _ssoCommand;
 
-            public Header(uint ssoSequence, uint session, string command)
+            public Header(uint ssoSequence, uint ssoSession, string ssoCommand)
             {
                 _ssoSequence = ssoSequence;
-                _ssoSession = session;
-                _ssoCommand = command;
-            }
+                _ssoSession = ssoSession;
+                _ssoCommand = ssoCommand;
 
-            public Header(byte[] data) : base(data)
-            {
-                EatBytes(4);
-                TakeUintBE(out _ssoSequence);
-
-                TakeBytes(out _extraData, Prefix.Uint16 | Prefix.WithPrefix);
-                TakeString(out _ssoCommand, Prefix.Uint16 | Prefix.WithPrefix);
-
-                EatBytes(4);
-                TakeUintBE(out _ssoSession);
-
-                EatBytes(4);
-            }
-
-            public override byte[] GetBytes()
-            {
                 PutUintBE(_ssoSequence);
                 PutUintBE(AppInfo.subAppId);
                 PutUintBE(AppInfo.subAppId);
@@ -91,8 +68,20 @@ namespace Konata.Msf.Packets
 
                 PutUintBE((uint)(_unknownBytes1.Length + 4));
                 PutBytes(_unknownBytes1);
+            }
 
-                return base.GetBytes();
+            public Header(byte[] data) : base(data)
+            {
+                EatBytes(4);
+                TakeUintBE(out _ssoSequence);
+
+                TakeBytes(out _extraData, Prefix.Uint16 | Prefix.WithPrefix);
+                TakeString(out _ssoCommand, Prefix.Uint16 | Prefix.WithPrefix);
+
+                EatBytes(4);
+                TakeUintBE(out _ssoSession);
+
+                EatBytes(4);
             }
         }
     }

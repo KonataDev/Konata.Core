@@ -6,7 +6,7 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _deviceName;
 
-        public T16e(string deviceName)
+        public T16e(string deviceName) : base()
         {
             _deviceName = deviceName;
         }

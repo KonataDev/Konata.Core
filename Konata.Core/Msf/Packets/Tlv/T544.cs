@@ -9,9 +9,10 @@ namespace Konata.Msf.Packets.Tlv
     {
         private readonly string _wtLoginSdk;
 
-        public T544(string wtLoginSdk)
+        public T544(string wtLoginSdk) : base()
         {
             _wtLoginSdk = wtLoginSdk;
+            PackGeneric();
         }
 
         public override void PutTlvCmd()

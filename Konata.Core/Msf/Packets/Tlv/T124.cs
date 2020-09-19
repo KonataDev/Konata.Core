@@ -12,7 +12,7 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _apnName;
 
         public T124(string osType, string osVersion, NetworkType networkType,
-            string networkDetail, string apnName)
+            string networkDetail, string apnName) : base()
         {
             _osType = osType;
             _osVersion = osVersion;
