@@ -12,37 +12,20 @@ namespace Konata.Msf.Packets.Oicq
     {
         private KeyBody _keyBody;
         private TlvBody _tlvBody;
+        private KeyRing _keyRing;
 
         public OicqRequestTgtgt(uint uin, string password, uint ssoseq, KeyRing keyring)
+            : base(0x0810, 0x09, uin)
         {
-            _cmd = 0x0810;
-            _subCmd = 0x09;
-
+            _keyRing = keyring;
             _keyBody = new KeyBody(keyring._randKey, keyring._defaultPublicKey);
-            _tlvBody = new TlvBody(_subCmd, uin, password, ssoseq, keyring._tgtgKey);
+            _tlvBody = new TlvBody(_oicqSubCommand, uin, password, ssoseq, keyring._tgtgKey);
+        }
 
-            // 構建 oicq_request
-            PutByte(0x02); // 頭部 0x02
-
-            EnterBarrier(2, Endian.Big, 4);
-            {
-                PutUshortBE(8001); // 協議版本 1F 41
-                PutUshortBE(_cmd);
-                PutUshortBE(1);
-                PutUintBE(uin);
-                PutByte(0x03);
-                PutByte(0x87); // 加密方式id
-                PutByte(0x00); // 永遠0
-                PutUintBE(2);
-                PutUintBE(AppInfo.appClientVersion);
-                PutUintBE(0);
-
-                PutPacket(_keyBody);
-                PutPacketEncrypted(_tlvBody, TeaCryptor.Instance, keyring._shareKey);
-            }
-            LeaveBarrier();
-
-            PutByte(0x03); // 尾部 0x03
+        protected override void PutRequestBody()
+        {
+            PutPacket(_keyBody);
+            PutPacketEncrypted(_tlvBody, TeaCryptor.Instance, _keyRing._shareKey);
         }
 
         private class KeyBody : Packet
