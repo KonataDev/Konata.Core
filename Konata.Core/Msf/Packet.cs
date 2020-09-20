@@ -726,6 +726,10 @@ namespace Konata.Msf
 
         #endregion
 
+        #region ValidateMethods 驗證方法會使用TakeMethods拿出數據並驗證有效性 不符合則會抛出錯誤
+
+        #endregion
+
         public uint Length
         {
             get { return _packetLength; }
@@ -800,6 +804,7 @@ namespace Konata.Msf
         }
 
         #region Operators
+
         public static Packet operator +(Packet a, Packet b)
         {
             var packet = new Packet();
@@ -823,6 +828,7 @@ namespace Konata.Msf
             packet.PutBytes(b);
             return packet;
         }
+
         #endregion
     }
 }
