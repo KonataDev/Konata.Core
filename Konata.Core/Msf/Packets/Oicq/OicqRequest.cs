@@ -113,8 +113,7 @@ namespace Konata.Msf.Packets.Oicq
             : base(data, TeaCryptor.Instance, shareKey)
         {
             TakeUshortBE(out _oicqSubCommand);
-            TakeByte(out var status); _oicqStatus = (OicqStatus)status;
-
+            _oicqStatus = (OicqStatus)TakeByte(out var _);
         }
     }
 
