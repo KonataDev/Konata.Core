@@ -569,30 +569,42 @@ namespace Konata.Msf
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-            case 0: // Read to end.
-                length = _packetLength - _pos;
-                break;
-            case 1:
-            case 2:
-            case 4:
-                if (CheckAvailable(preLen))
-                {
-                    length = (uint)BufferIO.BytesToUIntBE(_packetBuffer, _pos, preLen);
-                    _pos += preLen;
-                    if (reduce)
-                    {
-                        if (length < preLen)
-                        {
-                            throw new IOException("Data length is less than prefix length.");
-                        }
-                        length -= preLen;
-                    }
+                case 0: // Read to end.
+                    length = _packetLength - _pos;
                     break;
-                }
-                throw _bufferErr;
-            default:
-                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                case 1:
+                case 2:
+                case 4:
+                    if (CheckAvailable(preLen))
+                    {
+                        length = (uint)BufferIO.BytesToUIntBE(_packetBuffer, _pos, preLen);
+                        _pos += preLen;
+                        if (reduce)
+                        {
+                            if (length < preLen)
+                            {
+                                throw new IOException("Data length is less than prefix length.");
+                            }
+                            length -= preLen;
+                        }
+                        break;
+                    }
+                    throw _bufferErr;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
+            if (CheckAvailable(length))
+            {
+                value = new byte[length];
+                Buffer.BlockCopy(_packetBuffer, (int)_pos, value, 0, (int)length);
+                _pos += length;
+                return value;
+            }
+            throw _bufferErr;
+        }
+
+        public byte[] TakeBytes(out byte[] value, uint length)
+        {
             if (CheckAvailable(length))
             {
                 value = new byte[length];
@@ -733,6 +745,11 @@ namespace Konata.Msf
         public uint Length
         {
             get { return _packetLength; }
+        }
+
+        public uint RemainLength
+        {
+            get { return _packetLength - _pos; }
         }
 
         /// <summary>
