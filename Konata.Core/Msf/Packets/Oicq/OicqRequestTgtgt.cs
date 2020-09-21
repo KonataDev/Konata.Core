@@ -20,6 +20,8 @@ namespace Konata.Msf.Packets.Oicq
             _keyRing = keyring;
             _keyBody = new KeyBody(keyring._randKey, keyring._defaultPublicKey);
             _tlvBody = new TlvBody(_oicqSubCommand, uin, password, ssoseq, keyring._tgtgKey);
+
+            PackRequest();
         }
 
         protected override void PutRequestBody()
