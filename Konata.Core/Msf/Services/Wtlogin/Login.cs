@@ -68,7 +68,6 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do Slider.");
-            request.TakeAllBytes();
 
             return false;
         }
