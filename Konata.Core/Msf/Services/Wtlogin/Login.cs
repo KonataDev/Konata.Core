@@ -1,6 +1,7 @@
 ﻿using System;
 using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
+using Konata.Utils;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -28,7 +29,8 @@ namespace Konata.Msf.Services.Wtlogin
                 return false;
 
             var packet = ((Packet)args[0]);
-            var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _));
+            var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
+                core._keyRing._shareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest._oicqCommand}");
             Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest._oicqVersion}");
@@ -65,6 +67,8 @@ namespace Konata.Msf.Services.Wtlogin
 
         internal bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
         {
+            Console.WriteLine("Do Slider.");
+            request.TakeAllBytes();
 
             return false;
         }
