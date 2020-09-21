@@ -1,6 +1,7 @@
 ﻿using System;
 using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
+using Konata.Utils;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -24,8 +25,26 @@ namespace Konata.Msf.Services.Wtlogin
 
         protected override bool OnHandle(Core core, params object[] args)
         {
-            var data = ((Packet)args[0]).GetBytes();
+            if (args == null || args.Length == 0)
+                return false;
 
+            var packet = ((Packet)args[0]);
+            var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
+                core._keyRing._shareKey);
+
+            Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest._oicqCommand}");
+            Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest._oicqVersion}");
+            Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest._oicqStatus}");
+
+            core._oicqStatus = oicqRequest._oicqStatus;
+
+            switch (oicqRequest._oicqStatus)
+            {
+                case OicqStatus.DoVerifySlider:
+                    return Handle_VerifySliderCaptcha(core, oicqRequest);
+                case OicqStatus.PreventByIncorrectUserOrPwd:
+                    return Handle_InvalidUserOrPassword(core, oicqRequest);
+            }
 
             return false;
         }
@@ -46,27 +65,16 @@ namespace Konata.Msf.Services.Wtlogin
             return true;
         }
 
-        /// <summary>
-        /// 請求 OicqCheckImage
-        /// </summary>
-        /// <param name="core"></param>
-        internal bool Request_CheckImage(Core core)
+        internal bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
         {
-            var sequence = core._ssoMan.GetNewSequence();
+            Console.WriteLine("Do Slider.");
 
-            var request = new OicqRequestCheckImage();
-
-            core._ssoMan.PostMessage(this, request);
-
-            return true;
+            return false;
         }
 
-        /// <summary>
-        /// 處理 OicqTGTGT
-        /// </summary>
-        /// <param name="core"></param>
-        internal bool Handle_TGTGT(Core core)
+        internal bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
+            Console.WriteLine("Incorrect account or password.");
             return false;
         }
 

@@ -1,18 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets.Oicq
 {
     public class OicqRequestCheckImage : OicqRequest
     {
-        public OicqRequestCheckImage()
+        public OicqRequestCheckImage(uint uin, KeyRing keyring)
+            : base(0x0810, 0x02, uin, new XCaptcha(), 
+                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
-            _cmd = 0x0810;
-            _subCmd = 0x02;
-        }
 
+        }
+    }
+
+    public class XCaptcha : OicqRequestBody
+    {
+        public XCaptcha()
+        {
+
+        }
     }
 }

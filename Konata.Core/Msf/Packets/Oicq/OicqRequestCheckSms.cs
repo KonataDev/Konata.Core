@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets.Oicq
 {
     public class OicqRequestCheckSms : OicqRequest
     {
-        public OicqRequestCheckSms()
+        public OicqRequestCheckSms(uint uin, KeyRing keyring)
+            : base(0x0810, 0x07, uin, new XSms(),
+                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
-            _cmd = 0x0810;
-            _subCmd = 0x07;
+
+        }
+    }
+
+    public class XSms : OicqRequestBody
+    {
+        public XSms()
+        {
+
         }
     }
 }

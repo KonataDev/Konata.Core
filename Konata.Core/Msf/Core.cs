@@ -2,6 +2,7 @@
 using Konata.Msf;
 using Konata.Msf.Crypto;
 using Konata.Msf.Network;
+using Konata.Msf.Packets.Oicq;
 
 namespace Konata.Msf
 {
@@ -29,6 +30,8 @@ namespace Konata.Msf
 
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
+        internal OicqStatus _oicqStatus;
+
         internal EventDelegate _eventHandler;
 
         public Core(uint uin, string password)
