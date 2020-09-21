@@ -1,6 +1,5 @@
 ﻿using System;
 using Konata.Msf.Utils.Crypt;
-using Konata.Utils;
 
 namespace Konata.Msf.Packets.Oicq
 {
@@ -29,16 +28,16 @@ namespace Konata.Msf.Packets.Oicq
         public readonly OicqStatus _oicqStatus;
         public readonly OicqRequestBody _oicqRequestBody;
 
-        public OicqRequest(ushort command, ushort subCommand, uint uin) : base()
+        public OicqRequest(ushort command, ushort subCommand, uint uin,
+            OicqRequestBody body, byte[] shareKey, byte[] randKey, byte[] publicKey)
+            : base()
         {
             _uin = uin;
             _oicqVersion = 8001;
             _oicqCommand = command;
             _oicqSubCommand = subCommand;
-        }
+            _oicqRequestBody = body;
 
-        internal void PackRequest()
-        {
             PutByte(0x02); // 頭部 0x02
             {
                 EnterBarrier(2, Endian.Big, 4);
@@ -54,18 +53,12 @@ namespace Konata.Msf.Packets.Oicq
                     PutUintBE(AppInfo.appClientVersion);
                     PutUintBE(0);
 
-                    PutRequestBody();
+                    PutOicqRequestBody(_oicqRequestBody, shareKey, randKey, publicKey);
                 }
                 LeaveBarrier();
             }
             PutByte(0x03); // 尾部 0x03
         }
-
-        protected virtual void PutRequestBody()
-        {
-            // Do Nothing Here.
-        }
-
 
         public OicqRequest(byte[] data, byte[] shareKey) : base(data)
         {
@@ -91,12 +84,17 @@ namespace Konata.Msf.Packets.Oicq
 
         private void TakeOicqRequestBody(out OicqRequestBody body, byte[] shareKey)
         {
-            body = new OicqRequestBody(TakeAllBytes(out byte[] _), shareKey);
+            body = new OicqRequestBody(TakeBytes(out byte[] _, RemainLength - 1), shareKey);
         }
 
-        private void PutOicqRequestBody(OicqRequestBody body, byte[] shareKey)
+        private void PutOicqRequestBody(OicqRequestBody body, byte[] shareKey,
+            byte[] randKey, byte[] publicKey)
         {
-
+            PutUshortBE(0x0101);
+            PutBytes(randKey);
+            PutUshortBE(0x0102);
+            PutBytes(publicKey, 2);
+            PutPacketEncrypted(body, TeaCryptor.Instance, shareKey);
         }
     }
 
@@ -116,8 +114,6 @@ namespace Konata.Msf.Packets.Oicq
         {
             TakeUshortBE(out _oicqSubCommand);
             TakeByte(out var status); _oicqStatus = (OicqStatus)status;
-
-
 
         }
     }
