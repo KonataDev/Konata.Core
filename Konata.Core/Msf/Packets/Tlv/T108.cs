@@ -1,26 +1,32 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T108 : TlvBase
     {
-        private readonly byte[] _ksid;
+        public T108(byte[] ksid)
+            : base(0x0108, new T108Body(ksid, ksid.Length))
+        {
 
-        public T108(byte[] ksid) : base()
+        }
+    }
+
+    public class T108Body : TlvBody
+    {
+        public readonly byte[] _ksid;
+
+        public T108Body(byte[] ksid, int ksidLength)
+            : base()
         {
             _ksid = ksid;
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x108);
-        }
-
-        public override void PutTlvBody()
-        {
             PutBytes(_ksid);
+        }
+
+        public T108Body(byte[] data)
+            : base(data)
+        {
+            TakeBytes(out _ksid, Prefix.None);
         }
     }
 }

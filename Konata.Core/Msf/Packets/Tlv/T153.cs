@@ -1,26 +1,32 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T153 : TlvBase
     {
-        private readonly bool _isRooted;
+        public T153(bool isRooted)
+            : base(0x0153, new T153Body(isRooted))
+        {
 
-        public T153(bool isRooted) : base()
+        }
+    }
+
+    public class T153Body : TlvBody
+    {
+        public readonly bool _isRooted;
+
+        public T153Body(bool isRooted)
+            : base()
         {
             _isRooted = isRooted;
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x153);
-        }
-
-        public override void PutTlvBody()
-        {
             PutBoolBE(_isRooted, 2);
+        }
+
+        public T153Body(byte[] data)
+            : base(data)
+        {
+            TakeBoolBE(out _isRooted, 2);
         }
     }
 }

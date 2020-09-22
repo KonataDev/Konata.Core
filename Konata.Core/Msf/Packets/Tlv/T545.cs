@@ -5,23 +5,29 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T545 : TlvBase
     {
-        private readonly byte[] _unknownQiMei;
-
-        public T545(string qiMei = "") : base()
+        public T545(string qiMei = "")
+            : base(0x0545, new T545Body(qiMei))
         {
-            _unknownQiMei = Hex.HexStr2Bytes(qiMei);
 
-            PackGeneric();
+        }
+    }
+
+    public class T545Body : TlvBody
+    {
+        public readonly byte[] _unknownQiMeiMd5;
+
+        public T545Body(string qiMei)
+            : base()
+        {
+            _unknownQiMeiMd5 = new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(qiMei));
+
+            PutBytes(_unknownQiMeiMd5);
         }
 
-        public override void PutTlvCmd()
+        public T545Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x545);
-        }
-
-        public override void PutTlvBody()
-        {
-            PutEncryptedBytes(_unknownQiMei, new Md5Cryptor(), null);
+            TakeBytes(out _unknownQiMeiMd5, Prefix.None);
         }
     }
 }

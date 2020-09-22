@@ -5,30 +5,43 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T188 : TlvBase
     {
-        private readonly byte[] _androidId;
-
-        public T188(byte[] androidId) : base()
+        public T188(byte[] androidId)
+            : base(0x0188, new T188Body(androidId, androidId.Length))
         {
-            _androidId = androidId;
 
-            PackGeneric();
         }
 
-        public T188(string androidId) : base()
+        public T188(string androidId)
+            : base(0x0188, new T188Body(androidId))
         {
-            _androidId = Hex.HexStr2Bytes(androidId);
 
-            PackGeneric();
+        }
+    }
+
+    public class T188Body : TlvBody
+    {
+        public readonly byte[] _androidIdMd5;
+
+        public T188Body(byte[] androidId, int androidIdLength)
+            : base()
+        {
+            _androidIdMd5 = new Md5Cryptor().Encrypt(androidId);
+
+            PutBytes(_androidIdMd5);
         }
 
-        public override void PutTlvCmd()
+        public T188Body(string androidId)
+            : base()
         {
-            PutUshortBE(0x188);
+            _androidIdMd5 = new Md5Cryptor().Encrypt(Hex.HexStr2Bytes(androidId));
+
+            PutBytes(_androidIdMd5);
         }
 
-        public override void PutTlvBody()
+        public T188Body(byte[] data)
+            : base(data)
         {
-            PutEncryptedBytes(_androidId, new Md5Cryptor(), null);
+            TakeBytes(out _androidIdMd5, Prefix.None);
         }
     }
 }

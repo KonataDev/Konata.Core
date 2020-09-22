@@ -1,34 +1,37 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T18 : TlvBase
     {
-        private const ushort _sigVer = 0;
-        private const ushort _pingVersion = 1;
-        private const ushort _alwaysZero = 0;
-        private const uint _ssoVersion = 1536;
-
-        private readonly uint _appId;
-        private readonly uint _appClientVersion;
-        private readonly uint _uin;
-
-        public T18(uint appId, uint appClientVersion, uint uin) : base()
+        public T18(uint appId, uint appClientVersion, uint uin)
+            : base(0x0018, new T18Body(appId, appClientVersion, uin))
         {
+
+        }
+    }
+
+    public class T18Body : TlvBody
+    {
+        public readonly ushort _sigVer;
+        public readonly ushort _pingVersion;
+        public readonly ushort _alwaysZero;
+        public readonly uint _ssoVersion;
+        public readonly uint _appId;
+        public readonly uint _appClientVersion;
+        public readonly uint _uin;
+
+        public T18Body(uint appId, uint appClientVersion, uint uin)
+            : base()
+        {
+            _sigVer = 0;
+            _pingVersion = 1;
+            _alwaysZero = 0;
+            _ssoVersion = 1536;
+            _uin = uin;
             _appId = appId;
             _appClientVersion = appClientVersion;
-            _uin = uin;
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x18);
-        }
-
-        public override void PutTlvBody()
-        {
             PutUshortBE(_pingVersion);
             PutUintBE(_ssoVersion);
             PutUintBE(_appId);
@@ -36,6 +39,18 @@ namespace Konata.Msf.Packets.Tlv
             PutUintBE(_uin);
             PutUshortBE(_alwaysZero);
             PutUshortBE(0);
+        }
+
+        public T18Body(byte[] data)
+            : base(data)
+        {
+            TakeUshortBE(out _pingVersion);
+            TakeUintBE(out _ssoVersion);
+            TakeUintBE(out _appId);
+            TakeUintBE(out _appClientVersion);
+            TakeUintBE(out _uin);
+            TakeUshortBE(out _alwaysZero);
+            EatBytes(2);
         }
     }
 }

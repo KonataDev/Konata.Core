@@ -1,81 +1,107 @@
 ﻿using System;
-using System.Linq;
-using Konata.Utils;
-using Konata.Msf.Utils.Crypt;
 using Guid = Konata.Utils.Guid;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T106 : TlvBase
     {
-        private const ushort _tgtgtVer = 4;
-        private const uint _ssoVer = 6;
-
-        private readonly uint _appId;
-        private readonly uint _subAppId;
-        private readonly uint _appClientVersion;
-        private readonly uint _uin;
-        private readonly byte[] _ipAddress;
-        private readonly bool _isSavePassword;
-        private readonly byte[] _passwordMd5;
-        private readonly long _salt;
-        private readonly byte[] _tgtgKey;
-        private readonly bool _isGuidAvailable;
-        private readonly byte[] _guid;
-        private readonly LoginType _loginType;
-
         public T106(uint appId, uint subAppId, uint appClientVersion,
-            uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
-            byte[] tgtgKey, bool isGuidAvailable, byte[] guid, LoginType loginType) : base()
+            uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5,
+            long salt, bool isGuidAvailable, byte[] guid, LoginType loginType,
+            byte[] tgtgKey, byte[] t106Key)
+
+            : base(0x0106, new T106Body(appId, subAppId, appClientVersion, uin, ipAddress,
+            isSavePassword, passwordMd5, salt, isGuidAvailable, guid, loginType, tgtgKey), t106Key)
         {
+
+        }
+    }
+
+    public class T106Body : TlvBody
+    {
+        public readonly ushort _tgtgtVer;
+        public readonly uint _ssoVer;
+        public readonly uint _appId;
+        public readonly uint _subAppId;
+        public readonly uint _appClientVersion;
+        public readonly uint _uin;
+        public readonly string _uinString;
+        public readonly byte[] _ipAddress;
+        public readonly bool _isSavePassword;
+        public readonly byte[] _passwordMd5;
+        public readonly long _salt;
+        public readonly byte[] _tgtgKey;
+        public readonly bool _isGuidAvailable;
+        public readonly byte[] _guid;
+        public readonly LoginType _loginType;
+        public readonly int _randomNumber;
+        public readonly uint _timeNow;
+
+        public T106Body(uint appId, uint subAppId, uint appClientVersion,
+            uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5, long salt,
+            bool isGuidAvailable, byte[] guid, LoginType loginType, byte[] tgtgKey)
+            : base()
+        {
+            _ssoVer = 6;
+            _tgtgtVer = 4;
+
+            _uin = uin;
+            _uinString = uin.ToString();
+            _salt = salt;
+            _guid = guid;
             _appId = appId;
+            _tgtgKey = tgtgKey;
+            _loginType = loginType;
+            _ipAddress = ipAddress;
             _subAppId = subAppId;
             _appClientVersion = appClientVersion;
-            _uin = uin;
-            _ipAddress = ipAddress;
             _isSavePassword = isSavePassword;
             _passwordMd5 = passwordMd5;
-            _salt = salt;
-            _tgtgKey = tgtgKey;
             _isGuidAvailable = isGuidAvailable;
-            _guid = guid;
-            _loginType = loginType;
+            _randomNumber = new Random().Next();
+            _timeNow = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            PackEncrypted(TeaCryptor.Instance, GetCryptKey());
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x0106);
-        }
-
-        public override void PutTlvBody()
-        {
             PutUshortBE(_tgtgtVer);
-            PutUintBE((uint)new Random().Next());
+            PutIntBE(_randomNumber);
             PutUintBE(_ssoVer);
             PutUintBE(_appId);
             PutUintBE(_appClientVersion);
             PutLongBE(_uin == 0 ? _salt : _uin);
-            PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            PutUintBE(_timeNow);
             PutBytes(_ipAddress);
             PutBoolBE(_isSavePassword, 1);
-            PutBytes(_passwordMd5);
-            PutBytes(_tgtgKey);
+            PutBytes(_passwordMd5, 0, 16);
+            PutBytes(_tgtgKey, 0, 16);
             PutUintBE(0);
             PutBoolBE(_isGuidAvailable, 1);
-            PutBytes(_isGuidAvailable ? _guid : Guid.Generate());
+            PutBytes(_isGuidAvailable ? _guid : Guid.Generate(), 0, 16);
             PutUintBE(_subAppId);
             PutUintBE((uint)_loginType);
-            PutString(_uin.ToString(), 2);
+            PutString(_uinString, 2);
             PutUshortBE(0);
         }
 
-        private byte[] GetCryptKey()
+        public T106Body(byte[] data)
+            : base(data)
         {
-            return new Md5Cryptor().Encrypt(_passwordMd5
-                .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
-                .Concat(BitConverter.GetBytes(_uin).Reverse()).ToArray());
+            TakeUshortBE(out _tgtgtVer);
+            TakeIntBE(out _randomNumber);
+            TakeUintBE(out _ssoVer);
+            TakeUintBE(out _appId);
+            TakeUintBE(out _appClientVersion);
+            TakeLongBE(out var uin); _salt = uin; _uin = (uint)uin;
+            TakeUintBE(out _timeNow);
+            TakeBytes(out _ipAddress, 4);
+            TakeBoolBE(out _isSavePassword, 1);
+            TakeBytes(out _passwordMd5, 16);
+            TakeBytes(out _tgtgKey, 16);
+            EatBytes(4);
+            TakeBoolBE(out _isGuidAvailable, 1);
+            TakeBytes(out _guid, 16);
+            TakeUintBE(out _subAppId);
+            TakeUintBE(out var type); _loginType = (LoginType)type;
+            TakeString(out _uinString, Prefix.Uint16);
+            EatBytes(2);
         }
     }
 }

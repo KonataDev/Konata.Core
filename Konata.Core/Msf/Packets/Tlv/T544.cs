@@ -1,4 +1,4 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
@@ -7,23 +7,28 @@ namespace Konata.Msf.Packets.Tlv
     /// </summary>
     public class T544 : TlvBase
     {
-        private readonly string _wtLoginSdk;
+        public T544(string wtLoginSdk)
+            : base(0x0544, new T544Body(wtLoginSdk))
+        {
 
-        public T544(string wtLoginSdk) : base()
+        }
+    }
+
+    public class T544Body : TlvBody
+    {
+        public readonly string _wtLoginSdk;
+
+        public T544Body(string wtLoginSdk)
+            : base()
         {
             _wtLoginSdk = wtLoginSdk;
 
-            PackGeneric();
         }
 
-        public override void PutTlvCmd()
+        public T544Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x544);
-        }
-
-        public override void PutTlvBody()
-        {
-
+            EatBytes(RemainLength);
         }
     }
 }

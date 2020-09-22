@@ -4,26 +4,33 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T202 : TlvBase
     {
-        private readonly byte[] _wifiBssid;
-        private readonly string _wifiSsid;
-
-        public T202(byte[] wifiBssid, string wifiSsid) : base()
+        public T202(byte[] wifiBssid, string wifiSsid)
+            : base(0x0202, new T202Body(wifiBssid, wifiSsid))
         {
-            _wifiBssid = wifiBssid;
+
+        }
+    }
+
+    public class T202Body : TlvBody
+    {
+        public readonly byte[] _wifiBssidMd5;
+        public readonly string _wifiSsid;
+
+        public T202Body(byte[] wifiBssid, string wifiSsid)
+            : base()
+        {
             _wifiSsid = wifiSsid;
+            _wifiBssidMd5 = new Md5Cryptor().Encrypt(wifiBssid);
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x0202);
-        }
-
-        public override void PutTlvBody()
-        {
-            PutEncryptedBytes(_wifiBssid, new Md5Cryptor(), null, 2, 16);
+            PutBytes(_wifiBssidMd5, 2, 16);
             PutString(_wifiSsid, 2, 32);
+        }
+
+        public T202Body(byte[] data)
+            : base(data)
+        {
+            TakeBytes(out _wifiBssidMd5, Prefix.Uint16);
+            TakeString(out _wifiSsid, Prefix.Uint16);
         }
     }
 }

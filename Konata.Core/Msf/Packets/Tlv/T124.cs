@@ -1,8 +1,18 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T124 : TlvBase
+    {
+        public T124(string osType, string osVersion, NetworkType networkType,
+            string networkDetail, string apnName)
+            : base(0x0124, new T124Body(osType, osVersion, networkType, networkDetail, apnName))
+        {
+
+        }
+    }
+
+    public class T124Body : TlvBody
     {
         private readonly string _osType;
         private readonly string _osVersion;
@@ -11,8 +21,9 @@ namespace Konata.Msf.Packets.Tlv
         private readonly string _address;
         private readonly string _apnName;
 
-        public T124(string osType, string osVersion, NetworkType networkType,
-            string networkDetail, string apnName) : base()
+        public T124Body(string osType, string osVersion, NetworkType networkType,
+            string networkDetail, string apnName)
+            : base()
         {
             _osType = osType;
             _osVersion = osVersion;
@@ -21,22 +32,23 @@ namespace Konata.Msf.Packets.Tlv
             _apnName = apnName;
             _address = "";
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x124);
-        }
-
-        public override void PutTlvBody()
-        {
             PutString(_osType, 2, 16);
             PutString(_osVersion, 2, 16);
             PutUshortBE((ushort)_networkType);
             PutString(_networkDetail, 2, 16);
             PutString(_address, 2, 32);
             PutString(_apnName, 2, 16);
+        }
+
+        public T124Body(byte[] data)
+            : base(data)
+        {
+            TakeString(out _osType, Prefix.Uint16);
+            TakeString(out _osVersion, Prefix.Uint16);
+            TakeUshortBE(out var type); _networkType = (NetworkType)type;
+            TakeString(out _networkDetail, Prefix.Uint16);
+            TakeString(out _address, Prefix.Uint16);
+            TakeString(out _apnName, Prefix.Uint16);
         }
     }
 }

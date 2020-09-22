@@ -1,42 +1,68 @@
 ﻿using Konata.Msf.Utils.Crypt;
-using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public abstract class TlvBase : Packet
     {
-        protected void PackGeneric()
+        public readonly ushort _tlvCommand;
+        public readonly ushort _tlvBodyLength;
+
+        public TlvBody _tlvBody { get; protected set; }
+
+        public TlvBase(ushort tlvCommand, TlvBody tlvBody)
+            : base()
         {
-            PutTlvCmd();
+            _tlvCommand = tlvCommand;
+            _tlvBody = tlvBody;
+
+            PutUshortBE(tlvCommand);
             EnterBarrier(2, Endian.Big);
-            PutTlvBody();
+            {
+                PutPacket(tlvBody);
+            }
             LeaveBarrier();
         }
 
-        protected void PackEncrypted(ICryptor cryptor, byte[] cryptKey)
+        public TlvBase(ushort tlvCommand, TlvBody tlvBody, byte[] cryptKey)
+            : base()
         {
-            PutTlvCmd();
-            EnterBarrierEncrypted(2, Endian.Big, cryptor, cryptKey);
-            PutTlvBody();
+            _tlvCommand = tlvCommand;
+            _tlvBody = tlvBody;
+
+            PutUshortBE(tlvCommand);
+            EnterBarrierEncrypted(2, Endian.Big, TeaCryptor.Instance, cryptKey);
+            {
+                PutPacket(tlvBody);
+            }
             LeaveBarrier();
         }
 
-        /// <summary>
-        /// 寫入tlv類型
-        /// </summary>
-        /// <returns></returns>
-        public virtual void PutTlvCmd()
+        public TlvBase(byte[] data) : base()
         {
-            // DO Nothing Here.
+            TakeUshortBE(out _tlvCommand);
+            TakeUshortBE(out _tlvBodyLength);
         }
 
-        /// <summary>
-        /// 寫入tlv數據
-        /// </summary>
-        /// <returns></returns>
-        public virtual void PutTlvBody()
+        public TlvBase(byte[] data, byte[] cryptKey)
+            : base(data, TeaCryptor.Instance, cryptKey)
         {
-            // DO Nothing Here.
+            TakeUshortBE(out _tlvCommand);
+            TakeUshortBE(out _tlvBodyLength);
+        }
+    }
+
+    public class TlvBody : Packet
+    {
+        public TlvBody()
+            : base()
+        {
+
+        }
+
+        public TlvBody(byte[] data)
+            : base(data)
+        {
+
         }
     }
 }

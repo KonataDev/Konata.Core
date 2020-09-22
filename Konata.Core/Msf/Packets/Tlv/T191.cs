@@ -1,26 +1,30 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T191 : TlvBase
     {
-        private readonly int _unknownK;
-
-        public T191(int unknownK = 0x82) : base()
+        public T191(byte unknownK = 0x82)
+            : base(0x0191, new T191Body(unknownK))
         {
-            _unknownK = unknownK;
 
-            PackGeneric();
+        }
+    }
+
+    public class T191Body : TlvBody
+    {
+        public readonly byte _unknownK;
+
+        public T191Body(byte unknownK)
+            : base()
+        {
+            PutByte(_unknownK);
         }
 
-        public override void PutTlvCmd()
+        public T191Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x191);
-        }
-
-        public override void PutTlvBody()
-        {
-            PutByte((byte)_unknownK);
+            TakeByte(out _unknownK);
         }
     }
 }

@@ -5,23 +5,29 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T194 : TlvBase
     {
-        private readonly byte[] _imsi;
-
-        public T194(string imsi) : base()
+        public T194(string imsi)
+            : base(0x0194, new T194Body(imsi))
         {
-            _imsi = Encoding.UTF8.GetBytes(imsi);
 
-            PackGeneric();
+        }
+    }
+
+    public class T194Body : TlvBody
+    {
+        public readonly byte[] _imsiMd5;
+
+        public T194Body(string imsi)
+            : base()
+        {
+            _imsiMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(imsi));
+
+            PutBytes(_imsiMd5);
         }
 
-        public override void PutTlvCmd()
+        public T194Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x194);
-        }
-
-        public override void PutTlvBody()
-        {
-            PutEncryptedBytes(_imsi, new Md5Cryptor(), null);
+            TakeBytes(out _imsiMd5, Prefix.None);
         }
     }
 }
