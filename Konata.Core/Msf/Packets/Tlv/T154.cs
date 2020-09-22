@@ -1,26 +1,32 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T154 : TlvBase
     {
-        private readonly uint _ssoSequenceId;
+        public T154(uint ssoSequenceId)
+            : base(0x0154, new T154Body(ssoSequenceId))
+        {
 
-        public T154(uint ssoSequenceId) : base()
+        }
+    }
+
+    public class T154Body : TlvBody
+    {
+        public readonly uint _ssoSequenceId;
+
+        public T154Body(uint ssoSequenceId)
+            : base()
         {
             _ssoSequenceId = ssoSequenceId;
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x154);
-        }
-
-        public override void PutTlvBody()
-        {
             PutUintBE(_ssoSequenceId);
+        }
+
+        public T154Body(byte[] data)
+            : base(data)
+        {
+            TakeUintBE(out _ssoSequenceId);
         }
     }
 }
