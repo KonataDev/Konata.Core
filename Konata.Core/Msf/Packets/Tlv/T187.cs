@@ -1,27 +1,33 @@
-﻿using Konata.Utils;
+﻿using System;
 using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T187 : TlvBase
     {
-        private readonly byte[] _macAddress;
-
-        public T187(byte[] macAddress) : base()
+        public T187(byte[] macAddress)
+            : base(0x0187, new T187Body(macAddress, macAddress.Length))
         {
-            _macAddress = macAddress;
 
-            PackGeneric();
+        }
+    }
+
+    public class T187Body : TlvBody
+    {
+        public readonly byte[] _macAddressMd5;
+
+        public T187Body(byte[] macAddress, int macAddressLength)
+            : base()
+        {
+            _macAddressMd5 = new Md5Cryptor().Encrypt(macAddress);
+
+            PutBytes(_macAddressMd5);
         }
 
-        public override void PutTlvCmd()
+        public T187Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x187);
-        }
-
-        public override void PutTlvBody()
-        {
-            PutEncryptedBytes(_macAddress, new Md5Cryptor(), null);
+            TakeBytes(out _macAddressMd5, Prefix.None);
         }
     }
 }
