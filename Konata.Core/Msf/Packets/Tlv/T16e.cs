@@ -1,26 +1,32 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
     public class T16e : TlvBase
     {
-        private readonly string _deviceName;
+        public T16e(string deviceName)
+            : base(0x016e, new T16eBody(deviceName))
+        {
 
-        public T16e(string deviceName) : base()
+        }
+    }
+
+    public class T16eBody : TlvBody
+    {
+        public readonly string _deviceName;
+
+        public T16eBody(string deviceName)
+            : base()
         {
             _deviceName = deviceName;
 
-            PackGeneric();
-        }
-
-        public override void PutTlvCmd()
-        {
-            PutUshortBE(0x16e);
-        }
-
-        public override void PutTlvBody()
-        {
             PutString(_deviceName);
+        }
+
+        public T16eBody(byte[] data)
+            : base(data)
+        {
+            TakeString(out _deviceName, Prefix.None);
         }
     }
 }
