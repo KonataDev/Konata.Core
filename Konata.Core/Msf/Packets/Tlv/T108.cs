@@ -26,7 +26,7 @@ namespace Konata.Msf.Packets.Tlv
         public T108Body(byte[] data)
             : base(data)
         {
-
+            TakeBytes(out _ksid, Prefix.None);
         }
     }
 }
