@@ -1,4 +1,4 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
@@ -47,7 +47,7 @@ namespace Konata.Msf.Packets.Tlv
         }
 
         public T100Body(byte[] data)
-            : base()
+            : base(data)
         {
             TakeUshortBE(out _dbBufVer);
             TakeUintBE(out _ssoVer);
