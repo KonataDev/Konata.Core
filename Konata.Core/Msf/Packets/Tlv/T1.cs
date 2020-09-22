@@ -43,7 +43,7 @@ namespace Konata.Msf.Packets.Tlv
         }
 
         public T1Body(byte[] data)
-            : base()
+            : base(data)
         {
             TakeUshortBE(out _ipVersion);
             TakeIntBE(out _randomNumber);
