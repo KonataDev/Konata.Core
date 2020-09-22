@@ -4,7 +4,6 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T193 : TlvBase
     {
-
         public T193(string ticket)
             : base(0x0193, new T193Body(ticket))
         {
