@@ -56,9 +56,7 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Request_TGTGT(Core core)
         {
             var sequence = core._ssoMan.GetNewSequence();
-
-            var request = new OicqRequestTgtgt(
-                core._uin, core._password, sequence, core._keyRing);
+            var request = new OicqRequestTgtgt(core._uin, sequence, core._keyRing);
 
             core._ssoMan.PostMessage(this, request);
 
