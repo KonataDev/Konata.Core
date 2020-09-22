@@ -1,30 +1,30 @@
-﻿using Konata.Utils;
+﻿using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    /// <summary>
-    /// <TODO>未完成</TODO>
-    /// </summary>
-
     public class T104 : TlvBase
     {
-        private readonly string _sigSession;
-
-        public T104(string sigSession) : base()
+        public T104(string sigSession)
+            : base(0x0104, new T104Body(sigSession))
         {
-            _sigSession = sigSession;
 
-            PackGeneric();
+        }
+    }
+
+    public class T104Body : TlvBody
+    {
+        public readonly string _sigSession;
+
+        public T104Body(string sigSession)
+            : base()
+        {
+            PutString(sigSession);
         }
 
-        public override void PutTlvCmd()
+        public T104Body(byte[] data)
+            : base(data)
         {
-            PutUshortBE(0x104);
-        }
-
-        public override void PutTlvBody()
-        {
-
+            TakeString(out _sigSession, Prefix.None);
         }
     }
 }
