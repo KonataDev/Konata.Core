@@ -3,15 +3,6 @@ using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T194 : TlvBase
-    {
-        public T194(string imsi)
-            : base(0x0194, new T194Body(imsi))
-        {
-
-        }
-    }
-
     public class T194Body : TlvBody
     {
         public readonly byte[] _imsiMd5;

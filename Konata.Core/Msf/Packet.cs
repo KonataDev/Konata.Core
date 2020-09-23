@@ -48,9 +48,12 @@ namespace Konata.Msf
             _pos = 0;
             _flag = ReadWrite.Read;
 
-            _packetBuffer = new byte[data.Length];
-            _packetLength = (uint)data.Length;
-            Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
+            if (data != null)
+            {
+                _packetBuffer = new byte[data.Length];
+                _packetLength = (uint)data.Length;
+                Buffer.BlockCopy(data, 0, _packetBuffer, 0, data.Length);
+            }
         }
 
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
@@ -627,6 +630,24 @@ namespace Konata.Msf
             Buffer.BlockCopy(_packetBuffer, (int)_pos, value, 0, value.Length);
             _pos = _packetLength;
             return value;
+        }
+
+        public byte[] TakeTlvData(out byte[] value, out ushort cmd)
+        {
+            if (CheckAvailable(4))
+            {
+                TakeUshortBE(out cmd);
+                TakeUshortBE(out ushort len);
+                if (CheckAvailable(len))
+                {
+                    value = new byte[len];
+                    Buffer.BlockCopy(_packetBuffer, (int)_pos, value, 0, len);
+                    _pos += len;
+                    return value;
+                }
+                throw new IOException("Incomplete Tlv context.");
+            }
+            throw new IOException("Incomplete Tlv header.");
         }
 
         /// <summary>

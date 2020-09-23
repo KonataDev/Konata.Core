@@ -2,16 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T124 : TlvBase
-    {
-        public T124(string osType, string osVersion, NetworkType networkType,
-            string networkDetail, string apnName)
-            : base(0x0124, new T124Body(osType, osVersion, networkType, networkDetail, apnName))
-        {
-
-        }
-    }
-
     public class T124Body : TlvBody
     {
         private readonly string _osType;

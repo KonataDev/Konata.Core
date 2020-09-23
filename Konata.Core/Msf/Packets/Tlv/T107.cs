@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T107 : TlvBase
-    {
-        public T107(ushort picType, byte capType = 0, ushort picSize = 0, byte retType = 1)
-            : base(0x0107, new T107Body(picType, capType, picSize, retType))
-        {
-
-        }
-    }
-
     public class T107Body : TlvBody
     {
         public readonly ushort _picType;
@@ -18,7 +9,8 @@ namespace Konata.Msf.Packets.Tlv
         public readonly ushort _picSize;
         public readonly byte _retType;
 
-        public T107Body(ushort picType, byte capType, ushort picSize, byte retType)
+        public T107Body(ushort picType = 0, byte capType = 0,
+            ushort picSize = 0, byte retType = 1)
             : base()
         {
             _picType = picType;

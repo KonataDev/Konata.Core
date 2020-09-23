@@ -2,18 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T128 : TlvBase
-    {
-        public T128(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
-            byte[] guid, uint guidFlag, string deviceModel, string deviceBrand)
-
-            : base(0x0128, new T128Body(isNewInstall, isGuidAvaliable, isGuidChanged,
-             guid, guidFlag, deviceModel, deviceBrand))
-        {
-
-        }
-    }
-
     public class T128Body : TlvBody
     {
         public readonly bool _isNewInstall;

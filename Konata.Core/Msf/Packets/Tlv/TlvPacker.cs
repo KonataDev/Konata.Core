@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using Konata.Utils;
 using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Tlv
@@ -16,19 +14,23 @@ namespace Konata.Msf.Packets.Tlv
             _packet = new Packet();
         }
 
-        public void PushTlv(byte[] tlvData)
+        public void PutTlv(byte[] tlvData)
         {
             if (tlvData == null || tlvData.Length == 0)
+            {
                 return;
+            }
 
             ++_count;
             _packet.PutBytes(tlvData);
         }
 
-        public void PutTlv(TlvBase tlvData)
+        public void PutTlv(Tlv tlvData)
         {
             if (tlvData == null)
+            {
                 return;
+            }
 
             ++_count;
             _packet.PutTlv(tlvData);

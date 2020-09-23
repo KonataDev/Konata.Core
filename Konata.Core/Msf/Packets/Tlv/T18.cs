@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T18 : TlvBase
-    {
-        public T18(uint appId, uint appClientVersion, uint uin)
-            : base(0x0018, new T18Body(appId, appClientVersion, uin))
-        {
-
-        }
-    }
-
     public class T18Body : TlvBody
     {
         public readonly ushort _sigVer;

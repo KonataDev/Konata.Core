@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T16e : TlvBase
-    {
-        public T16e(string deviceName)
-            : base(0x016e, new T16eBody(deviceName))
-        {
-
-        }
-    }
-
     public class T16eBody : TlvBody
     {
         public readonly string _deviceName;

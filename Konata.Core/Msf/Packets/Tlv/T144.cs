@@ -1,51 +1,20 @@
-﻿using System;
+﻿using Konata.Msf.Services.JsApiSvr.WebView;
+using System;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T144 : TlvBase
-    {
-        public T144(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128,
-            T148 tlv148, T153 tlv153, T16e tlv16e, byte[] tgtgKey)
-            : base(0x0144, new T144Body(tlv109, tlv52d, tlv124, tlv128,
-             tlv148, tlv153, tlv16e), tgtgKey)
-        {
-
-        }
-
-        public T144(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128,
-            T16e tlv16e, byte[] tgtgKey)
-            : base(0x0144, new T144Body(tlv109, tlv52d, tlv124, tlv128,
-             tlv16e), tgtgKey)
-        {
-
-        }
-
-        public T144(string androidId, byte[] deviceDevInfo, string osType, string osVersion,
-            NetworkType networkType, string networkDetail, string apnName, bool isNewInstall,
-            bool isGuidAvaliable, bool isGuidChanged, byte[] guid, uint guidFlag,
-            string deviceModel, string deviceBrand, byte[] tgtgKey)
-
-            : base(0x0144, new T144Body(androidId, deviceDevInfo, osType, osVersion,
-             networkType, networkDetail, apnName, isNewInstall,
-             isGuidAvaliable, isGuidChanged, guid, guidFlag,
-             deviceModel, deviceBrand), tgtgKey)
-        {
-
-        }
-    }
-
     public class T144Body : TlvBody
     {
-        public readonly T109 _tlv109;
-        public readonly T52d _tlv52d;
-        public readonly T124 _tlv124;
-        public readonly T128 _tlv128;
-        public readonly T148 _tlv148;
-        public readonly T153 _tlv153;
-        public readonly T16e _tlv16e;
+        public readonly Tlv _tlv109;
+        public readonly Tlv _tlv52d;
+        public readonly Tlv _tlv124;
+        public readonly Tlv _tlv128;
+        public readonly Tlv _tlv148;
+        public readonly Tlv _tlv153;
+        public readonly Tlv _tlv16e;
 
-        public T144Body(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128,
-            T148 tlv148, T153 tlv153, T16e tlv16e)
+        public T144Body(Tlv tlv109, Tlv tlv52d, Tlv tlv124, Tlv tlv128,
+            Tlv tlv148, Tlv tlv153, Tlv tlv16e)
             : base()
         {
             _tlv109 = tlv109;
@@ -59,8 +28,8 @@ namespace Konata.Msf.Packets.Tlv
             PutT144Body();
         }
 
-        public T144Body(T109 tlv109, T52d tlv52d, T124 tlv124, T128 tlv128,
-            T16e tlv16e)
+        public T144Body(Tlv tlv109, Tlv tlv52d, Tlv tlv124, Tlv tlv128,
+            Tlv tlv16e)
         {
             _tlv109 = tlv109;
             _tlv52d = tlv52d;
@@ -76,11 +45,11 @@ namespace Konata.Msf.Packets.Tlv
             bool isGuidAvaliable, bool isGuidChanged, byte[] guid, uint guidFlag,
             string deviceModel, string deviceBrand)
         {
-            _tlv109 = new T109(androidId);
-            _tlv16e = new T16e(deviceModel);
-            _tlv52d = new T52d(deviceDevInfo);
-            _tlv124 = new T124(osType, osVersion, networkType, networkDetail, apnName);
-            _tlv128 = new T128(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand);
+            _tlv109 = new Tlv(0x0109, new T109Body(androidId));
+            _tlv16e = new Tlv(0x016e, new T16eBody(deviceModel));
+            _tlv52d = new Tlv(0x052d, new T52dBody(deviceDevInfo));
+            _tlv124 = new Tlv(0x0124, new T124Body(osType, osVersion, networkType, networkDetail, apnName));
+            _tlv128 = new Tlv(0x0128, new T128Body(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand));
 
             PutT144Body();
         }
@@ -101,7 +70,22 @@ namespace Konata.Msf.Packets.Tlv
         public T144Body(byte[] data)
             : base(data)
         {
-             
+            while (RemainLength > 0)
+            {
+                TakeTlvData(out byte[] body, out ushort cmd);
+                Tlv tlv = new Tlv(cmd, body);
+                switch (cmd)
+                {
+                case 0x0109: _tlv109 = tlv; break;
+                case 0x052d: _tlv52d = tlv; break;
+                case 0x0124: _tlv124 = tlv; break;
+                case 0x0128: _tlv128 = tlv; break;
+                case 0x0148: _tlv148 = tlv; break;
+                case 0x0153: _tlv153 = tlv; break;
+                case 0x016e: _tlv16e = tlv; break;
+                default: break; // Unknown Tlv.
+                }
+            }
         }
     }
 }
