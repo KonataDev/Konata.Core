@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T147 : TlvBase
-    {
-        public T147(uint appId, string apkVersionName, byte[] apkSignatureMd5)
-            : base(0x0147, new T147Body(appId, apkVersionName, apkSignatureMd5))
-        {
-
-        }
-    }
-
     public class T147Body : TlvBody
     {
         public readonly uint _appId;

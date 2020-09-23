@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
-using Konata.Utils;
+using Konata.Msf.Packets.Tlv;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -18,8 +18,8 @@ namespace Konata.Msf.Services.Wtlogin
         {
             switch (method)
             {
-                case "Request_TGTGT": return Request_TGTGT(core);
-                default: return false;
+            case "Request_TGTGT": return Request_TGTGT(core);
+            default: return false;
             }
         }
 
@@ -28,7 +28,7 @@ namespace Konata.Msf.Services.Wtlogin
             if (args == null || args.Length == 0)
                 return false;
 
-            var packet = ((Packet)args[0]);
+            var packet = (Packet)args[0];
             var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
                 core._keyRing._shareKey);
 
@@ -40,10 +40,10 @@ namespace Konata.Msf.Services.Wtlogin
 
             switch (oicqRequest._oicqStatus)
             {
-                case OicqStatus.DoVerifySlider:
-                    return Handle_VerifySliderCaptcha(core, oicqRequest);
-                case OicqStatus.PreventByIncorrectUserOrPwd:
-                    return Handle_InvalidUserOrPassword(core, oicqRequest);
+            case OicqStatus.DoVerifySlider:
+                return Handle_VerifySliderCaptcha(core, oicqRequest);
+            case OicqStatus.PreventByIncorrectUserOrPwd:
+                return Handle_InvalidUserOrPassword(core, oicqRequest);
             }
 
             return false;
@@ -67,6 +67,20 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do Slider.");
 
+            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            Tlv tlv104 = unpacker.TryGetTlv(0x104);
+            Tlv tlv192 = unpacker.TryGetTlv(0x192);
+            if (tlv104 != null && tlv192 != null)
+            {
+                var sig = ((T104Body)tlv104._tlvBody)._sigSession;
+                var captcha = ((T192Body)tlv192._tlvBody)._url;
+
+                Console.WriteLine($"  SigSession => {sig}");
+                Console.WriteLine($"  CaptchaUrl => {captcha}");
+            }
+
             return false;
         }
 
@@ -75,6 +89,5 @@ namespace Konata.Msf.Services.Wtlogin
             Console.WriteLine("Incorrect account or password.");
             return false;
         }
-
     }
 }

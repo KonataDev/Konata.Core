@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T177 : TlvBase
-    {
-        public T177(uint buildTime, string sdkVersion)
-            : base(0x0177, new T177Body(buildTime, sdkVersion))
-        {
-
-        }
-    }
-
     public class T177Body : TlvBody
     {
         public readonly uint _buildTime;

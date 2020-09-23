@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T536 : TlvBase
-    {
-        public T536(byte[] loginExtraData)
-            : base(0x0536, new T536Body(loginExtraData, loginExtraData.Length))
-        {
-
-        }
-    }
-
     public class T536Body : TlvBody
     {
         public readonly byte[] _loginExtraData;
@@ -26,7 +17,7 @@ namespace Konata.Msf.Packets.Tlv
         public T536Body(byte[] data)
             : base(data)
         {
-            TakeBytes(out _loginExtraData, Prefix.Uint16);
+            TakeBytes(out _loginExtraData, Prefix.None);
         }
     }
 }

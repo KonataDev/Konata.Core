@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T2 : TlvBase
-    {
-        public T2(string captchaCode, byte[] captchaKey)
-            : base(0x0002, new T2Body(captchaCode, captchaKey))
-        {
-
-        }
-    }
-
     public class T2Body : TlvBody
     {
         public readonly ushort _sigVer;
