@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T141 : TlvBase
-    {
-        public T141(string simOperatorName, NetworkType networkType, string apnName)
-            : base(0x0141, new T141Body(simOperatorName, networkType, apnName))
-        {
-
-        }
-    }
-
     public class T141Body : TlvBody
     {
         public readonly ushort _version;

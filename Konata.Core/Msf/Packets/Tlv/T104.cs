@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T104 : TlvBase
-    {
-        public T104(string sigSession)
-            : base(0x0104, new T104Body(sigSession))
-        {
-
-        }
-    }
-
     public class T104Body : TlvBody
     {
         public readonly string _sigSession;

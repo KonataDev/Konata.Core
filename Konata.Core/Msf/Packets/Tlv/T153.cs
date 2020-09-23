@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T153 : TlvBase
-    {
-        public T153(bool isRooted)
-            : base(0x0153, new T153Body(isRooted))
-        {
-
-        }
-    }
-
     public class T153Body : TlvBody
     {
         public readonly bool _isRooted;

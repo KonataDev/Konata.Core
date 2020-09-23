@@ -1,22 +1,8 @@
 ﻿using System;
+using System.IO;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T1 : TlvBase
-    {
-        public T1(uint uin, byte[] ipAddress)
-            : base(0x0001, new T1Body(uin, ipAddress))
-        {
-
-        }
-
-        public T1(byte[] data)
-            : base(data)
-        {
-            _tlvBody = new T1Body(TakeAllBytes(out byte[] _));
-        }
-    }
-
     public class T1Body : TlvBody
     {
         private readonly uint _uin;
@@ -42,7 +28,7 @@ namespace Konata.Msf.Packets.Tlv
             PutUshortBE(0);
         }
 
-        public T1Body(byte[] data)
+        internal T1Body(byte[] data)
             : base(data)
         {
             TakeUshortBE(out _ipVersion);

@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T511 : TlvBase
-    {
-        public T511(string[] domains)
-            : base(0x0511, new T511Body(domains))
-        {
-
-        }
-    }
-
     public class T511Body : TlvBody
     {
         public readonly string[] _domains;

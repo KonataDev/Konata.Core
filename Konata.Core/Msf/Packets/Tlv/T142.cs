@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T142 : TlvBase
-    {
-        public T142(string apkId)
-            : base(0x0142, new T142Body(apkId))
-        {
-
-        }
-    }
-
     public class T142Body : TlvBody
     {
         public readonly ushort _version = 0;

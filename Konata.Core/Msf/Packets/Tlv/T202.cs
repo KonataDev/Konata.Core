@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T202 : TlvBase
-    {
-        public T202(byte[] wifiBssid, string wifiSsid)
-            : base(0x0202, new T202Body(wifiBssid, wifiSsid))
-        {
-
-        }
-    }
-
     public class T202Body : TlvBody
     {
         public readonly byte[] _wifiBssidMd5;

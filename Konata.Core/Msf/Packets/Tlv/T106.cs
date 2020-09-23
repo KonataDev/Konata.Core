@@ -3,20 +3,6 @@ using Guid = Konata.Utils.Guid;
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T106 : TlvBase
-    {
-        public T106(uint appId, uint subAppId, uint appClientVersion,
-            uint uin, byte[] ipAddress, bool isSavePassword, byte[] passwordMd5,
-            long salt, bool isGuidAvailable, byte[] guid, LoginType loginType,
-            byte[] tgtgKey, byte[] t106Key)
-
-            : base(0x0106, new T106Body(appId, subAppId, appClientVersion, uin, ipAddress,
-            isSavePassword, passwordMd5, salt, isGuidAvailable, guid, loginType, tgtgKey), t106Key)
-        {
-
-        }
-    }
-
     public class T106Body : TlvBody
     {
         public readonly ushort _tgtgtVer;

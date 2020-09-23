@@ -2,15 +2,6 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    public class T116 : TlvBase
-    {
-        public T116(uint bitmap, uint getSig, uint[] subAppIdList = null)
-            : base(0x0116, new T116Body(bitmap, getSig, subAppIdList))
-        {
-
-        }
-    }
-
     public class T116Body : TlvBody
     {
         public readonly byte _ver;
