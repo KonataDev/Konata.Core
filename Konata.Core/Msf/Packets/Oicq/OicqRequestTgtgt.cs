@@ -15,9 +15,9 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqSubCommand = 0x0009;
 
         public OicqRequestTgtgt(uint uin, uint ssoseq, KeyRing keyring)
-            : base(OicqCommand, OicqSubCommand, uin, new XTGTGT(uin, ssoseq,
-                keyring._passwordMd5, keyring._tgtgKey, keyring._t106Key), keyring._shareKey,
-                keyring._randKey, keyring._defaultPublicKey)
+            : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH135,
+                new XTGTGT(uin, ssoseq, keyring._passwordMd5, keyring._tgtgKey,
+                    keyring._t106Key), keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
 
         }
