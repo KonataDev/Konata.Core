@@ -15,7 +15,7 @@ namespace Konata.Msf.Packets.Oicq
             string sigSission, string sigTicket)
 
             : base(OicqCommand, OicqSubCommand, uin,
-                  new XCaptcha(sigSission, sigTicket),
+                  OicqEncryptMethod.ECDH7, new XCaptcha(sigSission, sigTicket),
                   keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
 
