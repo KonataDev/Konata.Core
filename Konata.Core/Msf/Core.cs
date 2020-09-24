@@ -62,6 +62,12 @@ namespace Konata.Msf
             return Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
         }
 
+        public bool DoVerifySliderCaptcha(string sigSission, string sigTicket)
+        {
+            return Service.Run(this, "Wtlogin.Login", "Request_SliderCaptcha",
+                sigSission, sigTicket);
+        }
+
         internal void EmitError(uint errcode, string errstr)
         {
             if (_lastError == 0)
@@ -76,6 +82,5 @@ namespace Konata.Msf
         {
             _eventHandler?.Invoke(signal);
         }
-
     }
 }
