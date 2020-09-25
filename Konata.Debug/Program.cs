@@ -1,7 +1,5 @@
 ﻿using System;
-using Konata;
-using Konata.Msf.Packets.Tlv;
-using Konata.Utils;
+using Konata.Msf;
 
 namespace Konata.Debug
 {
@@ -10,11 +8,54 @@ namespace Konata.Debug
         public static void Main()
         {
             Bot bot = new Bot(2051118019, "12345678");
-            bot.Login();
+            bot.RegisterDelegate(EventProc);
+            bot.Run();
 
-            // var output = new T18(AppInfo.appId, AppInfo.appClientVersion, 2051118019);
-            // Console.WriteLine(output.ToHexString());
-            Console.Read();
+            Console.Write("Exit.");
         }
+
+        private static bool EventProc(Event eventId, params object[] args)
+        {
+            switch (eventId)
+            {
+                case Event.OnBotStart:
+                    return OnBootstrap();
+                case Event.OnVerifySliderCaptcha:
+                    return OnSliderCaptcha((string)args[0], (string)args[1]);
+                case Event.OnVerifyImageCaptcha:
+                    return OnImageCaptcha();
+                case Event.OnGroupMessage:
+                    return OnGroupMessage();
+                case Event.OnPrivateMessage:
+                    return OnPrivateMessage();
+            }
+        }
+
+        private static bool OnBootstrap()
+        {
+            // Do your initialize operations.
+            return false;
+        }
+
+        private static bool OnSliderCaptcha(string sigSission, string sigUrl)
+        {
+            return false;
+        }
+
+        private static bool OnImageCaptcha(string sigSission, string sigUrl)
+        {
+            return false;
+        }
+
+        private static bool OnPrivateMessage()
+        {
+            return false;
+        }
+
+        private static bool OnGroupMessage()
+        {
+            return false;
+        }
+
     }
 }

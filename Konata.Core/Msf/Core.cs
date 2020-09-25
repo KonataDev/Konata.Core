@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Konata.Msf;
 using Konata.Msf.Crypto;
 using Konata.Msf.Network;
@@ -18,7 +19,7 @@ namespace Konata.Msf
     //  ++--- WtLogin OnlinePush...etc 
     //   +----------------+
 
-    public delegate void EventDelegate(uint signal);
+    //public delegate void EventDelegate(uint signal);
 
     public class Core
     {
@@ -32,7 +33,7 @@ namespace Konata.Msf
         internal KeyRing _keyRing;
         internal OicqStatus _oicqStatus;
 
-        internal EventDelegate _eventHandler;
+        //internal EventDelegate _eventHandler;
 
         public Core(uint uin, string password)
         {
@@ -51,10 +52,15 @@ namespace Konata.Msf
             return _ssoMan.Initialize();
         }
 
-        public bool RegisterDelegate(EventDelegate func)
+        //public bool RegisterDelegate(EventDelegate func)
+        //{
+        //    _eventHandler = func;
+        //    return true;
+        //}
+
+        public void RegisterDelegate()
         {
-            _eventHandler = func;
-            return true;
+
         }
 
         public bool DoLogin()
@@ -68,19 +74,19 @@ namespace Konata.Msf
                 sigSission, sigTicket);
         }
 
-        internal void EmitError(uint errcode, string errstr)
-        {
-            if (_lastError == 0)
-            {
-                _lastError = errcode;
-                _lastErrorStr = errstr;
-                SendEvent(1);
-            }
-        }
+        //internal void EmitError(uint errcode, string errstr)
+        //{
+        //    if (_lastError == 0)
+        //    {
+        //        _lastError = errcode;
+        //        _lastErrorStr = errstr;
+        //        SendEvent(1);
+        //    }
+        //}
 
-        private void SendEvent(uint signal)
-        {
-            _eventHandler?.Invoke(signal);
-        }
+        //private void SendEvent(uint signal)
+        //{
+        //    _eventHandler?.Invoke(signal);
+        //}
     }
 }
