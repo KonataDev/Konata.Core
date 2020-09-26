@@ -32,12 +32,6 @@ namespace Konata
             //_botThread.Start();
         }
 
-        public bool Login()
-        {
-            PostEvent(EventType.DoLogin);
-            // return _msfCore.Connect() && _msfCore.DoLogin();
-        }
-
         /// <summary>
         /// 注冊事件委托回調方法
         /// </summary>
@@ -65,28 +59,61 @@ namespace Konata
             // 進入事件循環
             while (!_botIsExit)
             {
-                Thread.Sleep(0);
-
                 EventType coreEvent;
                 object[] eventArgs;
 
                 if (!GetEvent(out coreEvent, out eventArgs)
                     || coreEvent == EventType.Idle)
                 {
+                    Thread.Sleep(0);
                     continue;
                 }
 
+                // 處理事件
                 ProcessEvent(coreEvent, eventArgs);
             }
         }
 
+        #region In-System Event Handlers 
+
         private void ProcessEvent(EventType eventType,
             params object[] args)
         {
-            _eventProc(eventType, args); // run in sub thread
+            switch (eventType)
+            {
+                case EventType.Login: OnLogin(); break;
+                case EventType.HeartBeat: OnHeartBeat(); break;
+            }
+
+            // 將事件交給前端
+            _eventProc(eventType, args);
         }
 
-        #region EventMethods
+        private void OnLogin()
+        {
+            _msfCore.DoLogin();
+        }
+
+        private void OnHeartBeat()
+        {
+            // _msfCore.DoHeartBeat();
+        }
+
+        #endregion
+
+        #region Protocol Interoperation Methods
+
+        public void Login()
+        {
+            PostEvent(EventType.Login);
+            // return _msfCore.Connect() && _msfCore.DoLogin();
+        }
+
+
+
+        #endregion
+
+        #region Event Methods
 
         public void PostEvent(EventType type)
         {
