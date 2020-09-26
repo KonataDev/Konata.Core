@@ -22,9 +22,9 @@ namespace Konata.Debug
             {
                 case EventType.BotStart:
                     return OnBootstrap();
-                case EventType.VerifySliderCaptcha:
+                case EventType.WtLoginVerifySliderCaptcha:
                     return OnSliderCaptcha((string)args[0], (string)args[1]);
-                case EventType.VerifyImageCaptcha:
+                case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
                     return OnGroupMessage();
@@ -42,19 +42,19 @@ namespace Konata.Debug
         private static bool OnBootstrap()
         {
             bot.Login();
-            return false;
+            return true;
         }
 
         private static bool OnSliderCaptcha(string sigSission, string sigUrl)
         {
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
-            Console.Write($"Please input ticket: ");
 
             var sigTicket = "";
 
             while (sigTicket == "")
             {
+                Console.Write($"Please input the ticket: ");
                 sigTicket = Console.ReadLine();
 
                 if(sigTicket.Length < 50)

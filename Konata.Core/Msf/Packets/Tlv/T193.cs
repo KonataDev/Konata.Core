@@ -11,13 +11,13 @@ namespace Konata.Msf.Packets.Tlv
         {
             _ticket = ticket;
 
-            PutString(_ticket, 2);
+            PutString(_ticket);
         }
 
         public T193Body(byte[] data)
             : base(data)
         {
-            TakeString(out _ticket, Prefix.Uint16);
+            TakeString(out _ticket, Prefix.None);
         }
     }
 }

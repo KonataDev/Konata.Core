@@ -1,21 +1,37 @@
 ﻿using System;
-using Konata.Msf;
+using System.Threading;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
+using System.Collections.Generic;
 
 namespace Konata.Msf
 {
+    using SsoRequence = Int32;
+    using SsoSession = UInt32;
+
+    using SsoSeqLock = Mutex;
+    using SsoSeqDict = Dictionary<string, uint>;
+
     internal class SsoMan
     {
         private Core _msfCore;
         private PacketMan _pakMan;
 
-        private uint _ssoSequence;
+        private SsoSeqDict _ssoSeqDict;
+        private SsoSeqLock _ssoSeqLock;
 
-        private uint _ssoSession;
+        private SsoRequence _ssoSequence;
+        private SsoSession _ssoSession;
+
 
         internal SsoMan(Core core)
         {
+            _ssoSequence = 25900;
+            _ssoSession = 0x54B87ADC;
+
+            _ssoSeqDict = new SsoSeqDict();
+            _ssoSeqLock = new SsoSeqLock();
+
             _msfCore = core;
             _pakMan = new PacketMan(this);
         }
@@ -26,11 +42,17 @@ namespace Konata.Msf
         /// <returns></returns>
         internal bool Initialize()
         {
-            _ssoSequence = 85600;
-            _ssoSession = 0x01DAA2BC;
-
             _pakMan.OpenSocket();
             return true;
+        }
+
+        /// <summary>
+        /// 获取SSO序列
+        /// </summary>
+        /// <returns></returns>
+        internal uint GetSequence()
+        {
+            return (uint)_ssoSequence;
         }
 
         /// <summary>
@@ -39,7 +61,46 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint GetNewSequence()
         {
-            return ++_ssoSequence;
+            Interlocked.CompareExchange(ref _ssoSequence, 10000, 0x7FFFFFFF);
+            return (uint)Interlocked.Add(ref _ssoSequence, 1);
+        }
+
+        /// <summary>
+        /// 從服務名獲取SSO序列號, 如果沒有則會申請新的
+        /// </summary>
+        /// <returns></returns>
+        internal uint GetServiceSequence(string name)
+        {
+            uint sequence;
+
+            _ssoSeqLock.WaitOne();
+            {
+                if (_ssoSeqDict.ContainsKey(name))
+                {
+                    sequence = _ssoSeqDict[name];
+                    goto ret;
+                }
+
+                sequence = GetNewSequence();
+                _ssoSeqDict.Add(name, sequence);
+            }
+
+        ret:
+            _ssoSeqLock.ReleaseMutex();
+            return sequence;
+        }
+
+        /// <summary>
+        /// 移除SSO序列號
+        /// </summary>
+        /// <returns></returns>
+        internal void DestroyServiceSequence(string name)
+        {
+            _ssoSeqLock.WaitOne();
+            {
+                _ssoSeqDict.Remove(name);
+            }
+            _ssoSeqLock.ReleaseMutex();
         }
 
         /// <summary>
@@ -107,10 +168,8 @@ namespace Konata.Msf
         /// <param name="fromService"></param>
         internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
-            var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _), _msfCore._keyRing._zeroKey);
-
-            _ssoSequence = ssoMessage._header._ssoSequence;
-            _ssoSession = ssoMessage._header._ssoSession;
+            var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _),
+                _msfCore._keyRing._zeroKey);
 
             Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
             Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
@@ -124,7 +183,6 @@ namespace Konata.Msf
             {
                 Console.WriteLine($"Unknown message.\n{e.StackTrace}");
             }
-
         }
     }
 }

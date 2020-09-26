@@ -100,9 +100,9 @@ namespace Konata
         {
             switch (e._type)
             {
-                case EventType.Login: OnLogin(e); break;
+                case EventType.WtLogin: OnLogin(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
-                case EventType.VerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
+                case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
             }
         }
 
@@ -136,12 +136,12 @@ namespace Konata
 
         public void Login()
         {
-            PostEvent(EventFilter.System, EventType.Login);
+            PostEvent(EventFilter.System, EventType.WtLogin);
         }
 
         public void SubmitSliderTicket(string sigSission, string sigTicket)
         {
-            PostEvent(EventFilter.System, EventType.VerifySliderCaptcha,
+            PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha,
                 sigSission, sigTicket);
         }
 
