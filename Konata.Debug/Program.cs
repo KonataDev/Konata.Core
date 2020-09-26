@@ -42,7 +42,7 @@ namespace Konata.Debug
         private static bool OnBootstrap()
         {
             bot.Login();
-            return false;
+            return true;
         }
 
         private static bool OnSliderCaptcha(string sigSission, string sigUrl)
