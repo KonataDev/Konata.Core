@@ -10,15 +10,19 @@ namespace Konata.Msf
 
     public enum EventType : uint
     {
-        Idle = uint.MaxValue,
+        Idle = 0x00,
 
-        Login = 0x1000,
+        WtLogin = 0x1000,
+        WtLoginOK,
+        WtLoginVerifyDeviceLock,
+        WtLoginVerifySliderCaptcha,
+        WtLoginVerifyImageCaptcha,
+        WtLoginVerifySmsCaptcha,
         HeartBeat,
 
         BotStart = 0x2000,
-        VerifySliderCaptcha,
-        VerifyImageCaptcha,
-        VerifySmsCaptcha,
+        LoginFailed,
+        LoginSuccess,
         PrivateMessage,
         GroupMessage,
 

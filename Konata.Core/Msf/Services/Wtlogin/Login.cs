@@ -50,6 +50,8 @@ namespace Konata.Msf.Services.Wtlogin
                     return Handle_VerifySmsCaptcha(core, oicqRequest);
                 case OicqStatus.PreventByIncorrectUserOrPwd:
                     return Handle_InvalidUserOrPassword(core, oicqRequest);
+                case OicqStatus.OK:
+                    return Handle_WtloginSuccess(core, oicqRequest);
                 default: Handle_UnknownOicqRequest(core, oicqRequest); break;
             }
 
@@ -66,7 +68,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Submit OicqRequestTGTGT.");
 
-            var sequence = core._ssoMan.GetNewSequence();
+            var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestTgtgt(core._uin, sequence, core._keyRing);
 
             core._ssoMan.PostMessage(this, request, sequence);
@@ -86,7 +88,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
-            var sequence = core._ssoMan.GetNewSequence();
+            var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestCheckImage(core._uin, core._keyRing,
                 sigSission, sigTicket);
 
@@ -104,9 +106,9 @@ namespace Konata.Msf.Services.Wtlogin
         /// <returns></returns>
         internal bool Request_SmsCaptcha(Core core, string sigSission, string sigAnswer)
         {
-            Console.WriteLine("Submit OicqRequestCheckISms.");
+            Console.WriteLine("Submit OicqRequestCheckSms.");
 
-            var sequence = core._ssoMan.GetNewSequence();
+            var sequence = core._ssoMan.GetServiceSequence(name);
             // <TODO> OicqRequestCheckSms
 
             return true;
@@ -130,7 +132,7 @@ namespace Konata.Msf.Services.Wtlogin
                 var sig = ((T104Body)tlv104._tlvBody)._sigSession;
                 var captcha = ((T192Body)tlv192._tlvBody)._url;
 
-                core.PostUserEvent(EventType.VerifySliderCaptcha, sig, captcha);
+                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sig, captcha);
             }
             return false;
         }
@@ -139,7 +141,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do sms verification.");
 
-            core.PostUserEvent(EventType.VerifySmsCaptcha);
+            core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha);
 
             return false;
         }
@@ -148,19 +150,32 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do image verification.");
 
-            core.PostUserEvent(EventType.VerifySmsCaptcha);
+            core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha);
 
             return false;
         }
 
         internal bool Handle_VerifyDeviceLock(Core core, OicqRequest request)
         {
+            Console.WriteLine("Do DeviceLock verification.");
+            core.PostSystemEvent(EventType.LoginFailed);
+            return false;
+        }
+
+        internal bool Handle_WtloginSuccess(Core core, OicqRequest request)
+        {
+            Console.WriteLine("Wtlogin success.");
+
+            core._ssoMan.DestroyServiceSequence(name);
+            core.PostSystemEvent(EventType.WtLoginOK);
+
             return false;
         }
 
         internal bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Incorrect account or password.");
+            core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
 
