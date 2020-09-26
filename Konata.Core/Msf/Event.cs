@@ -2,7 +2,7 @@
 
 namespace Konata.Msf
 {
-    public enum EventBase : uint
+    public enum EventFilter : uint
     {
         System = 0x10000000,
         User = 0x20000000
@@ -26,13 +26,26 @@ namespace Konata.Msf
 
     public class Event
     {
-        public readonly EventType _type;
-        public readonly object[] _args;
+        public static Event Idle = new Event(EventFilter.System, EventType.Idle);
 
-        public Event(EventType type, params object[] args)
+        public EventType _type;
+        public EventFilter _filter;
+        public object[] _args;
+
+        public Event(EventFilter filter, EventType type,
+            params object[] args)
         {
             _type = type;
+            _filter = filter;
             _args = args;
         }
+
+        public Event(EventFilter filter, EventType type)
+        {
+            _type = type;
+            _filter = filter;
+        }
     }
+
+
 }
