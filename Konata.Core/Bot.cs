@@ -11,19 +11,19 @@ namespace Konata
 
     public class Bot
     {
-        public delegate bool EventProc(EventType e, params object[] a);
-
+        private bool _isExit;
         private Core _msfCore;
-
-        private bool _botIsExit;
-        private Thread _botThread;
 
         private EventProc _eventProc;
         private EventQueue _eventQueue;
         private EventMutex _eventLock;
 
+        public delegate bool EventProc(EventType e, params object[] a);
+
         public Bot(uint uin, string password)
         {
+            _isExit = false;
+
             _eventLock = new EventMutex();
             _eventQueue = new EventQueue();
 
@@ -37,7 +37,7 @@ namespace Konata
         /// <returns></returns>
         public bool RegisterDelegate(EventProc callback)
         {
-            if (_eventProc == null)
+            if (_eventProc != null)
             {
                 return false;
             }
@@ -51,11 +51,17 @@ namespace Konata
         /// </summary>
         public void Run()
         {
+            if (_isExit)
+            {
+                return;
+            }
+
             // 啓動時投遞訊息
-            PostEvent(EventType.BotStart);
+            PostEvent(EventFilter.User, EventType.BotStart);
 
             // 進入事件循環
-            while (!_botIsExit)
+            _isExit = false;
+            while (!_isExit)
             {
                 Event coreEvent;
                 if (!GetEvent(out coreEvent) || coreEvent._type == EventType.Idle)
@@ -96,11 +102,13 @@ namespace Konata
             {
                 case EventType.Login: OnLogin(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
+                case EventType.VerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
             }
         }
 
         private void OnLogin(Event e)
         {
+            _msfCore.Connect();
             _msfCore.WtLoginTgtgt();
         }
 
@@ -109,41 +117,54 @@ namespace Konata
             // _msfCore.DoHeartBeat();
         }
 
+        private void OnVerifySliderCaptcha(Event e)
+        {
+            if (e._args == null
+                || e._args.Length != 2
+                || !(e._args[0] is string)
+                || !(e._args[1] is string))
+            {
+                return;
+            }
+
+            _msfCore.WtLoginCheckSlider((string)e._args[0], (string)e._args[1]);
+        }
+
         #endregion
 
         #region Protocol Interoperation Methods
 
         public void Login()
         {
-            PostEvent(EventType.Login);
-            // return _msfCore.Connect() && _msfCore.DoLogin();
+            PostEvent(EventFilter.System, EventType.Login);
         }
 
         public void SubmitSliderTicket(string sigSission, string sigTicket)
         {
-            PostEvent(EventType.VerifySliderCaptcha, sigSission, sigTicket);
+            PostEvent(EventFilter.System, EventType.VerifySliderCaptcha,
+                sigSission, sigTicket);
         }
 
         #endregion
 
         #region Event Methods
 
-        public void PostEvent(EventType type)
-        {
-            PostSystemEvent(type, null);
-        }
-
-        public void PostEvent(EventType type, params object[] args)
-        {
-            PostSystemEvent(type, args);
-        }
-
+        /// <summary>
+        /// 投遞事件
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
         internal void PostEvent(EventFilter filter, EventType type,
             params object[] args)
         {
             PostEvent(new Event(filter, type, args));
         }
 
+        /// <summary>
+        /// 投遞事件
+        /// </summary>
+        /// <param name="e"></param>
         internal void PostEvent(Event e)
         {
             _eventLock.WaitOne();
@@ -153,16 +174,31 @@ namespace Konata
             _eventLock.ReleaseMutex();
         }
 
+        /// <summary>
+        /// 投遞系統事件
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
         internal void PostSystemEvent(EventType type, params object[] args)
         {
             PostEvent(new Event(EventFilter.System, type, args));
         }
 
+        /// <summary>
+        /// 投遞用戶事件
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
         internal void PostUserEvent(EventType type, params object[] args)
         {
             PostEvent(new Event(EventFilter.User, type, args));
         }
 
+        /// <summary>
+        /// 從隊列獲取一個事件
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private bool GetEvent(out Event e)
         {
             _eventLock.WaitOne();
