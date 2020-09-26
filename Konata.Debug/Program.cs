@@ -22,9 +22,9 @@ namespace Konata.Debug
             {
                 case EventType.BotStart:
                     return OnBootstrap();
-                case EventType.VerifySliderCaptcha:
+                case EventType.WtLoginVerifySliderCaptcha:
                     return OnSliderCaptcha((string)args[0], (string)args[1]);
-                case EventType.VerifyImageCaptcha:
+                case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
                     return OnGroupMessage();
