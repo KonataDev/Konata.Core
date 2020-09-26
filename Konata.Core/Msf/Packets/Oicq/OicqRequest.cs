@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Oicq
         PreventByReceiveIssue = 3,
         PreventByAccountFrozen = 40,
         PreventBySmsSentFailed = 162,
-        PreventByLoginArea = 237,
+        PreventByInvalidEnvironment = 237,
     }
 
     public enum OicqEncryptMethod

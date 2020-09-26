@@ -50,6 +50,8 @@ namespace Konata.Msf.Services.Wtlogin
                     return Handle_VerifySmsCaptcha(core, oicqRequest);
                 case OicqStatus.PreventByIncorrectUserOrPwd:
                     return Handle_InvalidUserOrPassword(core, oicqRequest);
+                case OicqStatus.PreventByInvalidEnvironment:
+                    return Handle_InvalidEnvironment(core, oicqRequest);
                 case OicqStatus.OK:
                     return Handle_WtloginSuccess(core, oicqRequest);
                 default: Handle_UnknownOicqRequest(core, oicqRequest); break;
@@ -175,6 +177,13 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Incorrect account or password.");
+            core.PostSystemEvent(EventType.LoginFailed);
+            return false;
+        }
+
+        internal bool Handle_InvalidEnvironment(Core core, OicqRequest request)
+        {
+            Console.WriteLine("[Error] Invalid login environment.");
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
