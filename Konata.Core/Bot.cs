@@ -7,6 +7,7 @@ namespace Konata
 {
     using EventMutex = Mutex;
     using EventQueue = Queue<Event>;
+    using EventWorkers = ThreadPool;
 
     public class Bot
     {
@@ -27,9 +28,6 @@ namespace Konata
             _eventQueue = new EventQueue();
 
             _msfCore = new Core(this, uin, password);
-
-            //_botThread = new Thread(BotThread);
-            //_botThread.Start();
         }
 
         /// <summary>
@@ -59,42 +57,54 @@ namespace Konata
             // 進入事件循環
             while (!_botIsExit)
             {
-                EventType coreEvent;
-                object[] eventArgs;
-
-                if (!GetEvent(out coreEvent, out eventArgs)
-                    || coreEvent == EventType.Idle)
+                Event coreEvent;
+                if (!GetEvent(out coreEvent) || coreEvent._type == EventType.Idle)
                 {
                     Thread.Sleep(0);
                     continue;
                 }
 
                 // 處理事件
-                ProcessEvent(coreEvent, eventArgs);
+                EventWorkers.QueueUserWorkItem(ProcessEvent, coreEvent);
             }
         }
 
         #region In-System Event Handlers 
 
-        private void ProcessEvent(EventType eventType,
-            params object[] args)
+        private void ProcessEvent(object o)
         {
-            switch (eventType)
+            var e = (Event)o;
+
+            if (e._filter == EventFilter.System)
             {
-                case EventType.Login: OnLogin(); break;
-                case EventType.HeartBeat: OnHeartBeat(); break;
+                OnSystemEvent(e);
+                return;
             }
 
             // 將事件交給前端
-            _eventProc(eventType, args);
+            OnUserEvent(e);
         }
 
-        private void OnLogin()
+        private void OnUserEvent(Event e)
+        {
+            _eventProc(e._type, e._args);
+        }
+
+        private void OnSystemEvent(Event e)
+        {
+            switch (e._type)
+            {
+                case EventType.Login: OnLogin(e); break;
+                case EventType.HeartBeat: OnHeartBeat(e); break;
+            }
+        }
+
+        private void OnLogin(Event e)
         {
             _msfCore.WtLoginTgtgt();
         }
 
-        private void OnHeartBeat()
+        private void OnHeartBeat(Event e)
         {
             // _msfCore.DoHeartBeat();
         }
@@ -114,41 +124,58 @@ namespace Konata
             PostEvent(EventType.VerifySliderCaptcha, sigSission, sigTicket);
         }
 
-
         #endregion
 
         #region Event Methods
 
         public void PostEvent(EventType type)
         {
-            PostEvent(type, null);
+            PostSystemEvent(type, null);
         }
 
         public void PostEvent(EventType type, params object[] args)
         {
+            PostSystemEvent(type, args);
+        }
+
+        internal void PostEvent(EventFilter filter, EventType type,
+            params object[] args)
+        {
+            PostEvent(new Event(filter, type, args));
+        }
+
+        internal void PostEvent(Event e)
+        {
             _eventLock.WaitOne();
             {
-                _eventQueue.Enqueue(new Event(type, args));
+                _eventQueue.Enqueue(e);
             }
             _eventLock.ReleaseMutex();
         }
 
-        private bool GetEvent(out EventType type, out object[] args)
+        internal void PostSystemEvent(EventType type, params object[] args)
         {
-            type = EventType.Idle;
-            args = null;
+            PostEvent(new Event(EventFilter.System, type, args));
+        }
 
+        internal void PostUserEvent(EventType type, params object[] args)
+        {
+            PostEvent(new Event(EventFilter.User, type, args));
+        }
+
+        private bool GetEvent(out Event e)
+        {
             _eventLock.WaitOne();
             {
                 if (_eventQueue.Count <= 0)
                 {
                     _eventLock.ReleaseMutex();
+
+                    e = Event.Idle;
                     return false;
                 }
 
-                var item = _eventQueue.Dequeue();
-                type = item._type;
-                args = item._args;
+                e = _eventQueue.Dequeue();
             }
             _eventLock.ReleaseMutex();
 
