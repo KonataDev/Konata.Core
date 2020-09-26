@@ -6,15 +6,16 @@ namespace Konata.Msf
     {
         Idle = uint.MaxValue,
 
-        DoLogin = 0x1000,
-        DoHeartBeat,
+        Login = 0x1000,
+        HeartBeat,
 
-        OnBotStart = 0x2000,
-        OnVerifySliderCaptcha,
-        OnVerifyImageCaptcha,
-        OnVerifySmsCaptcha,
-        OnPrivateMessage,
-        OnGroupMessage,
+        BotStart = 0x2000,
+        VerifySliderCaptcha,
+        VerifyImageCaptcha,
+        VerifySmsCaptcha,
+        PrivateMessage,
+        GroupMessage,
+
     }
 
     public class Event

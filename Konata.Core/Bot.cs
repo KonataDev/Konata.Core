@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Konata.Msf;
 
 namespace Konata
 {
-    using EventQueue = Queue<Event>;
     using EventMutex = Mutex;
+    using EventQueue = Queue<Event>;
 
     public class Bot
     {
-        public delegate bool EventProc(Event e, params object[] a);
+        public delegate bool EventProc(EventType e, params object[] a);
 
         private Core _msfCore;
 
@@ -24,10 +23,10 @@ namespace Konata
 
         public Bot(uint uin, string password)
         {
-            _eventLock = new Mutex();
+            _eventLock = new EventMutex();
             _eventQueue = new EventQueue();
 
-            _msfCore = new Core(uin, password);
+            _msfCore = new Core(this, uin, password);
 
             //_botThread = new Thread(BotThread);
             //_botThread.Start();
@@ -35,11 +34,15 @@ namespace Konata
 
         public bool Login()
         {
-            PostEvent(Event.DoLogin);
+            PostEvent(EventType.DoLogin);
             // return _msfCore.Connect() && _msfCore.DoLogin();
         }
 
-        ///
+        /// <summary>
+        /// 注冊事件委托回調方法
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public bool RegisterDelegate(EventProc callback)
         {
             if (_eventProc == null)
@@ -51,29 +54,39 @@ namespace Konata
             return true;
         }
 
-        ///
-        private void Run()
+        /// <summary>
+        /// 開始運行。此方法會阻塞綫程
+        /// </summary>
+        public void Run()
         {
-            PostEvent(Event.OnBotStart);
+            // 啓動時投遞訊息
+            PostEvent(EventType.BotStart);
 
+            // 進入事件循環
             while (!_botIsExit)
             {
-                Event coreEvent;
+                Thread.Sleep(0);
 
-                if (!_msfcore.PullEvent(out coreEvent, out arguments)
-                    || coreEvent == Event.Idle)
+                EventType coreEvent;
+                object[] eventArgs;
+
+                if (!GetEvent(out coreEvent, out eventArgs)
+                    || coreEvent == EventType.Idle)
                 {
-                    Thread.Sleep(0);
+                    continue;
                 }
 
-                EventProc(coreEvent);
+                ProcessEvent(coreEvent, eventArgs);
             }
         }
 
-        private void EventProc(Event eventId, params object[] args)
+        private void ProcessEvent(EventType eventType,
+            params object[] args)
         {
-
+            _eventProc(eventType, args); // run in sub thread
         }
+
+        #region EventMethods
 
         public void PostEvent(EventType type)
         {
@@ -110,5 +123,7 @@ namespace Konata
 
             return true;
         }
+
+        #endregion
     }
 }

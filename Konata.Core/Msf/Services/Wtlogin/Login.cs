@@ -116,23 +116,6 @@ namespace Konata.Msf.Services.Wtlogin
 
         #region Event Handlers
 
-        private event EventHandler eventEmitter;
-
-        public enum KonataEvents
-        {
-            OnSliderVerify
-        }
-
-        public sealed class KonataEventArgs : EventArgs
-        {
-            public KonataEvents Event { get; }
-
-            public KonataEventArgs(KonataEvents events)
-            {
-                Event = events;
-            }
-        }
-
         internal bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do slider verification.");
@@ -150,7 +133,8 @@ namespace Konata.Msf.Services.Wtlogin
                 Console.WriteLine($"  SigSession => {sig}");
                 Console.WriteLine($"  CaptchaUrl => {captcha}");
                 Console.WriteLine($"Please input ticket:");
-                eventEmitter.Invoke(null, new KonataEventArgs(KonataEvents.OnSliderVerify));
+
+                core.PostEvent(EventType.VerifySliderCaptcha, sig, captcha);
             }
             return false;
         }
@@ -159,12 +143,16 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do sms verification.");
 
+            core.PostEvent(EventType.VerifySmsCaptcha);
+
             return false;
         }
 
         internal bool Handle_VerifyImageCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do image verification.");
+
+            core.PostEvent(EventType.VerifySmsCaptcha);
 
             return false;
         }

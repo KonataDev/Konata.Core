@@ -14,21 +14,23 @@ namespace Konata.Debug
             Console.Write("Exit.");
         }
 
-        private static bool EventProc(Event eventId, params object[] args)
+        private static bool EventProc(EventType eventType, params object[] args)
         {
-            switch (eventId)
+            switch (eventType)
             {
-                case Event.OnBotStart:
+                case EventType.BotStart:
                     return OnBootstrap();
-                case Event.OnVerifySliderCaptcha:
+                case EventType.VerifySliderCaptcha:
                     return OnSliderCaptcha((string)args[0], (string)args[1]);
-                case Event.OnVerifyImageCaptcha:
+                case EventType.VerifyImageCaptcha:
                     return OnImageCaptcha();
-                case Event.OnGroupMessage:
+                case EventType.GroupMessage:
                     return OnGroupMessage();
-                case Event.OnPrivateMessage:
+                case EventType.PrivateMessage:
                     return OnPrivateMessage();
             }
+
+            return false;
         }
 
         private static bool OnBootstrap()
@@ -42,7 +44,7 @@ namespace Konata.Debug
             return false;
         }
 
-        private static bool OnImageCaptcha(string sigSission, string sigUrl)
+        private static bool OnImageCaptcha()
         {
             return false;
         }

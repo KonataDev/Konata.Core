@@ -29,13 +29,12 @@ namespace Konata.Msf
         internal uint _lastError;
         internal string _lastErrorStr;
 
+        internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
         internal OicqStatus _oicqStatus;
 
-        //internal EventDelegate _eventHandler;
-
-        public Core(uint uin, string password)
+        public Core(Bot bot, uint uin, string password)
         {
             _uin = uin;
             _password = password;
@@ -43,6 +42,7 @@ namespace Konata.Msf
             _lastError = 0;
             _lastErrorStr = "";
 
+            _bot = bot;
             _ssoMan = new SsoMan(this);
             _keyRing = new KeyRing(uin, password);
         }
@@ -50,17 +50,6 @@ namespace Konata.Msf
         public bool Connect()
         {
             return _ssoMan.Initialize();
-        }
-
-        //public bool RegisterDelegate(EventDelegate func)
-        //{
-        //    _eventHandler = func;
-        //    return true;
-        //}
-
-        public void RegisterDelegate()
-        {
-
         }
 
         public bool DoLogin()
@@ -74,19 +63,15 @@ namespace Konata.Msf
                 sigSission, sigTicket);
         }
 
-        //internal void EmitError(uint errcode, string errstr)
-        //{
-        //    if (_lastError == 0)
-        //    {
-        //        _lastError = errcode;
-        //        _lastErrorStr = errstr;
-        //        SendEvent(1);
-        //    }
-        //}
+        public void PostEvent(EventType type)
+        {
+            _bot.PostEvent(type);
+        }
 
-        //private void SendEvent(uint signal)
-        //{
-        //    _eventHandler?.Invoke(signal);
-        //}
+        public void PostEvent(EventType type, params object[] args)
+        {
+            _bot.PostEvent(type, args);
+        }
+
     }
 }
