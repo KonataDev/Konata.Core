@@ -49,7 +49,7 @@ namespace Konata.Debug
         {
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
-            Console.Write($"Please input ticket: ");
+            Console.Write($"Please input the ticket: ");
 
             var sigTicket = "";
 
@@ -61,6 +61,7 @@ namespace Konata.Debug
                 {
                     sigTicket = "";
                     Console.WriteLine("Wrong ticket. length < 50");
+                    Console.Write($"Please input the ticket: ");
                 }
             }
 
