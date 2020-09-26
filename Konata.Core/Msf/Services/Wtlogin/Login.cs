@@ -130,11 +130,7 @@ namespace Konata.Msf.Services.Wtlogin
                 var sig = ((T104Body)tlv104._tlvBody)._sigSession;
                 var captcha = ((T192Body)tlv192._tlvBody)._url;
 
-                Console.WriteLine($"  SigSession => {sig}");
-                Console.WriteLine($"  CaptchaUrl => {captcha}");
-                Console.WriteLine($"Please input ticket:");
-
-                core.PostEvent(EventType.VerifySliderCaptcha, sig, captcha);
+                core.PostUserEvent(EventType.VerifySliderCaptcha, sig, captcha);
             }
             return false;
         }
@@ -143,7 +139,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do sms verification.");
 
-            core.PostEvent(EventType.VerifySmsCaptcha);
+            core.PostUserEvent(EventType.VerifySmsCaptcha);
 
             return false;
         }
@@ -152,7 +148,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do image verification.");
 
-            core.PostEvent(EventType.VerifySmsCaptcha);
+            core.PostUserEvent(EventType.VerifySmsCaptcha);
 
             return false;
         }
