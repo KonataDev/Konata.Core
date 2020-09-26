@@ -26,9 +26,6 @@ namespace Konata.Msf
         internal uint _uin;
         internal string _password;
 
-        internal uint _lastError;
-        internal string _lastErrorStr;
-
         internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
@@ -38,9 +35,6 @@ namespace Konata.Msf
         {
             _uin = uin;
             _password = password;
-
-            _lastError = 0;
-            _lastErrorStr = "";
 
             _bot = bot;
             _ssoMan = new SsoMan(this);
@@ -52,12 +46,12 @@ namespace Konata.Msf
             return _ssoMan.Initialize();
         }
 
-        public bool DoLogin()
+        public bool WtLoginTgtgt()
         {
             return Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
         }
 
-        public bool DoVerifySliderCaptcha(string sigSission, string sigTicket)
+        public bool WtLoginCheckSlider(string sigSission, string sigTicket)
         {
             return Service.Run(this, "Wtlogin.Login", "Request_SliderCaptcha",
                 sigSission, sigTicket);
@@ -72,6 +66,5 @@ namespace Konata.Msf
         {
             _bot.PostEvent(type, args);
         }
-
     }
 }

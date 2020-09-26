@@ -14,9 +14,9 @@ namespace Konata.Debug
             Console.Write("Exit.");
         }
 
-        private static bool EventProc(EventType eventType, params object[] args)
+        private static bool EventProc(EventType type, params object[] args)
         {
-            switch (eventType)
+            switch (type)
             {
                 case EventType.BotStart:
                     return OnBootstrap();

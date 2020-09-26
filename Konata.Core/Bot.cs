@@ -91,7 +91,7 @@ namespace Konata
 
         private void OnLogin()
         {
-            _msfCore.DoLogin();
+            _msfCore.WtLoginTgtgt();
         }
 
         private void OnHeartBeat()
@@ -109,6 +109,10 @@ namespace Konata
             // return _msfCore.Connect() && _msfCore.DoLogin();
         }
 
+        public void SubmitSliderTicket(string sigSission, string sigTicket)
+        {
+            PostEvent(EventType.VerifySliderCaptcha, sigSission, sigTicket);
+        }
 
 
         #endregion

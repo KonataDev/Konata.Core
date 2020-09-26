@@ -2,6 +2,12 @@
 
 namespace Konata.Msf
 {
+    public enum EventBase : uint
+    {
+        System = 0x10000000,
+        User = 0x20000000
+    }
+
     public enum EventType : uint
     {
         Idle = uint.MaxValue,
