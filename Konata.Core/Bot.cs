@@ -1,70 +1,223 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using Konata.Msf;
 
 namespace Konata
 {
+    using EventMutex = Mutex;
+    using EventQueue = Queue<Event>;
+    using EventWorkers = ThreadPool;
 
     public class Bot
     {
-        private bool _isLogin;
+        private bool _isExit;
+        private Core _msfCore;
 
-        private Core _msfcore;
+        private EventProc _eventProc;
+        private EventQueue _eventQueue;
+        private EventMutex _eventLock;
+
+        public delegate bool EventProc(EventType e, params object[] a);
 
         public Bot(uint uin, string password)
         {
-            _msfcore = new Core(uin, password);
-            _msfcore.RegisterDelegate(EventHandler);
+            _isExit = false;
+
+            _eventLock = new EventMutex();
+            _eventQueue = new EventQueue();
+
+            _msfCore = new Core(this, uin, password);
         }
 
-        public bool Login()
+        /// <summary>
+        /// 注冊事件委托回調方法
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public bool RegisterDelegate(EventProc callback)
         {
-            return _msfcore.Connect() && _msfcore.DoLogin();
+            if (_eventProc != null)
+            {
+                return false;
+            }
 
-            //SsoPacket ssoPacket =
-            //    SsoPacketFactory.New(SsoCommand.WtLoginAuth, new OicqRequestTgtgt(_uin, _password, _tgtgKey, _randKey, _shareKey, _defaultPublicKey));
-
-            //ToServicePacket toServicePacket =
-            //    ToServicePacketFactory.Build(ssoPacket, 0x0A, 0x02, _zeroKey, _uin);
-
-            // _pakman.Emit(toServicePacket);
-
-            // Console.WriteLine(toServicePacket.ToString());
-
-            //byte[] data =
-            //{
-            //    0x00, 0x00, 0x01, 0x78, 0x00, 0x00, 0x00, 0x0A, 0x02, 0x00, 0x00, 0x00, 0x00, 0x0E, 0x32, 0x30,
-            //    0x35, 0x31, 0x31, 0x31, 0x38, 0x30, 0x31, 0x39, 0x66, 0x3B, 0x71, 0xA0, 0xAD, 0x77, 0x5B, 0x89,
-            //    0xD1, 0xEA, 0xBC, 0x38, 0x75, 0xBB, 0xC1, 0x59, 0x51, 0xC9, 0x3E, 0xFF, 0x1E, 0x03, 0xD9, 0x5D,
-            //    0x71, 0xCA, 0xBC, 0xC7, 0xB2, 0x0D, 0xAF, 0x5C, 0xBC, 0x08, 0x3B, 0x6F, 0x31, 0xA8, 0x9D, 0x4C,
-            //    0x26, 0x05, 0x2B, 0x39, 0xE9, 0xA0, 0x27, 0xD2, 0x58, 0x9E, 0x6F, 0x49, 0x10, 0xBE, 0xFC, 0xF7,
-            //    0xAA, 0xF3, 0xBD, 0x2C, 0x36, 0x23, 0x1E, 0x0F, 0x48, 0x3C, 0x0A, 0x19, 0xC8, 0x7F, 0xC7, 0x42,
-            //    0x01, 0x02, 0xD1, 0xEF, 0xA7, 0x2F, 0x79, 0x4C, 0x7F, 0x65, 0x3F, 0x01, 0x85, 0x4E, 0x3E, 0x4B,
-            //    0x76, 0x8A, 0xE6, 0xF2, 0x0C, 0x02, 0x8E, 0x7B, 0xE5, 0x65, 0x66, 0xF5, 0x0B, 0x4A, 0x50, 0x9E,
-            //    0xCD, 0x19, 0xCD, 0x43, 0xBC, 0x3A, 0x2D, 0xE0, 0x96, 0x7A, 0xFF, 0x1C, 0x47, 0xE5, 0xD2, 0xA2,
-            //    0xD3, 0xF5, 0x6F, 0x43, 0x7D, 0x26, 0x76, 0x33, 0x40, 0x96, 0x3C, 0x16, 0x48, 0x93, 0xF8, 0x4A,
-            //    0x55, 0x69, 0xAF, 0xC1, 0xE1, 0xE5, 0x9C, 0xF2, 0xDC, 0x18, 0x71, 0x26, 0x59, 0x96, 0x26, 0x90,
-            //    0x4F, 0x25, 0x1E, 0x9C, 0xA3, 0x32, 0xDC, 0x9B, 0x35, 0x8B, 0x2C, 0x9D, 0xDD, 0x34, 0x6B, 0x3A,
-            //    0x94, 0x21, 0x7A, 0xE1, 0x9E, 0xC3, 0x0A, 0xF3, 0xAC, 0x00, 0xAD, 0x4B, 0xD6, 0xD8, 0x0B, 0x5F,
-            //    0x3A, 0x0A, 0x74, 0xB9, 0xA8, 0xF0, 0x6B, 0xF0, 0x32, 0xFE, 0xFD, 0x42, 0xA7, 0x74, 0xB6, 0x31,
-            //    0x18, 0xA8, 0xF9, 0xFF, 0xA3, 0x61, 0x72, 0x29, 0x0E, 0x7F, 0x45, 0xC1, 0x47, 0x7C, 0xC4, 0x47,
-            //    0x02, 0xFA, 0x26, 0xEF, 0x86, 0xE7, 0x5B, 0xF8, 0xD9, 0x74, 0x12, 0xAE, 0x02, 0x1F, 0x48, 0x0A,
-            //    0x6B, 0xC5, 0x1A, 0xD4, 0x4C, 0xEC, 0x4E, 0xB1, 0x58, 0xCE, 0x75, 0xF6, 0xE8, 0x20, 0xD1, 0x64,
-            //    0x33, 0x8C, 0x2A, 0x18, 0x8F, 0xE3, 0xCD, 0x91, 0xBB, 0xED, 0xFC, 0xAC, 0xC0, 0x64, 0x67, 0x55,
-            //    0x89, 0x5A, 0x2B, 0x32, 0x70, 0xDC, 0xEF, 0xE1, 0xBB, 0xB9, 0x9C, 0xEF, 0x22, 0x94, 0x5E, 0x1D,
-            //    0x8E, 0x75, 0xB0, 0x7E, 0xDE, 0xC1, 0xD7, 0x4B, 0xF0, 0xAF, 0xB6, 0x87, 0x9C, 0xD4, 0x36, 0x70,
-            //    0x62, 0xFA, 0x7B, 0x3D, 0xD4, 0xCF, 0xFB, 0x17, 0x09, 0xDE, 0x20, 0x85, 0x7E, 0xD4, 0x4F, 0x7B,
-            //    0x4A, 0xEB, 0x8F, 0xB2, 0x9C, 0x84, 0x73, 0x1C, 0x66, 0xA5, 0x51, 0x07, 0x98, 0xEF, 0x4C, 0x37,
-            //    0xF8, 0xDA, 0xBD, 0x45, 0x7E, 0x9D, 0x8F, 0xA1, 0xA6, 0xE0, 0x2B, 0x7F, 0x05, 0x7F, 0xE6, 0x0D,
-            //    0xE6, 0x17, 0x73, 0x91, 0xC7, 0x8F, 0xC2, 0x49
-            //};
-
-            //var x = new FromServicePacket(data);
+            _eventProc = callback;
+            return true;
         }
 
-        private void EventHandler(uint signal)
+        /// <summary>
+        /// 開始運行。此方法會阻塞綫程
+        /// </summary>
+        public void Run()
         {
+            if (_isExit)
+            {
+                return;
+            }
 
+            // 啓動時投遞訊息
+            PostEvent(EventFilter.User, EventType.BotStart);
+
+            // 進入事件循環
+            _isExit = false;
+            while (!_isExit)
+            {
+                Event coreEvent;
+                if (!GetEvent(out coreEvent) || coreEvent._type == EventType.Idle)
+                {
+                    Thread.Sleep(0);
+                    continue;
+                }
+
+                // 處理事件
+                EventWorkers.QueueUserWorkItem(ProcessEvent, coreEvent);
+            }
         }
 
+        #region In-System Event Handlers 
+
+        private void ProcessEvent(object o)
+        {
+            var e = (Event)o;
+
+            if (e._filter == EventFilter.System)
+            {
+                OnSystemEvent(e);
+                return;
+            }
+
+            // 將事件交給前端
+            OnUserEvent(e);
+        }
+
+        private void OnUserEvent(Event e)
+        {
+            _eventProc(e._type, e._args);
+        }
+
+        private void OnSystemEvent(Event e)
+        {
+            switch (e._type)
+            {
+                case EventType.Login: OnLogin(e); break;
+                case EventType.HeartBeat: OnHeartBeat(e); break;
+                case EventType.VerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
+            }
+        }
+
+        private void OnLogin(Event e)
+        {
+            _msfCore.Connect();
+            _msfCore.WtLoginTgtgt();
+        }
+
+        private void OnHeartBeat(Event e)
+        {
+            // _msfCore.DoHeartBeat();
+        }
+
+        private void OnVerifySliderCaptcha(Event e)
+        {
+            if (e._args == null
+                || e._args.Length != 2
+                || !(e._args[0] is string)
+                || !(e._args[1] is string))
+            {
+                return;
+            }
+
+            _msfCore.WtLoginCheckSlider((string)e._args[0], (string)e._args[1]);
+        }
+
+        #endregion
+
+        #region Protocol Interoperation Methods
+
+        public void Login()
+        {
+            PostEvent(EventFilter.System, EventType.Login);
+        }
+
+        public void SubmitSliderTicket(string sigSission, string sigTicket)
+        {
+            PostEvent(EventFilter.System, EventType.VerifySliderCaptcha,
+                sigSission, sigTicket);
+        }
+
+        #endregion
+
+        #region Event Methods
+
+        /// <summary>
+        /// 投遞事件
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        internal void PostEvent(EventFilter filter, EventType type,
+            params object[] args)
+        {
+            PostEvent(new Event(filter, type, args));
+        }
+
+        /// <summary>
+        /// 投遞事件
+        /// </summary>
+        /// <param name="e"></param>
+        internal void PostEvent(Event e)
+        {
+            _eventLock.WaitOne();
+            {
+                _eventQueue.Enqueue(e);
+            }
+            _eventLock.ReleaseMutex();
+        }
+
+        /// <summary>
+        /// 投遞系統事件
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        internal void PostSystemEvent(EventType type, params object[] args)
+        {
+            PostEvent(new Event(EventFilter.System, type, args));
+        }
+
+        /// <summary>
+        /// 投遞用戶事件
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        internal void PostUserEvent(EventType type, params object[] args)
+        {
+            PostEvent(new Event(EventFilter.User, type, args));
+        }
+
+        /// <summary>
+        /// 從隊列獲取一個事件
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private bool GetEvent(out Event e)
+        {
+            _eventLock.WaitOne();
+            {
+                if (_eventQueue.Count <= 0)
+                {
+                    _eventLock.ReleaseMutex();
+
+                    e = Event.Idle;
+                    return false;
+                }
+
+                e = _eventQueue.Dequeue();
+            }
+            _eventLock.ReleaseMutex();
+
+            return true;
+        }
+
+        #endregion
     }
 }

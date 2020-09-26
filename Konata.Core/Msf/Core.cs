@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Konata.Msf;
 using Konata.Msf.Crypto;
 using Konata.Msf.Network;
@@ -18,30 +19,24 @@ namespace Konata.Msf
     //  ++--- WtLogin OnlinePush...etc 
     //   +----------------+
 
-    public delegate void EventDelegate(uint signal);
+    //public delegate void EventDelegate(uint signal);
 
     public class Core
     {
         internal uint _uin;
         internal string _password;
 
-        internal uint _lastError;
-        internal string _lastErrorStr;
-
+        internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
         internal OicqStatus _oicqStatus;
 
-        internal EventDelegate _eventHandler;
-
-        public Core(uint uin, string password)
+        public Core(Bot bot, uint uin, string password)
         {
             _uin = uin;
             _password = password;
 
-            _lastError = 0;
-            _lastErrorStr = "";
-
+            _bot = bot;
             _ssoMan = new SsoMan(this);
             _keyRing = new KeyRing(uin, password);
         }
@@ -51,31 +46,35 @@ namespace Konata.Msf
             return _ssoMan.Initialize();
         }
 
-        public bool RegisterDelegate(EventDelegate func)
-        {
-            _eventHandler = func;
-            return true;
-        }
-
-        public bool DoLogin()
+        public bool WtLoginTgtgt()
         {
             return Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
         }
 
-        internal void EmitError(uint errcode, string errstr)
+        public bool WtLoginCheckSlider(string sigSission, string sigTicket)
         {
-            if (_lastError == 0)
-            {
-                _lastError = errcode;
-                _lastErrorStr = errstr;
-                SendEvent(1);
-            }
+            return Service.Run(this, "Wtlogin.Login", "Request_SliderCaptcha",
+                sigSission, sigTicket);
         }
 
-        private void SendEvent(uint signal)
+        public void PostUserEvent(EventType type, params object[] args)
         {
-            _eventHandler?.Invoke(signal);
+            _bot.PostUserEvent(type, args);
         }
 
+        public void PostSystemEvent(EventType type, params object[] args)
+        {
+            _bot.PostSystemEvent(type, args);
+        }
+        
+        public void PostUserEvent(EventType type)
+        {
+            _bot.PostUserEvent(type, null);
+        }
+        
+        public void PostSystemEvent(EventType type)
+        {
+            _bot.PostSystemEvent(type, null);
+        }
     }
 }

@@ -19,6 +19,12 @@ namespace Konata.Msf.Packets.Oicq
         PreventByLoginArea = 237,
     }
 
+    public enum OicqEncryptMethod
+    {
+        ECDH7 = 0x07,
+        ECDH135 = 0x87,
+    }
+
     public class OicqRequest : Packet
     {
         public readonly uint _uin;
@@ -27,9 +33,11 @@ namespace Konata.Msf.Packets.Oicq
         public readonly ushort _oicqVersion;
         public readonly OicqStatus _oicqStatus;
         public readonly OicqRequestBody _oicqRequestBody;
+        public readonly OicqEncryptMethod _oicqEncryptMethod;
 
         public OicqRequest(ushort command, ushort subCommand, uint uin,
-            OicqRequestBody body, byte[] shareKey, byte[] randKey, byte[] publicKey)
+            OicqEncryptMethod method, OicqRequestBody body,
+            byte[] shareKey, byte[] randKey, byte[] publicKey)
             : base()
         {
             _uin = uin;
@@ -37,6 +45,7 @@ namespace Konata.Msf.Packets.Oicq
             _oicqCommand = command;
             _oicqSubCommand = subCommand;
             _oicqRequestBody = body;
+            _oicqEncryptMethod = method;
 
             PutByte(0x02); // 頭部 0x02
             {
@@ -47,7 +56,7 @@ namespace Konata.Msf.Packets.Oicq
                     PutUshortBE(1);
                     PutUintBE(_uin);
                     PutByte(0x03);
-                    PutByte(0x87); // 加密方式id
+                    PutByte((byte)method);
                     PutByte(0x00); // 永遠0
                     PutUintBE(2);
                     PutUintBE(AppInfo.appClientVersion);

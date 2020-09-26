@@ -30,7 +30,6 @@ namespace Konata.Msf
             }
             catch (Exception e)
             {
-                ((Core)args[0]).EmitError(1, e.StackTrace);
                 return false;
             }
         }
@@ -50,7 +49,6 @@ namespace Konata.Msf
             }
             catch (Exception e)
             {
-                ((Core)args[0]).EmitError(2, e.StackTrace);
                 return false;
             }
         }
