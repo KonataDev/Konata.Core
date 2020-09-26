@@ -57,14 +57,24 @@ namespace Konata.Msf
                 sigSission, sigTicket);
         }
 
-        public void PostEvent(EventType type)
+        public void PostUserEvent(EventType type, params object[] args)
         {
-            _bot.PostEvent(type);
+            _bot.PostUserEvent(type, args);
         }
 
-        public void PostEvent(EventType type, params object[] args)
+        public void PostSystemEvent(EventType type, params object[] args)
         {
-            _bot.PostEvent(type, args);
+            _bot.PostSystemEvent(type, args);
+        }
+        
+        public void PostUserEvent(EventType type)
+        {
+            _bot.PostUserEvent(type, null);
+        }
+        
+        public void PostSystemEvent(EventType type)
+        {
+            _bot.PostSystemEvent(type, null);
         }
     }
 }
