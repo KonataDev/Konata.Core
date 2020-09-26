@@ -5,9 +5,11 @@ namespace Konata.Debug
 {
     internal class Program
     {
+        static Bot bot;
+
         public static void Main()
         {
-            Bot bot = new Bot(2051118019, "12345678");
+            bot = new Bot(2051118019, "12345678");
             bot.RegisterDelegate(EventProc);
             bot.Run();
 
@@ -33,15 +35,39 @@ namespace Konata.Debug
             return false;
         }
 
+        /// <summary>
+        /// 框架啓動事件
+        /// </summary>
+        /// <returns></returns>
         private static bool OnBootstrap()
         {
-            // Do your initialize operations.
+            bot.Login();
             return false;
         }
 
         private static bool OnSliderCaptcha(string sigSission, string sigUrl)
         {
-            return false;
+            Console.WriteLine($"  SigSession => {sigSission}");
+            Console.WriteLine($"  CaptchaUrl => {sigUrl}");
+            Console.Write($"Please input ticket: ");
+
+            var sigTicket = "";
+
+            while (sigTicket == "")
+            {
+                sigTicket = Console.ReadLine();
+
+                if(sigTicket.Length < 50)
+                {
+                    sigTicket = "";
+                    Console.WriteLine("Wrong ticket. length < 50");
+                }
+            }
+
+            // 提交驗證
+            bot.SubmitSliderTicket(sigSission, sigTicket);
+
+            return true;
         }
 
         private static bool OnImageCaptcha()
@@ -58,6 +84,5 @@ namespace Konata.Debug
         {
             return false;
         }
-
     }
 }
