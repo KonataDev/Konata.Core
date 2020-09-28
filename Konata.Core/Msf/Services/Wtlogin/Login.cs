@@ -51,13 +51,13 @@ namespace Konata.Msf.Services.Wtlogin
                     return Handle_VerifySliderCaptcha(core, oicqRequest);
                 case OicqStatus.DoVerifyDeviceLockViaSms:
                     return Handle_VerifySmsCaptcha(core, oicqRequest);
-                
+
                 case OicqStatus.PreventByIncorrectUserOrPwd:
                     return Handle_InvalidUserOrPassword(core, oicqRequest);
                 case OicqStatus.PreventByInvalidEnvironment:
                     return Handle_InvalidEnvironment(core, oicqRequest);
                 case OicqStatus.PreventByLoginDenied:
-                    return Handle_LoginDenied(core,oicqRequest);
+                    return Handle_LoginDenied(core, oicqRequest);
 
                 default: Handle_UnknownOicqRequest(core, oicqRequest); break;
             }
@@ -196,6 +196,20 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Handle_LoginDenied(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Login denied.");
+
+            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            Tlv tlv146 = unpacker.TryGetTlv(0x146);
+            if (tlv146 != null)
+            {
+                var errorTitle = ((T146Body)tlv146._tlvBody)._title;
+                var errorMessage = ((T146Body)tlv146._tlvBody)._message;
+
+                Console.WriteLine($" => {errorTitle} {errorMessage}");
+
+            }
+
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
