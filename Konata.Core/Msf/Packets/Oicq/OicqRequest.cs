@@ -6,7 +6,8 @@ namespace Konata.Msf.Packets.Oicq
     public enum OicqStatus
     {
         OK = 0,
-        DoVerifySlider = 2,
+
+        DoVerifySliderCaptcha = 2,
 
         DoVerifyDeviceLock = 204,
         DoVerifyDeviceLockViaSms = 160,
@@ -16,6 +17,7 @@ namespace Konata.Msf.Packets.Oicq
         PreventByReceiveIssue = 3,
         PreventByAccountFrozen = 40,
         PreventBySmsSentFailed = 162,
+        PreventByLoginDenied = 167,
         PreventByInvalidEnvironment = 237,
     }
 

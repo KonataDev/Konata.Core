@@ -44,16 +44,21 @@ namespace Konata.Msf.Services.Wtlogin
             core._oicqStatus = oicqRequest._oicqStatus;
             switch (oicqRequest._oicqStatus)
             {
-                case OicqStatus.DoVerifySlider:
+                case OicqStatus.OK:
+                    return Handle_WtloginSuccess(core, oicqRequest);
+
+                case OicqStatus.DoVerifySliderCaptcha:
                     return Handle_VerifySliderCaptcha(core, oicqRequest);
                 case OicqStatus.DoVerifyDeviceLockViaSms:
                     return Handle_VerifySmsCaptcha(core, oicqRequest);
+                
                 case OicqStatus.PreventByIncorrectUserOrPwd:
                     return Handle_InvalidUserOrPassword(core, oicqRequest);
                 case OicqStatus.PreventByInvalidEnvironment:
                     return Handle_InvalidEnvironment(core, oicqRequest);
-                case OicqStatus.OK:
-                    return Handle_WtloginSuccess(core, oicqRequest);
+                case OicqStatus.PreventByLoginDenied:
+                    return Handle_LoginDenied(core,oicqRequest);
+
                 default: Handle_UnknownOicqRequest(core, oicqRequest); break;
             }
 
@@ -152,7 +157,7 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do image verification.");
 
-            core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha);
+            // core.PostUserEvent(EventType.WtLoginVerifyImageCaptcha);
 
             return false;
         }
@@ -188,9 +193,17 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
+        internal bool Handle_LoginDenied(Core core, OicqRequest request)
+        {
+            Console.WriteLine("[Error] Login denied.");
+            core.PostSystemEvent(EventType.LoginFailed);
+            return false;
+        }
+
         internal bool Handle_UnknownOicqRequest(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Unknown OicqRequest received.");
+            core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
 
