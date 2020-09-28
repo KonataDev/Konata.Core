@@ -4,20 +4,20 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T191Body : TlvBody
     {
-        public readonly byte _unknownK;
+        public readonly byte _verifyType;
 
-        public T191Body(byte unknownK = 0x82)
+        public T191Body(byte verifyType = 0x82)
             : base()
         {
-            _unknownK = unknownK;
+            _verifyType = verifyType;
 
-            PutByte(_unknownK);
+            PutByte(_verifyType);
         }
 
         public T191Body(byte[] data)
             : base(data)
         {
-            TakeByte(out _unknownK);
+            TakeByte(out _verifyType);
         }
     }
 }
