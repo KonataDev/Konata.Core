@@ -189,6 +189,20 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Handle_InvalidEnvironment(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Invalid login environment.");
+
+            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            Tlv tlv146 = unpacker.TryGetTlv(0x146);
+            if (tlv146 != null)
+            {
+                var errorTitle = ((T146Body)tlv146._tlvBody)._title;
+                var errorMessage = ((T146Body)tlv146._tlvBody)._message;
+
+                Console.WriteLine($"[Error] {errorTitle} {errorMessage}");
+
+            }
+
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
@@ -206,7 +220,7 @@ namespace Konata.Msf.Services.Wtlogin
                 var errorTitle = ((T146Body)tlv146._tlvBody)._title;
                 var errorMessage = ((T146Body)tlv146._tlvBody)._message;
 
-                Console.WriteLine($" => {errorTitle} {errorMessage}");
+                Console.WriteLine($"[Error] {errorTitle} {errorMessage}");
 
             }
 
