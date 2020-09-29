@@ -1,5 +1,6 @@
 ﻿using System;
 using Konata.Msf;
+using Konata.Debug.DevToolsProtocol;
 
 namespace Konata.Debug
 {
@@ -50,23 +51,39 @@ namespace Konata.Debug
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
 
-            var sigTicket = "";
+            var chrome = new Browser();
+            Console.WriteLine($"Opening chrome browser...");
 
-            while (sigTicket == "")
+            if (!chrome.Open("Default", 480, 720, true))
             {
-                Console.Write($"Please input the ticket: ");
-                sigTicket = Console.ReadLine();
+                Console.WriteLine($"Your device have not installed chrome.");
+                return false;
+            }
 
-                if(sigTicket.Length < 50)
-                {
-                    sigTicket = "";
-                    Console.WriteLine("Wrong ticket. length < 50");
-                }
+            string sigTicket = "";
+            var tab = chrome.ConnectToFirstTab();
+            {
+                tab.EnableNetwork(65536);
+                tab.EnablePage();
+                tab.EnableRuntime();
+                tab.EnableDOM();
+                tab.EnableCSS();
+                tab.EnableOverlay();
+                tab.EnableTouchSimulation(1, "mobile");
+
+                tab.NavigateTo(sigUrl);
+
+                sigTicket = tab.WaitForTicket();
+            }
+            chrome.Close();
+
+            if (sigTicket == null || sigTicket == "")
+            {
+                return false;
             }
 
             // 提交驗證
             bot.SubmitSliderTicket(sigSission, sigTicket);
-
             return true;
         }
 
