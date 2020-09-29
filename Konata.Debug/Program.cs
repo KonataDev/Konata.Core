@@ -54,6 +54,7 @@ namespace Konata.Debug
             var chrome = new Browser();
             Console.WriteLine($"Opening chrome browser...");
 
+            var userAgent = "useragent";
             if (!chrome.Open("Default", 480, 720, true))
             {
                 Console.WriteLine($"Your device have not installed chrome.");
@@ -66,12 +67,17 @@ namespace Konata.Debug
                 tab.EnableNetwork(65536);
                 tab.EnablePage();
                 tab.EnableRuntime();
+                tab.EnableDebugger();
                 tab.EnableDOM();
                 tab.EnableCSS();
                 tab.EnableOverlay();
                 tab.EnableTouchSimulation(1, "mobile");
 
                 tab.NavigateTo(sigUrl);
+
+                tab.DebuggerPause();
+                tab.ExecuteScript($"navigator.__defineGetter__('userAgent',()=>'{userAgent}')");
+                tab.DebuggerResume();
 
                 sigTicket = tab.WaitForTicket();
             }
@@ -83,6 +89,7 @@ namespace Konata.Debug
             }
 
             // 提交驗證
+            Console.WriteLine($"Ticket got => \n{sigTicket}");
             bot.SubmitSliderTicket(sigSission, sigTicket);
             return true;
         }
