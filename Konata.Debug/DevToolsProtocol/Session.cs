@@ -4,6 +4,7 @@ using System.Threading;
 using System.Net.WebSockets;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Konata.Debug.DevToolsProtocol
 {
@@ -47,31 +48,76 @@ namespace Konata.Debug.DevToolsProtocol
 
         private void ReceiveThread()
         {
-            var recvBuffer = new byte[5120];
-            var arraySegment = new ArraySegment<byte>(recvBuffer);
+            var recvBuffer = new byte[0];
+            var tokenCount = 0;
+            var splitPosition = 0;
 
             while (true)
             {
                 Thread.Sleep(0);
 
-                _wsClient.ReceiveAsync(arraySegment, CancellationToken.None).Wait();
-
-                var zeroPosition = Array.IndexOf<byte>(recvBuffer, 0);
-                if (zeroPosition <= 0)
+                byte[] segBuf = RecvSegment();
+                if (segBuf.Length <= 0)
                 {
-                    return;
+                    continue;
                 }
 
-                var stringBody = new byte[zeroPosition];
-                Array.Copy(recvBuffer, stringBody, zeroPosition);
-                Array.Clear(recvBuffer, 0x00, zeroPosition);
+                recvBuffer = recvBuffer.Concat(segBuf).ToArray();
 
-                OnReceiveData(Encoding.UTF8.GetString(stringBody));
+                if (recvBuffer.Length <= 2)
+                {
+                    continue;
+                }
+
+                for (int i = splitPosition; i < recvBuffer.Length; ++i)
+                {
+                    switch ((char)recvBuffer[i])
+                    {
+                        case '{': ++tokenCount; break;
+                        case '}': --tokenCount; break;
+                        default: break;
+                    }
+
+                    ++splitPosition;
+
+                    if (splitPosition != 0 && tokenCount == 0)
+                    {
+                        var jsonBuffer = new byte[splitPosition];
+                        Array.Copy(recvBuffer, jsonBuffer, splitPosition);
+
+                        var newBuffer = new byte[recvBuffer.Length - splitPosition];
+                        Array.Copy(recvBuffer, newBuffer, newBuffer.Length);
+                        recvBuffer = newBuffer;
+                        splitPosition = 0;
+
+                        OnReceiveData(Encoding.UTF8.GetString(jsonBuffer));
+                        break;
+                    }
+                }
             }
         }
 
+        private byte[] segmentBuffer = new byte[5120];
+
+        private byte[] RecvSegment()
+        {
+            _wsClient.ReceiveAsync(new ArraySegment<byte>(segmentBuffer), CancellationToken.None).Wait();
+
+            var zeroPosition = Array.IndexOf<byte>(segmentBuffer, 0);
+            if (zeroPosition <= 0)
+            {
+                return new byte[0];
+            }
+
+            var stringSeg = new byte[zeroPosition];
+            Array.Copy(segmentBuffer, stringSeg, zeroPosition);
+            Array.Clear(segmentBuffer, 0x00, zeroPosition);
+
+            return stringSeg;
+        }
+
         private Regex _depRegexEvent = new Regex("^{\"method\":\"([a-zA-Z.]*)\",\"params\":(.*)}$");
-        private Regex _cdpRegexSequence = new Regex("^{\"id\":([0-9]*),\"result\":(.*)}$");
+        private Regex _cdpRegexCallRet = new Regex("^{\"id\":([0-9]*),\"result\":(.*)}$");
 
         private void OnReceiveData(string json)
         {
@@ -79,13 +125,15 @@ namespace Konata.Debug.DevToolsProtocol
             if (matches.Success)
             {
                 OnReceiveEvent(matches.Groups[1].Value, matches.Groups[2].Value);
+                return;
             }
 
-            matches = _cdpRegexSequence.Match(json);
+            matches = _cdpRegexCallRet.Match(json);
             if (matches.Success)
             {
-                OnReceiveSequence(uint.Parse(matches.Groups[1].Value),
+                OnReceiveCallRet(uint.Parse(matches.Groups[1].Value),
                     matches.Groups[2].Value);
+                return;
             }
         }
 
@@ -96,15 +144,19 @@ namespace Konata.Debug.DevToolsProtocol
                 _cdpEventQueue.Enqueue(new CdpEvent { _method = method, _data = data });
             }
             _cdpMutexEvent.ReleaseMutex();
+
+            Console.WriteLine(data);
         }
 
-        private void OnReceiveSequence(uint sequence, string result)
+        private void OnReceiveCallRet(uint sequence, string result)
         {
             _cdpMutexSequence.WaitOne();
             {
                 _cdpSequenceMap.Add(sequence, result);
             }
             _cdpMutexSequence.ReleaseMutex();
+
+            Console.WriteLine(result);
         }
 
 
