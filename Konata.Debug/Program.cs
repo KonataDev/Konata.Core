@@ -1,5 +1,6 @@
 ﻿using System;
 using Konata.Msf;
+using Konata.Debug.DevToolsProtocol;
 
 namespace Konata.Debug
 {
@@ -50,23 +51,36 @@ namespace Konata.Debug
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
 
-            var sigTicket = "";
+            var browser = new Browser();
+            Console.WriteLine($"Opening browser...");
 
-            while (sigTicket == "")
+            var userAgent = "useragent";
+            if (!browser.Open(Browser.Chrome, userAgent, 480, 720, true))
             {
-                Console.Write($"Please input the ticket: ");
-                sigTicket = Console.ReadLine();
+                Console.WriteLine($"Your device haven't installed chromium kernel family web browser. (Need DevTools Protocol support.)");
+                return false;
+            }
 
-                if(sigTicket.Length < 50)
-                {
-                    sigTicket = "";
-                    Console.WriteLine("Wrong ticket. length < 50");
-                }
+            string sigTicket;
+            var session = browser.ConnectToFirstTab();
+            {
+                session.EnableNetwork(65536);
+                session.EnableTouchSimulation(1, "mobile");
+                session.NavigateTo(sigUrl);
+
+                sigTicket = session.WaitForTicket();
+            }
+            session.Close();
+            browser.WaitForExit();
+
+            if (sigTicket == null || sigTicket == "")
+            {
+                return false;
             }
 
             // 提交驗證
+            Console.WriteLine($"Ticket got => \n{sigTicket}");
             bot.SubmitSliderTicket(sigSission, sigTicket);
-
             return true;
         }
 

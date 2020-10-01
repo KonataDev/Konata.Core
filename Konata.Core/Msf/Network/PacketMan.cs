@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
-using System.Collections.Generic;
 using Konata.Msf.Packets;
 using Konata.Utils;
 
