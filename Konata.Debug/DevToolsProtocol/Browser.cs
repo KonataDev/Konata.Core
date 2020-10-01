@@ -8,57 +8,90 @@ using System.Text.RegularExpressions;
 
 namespace Konata.Debug.DevToolsProtocol
 {
+    public struct BrowserConfig
+    {
+        public string _executeName;
+        public string _profilePrefix;
+        public string _profile;
+    }
+
     public class Browser
     {
-        private Process _chromeInstance;
-        private string _chromeDevUrl;
+        public static readonly BrowserConfig Chrome =
+            new BrowserConfig
+            {
+                _executeName = "chrome",
+                _profile = "Default",
+                _profilePrefix = $"%LOCALAPPDATA%/Google/Chrome*/User Data/"
+            };
 
-        public bool Open(string profileName, uint windowWidth,
+        public static readonly BrowserConfig MsEdge =
+            new BrowserConfig
+            {
+                _executeName = "msedge",
+                _profile = "Default",
+                _profilePrefix = $"%LOCALAPPDATA%/Microsoft/Edge*/User Data/"
+            };
+
+        private Process _browserInstance;
+        private string _browserDevUrl;
+
+        /// <summary>
+        /// 啓動Chrome
+        /// </summary>
+        /// <param name="profileName"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="windowWidth"></param>
+        /// <param name="windowHeight"></param>
+        /// <param name="disableExtensions"></param>
+        /// <returns></returns>
+        public bool Open(BrowserConfig browser, string userAgent, uint windowWidth,
             uint windowHeight, bool disableExtensions)
         {
-            string pathToChrome = "";
+            string pathToBrowser = "";
+            string argsToBrowser = "";
             string pathToProfile = "";
-            string argsToChrome = "";
             ushort debugPort = FindAvailablePort();
 
             switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
-                    pathToChrome = "chrome.exe";
-                    pathToProfile = Path.GetFileName($"%LOCALAPPDATA%/Google/Chrome*/User Data/{profileName}");
+                    pathToBrowser = browser._executeName;
+                    pathToProfile = Path.GetFileName($"{browser._profilePrefix}{browser._profile}");
                     break;
-                case PlatformID.Unix:
-                    pathToChrome = "chrome";
-                    pathToProfile = "";
-                    break;
+                    //case PlatformID.Unix:
+                    //    pathToBrowser = "chrome";
+                    //    pathToProfile = "";
+                    //    break;
             }
 
-            if (pathToChrome == "")
+            if (pathToBrowser == "")
             {
                 return false;
             }
 
-            _chromeDevUrl = $"http://127.0.0.1:{debugPort}";
-            argsToChrome += disableExtensions ? "--disable-extensions " : "";
-            argsToChrome += $"--remote-debugging-port={debugPort} ";
-            argsToChrome += $"--window-size={windowWidth},{windowHeight} ";
-            argsToChrome += $"--homepage=about:blank ";
-            argsToChrome += $"--enable-automation ";
-            argsToChrome += $"--no-sandbox ";
-            argsToChrome += $"--user-data-dir=\"{pathToProfile}\"";
+            _browserDevUrl = $"http://127.0.0.1:{debugPort}";
+            argsToBrowser += disableExtensions ? "--disable-extensions " : "";
+            argsToBrowser += $"--remote-debugging-port={debugPort} ";
+            argsToBrowser += $"--window-size={windowWidth},{windowHeight} ";
+            argsToBrowser += $"--homepage=about:blank ";
+            argsToBrowser += $"--enable-automation ";
+            argsToBrowser += $"--no-sandbox ";
+            argsToBrowser += $"--user-agent=\"{userAgent}\" ";
+            argsToBrowser += $"--user-data-dir=\"{pathToProfile}\"";
 
-            _chromeInstance = Process.Start(pathToChrome, argsToChrome);
+            _browserInstance = Process.Start(pathToBrowser, argsToBrowser);
 
-            return _chromeInstance.Id != 0;
+            return _browserInstance.Id != 0;
         }
 
         /// <summary>
         /// 關閉瀏覽器
         /// </summary>
         /// <returns></returns>
-        public bool Close()
+        public bool WaitForExit()
         {
-            _chromeInstance.WaitForExit();
+            _browserInstance.WaitForExit();
             return false;
         }
 
@@ -125,7 +158,7 @@ namespace Konata.Debug.DevToolsProtocol
         /// <returns></returns>
         public string RequestEndpoint(string endpoint)
         {
-            var http = WebRequest.CreateHttp($"{_chromeDevUrl}/{endpoint}");
+            var http = WebRequest.CreateHttp($"{_browserDevUrl}/{endpoint}");
             var response = http.GetResponse();
 
             byte[] data = new byte[response.ContentLength];
@@ -134,6 +167,10 @@ namespace Konata.Debug.DevToolsProtocol
             return Encoding.UTF8.GetString(data);
         }
 
+        /// <summary>
+        /// 尋找可用端口
+        /// </summary>
+        /// <returns></returns>
         private static ushort FindAvailablePort()
         {
             var ipProp = IPGlobalProperties.GetIPGlobalProperties();

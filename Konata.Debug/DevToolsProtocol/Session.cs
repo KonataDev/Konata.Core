@@ -20,14 +20,15 @@ namespace Konata.Debug.DevToolsProtocol
     public class Session
     {
         private Mutex _cdpMutexEvent;
-        private Mutex _cdpMutexSequence;
+        private Mutex _cdpMutexCallRet;
         private CdpEventQueue _cdpEventQueue;
-        private CdpSequenceMap _cdpSequenceMap;
+        private CdpSequenceMap _cdpCallRetMap;
 
         private Thread _wsRecvThread;
         private ClientWebSocket _wsClient;
 
         private uint _sessionSequence;
+        private bool _sessionFinished = false;
 
         public Session(string webSocketURL)
         {
@@ -42,10 +43,13 @@ namespace Konata.Debug.DevToolsProtocol
             _cdpMutexEvent = new Mutex();
             _cdpEventQueue = new CdpEventQueue();
 
-            _cdpMutexSequence = new Mutex();
-            _cdpSequenceMap = new CdpSequenceMap();
+            _cdpMutexCallRet = new Mutex();
+            _cdpCallRetMap = new CdpSequenceMap();
         }
 
+        /// <summary>
+        /// 接收綫程
+        /// </summary>
         private void ReceiveThread()
         {
             var recvBuffer = new byte[0];
@@ -97,11 +101,22 @@ namespace Konata.Debug.DevToolsProtocol
             }
         }
 
-        private byte[] segmentBuffer = new byte[5120];
+        private byte[] segmentBuffer = new byte[512000];
 
+        /// <summary>
+        /// 奇怪的Segment設定 C# nmsl
+        /// </summary>
+        /// <returns></returns>
         private byte[] RecvSegment()
         {
-            _wsClient.ReceiveAsync(new ArraySegment<byte>(segmentBuffer), CancellationToken.None).Wait();
+            try
+            {
+                _wsClient.ReceiveAsync(new ArraySegment<byte>(segmentBuffer), CancellationToken.None).Wait();
+            }
+            catch (Exception _)
+            {
+                OnDisconnect();
+            }
 
             var zeroPosition = Array.IndexOf<byte>(segmentBuffer, 0);
             if (zeroPosition <= 0)
@@ -113,15 +128,29 @@ namespace Konata.Debug.DevToolsProtocol
             Array.Copy(segmentBuffer, stringSeg, zeroPosition);
             Array.Clear(segmentBuffer, 0x00, zeroPosition);
 
+            // Console.Write(Encoding.UTF8.GetString(stringSeg));
+
             return stringSeg;
         }
 
-        private Regex _depRegexEvent = new Regex("^{\"method\":\"([a-zA-Z.]*)\",\"params\":(.*)}$");
-        private Regex _cdpRegexCallRet = new Regex("^{\"id\":([0-9]*),\"result\":(.*)}$");
+        private readonly Regex _cdpRegexEvent =
+            new Regex(@"^{""method"":""([a-zA-Z.]*)"",""params"":(.*)}$");
+        private readonly Regex _cdpRegexCallRet =
+            new Regex(@"^{""id"":([0-9]*),""result"":(.*)}$");
+        private readonly Regex _cdpRegexRequestInfo =
+            new Regex(@"""requestId"":""([0-9.]*)"".*?""url"":""(https:\/\/\S.*?)""");
+        private readonly Regex _cdpRegexRequestId =
+            new Regex(@"""requestId"":""([0-9.]*)""");
+        private readonly Regex _cdpRegexTicket =
+            new Regex(@"\\""ticket\\"":\\""([a-zA-Z0-9_*-]*)\\""");
 
+        /// <summary>
+        /// 接收到數據
+        /// </summary>
+        /// <param name="json"></param>
         private void OnReceiveData(string json)
         {
-            var matches = _depRegexEvent.Match(json);
+            var matches = _cdpRegexEvent.Match(json);
             if (matches.Success)
             {
                 OnReceiveEvent(matches.Groups[1].Value, matches.Groups[2].Value);
@@ -135,8 +164,15 @@ namespace Konata.Debug.DevToolsProtocol
                     matches.Groups[2].Value);
                 return;
             }
+
+            Console.WriteLine("\nUnknwon: " + json);
         }
 
+        /// <summary>
+        /// 接收調試事件
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="data"></param>
         private void OnReceiveEvent(string method, string data)
         {
             _cdpMutexEvent.WaitOne();
@@ -144,21 +180,34 @@ namespace Konata.Debug.DevToolsProtocol
                 _cdpEventQueue.Enqueue(new CdpEvent { _method = method, _data = data });
             }
             _cdpMutexEvent.ReleaseMutex();
-
-            Console.WriteLine(data);
         }
 
+        /// <summary>
+        /// 接收遠端調用返回值
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="result"></param>
         private void OnReceiveCallRet(uint sequence, string result)
         {
-            _cdpMutexSequence.WaitOne();
+            _cdpMutexCallRet.WaitOne();
             {
-                _cdpSequenceMap.Add(sequence, result);
+                _cdpCallRetMap.Add(sequence, result);
             }
-            _cdpMutexSequence.ReleaseMutex();
-
-            Console.WriteLine(result);
+            _cdpMutexCallRet.ReleaseMutex();
         }
 
+        /// <summary>
+        /// 斷開連接
+        /// </summary>
+        private void OnDisconnect()
+        {
+            _sessionFinished = true;
+            _wsRecvThread.Abort();
+            _cdpMutexEvent.Dispose();
+            _cdpMutexCallRet.Dispose();
+            _cdpEventQueue.Clear();
+            _cdpCallRetMap.Clear();
+        }
 
         /// <summary>
         /// 啓用Network
@@ -209,9 +258,20 @@ namespace Konata.Debug.DevToolsProtocol
             CallDevTool("CSS.enable()");
         }
 
+        /// <summary>
+        /// 啓用Debugger
+        /// </summary>
         public void EnableDebugger()
         {
             CallDevTool("Debugger.enable()");
+        }
+
+        /// <summary>
+        /// 啓用Logger
+        /// </summary>
+        public void EnableLog()
+        {
+            CallDevTool("Log.enable()");
         }
 
         /// <summary>
@@ -236,32 +296,54 @@ namespace Konata.Debug.DevToolsProtocol
             CallDevTool("Network.setExtraHTTPHeaders(headers)", headers);
         }
 
+        /// <summary>
+        /// 覆蓋UserAgent
+        /// </summary>
+        /// <param name="userAgent"></param>
         public void SetUserAgentOverride(string userAgent)
         {
             CallDevTool("Network.setUserAgentOverride(userAgent)", userAgent);
         }
 
+        /// <summary>
+        /// 覆蓋UserAgent
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <param name="acceptLanguage"></param>
         public void SetUserAgentOverride(string userAgent, string acceptLanguage)
         {
             CallDevTool("Network.setUserAgentOverride(userAgent,acceptLanguage)",
                 userAgent, acceptLanguage);
         }
 
+        /// <summary>
+        /// 執行JavaScript脚本
+        /// </summary>
+        /// <param name="script"></param>
         public void ExecuteScript(string script)
         {
             CallDevTool("Runtime.evaluate(expression)", script);
         }
 
+        /// <summary>
+        /// 暫停調試器
+        /// </summary>
         public void DebuggerPause()
         {
             CallDevTool("Debugger.pause()");
         }
 
+        /// <summary>
+        /// 恢復調試器
+        /// </summary>
         public void DebuggerResume()
         {
             CallDevTool("Debugger.resume()");
         }
 
+        /// <summary>
+        /// 設置Cookie
+        /// </summary>
         public void SetCookie()
         {
 
@@ -288,12 +370,104 @@ namespace Konata.Debug.DevToolsProtocol
         }
 
         /// <summary>
+        /// 關閉瀏覽器
+        /// </summary>
+        public void Close()
+        {
+            CallDevTool("Browser.close()");
+        }
+
+        /// <summary>
+        /// 獲取指定請求ID的數據
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <returns></returns>
+        public string GetResponseBody(string requestId)
+        {
+            var s = CallDevTool("Network.getResponseBody(requestId)", requestId);
+            return s;
+        }
+
+        private enum TicketRecvStatus
+        {
+            WaitForRequest,
+            WaitForFinishLoading
+        }
+
+        /// <summary>
         /// 等待Ticket產生
         /// </summary>
         /// <returns></returns>
         public string WaitForTicket()
         {
-            return Console.ReadLine();
+            var ticketRequestId = "";
+            var ticketStatus = TicketRecvStatus.WaitForRequest;
+
+            while (!_sessionFinished)
+            {
+                Thread.Sleep(1);
+
+                CdpEvent? e = null;
+                _cdpMutexEvent.WaitOne();
+                {
+                    if (_cdpEventQueue.Count > 0)
+                    {
+                        e = _cdpEventQueue.Dequeue();
+                    }
+                }
+                _cdpMutexEvent.ReleaseMutex();
+
+                if (e == null)
+                {
+                    continue;
+                }
+
+
+                Console.WriteLine(e?._method + e?._data);
+                switch (ticketStatus)
+                {
+                    case TicketRecvStatus.WaitForRequest:
+                        if (e?._method == "Network.responseReceived")
+                        {
+                            var match = _cdpRegexRequestInfo.Match(e?._data);
+                            if (match.Success)
+                            {
+                                var requestId = match.Groups[1].Value;
+                                var requestURL = match.Groups[2].Value;
+
+                                if (requestURL == "https://t.captcha.qq.com/cap_union_new_verify")
+                                {
+                                    ticketRequestId = requestId;
+                                    ticketStatus = TicketRecvStatus.WaitForFinishLoading;
+
+                                    Console.WriteLine($"Found ticket requestID => {ticketRequestId}");
+                                }
+                            }
+                        }
+
+                        break;
+                    case TicketRecvStatus.WaitForFinishLoading:
+                        if (e?._method == "Network.loadingFinished")
+                        {
+                            var match = _cdpRegexRequestId.Match(e?._data);
+                            if (match.Success)
+                            {
+                                if (match.Groups[1].Value == ticketRequestId)
+                                {
+                                    var response = GetResponseBody(ticketRequestId);
+
+                                    match = _cdpRegexTicket.Match(response);
+                                    if (match.Success)
+                                    {
+                                        return match.Groups[1].Value;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            return "";
         }
 
         /// <summary>
@@ -336,8 +510,27 @@ namespace Konata.Debug.DevToolsProtocol
 
             ++_sessionSequence;
 
-            var json = $"{{\"id\": {_sessionSequence}, \"method\": \"{protoMethodName}\", \"params\": {{{string.Join(",", callParams)}}}}}";
+            var json = $"{{\"id\":{_sessionSequence}, \"method\":\"{protoMethodName}\", \"params\":{{{string.Join(",", callParams)}}}}}";
+
             Console.WriteLine(json);
+
+            return SendMessage(_sessionSequence, json);
+        }
+
+        /// <summary>
+        /// 遠端調用DevTools方法, 實質上是拼接JSON _(:3) z)_
+        /// </summary>
+        /// <param name="proto"></param>
+        /// <param name="rawParaments"></param>
+        /// <returns></returns>
+        public string CallDevToolRaw(string proto, string rawParaments)
+        {
+            var bracketFirst = proto.IndexOf("(");
+            var protoMethodName = proto.Substring(0, bracketFirst);
+
+            ++_sessionSequence;
+
+            var json = $"{{\"id\":{_sessionSequence}, \"method\":\"{protoMethodName}\", \"params\":{rawParaments}}}";
 
             return SendMessage(_sessionSequence, json);
         }
@@ -363,23 +556,29 @@ namespace Konata.Debug.DevToolsProtocol
             return GetMessage(sequence);
         }
 
+        /// <summary>
+        /// 獲取訊息
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <returns></returns>
         private string GetMessage(uint sequence)
         {
             var result = "";
+            var retry = 10;
 
-            while (result.Length == 0)
+            while (result.Length == 0 && --retry > 0)
             {
-                Thread.Sleep(0);
+                Thread.Sleep(500);
 
-                _cdpMutexSequence.WaitOne();
+                _cdpMutexCallRet.WaitOne();
                 {
-                    if (_cdpSequenceMap.ContainsKey(sequence))
+                    if (_cdpCallRetMap.ContainsKey(sequence))
                     {
-                        result = _cdpSequenceMap[sequence];
-                        _cdpSequenceMap.Remove(sequence);
+                        result = _cdpCallRetMap[sequence];
+                        _cdpCallRetMap.Remove(sequence);
                     }
                 }
-                _cdpMutexSequence.ReleaseMutex();
+                _cdpMutexCallRet.ReleaseMutex();
             }
 
             return result;
