@@ -51,37 +51,27 @@ namespace Konata.Debug
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
 
-            var chrome = new Browser();
-            Console.WriteLine($"Opening chrome browser...");
+            var browser = new Browser();
+            Console.WriteLine($"Opening browser...");
 
             var userAgent = "useragent";
-            if (!chrome.Open("Default", 480, 720, true))
+            if (!browser.Open(Browser.Chrome, userAgent, 480, 720, true))
             {
-                Console.WriteLine($"Your device have not installed chrome.");
+                Console.WriteLine($"Your device haven't installed chromium kernel family web browser. (Need DevTools Protocol support.)");
                 return false;
             }
 
-            string sigTicket = "";
-            var tab = chrome.ConnectToFirstTab();
+            string sigTicket;
+            var session = browser.ConnectToFirstTab();
             {
-                tab.EnableNetwork(65536);
-                tab.EnablePage();
-                tab.EnableRuntime();
-                tab.EnableDebugger();
-                tab.EnableDOM();
-                tab.EnableCSS();
-                tab.EnableOverlay();
-                tab.EnableTouchSimulation(1, "mobile");
+                session.EnableNetwork(65536);
+                session.EnableTouchSimulation(1, "mobile");
+                session.NavigateTo(sigUrl);
 
-                tab.NavigateTo(sigUrl);
-
-                tab.DebuggerPause();
-                tab.ExecuteScript($"navigator.__defineGetter__('userAgent',()=>'{userAgent}')");
-                tab.DebuggerResume();
-
-                sigTicket = tab.WaitForTicket();
+                sigTicket = session.WaitForTicket();
             }
-            chrome.Close();
+            session.Close();
+            browser.WaitForExit();
 
             if (sigTicket == null || sigTicket == "")
             {
