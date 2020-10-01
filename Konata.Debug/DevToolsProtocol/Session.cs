@@ -384,8 +384,7 @@ namespace Konata.Debug.DevToolsProtocol
         /// <returns></returns>
         public string GetResponseBody(string requestId)
         {
-            var s = CallDevTool("Network.getResponseBody(requestId)", requestId);
-            return s;
+            return CallDevTool("Network.getResponseBody(requestId)", requestId);
         }
 
         private enum TicketRecvStatus
