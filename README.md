@@ -7,7 +7,7 @@
  - [x] 實現 ECDH 密鈅交換算法 基於橢圓曲綫 secp192k1
  - [x] 修復 TEA(TinyEncryptionAlogrithm) 16輪加密算法
  - [x] 打包TLV 製作 wtlogin 封包
- - [ ] 驗證圖形滑塊
+ - [x] 驗證圖形滑塊
  - [ ] 驗證SMS
  - [ ] 驗證設備鎖
  - [ ] 上報 PubAccountSvc.get_follow_list
