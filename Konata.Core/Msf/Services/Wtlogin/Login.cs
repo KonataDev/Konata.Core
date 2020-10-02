@@ -139,7 +139,7 @@ namespace Konata.Msf.Services.Wtlogin
                 var sig = ((T104Body)tlv104._tlvBody)._sigSession;
                 var captcha = ((T192Body)tlv192._tlvBody)._url;
 
-                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sig, captcha);
+                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sig, captcha, DeviceInfo.Browser.UserAgent);
             }
             return false;
         }
@@ -200,7 +200,6 @@ namespace Konata.Msf.Services.Wtlogin
                 var errorMessage = ((T146Body)tlv146._tlvBody)._message;
 
                 Console.WriteLine($"[Error] {errorTitle} {errorMessage}");
-
             }
 
             core.PostSystemEvent(EventType.LoginFailed);
@@ -221,7 +220,6 @@ namespace Konata.Msf.Services.Wtlogin
                 var errorMessage = ((T146Body)tlv146._tlvBody)._message;
 
                 Console.WriteLine($"[Error] {errorTitle} {errorMessage}");
-
             }
 
             core.PostSystemEvent(EventType.LoginFailed);
