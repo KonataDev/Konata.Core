@@ -55,7 +55,7 @@ namespace Konata.Msf
         /// <returns></returns>
         public bool DisConnect()
         {
-            return _ssoMan.Disconnect();
+            return _ssoMan.DisConnect();
         }
 
         /// <summary>
