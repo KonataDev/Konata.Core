@@ -74,9 +74,11 @@ namespace Konata.Debug.DevToolsProtocol
             argsToBrowser += disableExtensions ? "--disable-extensions " : "";
             argsToBrowser += $"--remote-debugging-port={debugPort} ";
             argsToBrowser += $"--window-size={windowWidth},{windowHeight} ";
-            argsToBrowser += $"--homepage=about:blank ";
+            argsToBrowser += $"--app=about:blank ";
             argsToBrowser += $"--enable-automation ";
             argsToBrowser += $"--no-sandbox ";
+            argsToBrowser += $"--headeless --disable-gpu ";
+            argsToBrowser += $"--lang=zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7 ";
             argsToBrowser += $"--user-agent=\"{userAgent}\" ";
             argsToBrowser += $"--user-data-dir=\"{pathToProfile}\"";
 
@@ -118,6 +120,11 @@ namespace Konata.Debug.DevToolsProtocol
             return new Session(tabs[0]);
         }
 
+        // "type":\s"page",\s*.*\s*"webSocketDebuggerUrl"*.\s*"(ws:\/\/\S*?)"
+        private readonly Regex _endpointRegex =
+            new Regex(@"""type"":\s""page"",\s*.*\s*""webSocketDebuggerUrl""*.\s*""(ws:\/\/\S*?)""",
+                RegexOptions.Multiline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         /// <summary>
         /// 列出所有標籤頁
         /// </summary>
@@ -125,11 +132,7 @@ namespace Konata.Debug.DevToolsProtocol
         public string[] ListAllTabs()
         {
             var json = RequestEndpoint("json/list");
-
-            // "type":\s"page",\s*.*\s*"webSocketDebuggerUrl"*.\s*"(ws:\/\/\S*?)"
-            var regex = new Regex("\"type\":\\s\"page\",\\s*.*\\s*\"webSocketDebuggerUrl\"*.\\s*\"(ws:\\/\\/\\S*?)\"",
-                RegexOptions.Multiline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            var matches = regex.Matches(json);
+            var matches = _endpointRegex.Matches(json);
 
             var tabs = new string[matches.Count];
             for (int i = 0; i < matches.Count; ++i)

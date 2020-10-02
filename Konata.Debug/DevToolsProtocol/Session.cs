@@ -10,6 +10,7 @@ namespace Konata.Debug.DevToolsProtocol
 {
     using CdpEventQueue = Queue<CdpEvent>;
     using CdpSequenceMap = Dictionary<uint, string>;
+    using CdpExtraHeader = Dictionary<string, string>;
 
     public struct CdpEvent
     {
@@ -291,9 +292,23 @@ namespace Konata.Debug.DevToolsProtocol
         /// 設置額外的請求頭
         /// </summary>
         /// <param name="headers"></param>
-        public void SetExtraHeaders(string[] headers)
+        public void SetExtraHeaders(CdpExtraHeader headers)
         {
-            CallDevTool("Network.setExtraHTTPHeaders(headers)", headers);
+            var headerParams = new List<string>();
+            foreach (var element in headers)
+            {
+                headerParams.Add($"\"{element.Key}\": \"{element.Value}\"");
+            }
+
+            CallDevToolRaw("Network.setExtraHTTPHeaders()", $"{{\"headers\": {{{string.Join(",", headerParams)}}}}}");
+        }
+
+        /// <summary>
+        /// 設置額外的請求頭
+        /// </summary>
+        public void SetExtraHeader(string headerName, string headerValue)
+        {
+            CallDevToolRaw("Network.setExtraHTTPHeaders()", $"{{\"headers\": {{\"{headerName}\": \"{headerValue}\"}}}}");
         }
 
         /// <summary>
@@ -344,9 +359,19 @@ namespace Konata.Debug.DevToolsProtocol
         /// <summary>
         /// 設置Cookie
         /// </summary>
-        public void SetCookie()
+        /// <param name="cookieName"></param>
+        /// <param name="cookieValue"></param>
+        public void SetCookie(string cookieName, string cookieValue)
         {
+            CallDevTool("Network.setCookie(name,value)", cookieName, cookieValue);
+        }
 
+        /// <summary>
+        /// 設置Cookie
+        /// </summary>
+        public void SetCookie(string cookieName, string cookieValue, string cookieDomain)
+        {
+            CallDevTool("Network.setCookie(name,value,domain)", cookieName, cookieValue, cookieDomain);
         }
 
         /// <summary>
@@ -520,16 +545,18 @@ namespace Konata.Debug.DevToolsProtocol
         /// 遠端調用DevTools方法, 實質上是拼接JSON _(:3) z)_
         /// </summary>
         /// <param name="proto"></param>
-        /// <param name="rawParaments"></param>
+        /// <param name="rawParameters"></param>
         /// <returns></returns>
-        public string CallDevToolRaw(string proto, string rawParaments)
+        public string CallDevToolRaw(string proto, string rawParameters)
         {
             var bracketFirst = proto.IndexOf("(");
             var protoMethodName = proto.Substring(0, bracketFirst);
 
             ++_sessionSequence;
 
-            var json = $"{{\"id\":{_sessionSequence}, \"method\":\"{protoMethodName}\", \"params\":{rawParaments}}}";
+            var json = $"{{\"id\":{_sessionSequence}, \"method\":\"{protoMethodName}\", \"params\":{rawParameters}}}";
+
+            Console.WriteLine(json);
 
             return SendMessage(_sessionSequence, json);
         }
