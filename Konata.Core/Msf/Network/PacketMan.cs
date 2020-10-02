@@ -50,27 +50,36 @@ namespace Konata.Msf.Network
             _ssoMan = ssoMan;
         }
 
+        /// <summary>
+        /// 打開網路插座
+        /// </summary>
+        /// <returns></returns>
         public bool OpenSocket()
         {
             _recvBuffer = new byte[2048];
-
             _recvStatus = ReceiveStatus.Idle;
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.Connect(_msfServers[0].url, _msfServers[0].port);
             _socket.BeginReceive(_recvBuffer, 0, _recvBuffer.Length, SocketFlags.None, OnReceive, null);
 
-            //_thread = new Thread(PacketManThread);
-            //_thread.Start();
-
             return true;
         }
 
-        public void CloseSocket()
+        /// <summary>
+        /// 關閉網路插座
+        /// </summary>
+        /// <returns></returns>
+        public bool CloseSocket()
         {
+            if (_recvStatus == ReceiveStatus.Stop)
+            {
+                return false;
+            }
+
             _socket.Close();
             _recvStatus = ReceiveStatus.Stop;
-            // _thread.Join();
+            return true;
         }
 
         public void Emit(ToServiceMessage message)
@@ -80,6 +89,11 @@ namespace Konata.Msf.Network
 
         private void OnSend(byte[] data)
         {
+            if (_recvStatus == ReceiveStatus.Stop)
+            {
+                return;
+            }
+
             _socket.Send(data);
             Console.WriteLine($"Send =>\n{Hex.Bytes2HexStr(data)}\n");
         }
@@ -109,9 +123,17 @@ namespace Konata.Msf.Network
                     }
                 }
             }
+            catch (Exception _)
+            {
+                CloseSocket();
+            }
             finally
             {
-                _socket.BeginReceive(_recvBuffer, _recvLength, _recvBuffer.Length - _recvLength, SocketFlags.None, OnReceive, null);
+                if (_recvStatus != ReceiveStatus.Stop)
+                {
+                    _socket.BeginReceive(_recvBuffer, _recvLength, _recvBuffer.Length - _recvLength,
+                        SocketFlags.None, OnReceive, null);
+                }
             }
         }
 

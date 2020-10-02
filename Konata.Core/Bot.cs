@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
+using System.Collections.Generic;
 using Konata.Msf;
 
 namespace Konata
@@ -101,6 +101,7 @@ namespace Konata
             switch (e._type)
             {
                 case EventType.WtLogin: OnLogin(e); break;
+                case EventType.LoginFailed: OnLoginFailed(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
                 case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
             }
@@ -110,6 +111,11 @@ namespace Konata
         {
             _msfCore.Connect();
             _msfCore.WtLoginTgtgt();
+        }
+
+        private void OnLoginFailed(Event e)
+        {
+            _msfCore.DisConnect();
         }
 
         private void OnHeartBeat(Event e)
@@ -134,11 +140,19 @@ namespace Konata
 
         #region Protocol Interoperation Methods
 
+        /// <summary>
+        /// 執行登錄
+        /// </summary>
         public void Login()
         {
             PostEvent(EventFilter.System, EventType.WtLogin);
         }
 
+        /// <summary>
+        /// 提交滑塊驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigTicket"></param>
         public void SubmitSliderTicket(string sigSission, string sigTicket)
         {
             PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha,
@@ -152,18 +166,6 @@ namespace Konata
         /// <summary>
         /// 投遞事件
         /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="type"></param>
-        /// <param name="args"></param>
-        internal void PostEvent(EventFilter filter, EventType type,
-            params object[] args)
-        {
-            PostEvent(new Event(filter, type, args));
-        }
-
-        /// <summary>
-        /// 投遞事件
-        /// </summary>
         /// <param name="e"></param>
         internal void PostEvent(Event e)
         {
@@ -172,6 +174,18 @@ namespace Konata
                 _eventQueue.Enqueue(e);
             }
             _eventLock.ReleaseMutex();
+        }
+
+        /// <summary>
+        /// 投遞事件
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        internal void PostEvent(EventFilter filter, EventType type,
+            params object[] args)
+        {
+            PostEvent(new Event(filter, type, args));
         }
 
         /// <summary>

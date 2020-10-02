@@ -40,10 +40,14 @@ namespace Konata.Msf
         /// 初始化SSO管理者並連接伺服器等待數據發送。
         /// </summary>
         /// <returns></returns>
-        internal bool Initialize()
+        internal bool Connect()
         {
-            _pakMan.OpenSocket();
-            return true;
+            return _pakMan.OpenSocket();
+        }
+
+        internal bool DisConnect()
+        {
+            return _pakMan.CloseSocket();
         }
 
         /// <summary>

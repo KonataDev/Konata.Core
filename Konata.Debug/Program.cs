@@ -1,6 +1,7 @@
 ﻿using System;
 using Konata.Msf;
 using Konata.Debug.DevToolsProtocol;
+using System.Collections.Generic;
 
 namespace Konata.Debug
 {
@@ -24,7 +25,7 @@ namespace Konata.Debug
                 case EventType.BotStart:
                     return OnBootstrap();
                 case EventType.WtLoginVerifySliderCaptcha:
-                    return OnSliderCaptcha((string)args[0], (string)args[1]);
+                    return OnSliderCaptcha((string)args[0], (string)args[1], (string)args[2]);
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
@@ -46,7 +47,7 @@ namespace Konata.Debug
             return true;
         }
 
-        private static bool OnSliderCaptcha(string sigSission, string sigUrl)
+        private static bool OnSliderCaptcha(string sigSission, string sigUrl, string userAgent)
         {
             Console.WriteLine($"  SigSession => {sigSission}");
             Console.WriteLine($"  CaptchaUrl => {sigUrl}");
@@ -54,10 +55,9 @@ namespace Konata.Debug
             var browser = new Browser();
             Console.WriteLine($"Opening browser...");
 
-            var userAgent = "useragent";
-            if (!browser.Open(Browser.Chrome, userAgent, 480, 720, true))
+            if (!browser.Open(Browser.Chrome, userAgent, 504, 896, true))
             {
-                Console.WriteLine($"Your device haven't installed chromium kernel family web browser. (Need DevTools Protocol support.)");
+                Console.WriteLine($"Your device haven't installed chromium kernel family web browser. (Konata slider needs DevTools Protocol support.)");
                 return false;
             }
 
@@ -66,8 +66,21 @@ namespace Konata.Debug
             {
                 session.EnableNetwork(65536);
                 session.EnableTouchSimulation(1, "mobile");
-                session.NavigateTo(sigUrl);
+                session.SetCookie("uin", "", ".captcha.qq.com");
+                session.SetCookie("qq_locale_id", "2052", ".captcha.qq.com");
+                session.SetCookie("login_key_set_failed", "AlreadyLogout", ".captcha.qq.com");
+                session.SetExtraHeaders(new Dictionary<string, string>
+                {
+                    ["sec-ch-ua"] = "",
+                    ["Sec-Fetch-Dest"] = "",
+                    ["sec-ch-ua-mobile"] = "",
+                    ["X-Requested-With"] = "com.tencent.mobileqq",
+                    ["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+                    ["Accept-Language"] = "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
 
+                });
+
+                session.NavigateTo(sigUrl);
                 sigTicket = session.WaitForTicket();
             }
             session.Close();
