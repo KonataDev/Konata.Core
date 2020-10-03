@@ -111,7 +111,7 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="sigSission"></param>
         /// <param name="sigAnswer"></param>
         /// <returns></returns>
-        internal bool Request_SmsCaptcha(Core core, string sigSission, string sigAnswer)
+        internal bool Request_SmsCaptcha(Core core, string sigSission, string sigSmsCode)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
@@ -148,7 +148,27 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Do sms verification.");
 
-            core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha);
+            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            Tlv tlv104 = unpacker.TryGetTlv(0x104);
+            Tlv tlv174 = unpacker.TryGetTlv(0x174); // 隨機64字節
+            Tlv tlv204 = unpacker.TryGetTlv(0x204); // 賬號申訴
+            Tlv tlv178 = unpacker.TryGetTlv(0x178); // 手機號碼
+            Tlv tlv17d = unpacker.TryGetTlv(0x17d); // 手機QQ安全中心
+            Tlv tlv402 = unpacker.TryGetTlv(0x402);
+            Tlv tlv403 = unpacker.TryGetTlv(0x403);
+            Tlv tlv17e = unpacker.TryGetTlv(0x17e); // 提示訊息
+            if (tlv104 != null && tlv174 != null
+                && tlv204 != null && tlv178 != null
+                && tlv17d != null && tlv402！= null
+                  && tlv403 != null && tlv17e != null )
+            {
+                var sig = ((T104Body)tlv104._tlvBody)._sigSession;
+                var captcha = ((T192Body)tlv192._tlvBody)._url;
+
+                core.PostSystemEvent(EventType.WtLoginSendSms, sig);
+            }
 
             return false;
         }

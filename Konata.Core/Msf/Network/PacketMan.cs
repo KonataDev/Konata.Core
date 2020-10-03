@@ -23,7 +23,7 @@ namespace Konata.Msf.Network
 
         private static MsfServer[] _msfServers =
         {
-            new MsfServer { url = "127.0.0.1", port = 8080 },
+            // new MsfServer { url = "127.0.0.1", port = 8080 },
             new MsfServer { url = "msfwifi.3g.qq.com", port = 8080 },
             new MsfServer { url = "14.215.138.110", port = 8080 },
             new MsfServer { url = "113.96.12.224", port = 8080 },

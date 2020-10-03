@@ -79,6 +79,18 @@ namespace Konata.Msf
                 sigSission, sigTicket);
         }
 
+        /// <summary>
+        /// 提交SMS驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigSmsCode"></param>
+        /// <returns></returns>
+        public bool WtLoginCheckSms(string sigSission, string sigSmsCode)
+        {
+            return Service.Run(this, "Wtlogin.Login", "Request_SmsCaptcha",
+                sigSission, sigSmsCode);
+        }
+
         #endregion
 
         #region Event Metods
