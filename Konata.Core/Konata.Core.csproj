@@ -50,6 +50,11 @@
     <Compile Include="Msf\Event.cs" />
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\Tlv\T146.cs" />
+    <Compile Include="Msf\Packets\Tlv\T174.cs" />
+    <Compile Include="Msf\Packets\Tlv\T178.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T204.cs" />
     <Compile Include="Msf\Packets\Tlv\T508.cs" />
     <Compile Include="Msf\Packets\Tlv\TlvUnpacker.cs" />
     <Compile Include="Msf\Service.cs" />

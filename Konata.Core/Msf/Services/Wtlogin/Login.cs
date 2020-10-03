@@ -159,15 +159,18 @@ namespace Konata.Msf.Services.Wtlogin
             Tlv tlv402 = unpacker.TryGetTlv(0x402);
             Tlv tlv403 = unpacker.TryGetTlv(0x403);
             Tlv tlv17e = unpacker.TryGetTlv(0x17e); // 提示訊息
+
             if (tlv104 != null && tlv174 != null
                 && tlv204 != null && tlv178 != null
-                && tlv17d != null && tlv402！= null
-                  && tlv403 != null && tlv17e != null )
+                && tlv17d != null && tlv402 != null
+                && tlv403 != null && tlv17e != null)
             {
                 var sig = ((T104Body)tlv104._tlvBody)._sigSession;
-                var captcha = ((T192Body)tlv192._tlvBody)._url;
+                var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
 
-                core.PostSystemEvent(EventType.WtLoginSendSms, sig);
+                Console.WriteLine($"[Hint] {sigMessage}");
+
+                // core.PostSystemEvent(EventType.WtLoginSendSms, sig);
             }
 
             return false;

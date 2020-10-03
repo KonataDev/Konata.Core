@@ -103,6 +103,7 @@ namespace Konata
                 case EventType.WtLogin: OnLogin(e); break;
                 case EventType.LoginFailed: OnLoginFailed(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
+                case EventType.WtLoginSendSms: OnSendSms(e); break;
                 case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
                 case EventType.WtLoginVerifySmsCaptcha: OnVerifySmsCaptcha(e); break;
             }
@@ -148,6 +149,18 @@ namespace Konata
             }
 
             _msfCore.WtLoginCheckSms((string)e._args[0], (string)e._args[1]);
+        }
+
+        private void OnSendSms(Event e)
+        {
+            if (e._args == null
+                || e._args.Length != 1
+                || !(e._args[0] is string))
+            {
+                return;
+            }
+
+            _msfCore.WtLoginSendSms((string)e._args[0]);
         }
 
         #endregion

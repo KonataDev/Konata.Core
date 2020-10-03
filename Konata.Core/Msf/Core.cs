@@ -91,6 +91,11 @@ namespace Konata.Msf
                 sigSission, sigSmsCode);
         }
 
+        public bool WtLoginSendSms(string sigSission)
+        {
+            return Service.Run(this, "Wtlogin.Login", "Request_SendSms", sigSission);
+        }
+
         #endregion
 
         #region Event Metods
