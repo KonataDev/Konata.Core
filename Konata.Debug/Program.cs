@@ -11,7 +11,7 @@ namespace Konata.Debug
 
         public static void Main()
         {
-            bot = new Bot(2051118019, "12345678");
+            bot = new Bot(3322047216, "0hrwcupn5");
             bot.RegisterDelegate(EventProc);
             bot.Run();
 
@@ -26,6 +26,8 @@ namespace Konata.Debug
                     return OnBootstrap();
                 case EventType.WtLoginVerifySliderCaptcha:
                     return OnSliderCaptcha((string)args[0], (string)args[1], (string)args[2]);
+                case EventType.WtLoginVerifySmsCaptcha:
+                    return OnSmsCaptcha((string)args[0], (string)args[1]);
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
@@ -77,7 +79,6 @@ namespace Konata.Debug
                     ["X-Requested-With"] = "com.tencent.mobileqq",
                     ["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
                     ["Accept-Language"] = "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-
                 });
 
                 session.NavigateTo(sigUrl);
@@ -94,7 +95,19 @@ namespace Konata.Debug
             // 提交驗證
             Console.WriteLine($"Ticket got => \n{sigTicket}");
             bot.SubmitSliderTicket(sigSission, sigTicket);
+
             return true;
+        }
+
+        private static bool OnSmsCaptcha(string sigSission, string sigPhone)
+        {
+            Console.Write($"We sent an SMS to your phone number {sigPhone}, Please type the code you've received: ");
+            var sigSmsCode = Console.ReadLine();
+
+            Console.WriteLine($"SMS Code got => \n{sigSmsCode}");
+            bot.SubmitSmsCode(sigSission, sigSmsCode);
+
+            return false;
         }
 
         private static bool OnImageCaptcha()
