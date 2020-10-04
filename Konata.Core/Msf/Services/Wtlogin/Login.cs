@@ -24,6 +24,8 @@ namespace Konata.Msf.Services.Wtlogin
                     return Request_SliderCaptcha(core, (string)args[0], (string)args[1]);
                 case "Request_SmsCaptcha":
                     return Request_SmsCaptcha(core, (string)args[0], (string)args[1]);
+                case "Request_SendSms":
+                    return Request_SendSms(core, (string)args[0]);
                 default: return false;
             }
         }
@@ -121,6 +123,18 @@ namespace Konata.Msf.Services.Wtlogin
             return true;
         }
 
+        internal bool Request_SendSms(Core core, string sigSession)
+        {
+            Console.WriteLine("Request send SMS.");
+
+            var sequence = core._ssoMan.GetServiceSequence(name);
+           // var request = new OicqRequestCheckSms
+
+            return true;
+
+        }
+
+
         #endregion
 
         #region Event Handlers
@@ -170,7 +184,7 @@ namespace Konata.Msf.Services.Wtlogin
 
                 Console.WriteLine($"[Hint] {sigMessage}");
 
-                // core.PostSystemEvent(EventType.WtLoginSendSms, sig);
+                core.PostSystemEvent(EventType.WtLoginSendSms, sig);
             }
 
             return false;
