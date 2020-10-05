@@ -23,7 +23,7 @@ namespace Konata.Msf.Services.Wtlogin
                 case "Request_SliderCaptcha":
                     return Request_SliderCaptcha(core, (string)args[0], (string)args[1]);
                 case "Request_SmsCaptcha":
-                    return Request_SmsCaptcha(core, (string)args[0], (byte[])args[1], (string)args[2]);
+                    return Request_SmsCaptcha(core, (string)args[0], (byte[])args[1], (string)args[2], (byte[])args[3]);
                 case "Request_RefreshSms":
                     return Request_RefreshSms(core, (string)args[0], (byte[])args[1]);
                 default: return false;
@@ -113,14 +113,16 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="sigSession"></param>
         /// <param name="sigSecret"></param>
         /// <param name="sigSmsCode"></param>
+        /// <param name="g"></param>
         /// <returns></returns>
-        internal bool Request_SmsCaptcha(Core core, string sigSession, byte[] sigSecret, string sigSmsCode)
+        internal bool Request_SmsCaptcha(Core core, string sigSession, byte[] sigSecret,
+            string sigSmsCode, byte[] g)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckSms(core._uin, core._keyRing, DeviceInfo.Guid,
-                sigSession, sigSecret, sigSmsCode);
+            var request = new OicqRequestCheckSms(core._uin, core._keyRing, sigSession,
+                sigSecret, sigSmsCode, g);
 
             core._ssoMan.PostMessage(this, request, sequence);
             return true;

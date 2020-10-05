@@ -123,7 +123,7 @@ namespace Konata.Msf.Network
                     }
                 }
             }
-            catch (Exception _)
+            catch
             {
                 CloseSocket();
             }
