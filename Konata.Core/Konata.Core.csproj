@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{47052D6B-7E37-4CD2-8658-102BEDCE394D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Konata</RootNamespace>
+    <AssemblyName>Konata.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bot.cs" />
+    <Compile Include="AppInfo.cs" />
+    <Compile Include="Msf\Core.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\ECDiffieHellman.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\EllipticCurve.cs" />
+    <Compile Include="Msf\Crypto\Ecdh\Point.cs" />
+    <Compile Include="Msf\Crypto\KeyRing.cs" />
+    <Compile Include="Msf\Event.cs" />
+    <Compile Include="Msf\Packets\FromServiceMessage.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestRefreshSms.cs" />
+    <Compile Include="Msf\Packets\Tlv\T146.cs" />
+    <Compile Include="Msf\Packets\Tlv\T174.cs" />
+    <Compile Include="Msf\Packets\Tlv\T178.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17a.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17c.cs" />
+    <Compile Include="Msf\Packets\Tlv\T198.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T204.cs" />
+    <Compile Include="Msf\Packets\Tlv\T401.cs" />
+    <Compile Include="Msf\Packets\Tlv\T508.cs" />
+    <Compile Include="Msf\Packets\Tlv\TlvUnpacker.cs" />
+    <Compile Include="Msf\Service.cs" />
+    <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
+    <Compile Include="Msf\Packets\Tlv\T1.cs" />
+    <Compile Include="Msf\Packets\Tlv\T100.cs" />
+    <Compile Include="Msf\Packets\Tlv\T104.cs" />
+    <Compile Include="Msf\Packets\Tlv\T106.cs" />
+    <Compile Include="Msf\Packets\Tlv\T107.cs" />
+    <Compile Include="Msf\Packets\Tlv\T108.cs" />
+    <Compile Include="Msf\Packets\Tlv\T109.cs" />
+    <Compile Include="Msf\Packets\Tlv\T116.cs" />
+    <Compile Include="Msf\Packets\Tlv\T124.cs" />
+    <Compile Include="Msf\Packets\Tlv\T128.cs" />
+    <Compile Include="Msf\Packets\Tlv\T141.cs" />
+    <Compile Include="Msf\Packets\Tlv\T142.cs" />
+    <Compile Include="Msf\Packets\Tlv\T144.cs" />
+    <Compile Include="Msf\Packets\Tlv\T145.cs" />
+    <Compile Include="Msf\Packets\Tlv\T147.cs" />
+    <Compile Include="Msf\Packets\Tlv\T148.cs" />
+    <Compile Include="Msf\Packets\Tlv\T153.cs" />
+    <Compile Include="Msf\Packets\Tlv\T154.cs" />
+    <Compile Include="Msf\Packets\Tlv\T166.cs" />
+    <Compile Include="Msf\Packets\Tlv\T16e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T177.cs" />
+    <Compile Include="Msf\Packets\Tlv\T18.cs" />
+    <Compile Include="Msf\Packets\Tlv\T187.cs" />
+    <Compile Include="Msf\Packets\Tlv\T188.cs" />
+    <Compile Include="Msf\Packets\Tlv\T191.cs" />
+    <Compile Include="Msf\Packets\Tlv\T192.cs" />
+    <Compile Include="Msf\Packets\Tlv\T193.cs" />
+    <Compile Include="Msf\Packets\Tlv\T194.cs" />
+    <Compile Include="Msf\Packets\Tlv\T2.cs" />
+    <Compile Include="Msf\Packets\Tlv\T202.cs" />
+    <Compile Include="Msf\Packets\Tlv\T318.cs" />
+    <Compile Include="Msf\Packets\Tlv\T511.cs" />
+    <Compile Include="Msf\Packets\Tlv\T516.cs" />
+    <Compile Include="Msf\Packets\Tlv\T521.cs" />
+    <Compile Include="Msf\Packets\Tlv\T525.cs" />
+    <Compile Include="Msf\Packets\Tlv\T52d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T536.cs" />
+    <Compile Include="Msf\Packets\Tlv\T544.cs" />
+    <Compile Include="Msf\Packets\Tlv\T545.cs" />
+    <Compile Include="Msf\Packets\Tlv\T8.cs" />
+    <Compile Include="Msf\Packets\Tlv\Tlv.cs" />
+    <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
+    <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
+    <Compile Include="Msf\Services\Wtlogin\Login.cs" />
+    <Compile Include="Msf\Network\PacketMan.cs" />
+    <Compile Include="Msf\Packet.cs" />
+    <Compile Include="Msf\ServiceTouch.cs" />
+    <Compile Include="Msf\SsoMan.cs" />
+    <Compile Include="Msf\Crypto\EncryptType.cs" />
+    <Compile Include="Msf\Types.cs" />
+    <Compile Include="Msf\Network\NetworkType.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
+    <Compile Include="Msf\Packets\ToServiceMessage.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestTgtgt.cs" />
+    <Compile Include="Msf\Utils\Crypt\ICryptor.cs" />
+    <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
+    <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
+    <Compile Include="DeviceInfo.cs" />
+    <Compile Include="Utils\BufferIO.cs" />
+    <Compile Include="Utils\Guid.cs" />
+    <Compile Include="Utils\StreamBuilder.cs" />
+    <Compile Include="Utils\Hex.cs" />
+    <Compile Include="Msf\Packets\Tlv\TlvPacker.cs" />
+    <Compile Include="Utils\StreamReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.3.0.29\lib\net461\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.Core.3.0.29\lib\net461\protobuf-net.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.7.1\lib\net461\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Primitives, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ServiceModel.Primitives.4.7.0\lib\net461\System.ServiceModel.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Device\" />
+    <Folder Include="Msf\Crypto\Tea\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">$(ProjectDir)prebuild.scanservice.bat --out $(ProjectDir)</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">bash $(ProjectDir)prebuild.scanservice.sh --out $(ProjectDir)</PreBuildEvent>
+  </PropertyGroup>
+</Project>
