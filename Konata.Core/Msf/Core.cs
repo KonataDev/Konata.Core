@@ -83,12 +83,13 @@ namespace Konata.Msf
         /// 提交SMS驗證碼
         /// </summary>
         /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
         /// <param name="sigSmsCode"></param>
         /// <returns></returns>
-        public bool WtLoginCheckSms(string sigSission, string sigSmsCode)
+        public bool WtLoginCheckSms(string sigSission, byte[] sigSecret, string sigSmsCode)
         {
             return Service.Run(this, "Wtlogin.Login", "Request_SmsCaptcha",
-                sigSission, sigSmsCode);
+                sigSission, sigSecret, sigSmsCode);
         }
 
         /// <summary>
@@ -97,9 +98,9 @@ namespace Konata.Msf
         /// <param name="sigSission"></param>
         /// <param name="sigSecret"></param>
         /// <returns></returns>
-        public bool WtLoginSendSms(string sigSission, byte[] sigSecret)
+        public bool WtLoginRefreshSms(string sigSission, byte[] sigSecret)
         {
-            return Service.Run(this, "Wtlogin.Login", "Request_SendSms", sigSission, sigSecret);
+            return Service.Run(this, "Wtlogin.Login", "Request_RefreshSms", sigSission, sigSecret);
         }
 
         #endregion

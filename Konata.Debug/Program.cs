@@ -27,7 +27,7 @@ namespace Konata.Debug
                 case EventType.WtLoginVerifySliderCaptcha:
                     return OnSliderCaptcha((string)args[0], (string)args[1], (string)args[2]);
                 case EventType.WtLoginVerifySmsCaptcha:
-                    return OnSmsCaptcha((string)args[0], (string)args[1]);
+                    return OnSmsCaptcha((string)args[0], (byte[])args[1], (string)args[2s]);
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
@@ -99,13 +99,13 @@ namespace Konata.Debug
             return true;
         }
 
-        private static bool OnSmsCaptcha(string sigSission, string sigPhone)
+        private static bool OnSmsCaptcha(string sigSession, byte[] sigSecret, string sigPhone)
         {
             Console.Write($"We sent an SMS to your phone number {sigPhone}, Please type the code you've received: ");
             var sigSmsCode = Console.ReadLine();
 
             Console.WriteLine($"SMS Code got => \n{sigSmsCode}");
-            bot.SubmitSmsCode(sigSission, sigSmsCode);
+            bot.SubmitSmsCode(sigSession, sigSecret, sigSmsCode);
 
             return false;
         }

@@ -23,9 +23,9 @@ namespace Konata.Msf.Services.Wtlogin
                 case "Request_SliderCaptcha":
                     return Request_SliderCaptcha(core, (string)args[0], (string)args[1]);
                 case "Request_SmsCaptcha":
-                    return Request_SmsCaptcha(core, (string)args[0], (string)args[1]);
-                case "Request_SendSms":
-                    return Request_SendSms(core, (string)args[0], (byte[])args[1]);
+                    return Request_SmsCaptcha(core, (string)args[0], (byte[])args[1], (string)args[2]);
+                case "Request_RefreshSms":
+                    return Request_RefreshSms(core, (string)args[0], (byte[])args[1]);
                 default: return false;
             }
         }
@@ -110,16 +110,19 @@ namespace Konata.Msf.Services.Wtlogin
         /// 請求 OicqRequestCheckSms
         /// </summary>
         /// <param name="core"></param>
-        /// <param name="sigSission"></param>
+        /// <param name="sigSession"></param>
+        /// <param name="sigSecret"></param>
         /// <param name="sigSmsCode"></param>
         /// <returns></returns>
-        internal bool Request_SmsCaptcha(Core core, string sigSission, string sigSmsCode)
+        internal bool Request_SmsCaptcha(Core core, string sigSession, byte[] sigSecret, string sigSmsCode)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            // <TODO> OicqRequestCheckSms
+            var request = new OicqRequestCheckSms(core._uin, core._keyRing, DeviceInfo.Guid,
+                sigSession, sigSecret, sigSmsCode);
 
+            core._ssoMan.PostMessage(this, request, sequence);
             return true;
         }
 
@@ -130,7 +133,7 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="sigSession"></param>
         /// <param name="sigSecret"></param>
         /// <returns></returns>
-        internal bool Request_SendSms(Core core, string sigSession, byte[] sigSecret)
+        internal bool Request_RefreshSms(Core core, string sigSession, byte[] sigSecret)
         {
             Console.WriteLine("Request send SMS.");
 
@@ -141,7 +144,6 @@ namespace Konata.Msf.Services.Wtlogin
 
             return true;
         }
-
 
         #endregion
 

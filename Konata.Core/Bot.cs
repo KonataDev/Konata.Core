@@ -103,7 +103,7 @@ namespace Konata
                 case EventType.WtLogin: OnLogin(e); break;
                 case EventType.LoginFailed: OnLoginFailed(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
-                case EventType.WtLoginSendSms: OnSendSms(e); break;
+                case EventType.WtLoginSendSms: OnRefreshSms(e); break;
                 case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
                 case EventType.WtLoginVerifySmsCaptcha: OnVerifySmsCaptcha(e); break;
             }
@@ -143,15 +143,16 @@ namespace Konata
             if (e._args == null
                 || e._args.Length != 2
                 || !(e._args[0] is string)
-                || !(e._args[1] is string))
+                || !(e._args[1] is byte[])
+                || !(e._args[2] is string))
             {
                 return;
             }
 
-            _msfCore.WtLoginCheckSms((string)e._args[0], (string)e._args[1]);
+            _msfCore.WtLoginCheckSms((string)e._args[0], (byte[])e._args[1], (string)e._args[2]);
         }
 
-        private void OnSendSms(Event e)
+        private void OnRefreshSms(Event e)
         {
             if (e._args == null
                 || e._args.Length != 2
@@ -161,7 +162,7 @@ namespace Konata
                 return;
             }
 
-            _msfCore.WtLoginSendSms((string)e._args[0], (byte[])e._args[1]);
+            _msfCore.WtLoginRefreshSms((string)e._args[0], (byte[])e._args[1]);
         }
 
         #endregion
@@ -191,11 +192,12 @@ namespace Konata
         /// 提交SMS驗證碼
         /// </summary>
         /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
         /// <param name="sigSmsCode"></param>
-        public void SubmitSmsCode(string sigSission, string sigSmsCode)
+        public void SubmitSmsCode(string sigSission, byte[] sigSecret, string sigSmsCode)
         {
             PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha,
-               sigSission, sigSmsCode);
+               sigSission, sigSecret, sigSmsCode);
         }
 
         #endregion
