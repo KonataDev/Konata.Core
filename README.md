@@ -8,7 +8,7 @@
  - [x] 修復 TEA(TinyEncryptionAlogrithm) 16輪加密算法
  - [x] 打包TLV 製作 wtlogin 封包
  - [x] 驗證圖形滑塊
- - [ ] 驗證SMS
+ - [x] 驗證SMS
  - [ ] 驗證設備鎖
  - [ ] 上報 PubAccountSvc.get_follow_list
  - [ ] 上報 OidbSvc.0x6de
