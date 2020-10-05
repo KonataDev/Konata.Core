@@ -2,13 +2,13 @@
 
 namespace Konata.Msf.Packets.Tlv
 {
-    // 與T197相同?
+    // 與T198相同?
 
-    public class T198Body : TlvBody
+    public class T197Body : TlvBody
     {
         public readonly byte _devLockMobileType;
 
-        public T198Body(byte devLockMobileType)
+        public T197Body(byte devLockMobileType)
             : base()
         {
             _devLockMobileType = devLockMobileType;
@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Tlv
             PutByte(_devLockMobileType);
         }
 
-        public T198Body(byte[] data)
+        public T197Body(byte[] data)
             : base(data)
         {
             TakeByte(out _devLockMobileType);

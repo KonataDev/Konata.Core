@@ -87,6 +87,7 @@ namespace Konata.Msf.Packets.Tlv
             case 0x0192: return new T192Body(data);
             case 0x0193: return new T193Body(data);
             case 0x0194: return new T194Body(data);
+            case 0x0197: return new T197Body(data);
             case 0x0198: return new T198Body(data);
             case 0x0202: return new T202Body(data);
             case 0x0204: return new T204Body(data);
