@@ -113,16 +113,16 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="sigSession"></param>
         /// <param name="sigSecret"></param>
         /// <param name="sigSmsCode"></param>
-        /// <param name="g"></param>
+        /// <param name="gSecret"></param>
         /// <returns></returns>
         internal bool Request_SmsCaptcha(Core core, string sigSession, byte[] sigSecret,
-            string sigSmsCode, byte[] g)
+            string sigSmsCode, byte[] gSecret)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestCheckSms(core._uin, core._keyRing, sigSession,
-                sigSecret, sigSmsCode, g);
+                sigSecret, sigSmsCode, gSecret);
 
             core._ssoMan.PostMessage(this, request, sequence);
             return true;

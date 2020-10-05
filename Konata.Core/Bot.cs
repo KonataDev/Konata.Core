@@ -157,7 +157,7 @@ namespace Konata
             if (e._args == null
                 || e._args.Length != 2
                 || !(e._args[0] is string)
-                || !(e._args[0] is byte[]))
+                || !(e._args[1] is byte[]))
             {
                 return;
             }

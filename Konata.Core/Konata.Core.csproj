@@ -55,7 +55,7 @@
     <Compile Include="Msf\Packets\Tlv\T178.cs" />
     <Compile Include="Msf\Packets\Tlv\T17a.cs" />
     <Compile Include="Msf\Packets\Tlv\T17c.cs" />
-    <Compile Include="Msf\Packets\Tlv\T198.cs" />
+    <Compile Include="Msf\Packets\Tlv\T197.cs" />
     <Compile Include="Msf\Packets\Tlv\T17d.cs" />
     <Compile Include="Msf\Packets\Tlv\T17e.cs" />
     <Compile Include="Msf\Packets\Tlv\T204.cs" />

@@ -160,7 +160,8 @@ namespace Konata.Msf
             var imeiByte = Encoding.UTF8.GetBytes(imei);
             var dpwdByte = Encoding.UTF8.GetBytes(dpwd);
 
-            var buffer = new byte[imeiByte.Length + dpwdByte.Length + ((int)salt?.Length)];
+            var buffer = new byte[imeiByte.Length + dpwdByte.Length +
+                (salt != null ? salt.Length : 0)];
             return new Md5Cryptor().Encrypt(buffer);
         }
 
