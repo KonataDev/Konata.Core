@@ -17,7 +17,7 @@ namespace Konata.Msf.Packets.Tlv
         public T17aBody(byte[] data)
             : base(data)
         {
-            TakeUintBE(out _smsAppId, Prefix.None);
+            TakeUintBE(out _smsAppId);
         }
     }
 }

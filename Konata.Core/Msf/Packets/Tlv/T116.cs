@@ -9,22 +9,18 @@ namespace Konata.Msf.Packets.Tlv
         public readonly uint _getSig;
         public readonly uint[] _subAppIdList;
 
-        public T116Body(uint bitmap, uint getSig, uint[] subAppIdList = null)
+        public T116Body(uint bitmap, uint getSig, uint[] subAppIdList)
             : base()
         {
             _ver = 0;
             _bitmap = bitmap;
             _getSig = getSig;
-
-            if (subAppIdList == null)
-            {
-                _subAppIdList = new uint[] { 1600000226U };
-            }
+            _subAppIdList = subAppIdList;
 
             PutByte(_ver);
             PutUintBE(_bitmap);
             PutUintBE(_getSig);
-            
+
             PutByte((byte)_subAppIdList.Length);
             {
                 foreach (uint element in _subAppIdList)
@@ -40,7 +36,7 @@ namespace Konata.Msf.Packets.Tlv
             TakeByte(out _ver);
             TakeUintBE(out _bitmap);
             TakeUintBE(out _getSig);
-            
+
             TakeByte(out var count);
             {
                 _subAppIdList = new uint[count];
