@@ -25,7 +25,7 @@ namespace Konata.Msf.Services.Wtlogin
                 case "Request_SmsCaptcha":
                     return Request_SmsCaptcha(core, (string)args[0], (string)args[1]);
                 case "Request_SendSms":
-                    return Request_SendSms(core, (string)args[0]);
+                    return Request_SendSms(core, (string)args[0], (byte[])args[1]);
                 default: return false;
             }
         }
@@ -111,7 +111,7 @@ namespace Konata.Msf.Services.Wtlogin
         /// </summary>
         /// <param name="core"></param>
         /// <param name="sigSission"></param>
-        /// <param name="sigAnswer"></param>
+        /// <param name="sigSmsCode"></param>
         /// <returns></returns>
         internal bool Request_SmsCaptcha(Core core, string sigSission, string sigSmsCode)
         {
@@ -123,15 +123,23 @@ namespace Konata.Msf.Services.Wtlogin
             return true;
         }
 
-        internal bool Request_SendSms(Core core, string sigSession)
+        /// <summary>
+        /// 刷新SMS驗證碼. CD 60s
+        /// </summary>
+        /// <param name="core"></param>
+        /// <param name="sigSession"></param>
+        /// <param name="sigSecret"></param>
+        /// <returns></returns>
+        internal bool Request_SendSms(Core core, string sigSession, byte[] sigSecret)
         {
             Console.WriteLine("Request send SMS.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-           // var request = new OicqRequestCheckSms
+            var request = new OicqRequestRefreshSms(core._uin, core._keyRing, sigSession, sigSecret);
+
+            core._ssoMan.PostMessage(this, request, sequence);
 
             return true;
-
         }
 
 
@@ -150,10 +158,11 @@ namespace Konata.Msf.Services.Wtlogin
             Tlv tlv192 = unpacker.TryGetTlv(0x192);
             if (tlv104 != null && tlv192 != null)
             {
-                var sig = ((T104Body)tlv104._tlvBody)._sigSession;
-                var captcha = ((T192Body)tlv192._tlvBody)._url;
+                var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
+                var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sig, captcha, DeviceInfo.Browser.UserAgent);
+                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigSession, sigCaptchaURL,
+                    DeviceInfo.Browser.UserAgent);
             }
             return false;
         }
@@ -179,12 +188,13 @@ namespace Konata.Msf.Services.Wtlogin
                 && tlv17d != null && tlv402 != null
                 && tlv403 != null && tlv17e != null)
             {
-                var sig = ((T104Body)tlv104._tlvBody)._sigSession;
+                var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
+                var sigSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
                 var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
 
                 Console.WriteLine($"[Hint] {sigMessage}");
 
-                core.PostSystemEvent(EventType.WtLoginSendSms, sig);
+                core.PostSystemEvent(EventType.WtLoginSendSms, sigSession, sigSecret);
             }
 
             return false;

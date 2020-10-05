@@ -91,9 +91,15 @@ namespace Konata.Msf
                 sigSission, sigSmsCode);
         }
 
-        public bool WtLoginSendSms(string sigSission)
+        /// <summary>
+        /// 刷新SMS驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
+        /// <returns></returns>
+        public bool WtLoginSendSms(string sigSission, byte[] sigSecret)
         {
-            return Service.Run(this, "Wtlogin.Login", "Request_SendSms", sigSission);
+            return Service.Run(this, "Wtlogin.Login", "Request_SendSms", sigSission, sigSecret);
         }
 
         #endregion

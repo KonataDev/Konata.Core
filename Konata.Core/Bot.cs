@@ -154,13 +154,14 @@ namespace Konata
         private void OnSendSms(Event e)
         {
             if (e._args == null
-                || e._args.Length != 1
-                || !(e._args[0] is string))
+                || e._args.Length != 2
+                || !(e._args[0] is string)
+                || !(e._args[0] is byte[]))
             {
                 return;
             }
 
-            _msfCore.WtLoginSendSms((string)e._args[0]);
+            _msfCore.WtLoginSendSms((string)e._args[0], (byte[])e._args[1]);
         }
 
         #endregion
