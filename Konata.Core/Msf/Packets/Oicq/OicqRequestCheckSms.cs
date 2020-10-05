@@ -12,10 +12,10 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqSubCommand = 0x0007;
 
         public OicqRequestCheckSms(uint uin, KeyRing keyring, string sigSession,
-            byte[] sigSecret, string sigSmsCode, byte[] gSecret)
+            byte[] sigSecret, string sigSmsCode, byte[] g)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
-                  new XCheckSms(sigSession, sigSecret, sigSmsCode, gSecret),
+                  new XCheckSms(sigSession, sigSecret, sigSmsCode, g),
                   keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
 
@@ -32,7 +32,7 @@ namespace Konata.Msf.Packets.Oicq
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(AppInfo.wtLoginMiscBitmap, AppInfo.wtLoginSubSigBitmap, AppInfo.wtLoginSubAppIdList)));
                     tlvs.PutTlv(new Tlv(0x0174, new T174Body(sigSecret)));
                     tlvs.PutTlv(new Tlv(0x017c, new T17cBody(sigSmsCode)));
-                    tlvs.PutTlv(new Tlv(0x0198, new T198Body(1)));
+                    tlvs.PutTlv(new Tlv(0x0198, new T198Body(0)));
                     tlvs.PutTlv(new Tlv(0x0401, new T401Body(gSecret)));// G
                 }
 
