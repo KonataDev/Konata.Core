@@ -114,7 +114,7 @@ namespace Konata.Debug.DevToolsProtocol
             {
                 _wsClient.ReceiveAsync(new ArraySegment<byte>(segmentBuffer), CancellationToken.None).Wait();
             }
-            catch (Exception _)
+            catch
             {
                 OnDisconnect();
             }

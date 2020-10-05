@@ -66,7 +66,7 @@ namespace Konata
                 Event coreEvent;
                 if (!GetEvent(out coreEvent) || coreEvent._type == EventType.Idle)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(1);
                     continue;
                 }
 
@@ -103,7 +103,9 @@ namespace Konata
                 case EventType.WtLogin: OnLogin(e); break;
                 case EventType.LoginFailed: OnLoginFailed(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
+                case EventType.WtLoginSendSms: OnRefreshSms(e); break;
                 case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
+                case EventType.WtLoginVerifySmsCaptcha: OnVerifySmsCaptcha(e); break;
             }
         }
 
@@ -136,6 +138,33 @@ namespace Konata
             _msfCore.WtLoginCheckSlider((string)e._args[0], (string)e._args[1]);
         }
 
+        private void OnVerifySmsCaptcha(Event e)
+        {
+            if (e._args == null
+                || e._args.Length != 2
+                || !(e._args[0] is string)
+                || !(e._args[1] is byte[])
+                || !(e._args[2] is string))
+            {
+                return;
+            }
+
+            _msfCore.WtLoginCheckSms((string)e._args[0], (byte[])e._args[1], (string)e._args[2]);
+        }
+
+        private void OnRefreshSms(Event e)
+        {
+            if (e._args == null
+                || e._args.Length != 2
+                || !(e._args[0] is string)
+                || !(e._args[1] is byte[]))
+            {
+                return;
+            }
+
+            _msfCore.WtLoginRefreshSms((string)e._args[0], (byte[])e._args[1]);
+        }
+
         #endregion
 
         #region Protocol Interoperation Methods
@@ -157,6 +186,18 @@ namespace Konata
         {
             PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha,
                 sigSission, sigTicket);
+        }
+
+        /// <summary>
+        /// 提交SMS驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
+        /// <param name="sigSmsCode"></param>
+        public void SubmitSmsCode(string sigSission, byte[] sigSecret, string sigSmsCode)
+        {
+            PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha,
+               sigSission, sigSecret, sigSmsCode);
         }
 
         #endregion

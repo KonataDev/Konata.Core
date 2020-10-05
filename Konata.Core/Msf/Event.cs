@@ -18,6 +18,7 @@ namespace Konata.Msf
         WtLoginVerifySliderCaptcha,
         WtLoginVerifyImageCaptcha,
         WtLoginVerifySmsCaptcha,
+        WtLoginSendSms,
         HeartBeat,
 
         BotStart = 0x2000,

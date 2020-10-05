@@ -220,9 +220,6 @@ namespace Konata.Msf
                      "SimpleUISwitch/0";
                 }
             }
-
         }
-
     }
-
 }

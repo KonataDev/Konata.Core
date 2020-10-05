@@ -8,13 +8,18 @@ namespace Konata
 {
     public static class AppInfo
     {
-        public const uint appId = 16;
-        public const uint subAppId = 537063202;
-        public const uint appClientVersion = 0;
-        public const string apkPackageName = "com.tencent.mobileqq";
-        public const string apkVersionName = "8.2.7";
-        public const string appBuildVer = "8.2.7.4395";
-        public const string appRevision = "7288ad61";
+        public static readonly uint appId = 16;
+        public static readonly uint subAppId = 537063202;
+        public static readonly uint appClientVersion = 0;
+        public static readonly string apkPackageName = "com.tencent.mobileqq";
+        public static readonly string apkVersionName = "8.2.7";
+        public static readonly string appBuildVer = "8.2.7.4395";
+        public static readonly string appRevision = "7288ad61";
+
+        public static readonly uint wtLoginMiscBitmap = 150470524;
+        public static readonly uint wtLoginSubSigBitmap = 66560;
+        public static readonly uint wtLoginMainSigBitmap = 16724722;
+        public static readonly uint[] wtLoginSubAppIdList = { 1600000226 };
 
         public static readonly byte[] apkSignature = new byte[]
         {
@@ -26,9 +31,11 @@ namespace Konata
 
         public static class WtLoginSdk
         {
-            public const uint buildTime = 1577331209;
-            public const string sdkVersion = "6.0.0.2425";
+            public static readonly uint buildTime = 1577331209;
+            public static readonly string sdkVersion = "6.0.0.2425";
         }
+
+
 
     }
 }

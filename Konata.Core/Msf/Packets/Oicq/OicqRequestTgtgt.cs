@@ -52,7 +52,8 @@ namespace Konata.Msf.Packets.Oicq
                     tlvs.PutTlv(new Tlv(0x0106, new T106Body(AppInfo.appId, AppInfo.subAppId, AppInfo.appClientVersion, uin,
                         new byte[4], true, passwordMd5, 0, true, DeviceInfo.Guid, LoginType.Password, tgtgKey), t106Key));
 
-                    tlvs.PutTlv(new Tlv(0x0116, new T116Body(184024956, 66560)));
+                    tlvs.PutTlv(new Tlv(0x0116, new T116Body(AppInfo.wtLoginMiscBitmap | (uint)WtLoginSigType.WLOGIN_DA2,
+                        AppInfo.wtLoginSubSigBitmap, AppInfo.wtLoginSubAppIdList)));
 
                     tlvs.PutTlv(new Tlv(0x0100, new T100Body(AppInfo.appId, AppInfo.subAppId,
                         AppInfo.appClientVersion)));

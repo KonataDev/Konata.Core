@@ -28,7 +28,7 @@ namespace Konata.Msf
             {
                 return map[name.ToLower()].OnRun(core, method, args);
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -47,7 +47,7 @@ namespace Konata.Msf
             {
                 return map[name.ToLower()].OnHandle(core, args);
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }

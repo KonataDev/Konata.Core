@@ -1,8 +1,9 @@
 ﻿using System;
-using Konata.Msf;
+using System.Security.Cryptography;
+using System.Text;
 using Konata.Msf.Crypto;
-using Konata.Msf.Network;
 using Konata.Msf.Packets.Oicq;
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf
 {
@@ -23,15 +24,22 @@ namespace Konata.Msf
         internal uint _uin;
         internal string _password;
 
+        internal byte[] _gSecret;
+        internal string _dPassword;
+
         internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
         internal OicqStatus _oicqStatus;
 
+
         public Core(Bot bot, uint uin, string password)
         {
             _uin = uin;
             _password = password;
+
+            _dPassword = MakeDpassword();
+            _gSecret = MakeGSecret(DeviceInfo.System.Imei, _dPassword, null);
 
             _bot = bot;
             _ssoMan = new SsoMan(this);
@@ -79,6 +87,30 @@ namespace Konata.Msf
                 sigSission, sigTicket);
         }
 
+        /// <summary>
+        /// 提交SMS驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
+        /// <param name="sigSmsCode"></param>
+        /// <returns></returns>
+        public bool WtLoginCheckSms(string sigSission, byte[] sigSecret, string sigSmsCode)
+        {
+            return Service.Run(this, "Wtlogin.Login", "Request_SmsCaptcha",
+                sigSission, sigSecret, sigSmsCode, _gSecret);
+        }
+
+        /// <summary>
+        /// 刷新SMS驗證碼
+        /// </summary>
+        /// <param name="sigSission"></param>
+        /// <param name="sigSecret"></param>
+        /// <returns></returns>
+        public bool WtLoginRefreshSms(string sigSission, byte[] sigSecret)
+        {
+            return Service.Run(this, "Wtlogin.Login", "Request_RefreshSms", sigSission, sigSecret);
+        }
+
         #endregion
 
         #region Event Metods
@@ -121,6 +153,47 @@ namespace Konata.Msf
             _bot.PostSystemEvent(type, null);
         }
 
-        #endregion 
+        #endregion
+
+        internal byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
+        {
+            var imeiByte = Encoding.UTF8.GetBytes(imei);
+            var dpwdByte = Encoding.UTF8.GetBytes(dpwd);
+
+            var buffer = new byte[imeiByte.Length + dpwdByte.Length +
+                (salt != null ? salt.Length : 0)];
+            return new Md5Cryptor().Encrypt(buffer);
+        }
+
+        internal string MakeDpassword()
+        {
+            try
+            {
+                var random = new Random();
+                var seedTable = new byte[16];
+
+                bool RandBoolean()
+                {
+                    return random.Next(0, 1) == 1;
+                }
+
+                using (RNGCryptoServiceProvider SecurityRandom =
+                    new RNGCryptoServiceProvider())
+                {
+                    SecurityRandom.GetBytes(seedTable);
+                }
+
+                for (int i = 0; i < seedTable.Length; ++i)
+                {
+                    seedTable[i] = (byte)(Math.Abs(seedTable[i] % 26) + (RandBoolean() ? 97 : 65));
+                }
+
+                return Encoding.UTF8.GetString(seedTable);
+            }
+            catch
+            {
+                return "1234567890123456";
+            }
+        }
     }
 }
