@@ -194,10 +194,11 @@ namespace Konata.Msf.Services.Wtlogin
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                     var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
                     var smsPhone = ((T178Body)tlv178._tlvBody)._phone;
+                    var smsCountryCode = ((T178Body)tlv178._tlvBody)._countryCode;
                     var smsSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    core._wtLogin._smsPhone = smsPhone;
+                    core._wtLogin._smsPhone = $"+{smsCountryCode} {smsPhone}";
                     core._wtLogin._smsSecret = smsSecret;
                     core._wtLogin._sigSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
