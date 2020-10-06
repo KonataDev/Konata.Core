@@ -26,12 +26,12 @@ namespace Konata.Msf
 
         internal byte[] _gSecret;
         internal string _dPassword;
+        internal string _smsPhone;
 
         internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
         internal OicqStatus _oicqStatus;
-
 
         public Core(Bot bot, uint uin, string password)
         {
