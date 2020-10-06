@@ -99,6 +99,18 @@ namespace Konata.Debug
             return true;
         }
 
+        private static bool OnSliderCaptchaRemote(string sigSission, string sigUrl)
+        {
+            Console.WriteLine($"  SigSession => {sigSission}");
+            Console.WriteLine($"  CaptchaUrl => {sigUrl}");
+
+            Console.WriteLine("Please paste the ticket: ");
+            var sigTicket = Console.ReadLine();
+
+            bot.SubmitSliderTicket(sigSission, sigTicket);
+            return true;
+        }
+
         private static bool OnSmsCaptcha(string sigSession, byte[] sigSecret, string sigPhone)
         {
             Console.Write($"We sent an SMS to your phone number {sigPhone}, Please type the code you've received: ");
