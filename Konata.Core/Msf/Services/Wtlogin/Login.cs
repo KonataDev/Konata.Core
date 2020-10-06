@@ -178,27 +178,48 @@ namespace Konata.Msf.Services.Wtlogin
             var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
-            Tlv tlv104 = unpacker.TryGetTlv(0x104);
-            Tlv tlv174 = unpacker.TryGetTlv(0x174); // 隨機64字節
-            Tlv tlv204 = unpacker.TryGetTlv(0x204); // 賬號申訴
-            Tlv tlv178 = unpacker.TryGetTlv(0x178); // 手機號碼
-            Tlv tlv17d = unpacker.TryGetTlv(0x17d); // 手機QQ安全中心
-            Tlv tlv402 = unpacker.TryGetTlv(0x402);
-            Tlv tlv403 = unpacker.TryGetTlv(0x403);
-            Tlv tlv17e = unpacker.TryGetTlv(0x17e); // 提示訊息
-
-            if (tlv104 != null && tlv174 != null
-                && tlv204 != null && tlv178 != null
-                && tlv17d != null && tlv402 != null
-                && tlv403 != null && tlv17e != null)
+            if (unpacker.Count == 8)
             {
-                var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
-                var sigSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
-                var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
+                Tlv tlv104 = unpacker.TryGetTlv(0x104);
+                Tlv tlv174 = unpacker.TryGetTlv(0x174);
+                Tlv tlv204 = unpacker.TryGetTlv(0x204);
+                Tlv tlv178 = unpacker.TryGetTlv(0x178);
+                Tlv tlv17d = unpacker.TryGetTlv(0x17d);
+                Tlv tlv402 = unpacker.TryGetTlv(0x402);
+                Tlv tlv403 = unpacker.TryGetTlv(0x403);
+                Tlv tlv17e = unpacker.TryGetTlv(0x17e);
 
-                Console.WriteLine($"[Hint] {sigMessage}");
+                if (tlv104 != null && tlv174 != null
+                    && tlv204 != null && tlv178 != null
+                    && tlv17d != null && tlv402 != null
+                    && tlv403 != null && tlv17e != null)
+                {
+                    var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
+                    var sigSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
+                    var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
+                    var smsPhone = ((T178Body)tlv178._tlvBody)._phone;
+                    Console.WriteLine($"[Hint] {sigMessage}");
 
-                core.PostSystemEvent(EventType.WtLoginSendSms, sigSession, sigSecret);
+                    core._smsPhone = smsPhone;
+                    core.PostSystemEvent(EventType.WtLoginSendSms, sigSession, sigSecret);
+                }
+            }
+            else if (unpacker.Count == 2)
+            {
+                Tlv tlv104 = unpacker.TryGetTlv(0x104);
+                Tlv tlv17b = unpacker.TryGetTlv(0x17b);
+
+                if (tlv104 != null && tlv17b != null)
+                {
+                    var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
+
+                    core.PostSystemEvent(EventType.WtLoginVerifySmsCaptcha, sigSession, core._smsPhone);
+                }
+            }
+            else
+            {
+                core.PostSystemEvent(EventType.LoginFailed);
+                Console.WriteLine("[Error] Unknown data received.");
             }
 
             return false;
