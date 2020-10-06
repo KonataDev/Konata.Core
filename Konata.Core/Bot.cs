@@ -128,41 +128,36 @@ namespace Konata
         private void OnVerifySliderCaptcha(Event e)
         {
             if (e._args == null
-                || e._args.Length != 2
-                || !(e._args[0] is string)
-                || !(e._args[1] is string))
+                || e._args.Length != 1
+                || !(e._args[0] is string))
             {
                 return;
             }
 
-            _msfCore.WtLoginCheckSlider((string)e._args[0], (string)e._args[1]);
+            _msfCore.WtLoginCheckSlider((string)e._args[0]);
         }
 
         private void OnVerifySmsCaptcha(Event e)
         {
             if (e._args == null
-                || e._args.Length != 2
-                || !(e._args[0] is string)
-                || !(e._args[1] is byte[])
-                || !(e._args[2] is string))
+                || e._args.Length != 1
+                || !(e._args[0] is string))
             {
                 return;
             }
 
-            _msfCore.WtLoginCheckSms((string)e._args[0], (byte[])e._args[1], (string)e._args[2]);
+            _msfCore.WtLoginCheckSms((string)e._args[0]);
         }
 
         private void OnRefreshSms(Event e)
         {
             if (e._args == null
-                || e._args.Length != 2
-                || !(e._args[0] is string)
-                || !(e._args[1] is byte[]))
+                || e._args.Length != 0)
             {
                 return;
             }
 
-            _msfCore.WtLoginRefreshSms((string)e._args[0], (byte[])e._args[1]);
+            _msfCore.WtLoginRefreshSms();
         }
 
         #endregion
@@ -180,24 +175,19 @@ namespace Konata
         /// <summary>
         /// 提交滑塊驗證碼
         /// </summary>
-        /// <param name="sigSission"></param>
-        /// <param name="sigTicket"></param>
-        public void SubmitSliderTicket(string sigSission, string sigTicket)
+        /// <param name="ticket"></param>
+        public void SubmitSliderTicket(string ticket)
         {
-            PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha,
-                sigSission, sigTicket);
+            PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha, ticket);
         }
 
         /// <summary>
         /// 提交SMS驗證碼
         /// </summary>
-        /// <param name="sigSission"></param>
-        /// <param name="sigSecret"></param>
-        /// <param name="sigSmsCode"></param>
-        public void SubmitSmsCode(string sigSission, byte[] sigSecret, string sigSmsCode)
+        /// <param name="smsCode"></param>
+        public void SubmitSmsCode(string smsCode)
         {
-            PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha,
-               sigSission, sigSecret, sigSmsCode);
+            PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha, smsCode);
         }
 
         #endregion

@@ -21,11 +21,11 @@ namespace Konata.Msf.Services.Wtlogin
                 case "Request_TGTGT":
                     return Request_TGTGT(core);
                 case "Request_SliderCaptcha":
-                    return Request_SliderCaptcha(core, (string)args[0], (string)args[1]);
+                    return Request_SliderCaptcha(core, (string)args[0]);
                 case "Request_SmsCaptcha":
-                    return Request_SmsCaptcha(core, (string)args[0], (byte[])args[1], (string)args[2], (byte[])args[3]);
+                    return Request_SmsCaptcha(core, (string)args[0]);
                 case "Request_RefreshSms":
-                    return Request_RefreshSms(core, (string)args[0], (byte[])args[1]);
+                    return Request_RefreshSms(core);
                 default: return false;
             }
         }
@@ -89,17 +89,15 @@ namespace Konata.Msf.Services.Wtlogin
         /// 請求 OicqRequestCheckImage
         /// </summary>
         /// <param name="core"></param>
-        /// <param name="sigSission"></param>
-        /// <param name="sigTicket"></param>
+        /// <param name="ticket"></param>
         /// <returns></returns>
-        internal bool Request_SliderCaptcha(Core core,
-            string sigSission, string sigTicket)
+        internal bool Request_SliderCaptcha(Core core, string ticket)
         {
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestCheckImage(core._uin, core._keyRing,
-                sigSission, sigTicket);
+                core._wtLogin._sigSession, ticket);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -110,19 +108,16 @@ namespace Konata.Msf.Services.Wtlogin
         /// 請求 OicqRequestCheckSms
         /// </summary>
         /// <param name="core"></param>
-        /// <param name="sigSession"></param>
-        /// <param name="sigSecret"></param>
-        /// <param name="sigSmsCode"></param>
-        /// <param name="gSecret"></param>
+        /// <param name="smsCode"></param>
         /// <returns></returns>
-        internal bool Request_SmsCaptcha(Core core, string sigSession, byte[] sigSecret,
-            string sigSmsCode, byte[] gSecret)
+        internal bool Request_SmsCaptcha(Core core, string smsCode)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckSms(core._uin, core._keyRing, sigSession,
-                sigSecret, sigSmsCode, gSecret);
+            var request = new OicqRequestCheckSms(core._uin, core._keyRing,
+                 core._wtLogin._sigSession, core._wtLogin._smsSecret,
+                 core._wtLogin._gSecret, smsCode);
 
             core._ssoMan.PostMessage(this, request, sequence);
             return true;
@@ -132,15 +127,14 @@ namespace Konata.Msf.Services.Wtlogin
         /// 刷新SMS驗證碼. CD 60s
         /// </summary>
         /// <param name="core"></param>
-        /// <param name="sigSession"></param>
-        /// <param name="sigSecret"></param>
         /// <returns></returns>
-        internal bool Request_RefreshSms(Core core, string sigSession, byte[] sigSecret)
+        internal bool Request_RefreshSms(Core core)
         {
             Console.WriteLine("Request send SMS.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestRefreshSms(core._uin, core._keyRing, sigSession, sigSecret);
+            var request = new OicqRequestRefreshSms(core._uin, core._keyRing,
+                 core._wtLogin._sigSession, core._wtLogin._smsSecret);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -165,7 +159,8 @@ namespace Konata.Msf.Services.Wtlogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigSession, sigCaptchaURL,
+                core._wtLogin._sigSession = sigSession;
+                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigCaptchaURL,
                     DeviceInfo.Browser.UserAgent);
             }
             return false;
@@ -195,13 +190,15 @@ namespace Konata.Msf.Services.Wtlogin
                     && tlv403 != null && tlv17e != null)
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
-                    var sigSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
                     var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
                     var smsPhone = ((T178Body)tlv178._tlvBody)._phone;
+                    var smsSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    core._smsPhone = smsPhone;
-                    core.PostSystemEvent(EventType.WtLoginSendSms, sigSession, sigSecret);
+                    core._wtLogin._smsPhone = smsPhone;
+                    core._wtLogin._smsSecret = smsSecret;
+                    core._wtLogin._sigSession = sigSession;
+                    core.PostSystemEvent(EventType.WtLoginSendSms);
                 }
             }
             else if (unpacker.Count == 2)
@@ -213,7 +210,8 @@ namespace Konata.Msf.Services.Wtlogin
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
 
-                    core.PostSystemEvent(EventType.WtLoginVerifySmsCaptcha, sigSession, core._smsPhone);
+                    core._wtLogin._sigSession = sigSession;
+                    core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._wtLogin._smsPhone);
                 }
             }
             else
