@@ -71,7 +71,7 @@ namespace Konata.Msf.Packets.Oicq
                     tlvs.PutTlv(new Tlv(0x0145, new T145Body(DeviceInfo.Guid)));
 
                     tlvs.PutTlv(new Tlv(0x0147, new T147Body(AppInfo.appId, AppInfo.apkVersionName,
-                        AppInfo.apkSignature)));
+                        AppInfo.apkSignatureMd5)));
                     // tlvs.PushTlv(new 166());
 
                     tlvs.PutTlv(new Tlv(0x0154, new T154Body(ssoseq)));

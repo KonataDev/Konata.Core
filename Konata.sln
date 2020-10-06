@@ -4,8 +4,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{47052D6B-7E37-4CD2-8658-102BEDCE394D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64} = {E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Debug", "Konata.Debug\Konata.Debug.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Console", "Konata.Console\Konata.Console.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Device", "Konata.Device\Konata.Device.csproj", "{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Test", "Konata.Test\Konata.Test.csproj", "{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47052D6B-7E37-4CD2-8658-102BEDCE394D} = {47052D6B-7E37-4CD2-8658-102BEDCE394D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,14 @@ Global
 		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

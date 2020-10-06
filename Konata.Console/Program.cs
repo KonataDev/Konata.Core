@@ -25,9 +25,9 @@ namespace Konata.Debug
                 case EventType.BotStart:
                     return OnBootstrap();
                 case EventType.WtLoginVerifySliderCaptcha:
-                    return OnSliderCaptcha((string)args[0], (string)args[1], (string)args[2]);
+                    return OnSliderCaptchaRemote((string)args[0]);
                 case EventType.WtLoginVerifySmsCaptcha:
-                    return OnSmsCaptcha((string)args[0], (byte[])args[1], (string)args[2]);
+                    return OnSmsCaptcha((string)args[0]);
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
@@ -49,10 +49,15 @@ namespace Konata.Debug
             return true;
         }
 
-        private static bool OnSliderCaptcha(string sigSission, string sigUrl, string userAgent)
+        /// <summary>
+        /// 驗證滑塊驗證碼
+        /// </summary>
+        /// <param name="captchaURL"></param>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
+        private static bool OnSliderCaptcha(string captchaURL, string userAgent)
         {
-            Console.WriteLine($"  SigSession => {sigSission}");
-            Console.WriteLine($"  CaptchaUrl => {sigUrl}");
+            Console.WriteLine($"  CaptchaUrl => {captchaURL}");
 
             var browser = new Browser();
             Console.WriteLine($"Opening browser...");
@@ -63,7 +68,7 @@ namespace Konata.Debug
                 return false;
             }
 
-            string sigTicket;
+            string ticket;
             var session = browser.ConnectToFirstTab();
             {
                 session.EnableNetwork(65536);
@@ -81,31 +86,52 @@ namespace Konata.Debug
                     ["Accept-Language"] = "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
                 });
 
-                session.NavigateTo(sigUrl);
-                sigTicket = session.WaitForTicket();
+                session.NavigateTo(captchaURL);
+                ticket = session.WaitForTicket();
             }
             session.Close();
             browser.WaitForExit();
 
-            if (sigTicket == null || sigTicket == "")
+            if (ticket == null || ticket == "")
             {
                 return false;
             }
 
             // 提交驗證
-            Console.WriteLine($"Ticket got => \n{sigTicket}");
-            bot.SubmitSliderTicket(sigSission, sigTicket);
+            Console.WriteLine($"Ticket got => \n{ticket}");
+            bot.SubmitSliderTicket(ticket);
 
             return true;
         }
 
-        private static bool OnSmsCaptcha(string sigSession, byte[] sigSecret, string sigPhone)
+        /// <summary>
+        /// 驗證滑塊驗證碼. 手動輸入
+        /// </summary>
+        /// <param name="captchaURL"></param>
+        /// <returns></returns>
+        private static bool OnSliderCaptchaRemote(string captchaURL)
+        {
+            Console.WriteLine($"  CaptchaUrl => {captchaURL}");
+            Console.WriteLine("Please paste the ticket: ");
+
+            var ticket = Console.ReadLine();
+
+            bot.SubmitSliderTicket(ticket);
+            return true;
+        }
+
+        /// <summary>
+        /// 驗證短訊驗證碼
+        /// </summary>
+        /// <param name="sigPhone"></param>
+        /// <returns></returns>
+        private static bool OnSmsCaptcha(string sigPhone)
         {
             Console.Write($"We sent an SMS to your phone number {sigPhone}, Please type the code you've received: ");
             var sigSmsCode = Console.ReadLine();
 
             Console.WriteLine($"SMS Code got => \n{sigSmsCode}");
-            bot.SubmitSmsCode(sigSession, sigSecret, sigSmsCode);
+            bot.SubmitSmsCode(sigSmsCode);
 
             return false;
         }

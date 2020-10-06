@@ -78,6 +78,7 @@ namespace Konata.Msf.Packets.Tlv
             case 0x0177: return new T177Body(data);
             case 0x0178: return new T178Body(data);
             case 0x017a: return new T17aBody(data);
+            case 0x017b: return new T17bBody(data);
             case 0x017c: return new T17cBody(data);
             case 0x017d: return new T17dBody(data);
             case 0x017e: return new T17eBody(data);

@@ -50,5 +50,7 @@ namespace Konata.Msf.Packets.Tlv
         {
             return map.ContainsKey(tlvCommand) ? map[tlvCommand] : null;
         }
+
+        public int Count { get { return map.Count; } }
     }
 }
