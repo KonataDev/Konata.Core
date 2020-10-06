@@ -25,9 +25,9 @@ namespace Konata.Debug
                 case EventType.BotStart:
                     return OnBootstrap();
                 case EventType.WtLoginVerifySliderCaptcha:
-                    return OnSliderCaptchaRemote((string)args[0], (string)args[1]/*, (string)args[2]*/);
+                    return OnSliderCaptchaRemote((string)args[0]);
                 case EventType.WtLoginVerifySmsCaptcha:
-                    return OnSmsCaptcha((string)args[0], (byte[])args[1], (string)args[2]);
+                    return OnSmsCaptcha((string)args[0]);
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
@@ -49,6 +49,12 @@ namespace Konata.Debug
             return true;
         }
 
+        /// <summary>
+        /// 驗證滑塊驗證碼
+        /// </summary>
+        /// <param name="captchaURL"></param>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
         private static bool OnSliderCaptcha(string captchaURL, string userAgent)
         {
             Console.WriteLine($"  CaptchaUrl => {captchaURL}");
@@ -98,17 +104,27 @@ namespace Konata.Debug
             return true;
         }
 
+        /// <summary>
+        /// 驗證滑塊驗證碼. 手動輸入
+        /// </summary>
+        /// <param name="captchaURL"></param>
+        /// <returns></returns>
         private static bool OnSliderCaptchaRemote(string captchaURL)
         {
             Console.WriteLine($"  CaptchaUrl => {captchaURL}");
-
             Console.WriteLine("Please paste the ticket: ");
+
             var ticket = Console.ReadLine();
 
             bot.SubmitSliderTicket(ticket);
             return true;
         }
 
+        /// <summary>
+        /// 驗證短訊驗證碼
+        /// </summary>
+        /// <param name="sigPhone"></param>
+        /// <returns></returns>
         private static bool OnSmsCaptcha(string sigPhone)
         {
             Console.Write($"We sent an SMS to your phone number {sigPhone}, Please type the code you've received: ");
