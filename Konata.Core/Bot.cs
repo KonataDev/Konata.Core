@@ -151,8 +151,7 @@ namespace Konata
 
         private void OnRefreshSms(Event e)
         {
-            if (e._args == null
-                || e._args.Length != 0)
+            if (e._args != null)
             {
                 return;
             }
