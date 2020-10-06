@@ -17,6 +17,7 @@ namespace Konata.Msf.Packets.Oicq
         PreventByReceiveIssue = 3,
         PreventByAccountFrozen = 40,
         PreventBySmsSentFailed = 162,
+        PreventByIncorrectSmsCode = 163,
         PreventByLoginDenied = 167,
         PreventByInvalidEnvironment = 237,
     }

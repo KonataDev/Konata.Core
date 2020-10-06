@@ -56,6 +56,8 @@ namespace Konata.Msf.Services.Wtlogin
 
                 case OicqStatus.PreventByIncorrectUserOrPwd:
                     return Handle_InvalidUserOrPassword(core, oicqRequest);
+                case OicqStatus.PreventByIncorrectSmsCode:
+                    return Handle_InvalidSmsCode(core, oicqRequest);
                 case OicqStatus.PreventByInvalidEnvironment:
                     return Handle_InvalidEnvironment(core, oicqRequest);
                 case OicqStatus.PreventByLoginDenied:
@@ -252,6 +254,13 @@ namespace Konata.Msf.Services.Wtlogin
         internal bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Incorrect account or password.");
+            core.PostSystemEvent(EventType.LoginFailed);
+            return false;
+        }
+
+        internal bool Handle_InvalidSmsCode(Core core, OicqRequest request)
+        {
+            Console.WriteLine("[Error] Incorrect sms code.");
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
