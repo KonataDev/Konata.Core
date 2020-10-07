@@ -12,10 +12,10 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqSubCommand = 0x0007;
 
         public OicqRequestCheckSms(uint uin, KeyRing keyring, string sigSession,
-            byte[] sigSecret, byte[] gSecret, string smsCode)
+            byte[] gSecret, string smsToken, string smsCode)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
-                  new XCheckSms(sigSession, sigSecret, gSecret, smsCode),
+                  new XCheckSms(sigSession, gSecret, smsToken, smsCode),
                   keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
         {
 
@@ -23,7 +23,7 @@ namespace Konata.Msf.Packets.Oicq
 
         public class XCheckSms : OicqRequestBody
         {
-            public XCheckSms(string sigSession, byte[] sigSecret, byte[] gSecret, string smsCode)
+            public XCheckSms(string sigSession, byte[] gSecret, string smsToken, string smsCode)
             {
                 TlvPacker tlvs = new TlvPacker();
                 {
@@ -31,7 +31,7 @@ namespace Konata.Msf.Packets.Oicq
                     tlvs.PutTlv(new Tlv(0x0104, new T104Body(sigSession)));
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(AppInfo.wtLoginMiscBitmap,
                         AppInfo.wtLoginSubSigBitmap, AppInfo.wtLoginSubAppIdList)));
-                    tlvs.PutTlv(new Tlv(0x0174, new T174Body(sigSecret)));
+                    tlvs.PutTlv(new Tlv(0x0174, new T174Body(smsToken)));
                     tlvs.PutTlv(new Tlv(0x017c, new T17cBody(smsCode)));
                     tlvs.PutTlv(new Tlv(0x0198, new T198Body(0)));
                     tlvs.PutTlv(new Tlv(0x0401, new T401Body(gSecret)));// G

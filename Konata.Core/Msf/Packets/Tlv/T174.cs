@@ -4,20 +4,20 @@ namespace Konata.Msf.Packets.Tlv
 {
     public class T174Body : TlvBody
     {
-        public readonly byte[] _sigSecret;
+        public readonly string _smsToken;
 
-        public T174Body(byte[] sigSecret, object nil)
+        public T174Body(string smsToken)
             : base()
         {
-            _sigSecret = sigSecret;
+            _smsToken = smsToken;
 
-            PutBytes(_sigSecret);
+            PutString(_smsToken);
         }
 
         public T174Body(byte[] data)
             : base(data)
         {
-            TakeBytes(out _sigSecret, Prefix.None);
+            TakeString(out _smsToken, Prefix.None);
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Oicq;
-using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf
 {
@@ -142,7 +139,5 @@ namespace Konata.Msf
         }
 
         #endregion
-
-
     }
 }

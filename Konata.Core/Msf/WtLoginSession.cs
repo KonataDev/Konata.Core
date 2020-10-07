@@ -10,7 +10,7 @@ namespace Konata.Msf
         public byte[] _gSecret;
         public string _dPassword;
 
-        public byte[] _smsSecret;
+        public string _smsToken;
         public string _smsPhone;
 
         public string _sigSession;
