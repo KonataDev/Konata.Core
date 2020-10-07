@@ -113,6 +113,7 @@
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />
     <Compile Include="Msf\Packet.cs" />
+    <Compile Include="Msf\Services\Wtlogin\Trans_emp.cs" />
     <Compile Include="Msf\ServiceTouch.cs" />
     <Compile Include="Msf\SsoMan.cs" />
     <Compile Include="Msf\Crypto\EncryptType.cs" />
