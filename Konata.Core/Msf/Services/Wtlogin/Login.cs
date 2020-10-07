@@ -118,8 +118,8 @@ namespace Konata.Msf.Services.Wtlogin
 
             var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestCheckSms(core._uin, core._keyRing,
-                 core._wtLogin._sigSession, core._wtLogin._smsSecret,
-                 core._wtLogin._gSecret, smsCode);
+                 core._wtLogin._sigSession, core._wtLogin._gSecret,
+                 core._wtLogin._smsToken, smsCode);
 
             core._ssoMan.PostMessage(this, request, sequence);
             return true;
@@ -136,7 +136,7 @@ namespace Konata.Msf.Services.Wtlogin
 
             var sequence = core._ssoMan.GetServiceSequence(name);
             var request = new OicqRequestRefreshSms(core._uin, core._keyRing,
-                 core._wtLogin._sigSession, core._wtLogin._smsSecret);
+                 core._wtLogin._sigSession, core._wtLogin._smsToken);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -175,12 +175,13 @@ namespace Konata.Msf.Services.Wtlogin
             var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
-            if (unpacker.Count == 8)
+            if (unpacker.Count == 8 || unpacker.Count == 9)
             {
                 Tlv tlv104 = unpacker.TryGetTlv(0x104);
                 Tlv tlv174 = unpacker.TryGetTlv(0x174);
                 Tlv tlv204 = unpacker.TryGetTlv(0x204);
                 Tlv tlv178 = unpacker.TryGetTlv(0x178);
+                Tlv tlv179 = unpacker.TryGetTlv(0x179);
                 Tlv tlv17d = unpacker.TryGetTlv(0x17d);
                 Tlv tlv402 = unpacker.TryGetTlv(0x402);
                 Tlv tlv403 = unpacker.TryGetTlv(0x403);
@@ -195,11 +196,11 @@ namespace Konata.Msf.Services.Wtlogin
                     var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
                     var smsPhone = ((T178Body)tlv178._tlvBody)._phone;
                     var smsCountryCode = ((T178Body)tlv178._tlvBody)._countryCode;
-                    var smsSecret = ((T174Body)tlv174._tlvBody)._sigSecret;
+                    var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
                     core._wtLogin._smsPhone = $"+{smsCountryCode} {smsPhone}";
-                    core._wtLogin._smsSecret = smsSecret;
+                    core._wtLogin._smsToken = smsToken;
                     core._wtLogin._sigSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
                 }
