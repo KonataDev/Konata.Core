@@ -109,6 +109,7 @@
     <Compile Include="Msf\Packets\Tlv\T8.cs" />
     <Compile Include="Msf\Packets\Tlv\Tlv.cs" />
     <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
+    <Compile Include="Msf\Services\Heartbeat\Alive.cs" />
     <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />

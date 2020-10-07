@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Services.Wtlogin
 {
-    class Trans_emp : Service
+    internal class Trans_emp : Service
     {
         private Trans_emp()
         {
@@ -15,6 +15,8 @@ namespace Konata.Msf.Services.Wtlogin
         {
             switch (method)
             {
+                case "Request_Transport":
+                    return Request_Transport(core);
                 default: return false;
             }
         }
@@ -24,6 +26,16 @@ namespace Konata.Msf.Services.Wtlogin
             if (args == null || args.Length == 0)
                 return false;
 
+            return false;
+        }
+
+        /// <summary>
+        /// 請求發送報告 沒什麽用 暫時咕
+        /// </summary>
+        /// <param name="core"></param>
+        /// <returns></returns>
+        internal bool Request_Transport(Core core)
+        {
             return false;
         }
     }
