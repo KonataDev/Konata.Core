@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Msf.Services.Wtlogin
+namespace Konata.Msf.Services.StatSvc
 {
     internal class Register : Service
     {
