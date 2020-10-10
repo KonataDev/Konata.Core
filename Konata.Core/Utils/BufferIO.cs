@@ -299,11 +299,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return Int8ToBytes((sbyte)value);
-            case 2: return Int16ToBytes((short)value, endian);
-            case 4: return Int32ToBytes((int)value, endian);
-            case 8: return Int64ToBytes(value, endian);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return Int8ToBytes((sbyte)value);
+                case 2: return Int16ToBytes((short)value, endian);
+                case 4: return Int32ToBytes((int)value, endian);
+                case 8: return Int64ToBytes(value, endian);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -311,11 +311,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return Int8ToBytes((sbyte)value);
-            case 2: return Int16ToBytes((short)value);
-            case 4: return Int32ToBytes((int)value);
-            case 8: return Int64ToBytes(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return Int8ToBytes((sbyte)value);
+                case 2: return Int16ToBytes((short)value);
+                case 4: return Int32ToBytes((int)value);
+                case 8: return Int64ToBytes(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -323,11 +323,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return Int8ToBytes((sbyte)value);
-            case 2: return Int16ToBytesLE((short)value);
-            case 4: return Int32ToBytesLE((int)value);
-            case 8: return Int64ToBytesLE(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return Int8ToBytes((sbyte)value);
+                case 2: return Int16ToBytesLE((short)value);
+                case 4: return Int32ToBytesLE((int)value);
+                case 8: return Int64ToBytesLE(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -335,11 +335,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return Int8ToBytes((sbyte)value);
-            case 2: return Int16ToBytesBE((short)value);
-            case 4: return Int32ToBytesBE((int)value);
-            case 8: return Int64ToBytesBE(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return Int8ToBytes((sbyte)value);
+                case 2: return Int16ToBytesBE((short)value);
+                case 4: return Int32ToBytesBE((int)value);
+                case 8: return Int64ToBytesBE(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -347,11 +347,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return UInt8ToBytes((byte)value);
-            case 2: return UInt16ToBytes((ushort)value, endian);
-            case 4: return UInt32ToBytes((uint)value, endian);
-            case 8: return UInt64ToBytes(value, endian);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return UInt8ToBytes((byte)value);
+                case 2: return UInt16ToBytes((ushort)value, endian);
+                case 4: return UInt32ToBytes((uint)value, endian);
+                case 8: return UInt64ToBytes(value, endian);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -359,11 +359,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return UInt8ToBytes((byte)value);
-            case 2: return UInt16ToBytes((ushort)value);
-            case 4: return UInt32ToBytes((uint)value);
-            case 8: return UInt64ToBytes(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return UInt8ToBytes((byte)value);
+                case 2: return UInt16ToBytes((ushort)value);
+                case 4: return UInt32ToBytes((uint)value);
+                case 8: return UInt64ToBytes(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -371,11 +371,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return UInt8ToBytes((byte)value);
-            case 2: return UInt16ToBytesLE((ushort)value);
-            case 4: return UInt32ToBytesLE((uint)value);
-            case 8: return UInt64ToBytesLE(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return UInt8ToBytes((byte)value);
+                case 2: return UInt16ToBytesLE((ushort)value);
+                case 4: return UInt32ToBytesLE((uint)value);
+                case 8: return UInt64ToBytesLE(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -383,11 +383,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return UInt8ToBytes((byte)value);
-            case 2: return UInt16ToBytesBE((ushort)value);
-            case 4: return UInt32ToBytesBE((uint)value);
-            case 8: return UInt64ToBytesBE(value);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return UInt8ToBytes((byte)value);
+                case 2: return UInt16ToBytesBE((ushort)value);
+                case 4: return UInt32ToBytesBE((uint)value);
+                case 8: return UInt64ToBytesBE(value);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -643,11 +643,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToInt8(buffer, startIndex);
-            case 2: return BytesToInt16(buffer, startIndex, endian);
-            case 4: return BytesToInt32(buffer, startIndex, endian);
-            case 8: return BytesToInt64(buffer, startIndex, endian);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToInt8(buffer, startIndex);
+                case 2: return BytesToInt16(buffer, startIndex, endian);
+                case 4: return BytesToInt32(buffer, startIndex, endian);
+                case 8: return BytesToInt64(buffer, startIndex, endian);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -655,11 +655,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToInt8(buffer, startIndex);
-            case 2: return BytesToInt16(buffer, startIndex);
-            case 4: return BytesToInt32(buffer, startIndex);
-            case 8: return BytesToInt64(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToInt8(buffer, startIndex);
+                case 2: return BytesToInt16(buffer, startIndex);
+                case 4: return BytesToInt32(buffer, startIndex);
+                case 8: return BytesToInt64(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -667,11 +667,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToInt8(buffer, startIndex);
-            case 2: return BytesToInt16LE(buffer, startIndex);
-            case 4: return BytesToInt32LE(buffer, startIndex);
-            case 8: return BytesToInt64LE(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToInt8(buffer, startIndex);
+                case 2: return BytesToInt16LE(buffer, startIndex);
+                case 4: return BytesToInt32LE(buffer, startIndex);
+                case 8: return BytesToInt64LE(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -679,11 +679,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToInt8(buffer, startIndex);
-            case 2: return BytesToInt16BE(buffer, startIndex);
-            case 4: return BytesToInt32BE(buffer, startIndex);
-            case 8: return BytesToInt64BE(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToInt8(buffer, startIndex);
+                case 2: return BytesToInt16BE(buffer, startIndex);
+                case 4: return BytesToInt32BE(buffer, startIndex);
+                case 8: return BytesToInt64BE(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -691,11 +691,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToUInt8(buffer, startIndex);
-            case 2: return BytesToUInt16(buffer, startIndex, endian);
-            case 4: return BytesToUInt32(buffer, startIndex, endian);
-            case 8: return BytesToUInt64(buffer, startIndex, endian);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToUInt8(buffer, startIndex);
+                case 2: return BytesToUInt16(buffer, startIndex, endian);
+                case 4: return BytesToUInt32(buffer, startIndex, endian);
+                case 8: return BytesToUInt64(buffer, startIndex, endian);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -703,11 +703,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToUInt8(buffer, startIndex);
-            case 2: return BytesToUInt16(buffer, startIndex);
-            case 4: return BytesToUInt32(buffer, startIndex);
-            case 8: return BytesToUInt64(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToUInt8(buffer, startIndex);
+                case 2: return BytesToUInt16(buffer, startIndex);
+                case 4: return BytesToUInt32(buffer, startIndex);
+                case 8: return BytesToUInt64(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -715,11 +715,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToUInt8(buffer, startIndex);
-            case 2: return BytesToUInt16LE(buffer, startIndex);
-            case 4: return BytesToUInt32LE(buffer, startIndex);
-            case 8: return BytesToUInt64LE(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToUInt8(buffer, startIndex);
+                case 2: return BytesToUInt16LE(buffer, startIndex);
+                case 4: return BytesToUInt32LE(buffer, startIndex);
+                case 8: return BytesToUInt64LE(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -727,11 +727,11 @@ namespace Konata.Utils
         {
             switch (length)
             {
-            case 1: return BytesToUInt8(buffer, startIndex);
-            case 2: return BytesToUInt16BE(buffer, startIndex);
-            case 4: return BytesToUInt32BE(buffer, startIndex);
-            case 8: return BytesToUInt64BE(buffer, startIndex);
-            default: throw new ArgumentOutOfRangeException();
+                case 1: return BytesToUInt8(buffer, startIndex);
+                case 2: return BytesToUInt16BE(buffer, startIndex);
+                case 4: return BytesToUInt32BE(buffer, startIndex);
+                case 8: return BytesToUInt64BE(buffer, startIndex);
+                default: throw new ArgumentOutOfRangeException();
             }
         }
     }
