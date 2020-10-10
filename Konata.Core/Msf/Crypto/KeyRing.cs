@@ -61,5 +61,15 @@ namespace Konata.Msf.Crypto
             0x98, 0xB5, 0x1A, 0x99, 0x2D, 0x50, 0x81, 0x3D,
             0xA8
         };
+
+        internal byte[] _tgtKey;
+        internal byte[] _tgtToken;
+
+        internal byte[] _wtSessionTicketSig;
+        internal byte[] _wtSessionTicketKey;
+
+        internal byte[] _gtKey;
+        internal byte[] _stKey;
+        internal byte[] _d2Key;
     }
 }

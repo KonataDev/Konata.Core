@@ -23,11 +23,26 @@ namespace Konata.Msf
 
         public static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
         {
+            byte[] buffer;
             var imeiByte = Encoding.UTF8.GetBytes(imei);
             var dpwdByte = Encoding.UTF8.GetBytes(dpwd);
 
-            var buffer = new byte[imeiByte.Length + dpwdByte.Length +
-                (salt != null ? salt.Length : 0)];
+            if (salt != null)
+            {
+                buffer = new byte[imeiByte.Length + dpwdByte.Length + salt.Length];
+
+                Array.Copy(imeiByte, buffer, imei.Length);
+                Array.Copy(dpwdByte, 0, buffer, imei.Length, dpwdByte.Length);
+                Array.Copy(salt, 0, buffer, imei.Length + dpwdByte.Length, salt.Length);
+            }
+            else
+            {
+                buffer = new byte[imeiByte.Length + dpwdByte.Length];
+
+                Array.Copy(imeiByte, buffer, imei.Length);
+                Array.Copy(dpwdByte, 0, buffer, imei.Length, dpwdByte.Length);
+            }
+
             return new Md5Cryptor().Encrypt(buffer);
         }
 
