@@ -15,7 +15,7 @@ namespace Konata.Test
                 var testName = $"Konata.Test.{element.Name}";
                 Exception testExpection = null;
 
-                Console.Write($"[ .... ] Testing => {testName}");
+                Console.WriteLine($"[ .... ] Testing => {testName}");
 
                 try
                 {
@@ -29,7 +29,7 @@ namespace Konata.Test
                 }
                 finally
                 {
-                    Console.Write($"\r{(testResult ? "[  OK  ] Pass" : "[FAILED] Test failed")} => {testName}\n");
+                    Console.WriteLine($"{(testResult ? "[  OK  ] Pass" : "[FAILED] Test failed")} => {testName}");
 
                     if (testExpection != null)
                     {

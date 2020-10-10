@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Utils;
+using Konata.Utils.Jce;
 
 namespace Konata.Test.Tests
 {
@@ -7,19 +7,13 @@ namespace Konata.Test.Tests
     {
         public override bool Run()
         {
-            var jce = new JceWriter();
-            jce.PutJceByte(0, 1);
-            jce.PutJceShort(1, 2);
-            jce.PutJceInt(2, 3);
-            jce.PutJceLong(3, 4);
-            {
-                var jce2 = new JceWriter();
-                jce2.PutJceString4(0, "Hello JCE");
-                jce2.PutJceInt(1, 233);
+            var jce = new JceOutputStream();
+            jce.Write(233, 1);
+            jce.Write(233, 2);
+            jce.Write(233, 3);
+            jce.Write(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 4);
 
-                jce.PutJceWriter(4, jce2);
-            }
-            jce.PutJceLong(5, 4);
+            Print(jce.ToString());
 
             return true;
         }
