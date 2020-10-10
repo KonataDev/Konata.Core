@@ -103,9 +103,10 @@ namespace Konata
                 case EventType.WtLogin: OnLogin(e); break;
                 case EventType.LoginFailed: OnLoginFailed(e); break;
                 case EventType.HeartBeat: OnHeartBeat(e); break;
-                case EventType.WtLoginSendSms: OnRefreshSms(e); break;
-                case EventType.WtLoginVerifySliderCaptcha: OnVerifySliderCaptcha(e); break;
-                case EventType.WtLoginVerifySmsCaptcha: OnVerifySmsCaptcha(e); break;
+                case EventType.WtLoginSendSms: OnWtLoginRefreshSms(e); break;
+                case EventType.WtLoginVerifySliderCaptcha: OnWtLoginVerifySliderCaptcha(e); break;
+                case EventType.WtLoginVerifySmsCaptcha: OnWtLoginVerifySmsCaptcha(e); break;
+                case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
             }
         }
 
@@ -122,10 +123,10 @@ namespace Konata
 
         private void OnHeartBeat(Event e)
         {
-            // _msfCore.DoHeartBeat();
+            _msfCore.Heartbeat_Alive();
         }
 
-        private void OnVerifySliderCaptcha(Event e)
+        private void OnWtLoginVerifySliderCaptcha(Event e)
         {
             if (e._args == null
                 || e._args.Length != 1
@@ -137,7 +138,7 @@ namespace Konata
             _msfCore.WtLoginCheckSlider((string)e._args[0]);
         }
 
-        private void OnVerifySmsCaptcha(Event e)
+        private void OnWtLoginVerifySmsCaptcha(Event e)
         {
             if (e._args == null
                 || e._args.Length != 1
@@ -149,7 +150,7 @@ namespace Konata
             _msfCore.WtLoginCheckSms((string)e._args[0]);
         }
 
-        private void OnRefreshSms(Event e)
+        private void OnWtLoginRefreshSms(Event e)
         {
             if (e._args != null)
             {
@@ -157,6 +158,21 @@ namespace Konata
             }
 
             _msfCore.WtLoginRefreshSms();
+        }
+
+        private void OnWtLoginSuccess(Event e)
+        {
+            if (e._args != null)
+            {
+                return;
+            }
+
+            _msfCore.StatSvc_RegisterClient();
+            _msfCore.OidbSvc_0xdc9();
+            _msfCore.OidbSvc_0x480_9();
+            _msfCore.OidbSvc_0x5eb_22();
+            _msfCore.OidbSvc_0x5eb_15();
+            _msfCore.OidbSvc_oidb_0xd82();
         }
 
         #endregion

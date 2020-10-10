@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Msf.Packets.Svc;
+using Konata.Msf.Packets.Wup.UniPacket;
 
 namespace Konata.Msf.Services.StatSvc
 {
@@ -13,10 +15,10 @@ namespace Konata.Msf.Services.StatSvc
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {
-            switch (method)
-            {
-                default: return false;
-            }
+            if (method == "")
+                throw new Exception("???");
+
+            return Request_Register(core);
         }
 
         protected override bool OnHandle(Core core, params object[] args)
@@ -24,6 +26,22 @@ namespace Konata.Msf.Services.StatSvc
             if (args == null || args.Length == 0)
                 return false;
 
+            return Handle_Register(core);
+        }
+
+        private bool Handle_Register(Core core)
+        {
+            return false;
+        }
+
+        private bool Request_Register(Core core)
+        {
+            var uniPacket = new UniPacket(true);
+            uniPacket.SetServantName(name);
+            uniPacket.SetFuncName("SvcReqRegister");
+
+            var request = new SvcReqRegister();
+            
             return false;
         }
     }

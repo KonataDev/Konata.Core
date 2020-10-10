@@ -96,6 +96,58 @@ namespace Konata.Msf
             return Service.Run(this, "Wtlogin.Login", "Request_RefreshSms");
         }
 
+        /// <summary>
+        /// 注冊客戶端
+        /// </summary>
+        /// <returns></returns>
+        public bool StatSvc_RegisterClient()
+        {
+            return Service.Run(this, "StatSvc.register");
+        }
+
+        /// <summary>
+        /// 獲取在綫狀態
+        /// </summary>
+        /// <returns></returns>
+        public bool StatSvc_GetOnlineStatus()
+        {
+            return Service.Run(this, "StatSvc.GetOnlineStatus");
+        }
+
+        /// <summary>
+        /// 發送心跳
+        /// </summary>
+        /// <returns></returns>
+        public bool Heartbeat_Alive()
+        {
+            return Service.Run(this, "Heartbeat.Alive");
+        }
+
+        public bool OidbSvc_0xdc9()
+        {
+            return Service.Run(this, "OidbSvc.0xdc9");
+        }
+
+        public bool OidbSvc_0x480_9()
+        {
+            return Service.Run(this, "OidbSvc.0x480_9");
+        }
+
+        public bool OidbSvc_0x5eb_22()
+        {
+            return Service.Run(this, "OidbSvc.0x5eb_22");
+        }
+
+        public bool OidbSvc_0x5eb_15()
+        {
+            return Service.Run(this, "OidbSvc.0x5eb_15");
+        }
+
+        public bool OidbSvc_oidb_0xd82()
+        {
+            return Service.Run(this, "OidbSvc.oidb_0xd82");
+        }
+
         #endregion
 
         #region Event Metods

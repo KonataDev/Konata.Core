@@ -204,6 +204,8 @@ namespace Konata.Msf.Services.Wtlogin
                     core._wtLogin._smsToken = smsToken;
                     core._wtLogin._sigSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
+
+                    return true;
                 }
             }
             else if (unpacker.Count == 2)
@@ -217,6 +219,8 @@ namespace Konata.Msf.Services.Wtlogin
 
                     core._wtLogin._sigSession = sigSession;
                     core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._wtLogin._smsPhone);
+
+                    return true;
                 }
             }
             else
@@ -308,11 +312,20 @@ namespace Konata.Msf.Services.Wtlogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
+                    core._keyRing._tgtKey = tgtKey;
+                    core._keyRing._tgtToken = tgtToken;
+                    core._keyRing._wtSessionTicketSig = wtSessionTicketSig;
+                    core._keyRing._wtSessionTicketKey = wtSessionTicketKey;
+                    core._keyRing._gtKey = gtKey;
+                    core._keyRing._stKey = stKey;
+                    core._keyRing._d2Key = d2Key;
+
+                    core._ssoMan.DestroyServiceSequence(name);
+                    core.PostSystemEvent(EventType.WtLoginOK);
+
+                    return true;
                 }
             }
-
-            core._ssoMan.DestroyServiceSequence(name);
-            core.PostSystemEvent(EventType.WtLoginOK);
 
             return false;
         }
