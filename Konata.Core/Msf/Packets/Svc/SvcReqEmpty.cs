@@ -3,7 +3,7 @@ using Konata.Utils.Jce;
 
 namespace Konata.Msf.Packets.Svc
 {
-    public class SvcReqEmpty : SvcRequest
+    public class SvcReqEmpty : SvcReq
     {
         public SvcReqEmpty()
             : base("PushService", "SvcReqEmpty", 0, 0, 0, 0,
@@ -12,7 +12,7 @@ namespace Konata.Msf.Packets.Svc
 
         }
 
-        public class XSvcEmpty : SvcRequestBody
+        public class XSvcEmpty : SvcReqBody
         {
             public XSvcEmpty()
                 : base()

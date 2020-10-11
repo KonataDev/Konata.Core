@@ -4,31 +4,31 @@ using Konata.Msf.Packets.Wup;
 
 namespace Konata.Msf.Packets.Svc
 {
-    public class SvcRequest : UniPacket
+    public class SvcReq : UniPacket
     {
-        public SvcRequest(string servantName, string funcName,
+        public SvcReq(string servantName, string funcName,
             byte packetType, ushort messageType, ushort requestId, ushort oldRespIret,
-            SvcRequestBody svcRequest)
+            SvcReqBody svcRequest)
 
             : base(true, servantName, funcName, packetType, messageType,
-                  requestId, oldRespIret, new SvcRequestBody(funcName, svcRequest))
+                  requestId, oldRespIret, new SvcReqBody(funcName, svcRequest))
         {
 
         }
     }
 
-    public class SvcRequestBody : UniPacketBody
+    public class SvcReqBody : UniPacketBody
     {
-        public SvcRequestBody()
+        public SvcReqBody()
             : base()
         {
 
         }
 
-        public SvcRequestBody(string funcName, SvcRequestBody body)
+        public SvcReqBody(string funcName, SvcReqBody body)
             : base()
         {
-            var dict = new Dictionary<string, SvcRequestBody>();
+            var dict = new Dictionary<string, SvcReqBody>();
             dict.Add(funcName, body);
             {
                 Write(dict, 0);

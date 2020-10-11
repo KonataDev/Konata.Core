@@ -4,7 +4,7 @@ using Konata.Utils.Jce;
 
 namespace Konata.Msf.Packets.Svc
 {
-    public class SvcReqRegister : SvcRequest
+    public class SvcReqRegister : SvcReq
     {
         public SvcReqRegister(byte packetType, ushort messageType,
             ushort requestId, ushort oldRespIret, XSvcRegister body)
@@ -15,7 +15,7 @@ namespace Konata.Msf.Packets.Svc
 
         }
 
-        public class XSvcRegister : SvcRequestBody
+        public class XSvcRegister : SvcReqBody
         {
             public byte _isOnline = 0;
             public byte _isSetStatus = 0;
