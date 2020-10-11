@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Konata.Msf;
 
@@ -18,7 +19,7 @@ namespace Konata.Utils.Jce
 
         }
 
-        private void PutJceTypeHeader(JceType type, byte index)
+        public void PutJceTypeHeader(JceType type, byte index)
         {
             if (index >= 15)
             {
@@ -48,7 +49,7 @@ namespace Konata.Utils.Jce
                 PutJceZeroTag(index);
                 return;
             }
-            else if (value > 0 && value <= byte.MaxValue)
+            else if (value > sbyte.MinValue && value <= sbyte.MaxValue)
             {
                 PutJceTypeHeader(JceType.Byte, index);
                 PutByte((byte)value);
@@ -108,10 +109,55 @@ namespace Konata.Utils.Jce
             }
         }
 
+        public void Write<K, V>(Dictionary<K, V> value, byte index)
+        {
+            PutJceTypeHeader(JceType.Map, index);
+            Write(value == null ? 0 : value.Count, 0);
+            if (value != null)
+            {
+                foreach (var element in value)
+                {
+                    Write(element.Key, 0);
+                    Write(element.Value, 1);
+                }
+            }
+        }
+
+        public void Write(object value, byte index)
+        {
+            if (value is byte || value is sbyte
+                || value is short || value is ushort
+                || value is int || value is uint
+                || value is long || value is ulong)
+            {
+                Write((long)value, index);
+            }
+            else if (value is string)
+            {
+                Write((string)value, index);
+            }
+            else if (value is byte[])
+            {
+                Write((byte[])value, index);
+            }
+            else if (value is Packet)
+            {
+                Write(((Packet)value).GetBytes(), index);
+            }
+            else
+            {
+                throw new Exception("Not supported Jce Type.");
+            }
+        }
+
+
         public void Write(JceOutputStream value, byte index)
         {
-            PutJceTypeHeader(JceType.String4, index);
-
+            PutJceTypeHeader(JceType.StructBegin, 0);
+            {
+                Write(value.GetBytes(), 0);
+            }
+            PutJceTypeHeader(JceType.StructEnd, 1);
         }
 
         //public void PutJceMap()
@@ -124,16 +170,6 @@ namespace Konata.Utils.Jce
 
         //}
 
-
-        private void PutJceStructBegin()
-        {
-
-        }
-
-        private void PutJceStructEnd()
-        {
-
-        }
 
         private void PutJceZeroTag(byte index)
         {
