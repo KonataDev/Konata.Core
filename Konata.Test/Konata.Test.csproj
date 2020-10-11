@@ -47,6 +47,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="Tests\TestJceWriter.cs" />
+    <Compile Include="Tests\TestSvcReqEmpty.cs" />
     <Compile Include="Tests\TestSvcReqRegister.cs" />
   </ItemGroup>
   <ItemGroup>
