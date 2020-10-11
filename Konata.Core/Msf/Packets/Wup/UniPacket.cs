@@ -1,38 +1,55 @@
 ﻿using System;
+using System.Collections.Generic;
 using Konata.Utils.Jce;
-using Konata.Msf.Packets.Svc;
 
-namespace Konata.Msf.Packets.Wup.UniPacket
+namespace Konata.Msf.Packets.Wup
 {
-    public class UniPacket
+    public class UniPacket : JceOutputStream
     {
-        private RequestPacket _package;
+        public readonly UniPacketBody _packageBody;
+        public readonly ushort _packageVersion;
+        public readonly string _packageServantName;
+        public readonly string _packageFuncName;
+        public readonly byte _packagePacketType;
+        public readonly ushort _packageMessageType;
+        public readonly ushort _packageRequestId;
+        public readonly ushort _packageOldRespIret;
+        public readonly ushort _packageTimeout;
+        public readonly Dictionary<string, string> _packageContext;
+        public readonly Dictionary<string, string> _packageStatus;
 
-        public UniPacket()
+        public UniPacket(bool useVersion3, string servantName, string funcName,
+            byte packetType, ushort messageType, ushort requestId, ushort oldRespIret,
+            UniPacketBody body)
         {
-            _package = new RequestPacket();
-            _package._version = 2;
-        }
+            _packageBody = body;
+            _packageServantName = servantName;
+            _packageFuncName = funcName;
+            _packagePacketType = packetType;
+            _packageMessageType = messageType;
+            _packageRequestId = requestId;
+            _packageOldRespIret = oldRespIret;
+            _packageVersion = (ushort)(useVersion3 ? 3 : 2);
 
-        public UniPacket(bool useVersion3)
+            Write(_packageVersion, 1);
+            Write(_packagePacketType, 2);
+            Write(_packageMessageType, 3);
+            Write(_packageRequestId, 4);
+            Write(_packageServantName, 5);
+            Write(_packageFuncName, 6);
+            Write((Packet)_packageBody, 7);
+            Write(_packageTimeout, 8);
+            Write(_packageContext, 9);
+            Write(_packageStatus, 10);
+        }
+    }
+
+    public class UniPacketBody : JceOutputStream
+    {
+        public UniPacketBody()
+            : base()
         {
-            _package = new RequestPacket();
-            _package._version = (short)(useVersion3 ? 3 : 2);
-        }
 
-        public void SetServantName(string name)
-        {
-            _package._servantName = name;
         }
-
-        public void SetFuncName(string name)
-        {
-            _package._funcName = name;
-        }
-
-        public void Put(string name, JceOutputStream os)
-        {
-        }
-
     }
 }
