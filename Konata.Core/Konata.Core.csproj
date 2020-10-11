@@ -50,13 +50,12 @@
     <Compile Include="Msf\Event.cs" />
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReqEmpty.cs" />
-    <Compile Include="Msf\Packets\Svc\SvcRequest.cs" />
+    <Compile Include="Msf\Packets\Svc\SvcReq.cs" />
     <Compile Include="Utils\Jce\JceStruct.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReqRegister.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestRefreshSms.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestTransport.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbSSOPkg.cs" />
-    <Compile Include="Msf\Packets\Svc\RequestPacket.cs" />
     <Compile Include="Msf\Packets\Tlv\T103.cs" />
     <Compile Include="Msf\Packets\Tlv\T10a.cs" />
     <Compile Include="Msf\Packets\Tlv\T10c.cs" />
