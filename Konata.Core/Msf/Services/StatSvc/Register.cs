@@ -15,7 +15,7 @@ namespace Konata.Msf.Services.StatSvc
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {
-            if (method == "")
+            if (method != "")
                 throw new Exception("???");
 
             return Request_Register(core);
