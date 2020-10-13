@@ -8,10 +8,17 @@ namespace Konata.Msf.Packets
         private Body _body;
         private Header _header;
 
-        public ToServiceMessage(uint packetType, uint encryptType, uint uin, Packet packet)
+        // About packetType
+        // 0x0A d2Token field always be d2Token
+        // 0x0B d2Token replaced with ssoSeq
+
+        public ToServiceMessage(uint packetType, uint uin, byte[] d2Token,
+            byte[] d2Key, Packet packet)
+            : base()
         {
-            _body = new Body(packet, TeaCryptor.Instance, new byte[16]);
-            _header = new Header(packetType, encryptType, new byte[0], uin.ToString());
+            _body = new Body(packet, TeaCryptor.Instance, d2Key ?? new byte[16]);
+            _header = new Header(packetType, (uint)(d2Token.Length == 0 ? 2 : 1),
+                d2Token ?? new byte[0], uin.ToString());
 
             PutUintBE((uint)(_header.Length + _body.Length + 4));
             PutPacket(_header);

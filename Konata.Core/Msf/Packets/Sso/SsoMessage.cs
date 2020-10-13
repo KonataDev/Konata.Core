@@ -9,9 +9,11 @@ namespace Konata.Msf.Packets
         public Header _header;
         public Packet _packet;
 
-        public SsoMessage(uint seq, uint session, string command, Packet packet) : base()
+        public SsoMessage(uint seq, uint session, string command,
+            byte[] tgtToken, Packet packet)
+            : base()
         {
-            _header = new Header(seq, session, command);
+            _header = new Header(seq, session, command, tgtToken);
             _packet = packet;
 
             PutUintBE((uint)(_header.Length + 4));
@@ -38,11 +40,18 @@ namespace Konata.Msf.Packets
             public readonly uint _ssoSession;
             public readonly string _ssoCommand;
 
-            public Header(uint ssoSequence, uint ssoSession, string ssoCommand) : base()
+            public Header(uint ssoSequence, uint ssoSession, string ssoCommand,
+                byte[] tgtToken)
+                : base()
             {
                 _ssoSequence = ssoSequence;
                 _ssoSession = ssoSession;
                 _ssoCommand = ssoCommand;
+
+                if (tgtToken != null)
+                {
+                    _tgtToken = tgtToken;
+                }
 
                 PutUintBE(_ssoSequence);
                 PutUintBE(AppInfo.subAppId);
