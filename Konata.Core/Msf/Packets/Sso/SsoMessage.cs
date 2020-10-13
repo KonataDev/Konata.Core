@@ -1,7 +1,6 @@
-﻿using Konata.Msf;
+﻿using System;
+using Konata.Msf;
 using Konata.Msf.Utils.Crypt;
-using Konata.Utils;
-using System;
 
 namespace Konata.Msf.Packets
 {
@@ -30,7 +29,7 @@ namespace Konata.Msf.Packets
 
         public class Header : Packet
         {
-            private readonly byte[] _extraData = { };
+            private readonly byte[] _tgtToken = { };
             private readonly byte[] _unknownBytes0 = { };
             private readonly byte[] _unknownBytes1 = { };
             private readonly string _unknownString = $"||A{AppInfo.apkVersionName}.{AppInfo.appRevision}";
@@ -50,8 +49,8 @@ namespace Konata.Msf.Packets
                 PutUintBE(AppInfo.subAppId);
                 PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
 
-                PutUintBE((uint)(_extraData.Length + 4));
-                PutBytes(_extraData);
+                PutUintBE((uint)(_tgtToken.Length + 4));
+                PutBytes(_tgtToken);
 
                 PutUintBE((uint)(_ssoCommand.Length + 4));
                 PutString(_ssoCommand);
@@ -79,7 +78,7 @@ namespace Konata.Msf.Packets
 
                 EatBytes(4);
 
-                TakeBytes(out _extraData, Prefix.Uint32 | Prefix.WithPrefix);
+                TakeBytes(out _tgtToken, Prefix.Uint32 | Prefix.WithPrefix);
                 TakeString(out _ssoCommand, Prefix.Uint32 | Prefix.WithPrefix);
 
                 EatBytes(4);

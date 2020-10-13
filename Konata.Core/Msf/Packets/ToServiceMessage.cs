@@ -20,13 +20,13 @@ namespace Konata.Msf.Packets
 
         private class Header : Packet
         {
-            public Header(uint packetType, uint encryptType, byte[] ticket, string uin)
+            public Header(uint packetType, uint encryptType, byte[] d2Token, string uin)
             {
                 PutUintBE(packetType);
                 PutByte((byte)encryptType);
 
-                PutUintBE((uint)(ticket.Length + 4));
-                PutBytes(ticket);
+                PutUintBE((uint)(d2Token.Length + 4));
+                PutBytes(d2Token);
 
                 PutByte(0x00);
 

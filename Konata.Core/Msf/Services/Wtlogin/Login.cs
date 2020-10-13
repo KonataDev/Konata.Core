@@ -301,12 +301,14 @@ namespace Konata.Msf.Services.Wtlogin
                     var tgtKey = ((T10dBody)tlv10d._tlvBody)._tgtKey;
                     var tgtToken = ((T10aBody)tlv10a._tlvBody)._tgtToken;
 
+                    var d2Key = ((T305Body)tlv305._tlvBody)._d2Key;
+                    var d2Token = ((T143Body)tlv143._tlvBody)._d2Token;
+
                     var wtSessionTicketSig = ((T133Body)tlv133._tlvBody)._wtSessionTicketSig;
                     var wtSessionTicketKey = ((T134Body)tlv134._tlvBody)._wtSessionTicketKey;
 
                     var gtKey = ((T10cBody)tlv10c._tlvBody)._gtKey;
                     var stKey = ((T10eBody)tlv10e._tlvBody)._stKey;
-                    var d2Key = ((T305Body)tlv305._tlvBody)._d2Key;
 
                     var userAge = ((T11aBody)tlv11a._tlvBody)._age;
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
@@ -314,11 +316,12 @@ namespace Konata.Msf.Services.Wtlogin
 
                     core._keyRing._tgtKey = tgtKey;
                     core._keyRing._tgtToken = tgtToken;
+                    core._keyRing._d2Key = d2Key;
+                    core._keyRing._d2Token = d2Token;
                     core._keyRing._wtSessionTicketSig = wtSessionTicketSig;
                     core._keyRing._wtSessionTicketKey = wtSessionTicketKey;
                     core._keyRing._gtKey = gtKey;
                     core._keyRing._stKey = stKey;
-                    core._keyRing._d2Key = d2Key;
 
                     core._ssoMan.DestroyServiceSequence(name);
                     core.PostSystemEvent(EventType.WtLoginOK);

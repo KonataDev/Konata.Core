@@ -65,11 +65,13 @@ namespace Konata.Msf.Crypto
         internal byte[] _tgtKey;
         internal byte[] _tgtToken;
 
+        internal byte[] _d2Key;
+        internal byte[] _d2Token;
+
         internal byte[] _wtSessionTicketSig;
         internal byte[] _wtSessionTicketKey;
 
         internal byte[] _gtKey;
         internal byte[] _stKey;
-        internal byte[] _d2Key;
     }
 }
