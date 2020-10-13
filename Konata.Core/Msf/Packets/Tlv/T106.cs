@@ -70,24 +70,24 @@ namespace Konata.Msf.Packets.Tlv
         public T106Body(byte[] data)
             : base(data)
         {
-            TakeUshortBE(out _tgtgtVer);
-            TakeIntBE(out _randomNumber);
-            TakeUintBE(out _ssoVer);
-            TakeUintBE(out _appId);
-            TakeUintBE(out _appClientVersion);
-            TakeLongBE(out var uin); _salt = uin; _uin = (uint)uin;
-            TakeUintBE(out _timeNow);
-            TakeBytes(out _ipAddress, 4);
-            TakeBoolBE(out _isSavePassword, 1);
-            TakeBytes(out _passwordMd5, 16);
-            TakeBytes(out _tgtgKey, 16);
-            EatBytes(4);
-            TakeBoolBE(out _isGuidAvailable, 1);
-            TakeBytes(out _guid, 16);
-            TakeUintBE(out _subAppId);
-            TakeUintBE(out var type); _loginType = (LoginType)type;
-            TakeString(out _uinString, Prefix.Uint16);
-            EatBytes(2);
+            //TakeUshortBE(out _tgtgtVer);
+            //TakeIntBE(out _randomNumber);
+            //TakeUintBE(out _ssoVer);
+            //TakeUintBE(out _appId);
+            //TakeUintBE(out _appClientVersion);
+            //TakeLongBE(out var uin); _salt = uin; _uin = (uint)uin;
+            //TakeUintBE(out _timeNow);
+            //TakeBytes(out _ipAddress, 4);
+            //TakeBoolBE(out _isSavePassword, 1);
+            //TakeBytes(out _passwordMd5, 16);
+            //TakeBytes(out _tgtgKey, 16);
+            //EatBytes(4);
+            //TakeBoolBE(out _isGuidAvailable, 1);
+            //TakeBytes(out _guid, 16);
+            //TakeUintBE(out _subAppId);
+            //// TakeUintBE(out var type); _loginType = (LoginType)type;
+            //TakeString(out _uinString, Prefix.Uint16);
+            //EatBytes(2);
         }
     }
 }
