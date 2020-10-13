@@ -15,9 +15,9 @@
  - [ ] 上報 HunganSvc.Ie
  - [ ] 上報 Account.RequestQueryQQMobileContactsV3
  - [ ] 上報 OidbSvc.0x8a8
- - [ ] 上報 StatSvc.register 
+ - [x] 上報 StatSvc.register 
  - [ ] 拉取群列表
  - [ ] 拉取朋友列表
  - [ ] OnlinePush
  - [ ] HeartBeat
- - [ ] 更多等待探索...
+ - [ ] [更多](../../projects/1)...
