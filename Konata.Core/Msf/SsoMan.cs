@@ -23,6 +23,11 @@ namespace Konata.Msf
         private SsoRequence _ssoSequence;
         private SsoSession _ssoSession;
 
+        private byte[] _d2Key;
+        private byte[] _d2Token;
+
+        private byte[] _tgtKey;
+        private byte[] _tgtToken;
 
         internal SsoMan(Core core)
         {
@@ -34,6 +39,9 @@ namespace Konata.Msf
 
             _msfCore = core;
             _pakMan = new PacketMan(this);
+
+            _d2Token = new byte[0];
+            _tgtToken = new byte[0];
         }
 
         /// <summary>
@@ -107,6 +115,20 @@ namespace Konata.Msf
             _ssoSeqLock.ReleaseMutex();
         }
 
+        [Obsolete]
+        internal void SetTgtTokenPair(byte[] tgtToken, byte[] tgtkey)
+        {
+            _tgtKey = tgtkey;
+            _tgtToken = tgtToken;
+        }
+
+        [Obsolete]
+        internal void SetD2TokenPair(byte[] d2Token, byte[] d2Key)
+        {
+            _d2Key = d2Key;
+            _d2Token = d2Token;
+        }
+
         /// <summary>
         /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
         /// </summary>
@@ -118,7 +140,6 @@ namespace Konata.Msf
             return PostMessage(service, packet, GetNewSequence());
         }
 
-        /// <summary>
         /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
         /// </summary>
         /// <param name="service">服務名</param>
@@ -127,8 +148,8 @@ namespace Konata.Msf
         /// <returns></returns>
         internal uint PostMessage(Service service, Packet packet, uint ssoSequence)
         {
-            var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, packet);
-            var toService = new ToServiceMessage(10, 2, _msfCore._uin, ssoMessage);
+            var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
+            var toService = new ToServiceMessage(10, _msfCore._uin, _d2Token, _d2Key, ssoMessage);
 
             _pakMan.Emit(toService);
             return ssoSequence;
