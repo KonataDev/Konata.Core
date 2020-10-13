@@ -262,9 +262,10 @@ namespace Konata.Msf.Services.Wtlogin
 
                 if (tlv119 != null && tlv161 != null)
                 {
-                    var tlv119Unpacker = new TlvUnpacker(
-                        tlv119.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, core._keyRing._tgtgKey), true);
+                    var decrtpted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
+                        TeaCryptor.Instance, core._keyRing._tgtgKey);
+
+                    var tlv119Unpacker = new TlvUnpacker(decrtpted, true);
 
                     Tlv tlv16a = tlv119Unpacker.TryGetTlv(0x16a); // no pic sig
                     Tlv tlv106 = tlv119Unpacker.TryGetTlv(0x106);
@@ -323,7 +324,10 @@ namespace Konata.Msf.Services.Wtlogin
                     core._keyRing._gtKey = gtKey;
                     core._keyRing._stKey = stKey;
 
+                    core._ssoMan.SetD2TokenPair(d2Token, d2Key);
+                    core._ssoMan.SetTgtTokenPair(tgtToken, tgtKey);
                     core._ssoMan.DestroyServiceSequence(name);
+
                     core.PostSystemEvent(EventType.WtLoginOK);
 
                     return true;
