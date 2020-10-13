@@ -10,7 +10,6 @@ namespace Konata.Msf.Packets.Tlv
             : base()
         {
             _wtLoginSdk = wtLoginSdk;
-
         }
 
         public T544Body(byte[] data)

@@ -19,6 +19,7 @@ namespace Konata.Msf
         {
             public static string Os = "android";
             public static string OsVersion = "8.1.0";
+            public static string OsName = "klteduosctc-user 6.0";
             public static string AndroidId = "8edadfb1e4a02cdc";
 
             public static string ModelName = "SM-G9009W";

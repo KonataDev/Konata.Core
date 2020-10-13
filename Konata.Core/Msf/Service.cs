@@ -35,6 +35,18 @@ namespace Konata.Msf
         }
 
         /// <summary>
+        /// 拉起指定的服務並開始執行特定任務
+        /// </summary>
+        /// <param name="core"></param>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal static bool Run(Core core, string name, params object[] args)
+        {
+            return Run(core, name, "", args);
+        }
+
+        /// <summary>
         /// 拉起指定的服務並響應特定指令
         /// </summary>
         /// <param name="core"></param>
@@ -47,8 +59,9 @@ namespace Konata.Msf
             {
                 return map[name.ToLower()].OnHandle(core, args);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.StackTrace);
                 return false;
             }
         }

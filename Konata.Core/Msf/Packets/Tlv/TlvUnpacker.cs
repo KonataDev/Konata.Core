@@ -26,9 +26,13 @@ namespace Konata.Msf.Packets.Tlv
                 packet.TakeTlvData(out byte[] tlv, out ushort cmd);
                 if (map.ContainsKey(cmd))
                 {
-                    throw new IOException("Repeated Tlv command.");
+                    map[cmd] = new Tlv(cmd, tlv);
+                    // throw new IOException("Repeated Tlv command.");
                 }
-                map.Add(cmd, new Tlv(cmd, tlv));
+                else
+                {
+                    map.Add(cmd, new Tlv(cmd, tlv));
+                }
             }
             if (prefixTlvCount && count < countMax)
             {

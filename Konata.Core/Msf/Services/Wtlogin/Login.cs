@@ -2,6 +2,7 @@
 using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
 using Konata.Msf.Packets.Tlv;
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -203,6 +204,8 @@ namespace Konata.Msf.Services.Wtlogin
                     core._wtLogin._smsToken = smsToken;
                     core._wtLogin._sigSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
+
+                    return true;
                 }
             }
             else if (unpacker.Count == 2)
@@ -216,6 +219,8 @@ namespace Konata.Msf.Services.Wtlogin
 
                     core._wtLogin._sigSession = sigSession;
                     core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._wtLogin._smsPhone);
+
+                    return true;
                 }
             }
             else
@@ -247,8 +252,87 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Wtlogin success.");
 
-            core._ssoMan.DestroyServiceSequence(name);
-            core.PostSystemEvent(EventType.WtLoginOK);
+            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            if (unpacker.Count == 2)
+            {
+                Tlv tlv119 = unpacker.TryGetTlv(0x119);
+                Tlv tlv161 = unpacker.TryGetTlv(0x161);
+
+                if (tlv119 != null && tlv161 != null)
+                {
+                    var decrtpted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
+                        TeaCryptor.Instance, core._keyRing._tgtgKey);
+
+                    var tlv119Unpacker = new TlvUnpacker(decrtpted, true);
+
+                    Tlv tlv16a = tlv119Unpacker.TryGetTlv(0x16a); // no pic sig
+                    Tlv tlv106 = tlv119Unpacker.TryGetTlv(0x106);
+                    Tlv tlv10c = tlv119Unpacker.TryGetTlv(0x10c); // gt key
+                    Tlv tlv10a = tlv119Unpacker.TryGetTlv(0x10a); // tgt
+                    Tlv tlv10d = tlv119Unpacker.TryGetTlv(0x10d); // tgt key
+                    Tlv tlv114 = tlv119Unpacker.TryGetTlv(0x114); // st
+                    Tlv tlv10e = tlv119Unpacker.TryGetTlv(0x10e); // st key
+                    Tlv tlv103 = tlv119Unpacker.TryGetTlv(0x103); // stwx_web
+                    Tlv tlv133 = tlv119Unpacker.TryGetTlv(0x133);
+                    Tlv tlv134 = tlv119Unpacker.TryGetTlv(0x134); // ticket key
+                    Tlv tlv528 = tlv119Unpacker.TryGetTlv(0x528);
+                    Tlv tlv322 = tlv119Unpacker.TryGetTlv(0x322); // device token
+                    Tlv tlv11d = tlv119Unpacker.TryGetTlv(0x11d); // st, st key
+                    Tlv tlv11f = tlv119Unpacker.TryGetTlv(0x11f);
+                    Tlv tlv138 = tlv119Unpacker.TryGetTlv(0x138);
+                    Tlv tlv11a = tlv119Unpacker.TryGetTlv(0x11a); // age, sex, nickname
+                    Tlv tlv522 = tlv119Unpacker.TryGetTlv(0x522);
+                    Tlv tlv537 = tlv119Unpacker.TryGetTlv(0x537);
+                    Tlv tlv550 = tlv119Unpacker.TryGetTlv(0x550);
+                    Tlv tlv203 = tlv119Unpacker.TryGetTlv(0x203);
+                    Tlv tlv120 = tlv119Unpacker.TryGetTlv(0x120); // skey
+                    Tlv tlv16d = tlv119Unpacker.TryGetTlv(0x16d);
+                    Tlv tlv512 = tlv119Unpacker.TryGetTlv(0x512); // Map<domain, p_skey>
+                    Tlv tlv305 = tlv119Unpacker.TryGetTlv(0x305); // d2key
+                    Tlv tlv143 = tlv119Unpacker.TryGetTlv(0x143); // d2
+                    Tlv tlv118 = tlv119Unpacker.TryGetTlv(0x118);
+                    Tlv tlv163 = tlv119Unpacker.TryGetTlv(0x163);
+                    Tlv tlv130 = tlv119Unpacker.TryGetTlv(0x130);
+                    Tlv tlv403 = tlv119Unpacker.TryGetTlv(0x403);
+
+                    var noPicSig = ((T16aBody)tlv16a._tlvBody)._noPicSig;
+
+                    var tgtKey = ((T10dBody)tlv10d._tlvBody)._tgtKey;
+                    var tgtToken = ((T10aBody)tlv10a._tlvBody)._tgtToken;
+
+                    var d2Key = ((T305Body)tlv305._tlvBody)._d2Key;
+                    var d2Token = ((T143Body)tlv143._tlvBody)._d2Token;
+
+                    var wtSessionTicketSig = ((T133Body)tlv133._tlvBody)._wtSessionTicketSig;
+                    var wtSessionTicketKey = ((T134Body)tlv134._tlvBody)._wtSessionTicketKey;
+
+                    var gtKey = ((T10cBody)tlv10c._tlvBody)._gtKey;
+                    var stKey = ((T10eBody)tlv10e._tlvBody)._stKey;
+
+                    var userAge = ((T11aBody)tlv11a._tlvBody)._age;
+                    var userFace = ((T11aBody)tlv11a._tlvBody)._face;
+                    var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
+
+                    core._keyRing._tgtKey = tgtKey;
+                    core._keyRing._tgtToken = tgtToken;
+                    core._keyRing._d2Key = d2Key;
+                    core._keyRing._d2Token = d2Token;
+                    core._keyRing._wtSessionTicketSig = wtSessionTicketSig;
+                    core._keyRing._wtSessionTicketKey = wtSessionTicketKey;
+                    core._keyRing._gtKey = gtKey;
+                    core._keyRing._stKey = stKey;
+
+                    core._ssoMan.SetD2TokenPair(d2Token, d2Key);
+                    core._ssoMan.SetTgtTokenPair(tgtToken, tgtKey);
+                    core._ssoMan.DestroyServiceSequence(name);
+
+                    core.PostSystemEvent(EventType.WtLoginOK);
+
+                    return true;
+                }
+            }
 
             return false;
         }
