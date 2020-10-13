@@ -59,8 +59,9 @@ namespace Konata.Msf
             {
                 return map[name.ToLower()].OnHandle(core, args);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.StackTrace);
                 return false;
             }
         }
