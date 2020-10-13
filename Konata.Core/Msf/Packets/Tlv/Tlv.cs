@@ -66,6 +66,7 @@ namespace Konata.Msf.Packets.Tlv
                 case 0x0128: return new T128Body(data);
                 case 0x0141: return new T141Body(data);
                 case 0x0142: return new T142Body(data);
+                case 0x0143: return new T143Body(data);
                 case 0x0144: return new T144Body(data);
                 case 0x0145: return new T145Body(data);
                 case 0x0146: return new T146Body(data);
