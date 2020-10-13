@@ -23,7 +23,7 @@ namespace Konata.Msf
             public static string AndroidId = "8edadfb1e4a02cdc";
 
             public static string ModelName = "SM-G9009W";
-            public static string Manufacturer = "SAMSUNG";
+            public static string Manufacturer = "samsung";
 
             public static string Imei
             {
