@@ -116,14 +116,14 @@ namespace Konata.Msf
         }
 
         [Obsolete]
-        internal void SetTgtTokenPair(byte[] tgtToken, byte[] tgtkey)
+        internal void SetTgtPair(byte[] tgtToken, byte[] tgtkey)
         {
             _tgtKey = tgtkey;
             _tgtToken = tgtToken;
         }
 
         [Obsolete]
-        internal void SetD2TokenPair(byte[] d2Token, byte[] d2Key)
+        internal void SetD2Pair(byte[] d2Token, byte[] d2Key)
         {
             _d2Key = d2Key;
             _d2Token = d2Token;
@@ -194,7 +194,8 @@ namespace Konata.Msf
         internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
             var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _),
-                _msfCore._keyRing._zeroKey);
+                fromService._encryptType == 2 ?
+                _msfCore._keyRing._zeroKey : _d2Key);
 
             Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
             Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
