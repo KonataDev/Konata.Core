@@ -3,6 +3,7 @@ using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
 using Konata.Msf.Packets.Tlv;
 using Konata.Msf.Utils.Crypt;
+using Konata.Utils;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -324,11 +325,18 @@ namespace Konata.Msf.Services.Wtlogin
                     core._keyRing._gtKey = gtKey;
                     core._keyRing._stKey = stKey;
 
-                    core._ssoMan.SetD2TokenPair(d2Token, d2Key);
-                    core._ssoMan.SetTgtTokenPair(tgtToken, tgtKey);
+                    core._ssoMan.SetD2Pair(d2Token, d2Key);
+                    core._ssoMan.SetTgtPair(tgtToken, tgtKey);
                     core._ssoMan.DestroyServiceSequence(name);
 
                     core.PostSystemEvent(EventType.WtLoginOK);
+
+                    Console.WriteLine($"gtKey => {Hex.Bytes2HexStr(gtKey)}");
+                    Console.WriteLine($"stKey => {Hex.Bytes2HexStr(stKey)}");
+                    Console.WriteLine($"tgtKey => {Hex.Bytes2HexStr(tgtKey)}");
+                    Console.WriteLine($"tgtToken => {Hex.Bytes2HexStr(tgtToken)}");
+                    Console.WriteLine($"d2Key => {Hex.Bytes2HexStr(d2Key)}");
+                    Console.WriteLine($"d2Token => {Hex.Bytes2HexStr(d2Token)}");
 
                     return true;
                 }
