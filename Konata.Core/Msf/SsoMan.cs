@@ -193,16 +193,28 @@ namespace Konata.Msf
         /// <param name="fromService"></param>
         internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
-            var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _),
-                fromService._encryptType == 2 ?
-                _msfCore._keyRing._zeroKey : _d2Key);
-
-            Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
-            Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
-            Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
-
             try
             {
+                var ssoData = fromService.TakeAllBytes(out byte[] _);
+
+                SsoMessage ssoMessage = null;
+                switch (fromService._encryptType)
+                {
+                    case 0:
+                        ssoMessage = new SsoMessage(ssoData);
+                        break;
+                    case 1:
+                        ssoMessage = new SsoMessage(ssoData, _d2Key);
+                        break;
+                    case 2:
+                        ssoMessage = new SsoMessage(ssoData, _msfCore._keyRing._zeroKey);
+                        break;
+                }
+
+                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
+                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
+                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
+
                 Service.Handle(_msfCore, ssoMessage._header._ssoCommand, ssoMessage._packet);
             }
             catch (Exception e)

@@ -22,8 +22,15 @@ namespace Konata.Msf.Packets
             PutPacket(_packet);
         }
 
-        public SsoMessage(byte[] data, byte[] cryptKey) :
-            base(data, TeaCryptor.Instance, cryptKey)
+        public SsoMessage(byte[] data, byte[] cryptKey)
+            : base(data, TeaCryptor.Instance, cryptKey)
+        {
+            _header = new Header(GetBytes());
+            _packet = new Packet(_header.TakeAllBytes(out byte[] _));
+        }
+
+        public SsoMessage(byte[] data)
+            : base(data)
         {
             _header = new Header(GetBytes());
             _packet = new Packet(_header.TakeAllBytes(out byte[] _));
