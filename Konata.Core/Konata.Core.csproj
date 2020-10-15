@@ -51,6 +51,7 @@
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReqEmpty.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReq.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PushNotify.cs" />
     <Compile Include="Utils\Jce\JceStruct.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReqRegister.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestRefreshSms.cs" />
