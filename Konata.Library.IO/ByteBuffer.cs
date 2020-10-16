@@ -17,25 +17,27 @@ namespace Konata.Library.IO
             WithPrefix = 128,  // 包括數據長度和前綴長度
         }
 
+        private static readonly IOException _exEob =
+            new IOException("Insufficient buffer space.");
+        private static int _minBufBase = 8;
+        private static uint _minBufSize = 1U << _minBufBase;
+
         protected byte[] _buffer;
         protected uint _length;
-        private static readonly IOException _bufferErr =
-            new IOException("Insufficient buffer space.");
+        private uint _rPos;
+        private uint _wPos;
 
-        public ByteBuffer()
+        public ByteBuffer(byte[] data = null)
         {
-
-        }
-
-        public ByteBuffer(byte[] data)
-        {
-            _pos = 0;
-
+            _buffer = null;
+            _length = 0;
+            _rPos = 0;
+            _wPos = 0;
             if (data != null)
             {
-                _buffer = new byte[data.Length];
                 _length = (uint)data.Length;
-                Buffer.BlockCopy(data, 0, _buffer, 0, data.Length);
+                _wPos = _length;
+                WriteData(data);
             }
         }
 
@@ -43,12 +45,12 @@ namespace Konata.Library.IO
 
         public void PutSbyte(sbyte value)
         {
-            WriteBytes(ByteConverter.Int8ToBytes(value));
+            WriteData(ByteConverter.Int8ToBytes(value));
         }
 
         public void PutByte(byte value)
         {
-            WriteBytes(ByteConverter.UInt8ToBytes(value));
+            WriteData(ByteConverter.UInt8ToBytes(value));
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutShortBE(short value)
         {
-            WriteBytes(ByteConverter.Int16ToBytesBE(value));
+            WriteData(ByteConverter.Int16ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutShortLE(short value)
         {
-            WriteBytes(ByteConverter.Int16ToBytesLE(value));
+            WriteData(ByteConverter.Int16ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutShort(short value, Endian endian)
         {
-            WriteBytes(ByteConverter.Int16ToBytes(value, endian));
+            WriteData(ByteConverter.Int16ToBytes(value, endian));
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUshortBE(ushort value)
         {
-            WriteBytes(ByteConverter.UInt16ToBytesBE(value));
+            WriteData(ByteConverter.UInt16ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUshortLE(ushort value)
         {
-            WriteBytes(ByteConverter.UInt16ToBytesLE(value));
+            WriteData(ByteConverter.UInt16ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutUshort(ushort value, Endian endian)
         {
-            WriteBytes(ByteConverter.UInt16ToBytes(value, endian));
+            WriteData(ByteConverter.UInt16ToBytes(value, endian));
         }
 
         /// <summary>
@@ -113,7 +115,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutIntBE(int value)
         {
-            WriteBytes(ByteConverter.Int32ToBytesBE(value));
+            WriteData(ByteConverter.Int32ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutIntLE(int value)
         {
-            WriteBytes(ByteConverter.Int32ToBytesLE(value));
+            WriteData(ByteConverter.Int32ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -132,7 +134,7 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutInt(int value, Endian endian)
         {
-            WriteBytes(ByteConverter.Int32ToBytes(value, endian));
+            WriteData(ByteConverter.Int32ToBytes(value, endian));
         }
 
         /// <summary>
@@ -141,7 +143,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUintBE(uint value)
         {
-            WriteBytes(ByteConverter.UInt32ToBytesBE(value));
+            WriteData(ByteConverter.UInt32ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUintLE(uint value)
         {
-            WriteBytes(ByteConverter.UInt32ToBytesLE(value));
+            WriteData(ByteConverter.UInt32ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -160,7 +162,7 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutUint(uint value, Endian endian)
         {
-            WriteBytes(ByteConverter.UInt32ToBytes(value, endian));
+            WriteData(ByteConverter.UInt32ToBytes(value, endian));
         }
 
         /// <summary>
@@ -169,7 +171,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutLongBE(long value)
         {
-            WriteBytes(ByteConverter.Int64ToBytesBE(value));
+            WriteData(ByteConverter.Int64ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -178,7 +180,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutLongLE(long value)
         {
-            WriteBytes(ByteConverter.Int64ToBytesLE(value));
+            WriteData(ByteConverter.Int64ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -188,7 +190,7 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutLong(long value, Endian endian)
         {
-            WriteBytes(ByteConverter.Int64ToBytes(value, endian));
+            WriteData(ByteConverter.Int64ToBytes(value, endian));
         }
 
         /// <summary>
@@ -197,7 +199,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUlongBE(ulong value)
         {
-            WriteBytes(ByteConverter.UInt64ToBytesBE(value));
+            WriteData(ByteConverter.UInt64ToBytes(value, Endian.Big));
         }
 
         /// <summary>
@@ -206,7 +208,7 @@ namespace Konata.Library.IO
         /// <param name="value">值</param>
         public void PutUlongLE(ulong value)
         {
-            WriteBytes(ByteConverter.UInt64ToBytesLE(value));
+            WriteData(ByteConverter.UInt64ToBytes(value, Endian.Little));
         }
 
         /// <summary>
@@ -216,7 +218,63 @@ namespace Konata.Library.IO
         /// <param name="endian">字节序</param>
         public void PutUlong(ulong value, Endian endian)
         {
-            WriteBytes(ByteConverter.UInt64ToBytes(value, endian));
+            WriteData(ByteConverter.UInt64ToBytes(value, endian));
+        }
+
+        /// <summary>
+        /// 以 Big Endian 字节序, 放入 float 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutFloatBE(float value)
+        {
+            WriteData(ByteConverter.SingleToBytes(value, Endian.Big));
+        }
+
+        /// <summary>
+        /// 以 Little Endian 字节序, 放入 float 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutFloatLE(float value)
+        {
+            WriteData(ByteConverter.SingleToBytes(value, Endian.Little));
+        }
+
+        /// <summary>
+        /// 放入 float 
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="endian">字节序</param>
+        public void PutFloat(float value, Endian endian)
+        {
+            WriteData(ByteConverter.SingleToBytes(value, endian));
+        }
+
+        /// <summary>
+        /// 以 Big Endian 字节序, 放入 double 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutDoubleBE(double value)
+        {
+            WriteData(ByteConverter.DoubleToBytes(value, Endian.Big));
+        }
+
+        /// <summary>
+        /// 以 Little Endian 字节序, 放入 double 
+        /// </summary>
+        /// <param name="value">值</param>
+        public void PutDoubleLE(double value)
+        {
+            WriteData(ByteConverter.DoubleToBytes(value, Endian.Little));
+        }
+
+        /// <summary>
+        /// 放入 double 
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="endian">字节序</param>
+        public void PutDouble(double value, Endian endian)
+        {
+            WriteData(ByteConverter.DoubleToBytes(value, endian));
         }
 
         /// <summary>
@@ -226,7 +284,7 @@ namespace Konata.Library.IO
         /// <param name="length">占用长度</param>
         public void PutBoolBE(bool value, byte length)
         {
-            WriteBytes(ByteConverter.BoolToBytesBE(value, length));
+            WriteData(ByteConverter.BoolToBytes(value, length, Endian.Big));
         }
 
         /// <summary>
@@ -236,12 +294,17 @@ namespace Konata.Library.IO
         /// <param name="length">占用长度</param>
         public void PutBoolLE(bool value, byte length)
         {
-            WriteBytes(ByteConverter.BoolToBytesLE(value, length));
+            WriteData(ByteConverter.BoolToBytes(value, length, Endian.Little));
         }
 
+        /// <summary>
+        /// 放入 bool 
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="endian">字节序</param>
         public void PutBool(bool value, byte length, Endian endian)
         {
-            WriteBytes(ByteConverter.BoolToBytes(value, length, endian));
+            WriteData(ByteConverter.BoolToBytes(value, length, endian));
         }
 
         public void PutString(string value, byte prefixLength = 0, byte limitedLength = 0)
@@ -269,7 +332,7 @@ namespace Konata.Library.IO
             }
             else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
             {
-                WriteBytes(value);
+                WriteData(value);
                 return;
             }
             if (prefix) // 添加前缀，使用大端序
@@ -279,210 +342,221 @@ namespace Konata.Library.IO
                     throw new IOException("Given prefix length is too small for value bytes."); // 给定的prefixLength不够填充value.Length，终止写入
                 }
             }
-            WriteBytes(array);
+            WriteData(array);
         }
-
-        private uint _pos;
         #endregion
 
         #region TakeMethods 拿走數據 此方法組會縮短緩衝區
-        public long TakeSigned(out long value, uint length, Endian endian = Endian.Big)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToInt(_buffer, _pos, length, endian);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
-
-        public long TakeSignedBE(out long value, uint length)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToIntBE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
-
-        public long TakeSignedLE(out long value, uint length)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToIntLE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
-
-        public ulong TakeUnsigned(out ulong value, uint length, Endian endian = Endian.Big)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToUInt(_buffer, _pos, length, endian);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
-
-        public ulong TakeUnsignedBE(out ulong value, uint length)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToUIntBE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
-
-        public ulong TakeUnsignedLE(out ulong value, uint length)
-        {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToUIntLE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
-        }
 
         public sbyte TakeSbyte(out sbyte value)
         {
-            return value = (sbyte)TakeSigned(out long _, 1);
+            if (CheckAvailable(1))
+            {
+                value = ByteConverter.BytesToInt8(_buffer, _rPos);
+                ++_rPos;
+                return value;
+            }
+            throw _exEob;
         }
 
         public byte TakeByte(out byte value)
         {
-            return value = (byte)TakeUnsigned(out ulong _, 1);
+            if (CheckAvailable(1))
+            {
+                value = ByteConverter.BytesToUInt8(_buffer, _rPos);
+                ++_rPos;
+                return value;
+            }
+            throw _exEob;
         }
 
         public short TakeShortBE(out short value)
         {
-            return value = (short)TakeSignedBE(out long _, 2);
+            return TakeShort(out value, Endian.Big);
         }
 
         public short TakeShortLE(out short value)
         {
-            return value = (short)TakeSignedLE(out long _, 2);
+            return TakeShort(out value, Endian.Little);
         }
 
         public short TakeShort(out short value, Endian endian)
         {
-            return value = (short)TakeSigned(out long _, 2, endian);
+            if (CheckAvailable(2))
+            {
+                value = ByteConverter.BytesToInt16(_buffer, _rPos, endian);
+                _rPos += 2;
+                return value;
+            }
+            throw _exEob;
         }
 
         public ushort TakeUshortBE(out ushort value)
         {
-            return value = (ushort)TakeUnsignedBE(out ulong _, 2);
+            return TakeUshort(out value, Endian.Big);
         }
 
         public ushort TakeUshortLE(out ushort value)
         {
-            return value = (ushort)TakeUnsignedLE(out ulong _, 2);
+            return TakeUshort(out value, Endian.Big);
         }
 
         public ushort TakeUshort(out ushort value, Endian endian)
         {
-            return value = (ushort)TakeUnsigned(out ulong _, 2, endian);
+            if (CheckAvailable(2))
+            {
+                value = ByteConverter.BytesToUInt16(_buffer, _rPos, endian);
+                _rPos += 2;
+                return value;
+            }
+            throw _exEob;
         }
 
         public int TakeIntBE(out int value)
         {
-            return value = (int)TakeSignedBE(out long _, 4);
+            return TakeInt(out value, Endian.Big);
         }
 
         public int TakeIntLE(out int value)
         {
-            return value = (int)TakeSignedLE(out long _, 4);
+            return TakeInt(out value, Endian.Little);
         }
 
         public int TakeInt(out int value, Endian endian)
         {
-            return value = (int)TakeSigned(out long _, 4, endian);
+            if (CheckAvailable(4))
+            {
+                value = ByteConverter.BytesToInt32(_buffer, _rPos, endian);
+                _rPos += 4;
+                return value;
+            }
+            throw _exEob;
         }
 
         public uint TakeUintBE(out uint value)
         {
-            return value = (uint)TakeUnsignedBE(out ulong _, 4);
+            return TakeUint(out value, Endian.Big);
         }
 
         public uint TakeUintLE(out uint value)
         {
-            return value = (uint)TakeUnsignedLE(out ulong _, 4);
+            return TakeUint(out value, Endian.Little);
         }
 
         public uint TakeUint(out uint value, Endian endian)
         {
-            return value = (uint)TakeUnsigned(out ulong _, 4, endian);
+            if (CheckAvailable(4))
+            {
+                value = ByteConverter.BytesToUInt32(_buffer, _rPos, endian);
+                _rPos += 4;
+                return value;
+            }
+            throw _exEob;
         }
 
         public long TakeLongBE(out long value)
         {
-            return value = TakeSignedBE(out long _, 8);
+            return TakeLong(out value, Endian.Big);
         }
 
         public long TakeLongLE(out long value)
         {
-            return value = TakeSignedLE(out long _, 8);
+            return TakeLong(out value, Endian.Little);
         }
 
         public long TakeLong(out long value, Endian endian)
         {
-            return value = TakeSigned(out long _, 8, endian);
+            if (CheckAvailable(8))
+            {
+                value = ByteConverter.BytesToInt64(_buffer, _rPos, endian);
+                _rPos += 8;
+                return value;
+            }
+            throw _exEob;
         }
 
         public ulong TakeUlongBE(out ulong value)
         {
-            return value = TakeUnsignedBE(out ulong _, 8);
+            return TakeUlong(out value, Endian.Big);
         }
 
         public ulong TakeUlongLE(out ulong value)
         {
-            return value = TakeUnsignedLE(out ulong _, 8);
+            return TakeUlong(out value, Endian.Little);
         }
 
         public ulong TakeUlong(out ulong value, Endian endian)
         {
-            return value = TakeUnsigned(out ulong _, 8, endian);
+            if (CheckAvailable(8))
+            {
+                value = ByteConverter.BytesToUInt64(_buffer, _rPos, endian);
+                _rPos += 8;
+                return value;
+            }
+            throw _exEob;
+        }
+
+        public float TakeFloatBE(out float value)
+        {
+            return TakeFloat(out value, Endian.Big);
+        }
+
+        public float TakeFloatLE(out float value)
+        {
+            return TakeFloat(out value, Endian.Little);
+        }
+
+        public float TakeFloat(out float value, Endian endian)
+        {
+            if (CheckAvailable(4))
+            {
+                value = ByteConverter.BytesToSingle(_buffer, _rPos, endian);
+                _rPos += 4;
+                return value;
+            }
+            throw _exEob;
+        }
+
+        public double TakeDoubleBE(out double value)
+        {
+            return TakeDouble(out value, Endian.Big);
+        }
+
+        public double TakeDoubleLE(out double value)
+        {
+            return TakeDouble(out value, Endian.Little);
+        }
+
+        public double TakeDouble(out double value, Endian endian)
+        {
+            if (CheckAvailable(8))
+            {
+                value = ByteConverter.BytesToDouble(_buffer, _rPos, endian);
+                _rPos += 8;
+                return value;
+            }
+            throw _exEob;
         }
 
         public bool TakeBoolBE(out bool value, byte length)
         {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToBoolBE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
+            return TakeBool(out value, length, Endian.Big);
         }
 
         public bool TakeBoolLE(out bool value, byte length)
         {
-            if (CheckAvailable(length))
-            {
-                value = ByteConverter.BytesToBoolLE(_buffer, _pos, length);
-                _pos += length;
-                return value;
-            }
-            throw _bufferErr;
+            return TakeBool(out value, length, Endian.Little);
         }
 
         public bool TakeBool(out bool value, byte length, Endian endian)
         {
             if (CheckAvailable(length))
             {
-                value = ByteConverter.BytesToBool(_buffer, _pos, length, endian);
-                _pos += length;
+                value = ByteConverter.BytesToBool(_buffer, _rPos, length, endian);
+                _rPos += length;
                 return value;
             }
-            throw _bufferErr;
+            throw _exEob;
         }
 
         public string TakeString(out string value, Prefix prefixFlag)
@@ -497,38 +571,40 @@ namespace Konata.Library.IO
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-                case 0: // Read to end.
-                    length = _length - _pos;
-                    break;
-                case 1:
-                case 2:
-                case 4:
-                    if (CheckAvailable(preLen))
+            case 0: // Read to end.
+                length = _length - _rPos;
+                break;
+            case 1:
+            case 2:
+            case 4:
+                if (CheckAvailable(preLen))
+                {
+                    length = preLen == 1 ? ByteConverter.BytesToUInt8(_buffer, _rPos) :
+                             preLen == 2 ? ByteConverter.BytesToUInt16(_buffer, _rPos, Endian.Big) :
+                                           ByteConverter.BytesToUInt32(_buffer, _rPos, Endian.Big);
+                    _rPos += preLen;
+                    if (reduce)
                     {
-                        length = (uint)ByteConverter.BytesToUIntBE(_buffer, _pos, preLen);
-                        _pos += preLen;
-                        if (reduce)
+                        if (length < preLen)
                         {
-                            if (length < preLen)
-                            {
-                                throw new IOException("Data length is less than prefix length.");
-                            }
-                            length -= preLen;
+                            throw new IOException("Data length is less than prefix length.");
                         }
-                        break;
+                        length -= preLen;
                     }
-                    throw _bufferErr;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                    break;
+                }
+                throw _exEob;
+            default:
+                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
             if (CheckAvailable(length))
             {
                 value = new byte[length];
-                Buffer.BlockCopy(_buffer, (int)_pos, value, 0, (int)length);
-                _pos += length;
+                Buffer.BlockCopy(_buffer, (int)_rPos, value, 0, (int)length);
+                _rPos += length;
                 return value;
             }
-            throw _bufferErr;
+            throw _exEob;
         }
 
         public byte[] TakeBytes(out byte[] value, uint length)
@@ -536,18 +612,18 @@ namespace Konata.Library.IO
             if (CheckAvailable(length))
             {
                 value = new byte[length];
-                Buffer.BlockCopy(_buffer, (int)_pos, value, 0, (int)length);
-                _pos += length;
+                Buffer.BlockCopy(_buffer, (int)_rPos, value, 0, (int)length);
+                _rPos += length;
                 return value;
             }
-            throw _bufferErr;
+            throw _exEob;
         }
 
         public byte[] TakeAllBytes(out byte[] value)
         {
-            value = new byte[_length - _pos];
-            Buffer.BlockCopy(_buffer, (int)_pos, value, 0, value.Length);
-            _pos = _length;
+            value = new byte[_length - _rPos];
+            Buffer.BlockCopy(_buffer, (int)_rPos, value, 0, value.Length);
+            _rPos = _length;
             return value;
         }
 
@@ -557,7 +633,7 @@ namespace Konata.Library.IO
         /// <param name="length"></param>
         public void EatBytes(uint length)
         {
-            _pos += length;
+            _rPos += length;
         }
 
         #endregion
@@ -588,45 +664,88 @@ namespace Konata.Library.IO
 
         public uint RemainLength
         {
-            get { return _length - _pos; }
+            get { return _length - _rPos; }
+        }
+
+        public static uint MinBufferBase
+        {
+            get
+            {
+                return (uint)_minBufBase;
+            }
+            set
+            {
+                if (value > 30)
+                {
+                    throw new IOException("Minimum buffer base out of range: 0 <= MinBufferBase <= 30.");
+                }
+                _minBufBase = (int)value;
+                _minBufSize = 1U << _minBufBase;
+            }
+        }
+
+        public static uint MinBufferSize
+        {
+            get
+            {
+                return _minBufSize;
+            }
+            set
+            {
+                if (value == 0 || value > 0x40000000)
+                {
+                    throw new IOException("Minimum buffer size out of range: 0 < MinBufferSize <= 0x40000000.");
+                }
+                int b = 0;
+                uint s = 1;
+                while (s < value)
+                {
+                    ++b;
+                    s <<= 1;
+                }
+                _minBufBase = b;
+                _minBufSize = s;
+            }
+        }
+
+        private void ExtendBufferSize(uint minLength)
+        {
+            uint size = minLength >> _minBufBase;
+            if ((minLength & (_minBufSize - 1)) > 0)
+            {
+                ++size;
+            }
+            size <<= _minBufBase;
+            if (_buffer == null)
+            {
+                _buffer = new byte[size];
+            }
+            else if (_buffer.Length < size)
+            {
+                Array.Resize(ref _buffer, (int)size);
+            }
+            if (_length < minLength)
+            {
+                _length = minLength;
+            }
         }
 
         /// <summary>
         /// 寫入數據
         /// </summary>
         /// <param name="data">數據</param>
-        public void WriteBytes(byte[] data)
+        protected void WriteData(byte[] data)
         {
-            // 分配新的空間
-            uint targetLength = _length + (uint)data.Length;
-            uint len = targetLength >> 10;
-            if ((targetLength & 1023) > 0)
-            {
-                ++len;
-            }
-            len <<= 10;
-            if (_buffer == null)
-            {
-                _buffer = new byte[len];
-            }
-            else if (_buffer.Length < targetLength)
-            {
-                Array.Resize(ref _buffer, (int)len);
-            }
-
-            // 寫入數據
-            Buffer.BlockCopy(data, 0, _buffer, (int)_length, data.Length);
-
-            // 更新長度
-            _length = targetLength;
+            ExtendBufferSize(_wPos + (uint)data.Length);
+            Buffer.BlockCopy(data, 0, _buffer, (int)_wPos, data.Length);
         }
 
-        public bool CheckAvailable(uint length = 0)
+        protected bool CheckAvailable(uint length = 0)
         {
-            return _pos + length <= _length;
+            return _rPos + length <= _length;
         }
 
-        public static bool InsertPrefix(byte[] array, uint value, uint size, uint offset = 0, Endian endian = Endian.Big)
+        protected static bool InsertPrefix(byte[] array, uint value, uint size, uint offset = 0, Endian endian = Endian.Big)
         {
             uint minLen = 0; // 表示value需要最少多少字节
             uint valLen = value; // 计算value各字节数值的临时变量
@@ -663,26 +782,26 @@ namespace Konata.Library.IO
 
         public static ByteBuffer operator +(ByteBuffer a, ByteBuffer b)
         {
-            var packet = new ByteBuffer();
-            packet.PutBytes(a.GetBytes());
-            packet.PutBytes(b.GetBytes());
-            return packet;
+            var buffer = new ByteBuffer();
+            buffer.PutBytes(a.GetBytes());
+            buffer.PutBytes(b.GetBytes());
+            return buffer;
         }
 
         public static ByteBuffer operator +(byte[] a, ByteBuffer b)
         {
-            var packet = new ByteBuffer();
-            packet.PutBytes(a);
-            packet.PutBytes(b.GetBytes());
-            return packet;
+            var buffer = new ByteBuffer();
+            buffer.PutBytes(a);
+            buffer.PutBytes(b.GetBytes());
+            return buffer;
         }
 
         public static ByteBuffer operator +(ByteBuffer a, byte[] b)
         {
-            var packet = new ByteBuffer();
-            packet.PutBytes(a.GetBytes());
-            packet.PutBytes(b);
-            return packet;
+            var buffer = new ByteBuffer();
+            buffer.PutBytes(a.GetBytes());
+            buffer.PutBytes(b);
+            return buffer;
         }
 
         #endregion
