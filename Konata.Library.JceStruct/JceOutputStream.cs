@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Konata.Msf;
+using System.Collections.Generic;
+using Konata.Library.IO;
 
-namespace Konata.Utils.Jce
+namespace Konata.Library.JceStruct
 {
-    public class JceOutputStream : Packet
+    public class JceOutputStream : ByteBuffer
     {
         public JceOutputStream()
             : base()
@@ -140,9 +140,9 @@ namespace Konata.Utils.Jce
             {
                 Write((byte[])value, index);
             }
-            else if (value is Packet)
+            else if (value is ByteBuffer)
             {
-                Write(((Packet)value).GetBytes(), index);
+                Write(((ByteBuffer)value).GetBytes(), index);
             }
             else
             {
@@ -160,21 +160,9 @@ namespace Konata.Utils.Jce
             PutJceTypeHeader(JceType.StructEnd, 1);
         }
 
-        //public void PutJceMap()
-        //{
-
-        //}
-
-        //public void PutJceList()
-        //{
-
-        //}
-
-
         private void PutJceZeroTag(byte index)
         {
             PutJceTypeHeader(JceType.ZeroTag, index);
         }
-
     }
 }

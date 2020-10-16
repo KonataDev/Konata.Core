@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils.Jce
+namespace Konata.Library.JceStruct
 {
     public enum JceType : byte
     {
@@ -18,10 +18,5 @@ namespace Konata.Utils.Jce
         StructEnd = 11,
         ZeroTag = 12,
         SimpleList = 13
-    }
-
-    class JceStruct
-    {
-
     }
 }

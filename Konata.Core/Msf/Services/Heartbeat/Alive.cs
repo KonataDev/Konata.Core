@@ -13,16 +13,28 @@ namespace Konata.Msf.Services.Heartbeat
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {
-            switch (method)
-            {
-                default: return false;
-            }
+            if (method != "")
+                throw new Exception("???");
+
+            return Request_Heartbeat(core);
         }
 
         protected override bool OnHandle(Core core, params object[] args)
         {
-            if (args == null || args.Length == 0)
-                return false;
+            return Handle_Heartbeat(core);
+        }
+
+        private bool Handle_Heartbeat(Core core)
+        {
+            // TODO: refresh heartbeat timer or task
+            return true;
+        }
+
+        private bool Request_Heartbeat(Core core)
+        {
+            var request = new Packet();
+            var sequence = core._ssoMan.GetNewSequence();
+            core._ssoMan.PostMessage(this, request, sequence);
 
             return false;
         }

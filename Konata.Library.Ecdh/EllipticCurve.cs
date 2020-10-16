@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 
-namespace ECDHAlgorithm
+namespace Konata.Library.Ecdh.ECDHAlgorithm
 {
     using bint = BigInteger;
 
-    internal struct EllipticCurve
+    public struct EllipticCurve
     {
         public static readonly EllipticCurve SecP192k1 = new EllipticCurve(
             new bint(new byte[] {

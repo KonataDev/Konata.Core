@@ -36,6 +36,8 @@ namespace Konata.Test
                         Console.WriteLine(testExpection.Message);
                         Console.WriteLine(testExpection.StackTrace);
                     }
+
+                    Console.WriteLine();
                 }
             }
             Console.ReadKey();
@@ -45,7 +47,7 @@ namespace Konata.Test
         {
             return AppDomain.CurrentDomain.GetAssemblies()
                        .SelectMany(t => t.GetTypes())
-                       .Where(t => t.IsClass && t.Namespace == "Konata.Test.Tests");
+                       .Where(t => t.IsClass && (t.FullName.IndexOf("<>") == -1) && t.Namespace == "Konata.Test.Tests");
         }
     }
 }

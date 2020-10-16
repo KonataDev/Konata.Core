@@ -1,45 +1,22 @@
-﻿using ProtoBuf;
+﻿using Konata.Library.Protobuf;
 
 namespace Konata.Msf.Packets.Protobuf
 {
-    [ProtoContract(SkipConstructor = true)]
-
-    public class DeviceReport
+    public class DeviceReport : ProtoTreeRoot
     {
-        [ProtoMember(1)]
-        public byte[] Bootloader { get; set; }
-
-
-        [ProtoMember(2)]
-        public byte[] Version { get; set; }
-
-
-        [ProtoMember(3)]
-        public byte[] CodeName { get; set; }
-
-
-        [ProtoMember(4)]
-        public byte[] Incremental { get; set; }
-
-
-        [ProtoMember(5)]
-        public byte[] Fingerprint { get; set; }
-
-
-        [ProtoMember(6)]
-        public byte[] BootId { get; set; }
-
-
-        [ProtoMember(7)]
-        public byte[] AndroidId { get; set; }
-
-
-        [ProtoMember(8)]
-        public byte[] BaseBand { get; set; }
-
-
-        [ProtoMember(9)]
-        public byte[] InnerVersion { get; set; }
-
+        public DeviceReport(string bootLoader, string version,
+            string codeName, string incremental, string fingerprint,
+            string bootId, string androidId, string baseBand, string innerVersion)
+        {
+            addLeaf("0A", bootLoader);
+            addLeaf("12", version);
+            addLeaf("1A", codeName);
+            addLeaf("22", incremental);
+            addLeaf("2A", fingerprint);
+            addLeaf("32", bootId);
+            addLeaf("3A", androidId);
+            addLeaf("42", baseBand);
+            addLeaf("4A", innerVersion);
+        }
     }
 }

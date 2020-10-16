@@ -2,14 +2,14 @@
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace ECDHAlgorithm
+namespace Konata.Library.Ecdh.ECDHAlgorithm
 {
     using bint = BigInteger;
 
     /// <summary>
     /// Reference: https://asecuritysite.com/encryption/ecdh3
     /// </summary>
-    internal class ECDiffieHellman
+    public class ECDiffieHellman
     {
         public EllipticCurve Curve { get; set; }
 

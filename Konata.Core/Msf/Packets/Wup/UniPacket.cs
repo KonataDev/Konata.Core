@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Konata.Utils.Jce;
+using Konata.Library.IO;
+using Konata.Library.JceStruct;
 
 namespace Konata.Msf.Packets.Wup
 {
@@ -37,7 +38,7 @@ namespace Konata.Msf.Packets.Wup
             Write(_packageRequestId, 4);
             Write(_packageServantName, 5);
             Write(_packageFuncName, 6);
-            Write((Packet)_packageBody, 7);
+            Write((ByteBuffer)_packageBody, 7);
             Write(_packageTimeout, 8);
             Write(_packageContext, 9);
             Write(_packageStatus, 10);

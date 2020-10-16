@@ -3,6 +3,7 @@ using System.Threading;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
 using System.Collections.Generic;
+using Konata.Library.IO;
 
 namespace Konata.Msf
 {
@@ -135,7 +136,7 @@ namespace Konata.Msf
         /// <param name="service">服務名</param>
         /// <param name="packet">請求數據</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, Packet packet)
+        internal uint PostMessage(Service service, ByteBuffer packet)
         {
             return PostMessage(service, packet, GetNewSequence());
         }
@@ -146,7 +147,7 @@ namespace Konata.Msf
         /// <param name="packet">請求數據</param>
         /// <param name="ssoSequence">SSO序列號</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, Packet packet, uint ssoSequence)
+        internal uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
         {
             var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
             var toService = new ToServiceMessage(10, _msfCore._uin, _d2Token, _d2Key, ssoMessage);
@@ -193,16 +194,28 @@ namespace Konata.Msf
         /// <param name="fromService"></param>
         internal void OnFromServiceMessage(FromServiceMessage fromService)
         {
-            var ssoMessage = new SsoMessage(fromService.TakeAllBytes(out byte[] _),
-                fromService._encryptType == 2 ?
-                _msfCore._keyRing._zeroKey : _d2Key);
-
-            Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
-            Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
-            Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
-
             try
             {
+                var ssoData = fromService.TakeAllBytes(out byte[] _);
+
+                SsoMessage ssoMessage = null;
+                switch (fromService._encryptType)
+                {
+                    case 0:
+                        ssoMessage = new SsoMessage(ssoData);
+                        break;
+                    case 1:
+                        ssoMessage = new SsoMessage(ssoData, _d2Key);
+                        break;
+                    case 2:
+                        ssoMessage = new SsoMessage(ssoData, _msfCore._keyRing._zeroKey);
+                        break;
+                }
+
+                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
+                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
+                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
+
                 Service.Handle(_msfCore, ssoMessage._header._ssoCommand, ssoMessage._packet);
             }
             catch (Exception e)

@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{47052D6B-7E37-4CD2-8658-102BEDCE394D}"
 	ProjectSection(ProjectDependencies) = postProject
+		{7784B744-3B0C-44B2-8CCA-02AD73A59932} = {7784B744-3B0C-44B2-8CCA-02AD73A59932}
 		{E9CBA664-3C6F-4E3D-B624-A8B295F9BB64} = {E9CBA664-3C6F-4E3D-B624-A8B295F9BB64}
+		{096C848E-E868-4C40-89FD-25D4DA781A4D} = {096C848E-E868-4C40-89FD-25D4DA781A4D}
+		{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F} = {B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}
+		{0DE72CE8-6E94-4404-A037-053B44CB9D2F} = {0DE72CE8-6E94-4404-A037-053B44CB9D2F}
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59} = {C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Console", "Konata.Console\Konata.Console.csproj", "{A70F3C28-12B7-4761-B09F-6C14BCA2CED2}"
@@ -16,6 +21,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Test", "Konata.Test\
 	ProjectSection(ProjectDependencies) = postProject
 		{47052D6B-7E37-4CD2-8658-102BEDCE394D} = {47052D6B-7E37-4CD2-8658-102BEDCE394D}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Library.IO", "Konata.Library.IO\Konata.Library.IO.csproj", "{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Library.JceStruct", "Konata.Library.JceStruct\Konata.Library.JceStruct.csproj", "{0DE72CE8-6E94-4404-A037-053B44CB9D2F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59} = {C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Library.Protobuf", "Konata.Library.Protobuf\Konata.Library.Protobuf.csproj", "{096C848E-E868-4C40-89FD-25D4DA781A4D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59} = {C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Library.TeaEncrypt", "Konata.Library.TeaEncrypt\Konata.Library.TeaEncrypt.csproj", "{7784B744-3B0C-44B2-8CCA-02AD73A59932}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Library.Ecdh", "Konata.Library.Ecdh\Konata.Library.Ecdh.csproj", "{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +60,26 @@ Global
 		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6A45776-F1DE-45D1-9AF4-051D9DDE109B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C20FA6F6-B931-4E81-92F7-DA3EF6C67D59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DE72CE8-6E94-4404-A037-053B44CB9D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DE72CE8-6E94-4404-A037-053B44CB9D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DE72CE8-6E94-4404-A037-053B44CB9D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DE72CE8-6E94-4404-A037-053B44CB9D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096C848E-E868-4C40-89FD-25D4DA781A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096C848E-E868-4C40-89FD-25D4DA781A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096C848E-E868-4C40-89FD-25D4DA781A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096C848E-E868-4C40-89FD-25D4DA781A4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7784B744-3B0C-44B2-8CCA-02AD73A59932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7784B744-3B0C-44B2-8CCA-02AD73A59932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7784B744-3B0C-44B2-8CCA-02AD73A59932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7784B744-3B0C-44B2-8CCA-02AD73A59932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B84755A0-A7E6-4D19-8EE9-8E46C2402E4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

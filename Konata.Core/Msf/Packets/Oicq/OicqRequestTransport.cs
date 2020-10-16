@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using Konata.Library.IO;
 using Konata.Msf.Crypto;
 using Konata.Msf.Utils.Crypt;
 

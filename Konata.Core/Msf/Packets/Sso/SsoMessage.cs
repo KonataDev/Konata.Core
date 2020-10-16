@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Library.IO;
 using Konata.Msf;
 using Konata.Msf.Utils.Crypt;
 
@@ -7,10 +8,10 @@ namespace Konata.Msf.Packets
     public class SsoMessage : Packet
     {
         public Header _header;
-        public Packet _packet;
+        public ByteBuffer _packet;
 
         public SsoMessage(uint seq, uint session, string command,
-            byte[] tgtToken, Packet packet)
+            byte[] tgtToken, ByteBuffer packet)
             : base()
         {
             _header = new Header(seq, session, command, tgtToken);
@@ -19,11 +20,18 @@ namespace Konata.Msf.Packets
             PutUintBE((uint)(_header.Length + 4));
             PutPacket(_header);
             PutUintBE((uint)(_packet.Length + 4));
-            PutPacket(_packet);
+            PutBytes(_packet.GetBytes());
         }
 
-        public SsoMessage(byte[] data, byte[] cryptKey) :
-            base(data, TeaCryptor.Instance, cryptKey)
+        public SsoMessage(byte[] data, byte[] cryptKey)
+            : base(data, TeaCryptor.Instance, cryptKey)
+        {
+            _header = new Header(GetBytes());
+            _packet = new Packet(_header.TakeAllBytes(out byte[] _));
+        }
+
+        public SsoMessage(byte[] data)
+            : base(data)
         {
             _header = new Header(GetBytes());
             _packet = new Packet(_header.TakeAllBytes(out byte[] _));

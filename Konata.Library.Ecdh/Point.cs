@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Numerics;
 
-namespace ECDHAlgorithm
+namespace Konata.Library.Ecdh.ECDHAlgorithm
 {
     using bint = BigInteger;
 
-    internal struct Point
+    public struct Point
     {
         public bint X { get; set; }
 

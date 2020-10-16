@@ -1,4 +1,5 @@
-﻿using Konata.Msf.Utils.Crypt;
+﻿using Konata.Library.IO;
+using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Tlv
 {
