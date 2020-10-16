@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Packets.Protobuf
 {
-    public class DeviceReport : ProtoNode
+    public class DeviceReport : ProtoTreeRoot
     {
         public DeviceReport(string bootLoader, string version,
             string codeName, string incremental, string fingerprint,
