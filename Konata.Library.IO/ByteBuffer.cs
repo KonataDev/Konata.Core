@@ -571,31 +571,31 @@ namespace Konata.Library.IO
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-            case 0: // Read to end.
-                length = _length - _rPos;
-                break;
-            case 1:
-            case 2:
-            case 4:
-                if (CheckAvailable(preLen))
-                {
-                    length = preLen == 1 ? ByteConverter.BytesToUInt8(_buffer, _rPos) :
-                             preLen == 2 ? ByteConverter.BytesToUInt16(_buffer, _rPos, Endian.Big) :
-                                           ByteConverter.BytesToUInt32(_buffer, _rPos, Endian.Big);
-                    _rPos += preLen;
-                    if (reduce)
-                    {
-                        if (length < preLen)
-                        {
-                            throw new IOException("Data length is less than prefix length.");
-                        }
-                        length -= preLen;
-                    }
+                case 0: // Read to end.
+                    length = _length - _rPos;
                     break;
-                }
-                throw _exEob;
-            default:
-                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                case 1:
+                case 2:
+                case 4:
+                    if (CheckAvailable(preLen))
+                    {
+                        length = preLen == 1 ? ByteConverter.BytesToUInt8(_buffer, _rPos) :
+                                 preLen == 2 ? ByteConverter.BytesToUInt16(_buffer, _rPos, Endian.Big) :
+                                               ByteConverter.BytesToUInt32(_buffer, _rPos, Endian.Big);
+                        _rPos += preLen;
+                        if (reduce)
+                        {
+                            if (length < preLen)
+                            {
+                                throw new IOException("Data length is less than prefix length.");
+                            }
+                            length -= preLen;
+                        }
+                        break;
+                    }
+                    throw _exEob;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
             if (CheckAvailable(length))
             {
@@ -738,6 +738,8 @@ namespace Konata.Library.IO
         {
             ExtendBufferSize(_wPos + (uint)data.Length);
             Buffer.BlockCopy(data, 0, _buffer, (int)_wPos, data.Length);
+
+            _wPos += (uint)data.Length;
         }
 
         protected bool CheckAvailable(uint length = 0)
