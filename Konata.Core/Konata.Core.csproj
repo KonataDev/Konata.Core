@@ -110,7 +110,7 @@
     <Compile Include="Msf\Packets\Tlv\TlvUnpacker.cs" />
     <Compile Include="Msf\Packets\Wup\UniPacket.cs" />
     <Compile Include="Msf\Service.cs" />
-    <Compile Include="Msf\Packets\Proto\DeviceReport.cs" />
+    <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Msf\Packets\Tlv\T1.cs" />
     <Compile Include="Msf\Packets\Tlv\T100.cs" />
     <Compile Include="Msf\Packets\Tlv\T104.cs" />
