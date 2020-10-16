@@ -45,7 +45,7 @@ namespace Konata.Msf
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
         {
-            WriteBytes(cryptor.Encrypt(value, cryptKey));
+            WriteData(cryptor.Encrypt(value, cryptKey));
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey,
