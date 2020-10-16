@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using Konata.Utils.Jce;
+using Konata.Library.JceStruct;
 
 namespace Konata.Msf.Packets.Svc
 {

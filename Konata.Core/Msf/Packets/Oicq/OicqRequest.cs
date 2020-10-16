@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Library.IO;
 using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Oicq

@@ -3,6 +3,7 @@ using System.IO;
 using Konata.Utils;
 using Konata.Library.IO;
 using Konata.Msf.Utils.Crypt;
+using Konata.Library.Protobuf;
 
 namespace Konata.Msf
 {
@@ -78,6 +79,15 @@ namespace Konata.Msf
         public void PutTlv(Packet value)
         {
             PutBytes(value.GetBytes());
+        }
+
+        /// <summary>
+        /// 放入 ProtoNode
+        /// </summary>
+        /// <param name="value"></param>
+        public void PutProtoNode(ProtoNode value)
+        {
+            PutBytes(ProtoWriter.Serialize(value));
         }
 
         private uint _pos;

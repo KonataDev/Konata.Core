@@ -3,7 +3,6 @@ using System.Text;
 using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Tlv;
 using Konata.Msf.Packets.Protobuf;
-using ProtoBuf;
 
 namespace Konata.Msf.Packets.Oicq
 {
@@ -28,20 +27,16 @@ namespace Konata.Msf.Packets.Oicq
                 : base()
             {
                 // 設備訊息上報
-                var deviceReport = new DeviceReport
-                {
-                    Bootloader = Encoding.UTF8.GetBytes(DeviceInfo.Build.Bootloader),
-                    Version = new byte[0], // Encoding.UTF8.GetBytes(DeviceInfo.System.OsVersion),
-                    CodeName = Encoding.UTF8.GetBytes(DeviceInfo.Build.CodeName),
-                    Incremental = Encoding.UTF8.GetBytes(DeviceInfo.Build.Incremental),
-                    Fingerprint = Encoding.UTF8.GetBytes(DeviceInfo.Build.Fingerprint),
-                    BootId = new byte[0], // Encoding.UTF8.GetBytes(DeviceInfo.BootId),
-                    AndroidId = Encoding.UTF8.GetBytes(DeviceInfo.System.AndroidId),
-                    BaseBand = Encoding.UTF8.GetBytes(DeviceInfo.Build.BaseBand),
-                    InnerVersion = Encoding.UTF8.GetBytes(DeviceInfo.Build.InnerVersion)
-                };
-                MemoryStream reportData = new MemoryStream();
-                Serializer.Serialize(reportData, deviceReport);
+                var report = new DeviceReport (
+                    DeviceInfo.Build.Bootloader,
+                    DeviceInfo.System.OsVersion,
+                    DeviceInfo.Build.CodeName,
+                    DeviceInfo.Build.Incremental,
+                    DeviceInfo.Build.Fingerprint,
+                    DeviceInfo.BootId,
+                    DeviceInfo.System.AndroidId,
+                    DeviceInfo.Build.BaseBand,
+                    DeviceInfo.Build.InnerVersion);
 
                 // 構建 tlv
                 TlvPacker tlvs = new TlvPacker();
@@ -62,7 +57,7 @@ namespace Konata.Msf.Packets.Oicq
                     tlvs.PutTlv(new Tlv(0x0142, new T142Body(AppInfo.apkPackageName)));
 
                     tlvs.PutTlv(new Tlv(0x0144, new T144Body(DeviceInfo.System.AndroidId,
-                        reportData.ToArray(), DeviceInfo.System.Os, DeviceInfo.System.OsVersion,
+                        report, DeviceInfo.System.Os, DeviceInfo.System.OsVersion,
                         DeviceInfo.Network.Type, DeviceInfo.Network.Mobile.OperatorName,
                         DeviceInfo.Network.Wifi.ApnName, true, true, false,
                         DeviceInfo.Guid, 285212672, DeviceInfo.System.ModelName,

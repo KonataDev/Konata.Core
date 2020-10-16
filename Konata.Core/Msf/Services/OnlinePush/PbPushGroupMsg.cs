@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using Konata.Msf.Packets.Proto;
-using ProtoBuf;
 
 namespace Konata.Msf.Services.OnlinePush
 {
@@ -30,11 +28,6 @@ namespace Konata.Msf.Services.OnlinePush
 
         private bool Handle_PbPushGroupMsg(Core core, byte[] pbData)
         {
-            var pbStream = new MemoryStream(pbData);
-            {
-
-            }
-            pbStream.Close();
 
             return true;
         }
