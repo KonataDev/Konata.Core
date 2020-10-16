@@ -11,7 +11,7 @@ namespace Konata.Test
 
         public void Print(params string[] args)
         {
-            Console.WriteLine($"         {string.Join(" ", args)}");
+            Console.WriteLine($"[ .... ] {string.Join(" ", args)}");
         }
 
         public void Print(byte[] arg)
