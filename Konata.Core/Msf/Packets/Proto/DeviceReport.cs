@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace Konata.Msf.Packets.Protobuf
+namespace Konata.Msf.Packets.Proto
 {
     [ProtoContract(SkipConstructor = true)]
 
