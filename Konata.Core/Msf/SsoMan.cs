@@ -3,6 +3,7 @@ using System.Threading;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
 using System.Collections.Generic;
+using Konata.Library.IO;
 
 namespace Konata.Msf
 {
@@ -135,7 +136,7 @@ namespace Konata.Msf
         /// <param name="service">服務名</param>
         /// <param name="packet">請求數據</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, Packet packet)
+        internal uint PostMessage(Service service, ByteBuffer packet)
         {
             return PostMessage(service, packet, GetNewSequence());
         }
@@ -146,7 +147,7 @@ namespace Konata.Msf
         /// <param name="packet">請求數據</param>
         /// <param name="ssoSequence">SSO序列號</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, Packet packet, uint ssoSequence)
+        internal uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
         {
             var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
             var toService = new ToServiceMessage(10, _msfCore._uin, _d2Token, _d2Key, ssoMessage);
