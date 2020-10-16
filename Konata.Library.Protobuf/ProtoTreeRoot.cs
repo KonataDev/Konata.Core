@@ -16,6 +16,7 @@ namespace Konata.Library.Protobuf
     public class ProtoTreeRoot
     {
         internal ProtoLeaves _leaves;
+        public delegate void TreeRootWriter(ProtoTreeRoot tree);
 
         public ProtoTreeRoot()
         {
@@ -25,6 +26,15 @@ namespace Konata.Library.Protobuf
         public void addTree(string treePath, ProtoTreeRoot value)
         {
             addLeaf(treePath, ProtoSerializer.Serialize(value));
+        }
+
+        public void addTree(string treePath, TreeRootWriter writer)
+        {
+            var newTree = new ProtoTreeRoot();
+            {
+                writer(newTree);
+            }
+            addTree(treePath, newTree);
         }
 
         public void addLeaf(string leafPath, string value)
