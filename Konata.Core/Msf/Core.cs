@@ -24,7 +24,7 @@ namespace Konata.Msf
         internal Bot _bot;
         internal SsoMan _ssoMan;
         internal KeyRing _keyRing;
-        internal WtLoginSession _wtLogin;
+        internal UserSigInfo _wtLogin;
         internal OicqStatus _oicqStatus;
 
         public Core(Bot bot, uint uin, string password)
@@ -35,7 +35,7 @@ namespace Konata.Msf
             _bot = bot;
             _ssoMan = new SsoMan(this);
             _keyRing = new KeyRing(uin, password);
-            _wtLogin = new WtLoginSession();
+            _wtLogin = new UserSigInfo();
         }
 
         #region Core Methods

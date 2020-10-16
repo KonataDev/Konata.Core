@@ -39,12 +39,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
-    <Compile Include="Msf\Crypto\Ecdh\ECDiffieHellman.cs" />
-    <Compile Include="Msf\Crypto\Ecdh\EllipticCurve.cs" />
-    <Compile Include="Msf\Crypto\Ecdh\Point.cs" />
     <Compile Include="Msf\Crypto\KeyRing.cs" />
     <Compile Include="Msf\Event.cs" />
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
@@ -179,7 +177,7 @@
     <Compile Include="Msf\Utils\Crypt\Md5Cryptor.cs" />
     <Compile Include="Msf\Utils\Crypt\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
-    <Compile Include="Msf\WtLoginSession.cs" />
+    <Compile Include="Msf\UserSigInfo.cs" />
     <Compile Include="Utils\Guid.cs" />
     <Compile Include="Utils\Hex.cs" />
     <Compile Include="Msf\Packets\Tlv\TlvPacker.cs" />
@@ -188,10 +186,12 @@
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Msf\Crypto\Tea\" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\Konata.Library.Ecdh\Konata.Library.Ecdh.csproj">
+      <Project>{b84755a0-a7e6-4d19-8ee9-8e46c2402e4f}</Project>
+      <Name>Konata.Library.Ecdh</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Konata.Library.IO\Konata.Library.IO.csproj">
       <Project>{c20fa6f6-b931-4e81-92f7-da3ef6c67d59}</Project>
       <Name>Konata.Library.IO</Name>
@@ -203,6 +203,10 @@
     <ProjectReference Include="..\Konata.Library.Protobuf\Konata.Library.Protobuf.csproj">
       <Project>{096c848e-e868-4c40-89fd-25d4da781a4d}</Project>
       <Name>Konata.Library.Protobuf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konata.Library.TeaEncrypt\Konata.Library.TeaEncrypt.csproj">
+      <Project>{7784b744-3b0c-44b2-8cca-02ad73a59932}</Project>
+      <Name>Konata.Library.TeaEncrypt</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
