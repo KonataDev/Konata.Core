@@ -130,15 +130,6 @@ namespace Konata.Msf
             return cryptor.Encrypt(GetBytes(), cryptKey);
         }
 
-        /// <summary>
-        /// 到字符串
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return Hex.Bytes2HexStr(GetBytes());
-        }
-
         private uint _barExtLen;
         private uint _barPos;
         private uint _lenSize;

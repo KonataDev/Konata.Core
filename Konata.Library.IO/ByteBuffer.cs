@@ -655,6 +655,15 @@ namespace Konata.Library.IO
             return new byte[0];
         }
 
+        /// <summary>
+        /// 到字符串
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return BitConverter.ToString(GetBytes()).Replace("-", " ");
+        }
+
         #endregion
 
         public uint Length
