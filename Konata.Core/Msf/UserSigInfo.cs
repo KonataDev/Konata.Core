@@ -5,7 +5,7 @@ using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf
 {
-    class WtLoginSession
+    public class UserSigInfo
     {
         public byte[] _gSecret;
         public string _dPassword;
@@ -15,7 +15,7 @@ namespace Konata.Msf
 
         public string _sigSession;
 
-        public WtLoginSession()
+        public UserSigInfo()
         {
             _dPassword = MakeDpassword();
             _gSecret = MakeGSecret(DeviceInfo.System.Imei, _dPassword, null);
