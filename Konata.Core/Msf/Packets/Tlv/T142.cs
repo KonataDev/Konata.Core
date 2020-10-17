@@ -14,7 +14,7 @@ namespace Konata.Msf.Packets.Tlv
             _apkId = apkId;
 
             PutUshortBE(_version);
-            PutString(_apkId, 2, 32);
+            PutString(_apkId, Prefix.Uint16, 32);
         }
 
         public T142Body(byte[] data)

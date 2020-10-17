@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Tlv
                 foreach (string element in _domains)
                 {
                     PutByte(0x01);
-                    PutString(element, 2);
+                    PutString(element, Prefix.Uint16);
                 }
             }
         }

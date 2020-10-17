@@ -17,7 +17,7 @@ namespace Konata.Msf.Packets.Tlv
 
             PutBoolBE(_doFetch, 1);
             PutUintBE(_timeout);
-            PutBytes(_userData, 2);
+            PutBytes(_userData);
         }
 
         public T508Body(byte[] data)

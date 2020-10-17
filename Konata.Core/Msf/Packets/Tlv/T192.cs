@@ -11,7 +11,7 @@ namespace Konata.Msf.Packets.Tlv
         {
             _url = url;
 
-            PutString(_url, 2);
+            PutString(_url, Prefix.Uint16);
         }
 
         public T192Body(byte[] data)

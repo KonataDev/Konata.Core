@@ -17,7 +17,7 @@ namespace Konata.Msf.Packets.Tlv
 
             PutUshortBE(_face);
             PutByte(_age);
-            PutString(_nickName, 1);
+            PutString(_nickName, Prefix.Uint8);
         }
 
         public T11aBody(byte[] data)

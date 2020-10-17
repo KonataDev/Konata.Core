@@ -20,8 +20,8 @@ namespace Konata.Msf.Packets.Tlv
             _smsAvailableCount = smsAvailableCount;
             _smsTimeLimit = smsTimeLimit;
 
-            PutString(_countryCode, 2);
-            PutString(_phone, 2);
+            PutString(_countryCode, Prefix.Uint16);
+            PutString(_phone, Prefix.Uint16);
             PutUintBE(_smsCodeStatus);
             PutUshortBE(_smsAvailableCount);
             PutUshortBE(_smsTimeLimit);

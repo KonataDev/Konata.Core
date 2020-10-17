@@ -22,12 +22,12 @@ namespace Konata.Msf.Packets.Tlv
             _appVersion = appVersion;
             _appSignature = appSignature;
 
-            PutString(_appName, 2, 32);
+            PutString(_appName, Prefix.Uint16, 32);
             PutUintBE(_ssoVersion);
             PutUintBE(_appId);
             PutUintBE(_subAppId);
-            PutString(_appVersion, 2, 32);
-            PutString(_appSignature, 2, 32);
+            PutString(_appVersion, Prefix.Uint16, 32);
+            PutString(_appSignature, Prefix.Uint16, 32);
         }
 
         public T148Body(byte[] data)

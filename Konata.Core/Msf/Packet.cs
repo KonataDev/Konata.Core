@@ -37,10 +37,10 @@ namespace Konata.Msf
             _length = (uint)_buffer.Length;
         }
 
-        public void PutHexString(string value, byte prefixLength = 0, byte limitedLength = 0)
+        public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
             var data = Hex.HexStr2Bytes(value);
-            PutBytes(data, prefixLength, limitedLength);
+            PutBytes(data, prefixFlag, limitedLength);
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
@@ -49,9 +49,9 @@ namespace Konata.Msf
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey,
-            byte prefixLength = 0, byte limitedLength = 0)
+            Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
-            PutBytes(cryptor.Encrypt(value, cryptKey), prefixLength, limitedLength);
+            PutBytes(cryptor.Encrypt(value, cryptKey), prefixFlag, limitedLength);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Konata.Msf
 
         private uint _barExtLen;
         private uint _barPos;
-        private uint _lenSize;
+        private Prefix _prefix;
         private Endian _barLenEndian;
         private bool _barEnc = false;
         private byte[] _barEncBuffer;
@@ -143,20 +143,20 @@ namespace Konata.Msf
         /// <summary>
         /// [進入屏障] 在這之後透過 PutMethods 方法組放入的數據將被計算長度
         /// </summary>
-        /// <param name="lengthSize"></param>
+        /// <param name="prefixFlag"></param>
         /// <param name="endian"></param>
-        protected void EnterBarrier(uint lengthSize, Endian endian, uint extend = 0)
+        protected void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
         {
             _barExtLen = extend;
             _barPos = _length;
-            _lenSize = lengthSize;
+            _prefix = prefixFlag;
             _barLenEndian = endian;
-            PutBytes(new byte[lengthSize]);
+            PutEmpty((int)prefixFlag);
         }
 
-        protected void EnterBarrierEncrypted(uint lengthSize, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
+        protected void EnterBarrierEncrypted(Prefix prefixFlag, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
         {
-            EnterBarrier(lengthSize, endian, extend);
+            EnterBarrier(prefixFlag, endian, extend);
             _barEnc = true;
             _barEncBuffer = _buffer;
             _barEncLength = _length;
@@ -183,8 +183,8 @@ namespace Konata.Msf
                 _barEncCryptor = null;
                 _barEncKey = null;
             }
-            InsertPrefix(_buffer, _length + _barExtLen - _barPos - _lenSize,
-                _lenSize, _barPos, _barLenEndian);
+            InsertPrefix(_buffer, _barPos,
+                _length + _barExtLen - _barPos - (uint)_prefix, _prefix, _barLenEndian);
         }
     }
 }

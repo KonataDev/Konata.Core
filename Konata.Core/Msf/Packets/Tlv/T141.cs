@@ -18,9 +18,9 @@ namespace Konata.Msf.Packets.Tlv
             _apnName = apnName;
 
             PutUshortBE(_version);
-            PutString(_simOperatorName, 2);
+            PutString(_simOperatorName, Prefix.Uint16);
             PutUshortBE((ushort)_networkType);
-            PutString(_apnName, 2);
+            PutString(_apnName, Prefix.Uint16);
         }
 
         public T141Body(byte[] data)

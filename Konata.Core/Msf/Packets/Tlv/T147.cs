@@ -16,8 +16,8 @@ namespace Konata.Msf.Packets.Tlv
             _apkSignatureMd5 = apkSignatureMd5;
 
             PutUintBE(_appId);
-            PutString(_apkVersionName, 2, 32);
-            PutBytes(_apkSignatureMd5, 2, 32);
+            PutString(_apkVersionName, Prefix.Uint16, 32);
+            PutBytes(_apkSignatureMd5, Prefix.Uint16, 32);
         }
 
         public T147Body(byte[] data)

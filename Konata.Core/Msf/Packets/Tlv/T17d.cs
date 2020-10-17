@@ -20,9 +20,9 @@ namespace Konata.Msf.Packets.Tlv
             _mbGuideInfoMessage = mbGuideInfoMessage;
 
             PutUshortBE(_mbGuideType);
-            PutString(_mbGuideMessage, 2);
+            PutString(_mbGuideMessage, Prefix.Uint16);
             PutUshortBE(_mbGuideInfoType);
-            PutString(_mbGuideInfoMessage, 2);
+            PutString(_mbGuideInfoMessage, Prefix.Uint16);
         }
 
         public T17dBody(byte[] data)
