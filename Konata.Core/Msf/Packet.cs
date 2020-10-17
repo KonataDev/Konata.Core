@@ -87,7 +87,7 @@ namespace Konata.Msf
         /// <param name="value"></param>
         public void PutProtoNode(ProtoTreeRoot value)
         {
-            PutBytes(ProtoSerializer.Serialize(value));
+            PutBytes(ProtoSerializer.Serialize(value).GetBytes());
         }
 
         private uint _pos;
