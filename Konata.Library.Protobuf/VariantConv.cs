@@ -4,33 +4,40 @@ namespace Konata.Library.Protobuf
 {
     internal static class VariantConv
     {
-        public static void VariantToNumber()
+        public static long VariantToNumber(byte[] variant)
         {
+            var number = 0L;
 
+            for (int i = variant.Length; i > 0; --i)
+            {
+                number |= (variant[i] & 127) << (i * 7);
+            }
+
+            return number;
         }
 
-        public static byte[] NumberToVariant(long value)
+        public static byte[] NumberToVariant(long number)
         {
             byte[] buffer;
 
-            if (value >= 127)
+            if (number >= 127)
             {
                 var len = 0;
                 buffer = new byte[10];
 
                 do
                 {
-                    buffer[len] = (byte)((value & 127) | 128);
-                    value >>= 7;
+                    buffer[len] = (byte)((number & 127) | 128);
+                    number >>= 7;
                     ++len;
-                } while (value > 127);
+                } while (number > 127);
 
-                buffer[len] = (byte)value;
+                buffer[len] = (byte)number;
                 Array.Resize(ref buffer, len + 1);
             }
             else
             {
-                buffer = new byte[1] { (byte)value };
+                buffer = new byte[1] { (byte)number };
             }
 
             return buffer;
