@@ -306,39 +306,38 @@ namespace Konata.Library.IO
             WriteData(ByteConverter.BoolToBytes(value, length, endian));
         }
 
-        public void PutString(string value, byte prefixLength = 0, byte limitedLength = 0)
+        public void PutString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
-            var data = Encoding.UTF8.GetBytes(value);
-            PutBytes(data, prefixLength, limitedLength); // 把字符串当作byte[]
+            PutBytes(Encoding.UTF8.GetBytes(value), prefixFlag , limitedLength); // 把字符串当作byte[]
         }
 
-        public void PutBytes(byte[] value, byte prefixLength = 0, byte limitedLength = 0)
+        public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
-            bool prefix = prefixLength > 0; // 是否有前缀
+            prefixFlag &= (Prefix)7;
             bool limited = limitedLength > 0; // 是否限制长度
             byte[] array; // 处理后的数据
             if (limited) // 限制长度时，写入数据长度=前缀+限制
             {
                 limitedLength = (byte)value.Length;
-                array = new byte[prefixLength + limitedLength];
+                array = new byte[(uint)prefixFlag + limitedLength];
                 int len = value.Length > limitedLength ? limitedLength : value.Length;
-                Buffer.BlockCopy(value, 0, array, prefixLength, len);
+                Buffer.BlockCopy(value, 0, array, (int)prefixFlag, len);
             }
-            else if (prefix) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
+            else if (prefixFlag> Prefix.None) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
             {
-                array = new byte[prefixLength + value.Length];
-                Buffer.BlockCopy(value, 0, array, prefixLength, value.Length);
+                array = new byte[(uint)prefixFlag + value.Length];
+                Buffer.BlockCopy(value, 0, array, (int)prefixFlag, value.Length);
             }
             else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
             {
                 WriteData(value);
                 return;
             }
-            if (prefix) // 添加前缀，使用大端序
+            if (prefixFlag > Prefix.None) // 添加前缀，使用大端序
             {
-                if (!InsertPrefix(array, (uint)value.Length, prefixLength))
+                if (!InsertPrefix(array, 0, (uint)value.Length, prefixFlag))
                 {
-                    throw new IOException("Given prefix length is too small for value bytes."); // 给定的prefixLength不够填充value.Length，终止写入
+                    throw new IOException("Given prefix length is too small for value bytes."); // 给定的prefix不够填充value.Length，终止写入
                 }
             }
             WriteData(array);
@@ -397,7 +396,7 @@ namespace Konata.Library.IO
 
         public ushort TakeUshortLE(out ushort value)
         {
-            return TakeUshort(out value, Endian.Big);
+            return TakeUshort(out value, Endian.Little);
         }
 
         public ushort TakeUshort(out ushort value, Endian endian)
@@ -755,26 +754,26 @@ namespace Konata.Library.IO
             return _rPos + length <= _length;
         }
 
-        protected static bool InsertPrefix(byte[] array, uint value, uint size, uint offset = 0, Endian endian = Endian.Big)
+        protected static bool InsertPrefix(byte[] buffer, uint offset, uint value, Prefix prefixFlag, Endian endian = Endian.Big)
         {
-            switch (size)
+            switch (prefixFlag)
             {
-            case 1:
+            case Prefix.Uint8:
                 if (value <= byte.MaxValue)
                 {
-                    Buffer.BlockCopy(ByteConverter.UInt8ToBytes((byte)value), 0, array, (int)offset, 1);
+                    Buffer.BlockCopy(ByteConverter.UInt8ToBytes((byte)value), 0, buffer, (int)offset, 1);
                     return true;
                 }
                 break;
-            case 2:
+            case Prefix.Uint16:
                 if (value <= ushort.MaxValue)
                 {
-                    Buffer.BlockCopy(ByteConverter.UInt16ToBytes((ushort)value, endian), 0, array, (int)offset, 2);
+                    Buffer.BlockCopy(ByteConverter.UInt16ToBytes((ushort)value, endian), 0, buffer, (int)offset, 2);
                     return true;
                 }
                 break;
-            case 4:
-                Buffer.BlockCopy(ByteConverter.UInt32ToBytes(value, endian), 0, array, (int)offset, 4);
+            case Prefix.Uint32:
+                Buffer.BlockCopy(ByteConverter.UInt32ToBytes(value, endian), 0, buffer, (int)offset, 4);
                 return true;
             }
             return false;

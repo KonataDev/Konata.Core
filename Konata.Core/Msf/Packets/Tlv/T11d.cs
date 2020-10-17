@@ -17,7 +17,7 @@ namespace Konata.Msf.Packets.Tlv
 
             PutUintBE(_appId);
             PutBytes(_st);
-            PutBytes(_stKey, 2);
+            PutBytes(_stKey);
         }
 
         public T11dBody(byte[] data)

@@ -25,10 +25,10 @@ namespace Konata.Msf.Packets.Tlv
 
             PutUshortBE(_ver);
             PutUshortBE(_code);
-            PutString(_title, 2);
-            PutString(_message, 2);
+            PutString(_title, Prefix.Uint16);
+            PutString(_message, Prefix.Uint16);
             PutUshortBE(_errorType);
-            PutString(_errorInfo, 2);
+            PutString(_errorInfo, Prefix.Uint16);
         }
 
         public T146Body(byte[] data)

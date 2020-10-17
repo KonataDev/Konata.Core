@@ -16,8 +16,8 @@ namespace Konata.Msf.Packets.Tlv
             _captchaKey = captchaKey;
 
             PutUshortBE(_sigVer);
-            PutString(_captchaCode, 2);
-            PutBytes(_captchaKey, 2);
+            PutString(_captchaCode, Prefix.Uint16);
+            PutBytes(_captchaKey);
         }
 
         public T2Body(byte[] data)

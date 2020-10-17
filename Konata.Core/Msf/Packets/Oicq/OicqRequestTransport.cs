@@ -33,7 +33,7 @@ namespace Konata.Msf.Packets.Oicq
                 PutUshortBE((ushort)data.Length);
                 PutUintBE(appId);
                 PutUintBE(role);
-                PutBytes(sigSession, 2);
+                PutBytes(sigSession);
 
                 PutByte(0x00);
 

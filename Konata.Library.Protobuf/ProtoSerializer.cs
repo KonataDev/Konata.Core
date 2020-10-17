@@ -16,7 +16,7 @@ namespace Konata.Library.Protobuf
                         continue;
 
                     buffer.PutByte(Tag(split[split.Length - 1]));
-                    buffer.PutBytes(element._data, 1);
+                    buffer.PutBytes(element._data);
                 }
             }
 

@@ -22,12 +22,12 @@ namespace Konata.Msf.Packets.Tlv
             _apnName = apnName;
             _address = "";
 
-            PutString(_osType, 2, 16);
-            PutString(_osVersion, 2, 16);
+            PutString(_osType, Prefix.Uint16, 16);
+            PutString(_osVersion, Prefix.Uint16, 16);
             PutUshortBE((ushort)_networkType);
-            PutString(_networkDetail, 2, 16);
-            PutString(_address, 2, 32);
-            PutString(_apnName, 2, 16);
+            PutString(_networkDetail, Prefix.Uint16, 16);
+            PutString(_address, Prefix.Uint16, 32);
+            PutString(_apnName, Prefix.Uint16, 16);
         }
 
         public T124Body(byte[] data)

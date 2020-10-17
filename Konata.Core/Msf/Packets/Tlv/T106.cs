@@ -56,14 +56,14 @@ namespace Konata.Msf.Packets.Tlv
             PutUintBE(_timeNow);
             PutBytes(_ipAddress);
             PutBoolBE(_isSavePassword, 1);
-            PutBytes(_passwordMd5, 0, 16);
-            PutBytes(_tgtgKey, 0, 16);
+            PutBytes(_passwordMd5, Prefix.None, 16);
+            PutBytes(_tgtgKey, Prefix.None, 16);
             PutUintBE(0);
             PutBoolBE(_isGuidAvailable, 1);
-            PutBytes(_isGuidAvailable ? _guid : Guid.Generate(), 0, 16);
+            PutBytes(_isGuidAvailable ? _guid : Guid.Generate(), Prefix.None, 16);
             PutUintBE(_subAppId);
             PutUintBE((uint)_loginType);
-            PutString(_uinString, 2);
+            PutString(_uinString, Prefix.Uint16);
             PutUshortBE(0);
         }
 
