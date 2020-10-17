@@ -36,7 +36,6 @@ namespace Konata.Library.IO
             if (data != null)
             {
                 _length = (uint)data.Length;
-                _wPos = _length;
                 WriteData(data);
             }
         }
@@ -571,31 +570,31 @@ namespace Konata.Library.IO
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-                case 0: // Read to end.
-                    length = _length - _rPos;
-                    break;
-                case 1:
-                case 2:
-                case 4:
-                    if (CheckAvailable(preLen))
+            case 0: // Read to end.
+                length = _length - _rPos;
+                break;
+            case 1:
+            case 2:
+            case 4:
+                if (CheckAvailable(preLen))
+                {
+                    length = preLen == 1 ? ByteConverter.BytesToUInt8(_buffer, _rPos) :
+                             preLen == 2 ? ByteConverter.BytesToUInt16(_buffer, _rPos, Endian.Big) :
+                                           ByteConverter.BytesToUInt32(_buffer, _rPos, Endian.Big);
+                    _rPos += preLen;
+                    if (reduce)
                     {
-                        length = preLen == 1 ? ByteConverter.BytesToUInt8(_buffer, _rPos) :
-                                 preLen == 2 ? ByteConverter.BytesToUInt16(_buffer, _rPos, Endian.Big) :
-                                               ByteConverter.BytesToUInt32(_buffer, _rPos, Endian.Big);
-                        _rPos += preLen;
-                        if (reduce)
+                        if (length < preLen)
                         {
-                            if (length < preLen)
-                            {
-                                throw new IOException("Data length is less than prefix length.");
-                            }
-                            length -= preLen;
+                            throw new IOException("Data length is less than prefix length.");
                         }
-                        break;
+                        length -= preLen;
                     }
-                    throw _exEob;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                    break;
+                }
+                throw _exEob;
+            default:
+                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
             if (CheckAvailable(length))
             {
@@ -745,10 +744,10 @@ namespace Konata.Library.IO
         /// <param name="data">數據</param>
         protected void WriteData(byte[] data)
         {
-            ExtendBufferSize(_wPos + (uint)data.Length);
+            uint minLength = _wPos + (uint)data.Length;
+            ExtendBufferSize(minLength > _length ? minLength : _length);
             Buffer.BlockCopy(data, 0, _buffer, (int)_wPos, data.Length);
-
-            _wPos += (uint)data.Length;
+            _wPos = minLength;
         }
 
         protected bool CheckAvailable(uint length = 0)
@@ -758,35 +757,27 @@ namespace Konata.Library.IO
 
         protected static bool InsertPrefix(byte[] array, uint value, uint size, uint offset = 0, Endian endian = Endian.Big)
         {
-            uint minLen = 0; // 表示value需要最少多少字节
-            uint valLen = value; // 计算value各字节数值的临时变量
-            while (valLen > 0)
+            switch (size)
             {
-                ++minLen;
-                valLen >>= 8;
-            }
-            if (minLen > size)
-            {
-                return false; // value数据太长，前缀无法表示其长度
-            }
-            valLen = value;
-            if (endian == Endian.Big)
-            {
-                for (int i = 0, j = (int)size - 1; i < minLen; ++i, --j)
+            case 1:
+                if (value <= byte.MaxValue)
                 {
-                    array[j + offset] = (byte)(valLen & 255); // 每次取最低一字节从后往前写入
-                    valLen >>= 8;
+                    Buffer.BlockCopy(ByteConverter.UInt8ToBytes((byte)value), 0, array, (int)offset, 1);
+                    return true;
                 }
-            }
-            else
-            {
-                for (int i = 0; i < minLen; ++i)
+                break;
+            case 2:
+                if (value <= ushort.MaxValue)
                 {
-                    array[i + offset] = (byte)(valLen & 255); // 每次取最低一字节从前往后写入
-                    valLen >>= 8;
+                    Buffer.BlockCopy(ByteConverter.UInt16ToBytes((ushort)value, endian), 0, array, (int)offset, 2);
+                    return true;
                 }
+                break;
+            case 4:
+                Buffer.BlockCopy(ByteConverter.UInt32ToBytes(value, endian), 0, array, (int)offset, 4);
+                return true;
             }
-            return true;
+            return false;
         }
 
         #region Operators
