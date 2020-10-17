@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets.Tlv
 {

@@ -2,7 +2,7 @@
 using System.IO;
 using Konata.Utils;
 using Konata.Library.IO;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 using Konata.Library.Protobuf;
 
 namespace Konata.Msf

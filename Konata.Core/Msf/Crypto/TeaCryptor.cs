@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Library.TeaEncrypt;
 
-namespace Konata.Msf.Utils.Crypt
+namespace Konata.Msf.Crypto
 {
     public sealed class TeaCryptor : ICryptor
     {

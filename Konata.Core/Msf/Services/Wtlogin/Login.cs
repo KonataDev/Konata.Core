@@ -2,7 +2,7 @@
 using Konata.Msf;
 using Konata.Msf.Packets.Oicq;
 using Konata.Msf.Packets.Tlv;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 using Konata.Utils;
 
 namespace Konata.Msf.Services.Wtlogin

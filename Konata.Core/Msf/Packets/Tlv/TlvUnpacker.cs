@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets.Tlv
 {

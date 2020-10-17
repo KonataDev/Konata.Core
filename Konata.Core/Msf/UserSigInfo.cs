@@ -2,7 +2,7 @@
 using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf
 {

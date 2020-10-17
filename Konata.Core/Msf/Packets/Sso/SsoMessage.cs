@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Library.IO;
 using Konata.Msf;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets
 {

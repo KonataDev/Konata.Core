@@ -2,14 +2,14 @@
 
 namespace Konata.Msf.Services.PbMessageSvc
 {
-    internal class PbMessageReadReport : Service
+    internal class PbMsgReadReport : Service
     {
-        private PbMessageReadReport()
+        private PbMsgReadReport()
         {
             Register("PbMessageSvc.PbMsgReadedReport", this);
         }
 
-        public static Service Instance { get; } = new PbMessageReadReport();
+        public static Service Instance { get; } = new PbMsgReadReport();
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {
