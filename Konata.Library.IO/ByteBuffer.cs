@@ -308,7 +308,7 @@ namespace Konata.Library.IO
 
         public void PutString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
-            PutBytes(Encoding.UTF8.GetBytes(value), prefixFlag , limitedLength); // 把字符串当作byte[]
+            PutBytes(Encoding.UTF8.GetBytes(value), prefixFlag, limitedLength); // 把字符串当作byte[]
         }
 
         public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
@@ -323,7 +323,7 @@ namespace Konata.Library.IO
                 int len = value.Length > limitedLength ? limitedLength : value.Length;
                 Buffer.BlockCopy(value, 0, array, (int)prefixFlag, len);
             }
-            else if (prefixFlag> Prefix.None) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
+            else if (prefixFlag > Prefix.None) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
             {
                 array = new byte[(uint)prefixFlag + value.Length];
                 Buffer.BlockCopy(value, 0, array, (int)prefixFlag, value.Length);
@@ -341,6 +341,13 @@ namespace Konata.Library.IO
                 }
             }
             WriteData(array);
+        }
+
+        public void PutEmpty(int count)
+        {
+            uint minLength = _wPos + (uint)count;
+            ExtendBufferSize(minLength > _length ? minLength : _length);
+            _wPos = minLength;
         }
         #endregion
 
