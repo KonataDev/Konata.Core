@@ -40,7 +40,7 @@ namespace Konata.Msf.Packets.Oicq
                 PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
                 PutByte(0x00);
                 PutByte(0x01);
-                EnterBarrierEncrypted(2, Endian.Big, TeaCryptor.Instance, sigSessionKey);
+                EnterBarrierEncrypted(Prefix.Uint16, Endian.Big, TeaCryptor.Instance, sigSessionKey);
                 {
                     var output = new MemoryStream();
                     var deflate = new DeflateStream(output, CompressionLevel.Fastest);

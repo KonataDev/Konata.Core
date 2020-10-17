@@ -53,7 +53,7 @@ namespace Konata.Msf.Packets.Oicq
 
             PutByte(0x02); // 頭部 0x02
             {
-                EnterBarrier(2, Endian.Big, 4);
+                EnterBarrier(Prefix.Uint16, Endian.Big, 4);
                 {
                     PutUshortBE(_oicqVersion);
                     PutUshortBE(_oicqCommand);

@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Tlv
             _tlvBody = tlvBody;
 
             PutUshortBE(tlvCommand);
-            EnterBarrier(2, Endian.Big);
+            EnterBarrier(Prefix.Uint16, Endian.Big);
             {
                 PutPacket(tlvBody);
             }
@@ -30,7 +30,7 @@ namespace Konata.Msf.Packets.Tlv
             _tlvBody = tlvBody;
 
             PutUshortBE(tlvCommand);
-            EnterBarrierEncrypted(2, Endian.Big, TeaCryptor.Instance, cryptKey);
+            EnterBarrierEncrypted(Prefix.Uint16, Endian.Big, TeaCryptor.Instance, cryptKey);
             {
                 PutPacket(tlvBody);
             }
