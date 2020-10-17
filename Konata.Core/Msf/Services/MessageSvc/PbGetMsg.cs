@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Library.Protobuf;
+using Konata.Msf.Packets.Protobuf;
 
 namespace Konata.Msf.Services.MessageSvc
 {
@@ -16,7 +18,7 @@ namespace Konata.Msf.Services.MessageSvc
             if (method != "")
                 throw new Exception("???");
 
-            return false;
+            return Request_GetMsg(core);
         }
 
         protected override bool OnHandle(Core core, params object[] args)
@@ -25,6 +27,16 @@ namespace Konata.Msf.Services.MessageSvc
                 return false;
 
             return false;
+        }
+
+        private bool Request_GetMsg(Core core)
+        {
+            var sequence = core._ssoMan.GetNewSequence();
+            var request = new ProtoGetMsg();
+
+            core._ssoMan.PostMessage(this, ProtoSerializer.Serialize(request), sequence);
+
+            return true;
         }
     }
 }
