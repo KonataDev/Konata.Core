@@ -4,6 +4,7 @@ namespace Konata.Library.Protobuf
 {
     internal static class VariantConv
     {
+#pragma warning disable CS0675
         public static long VariantToNumber(byte[] variant)
         {
             var number = 0L;
@@ -15,6 +16,7 @@ namespace Konata.Library.Protobuf
 
             return number;
         }
+#pragma warning restore CS0675
 
         public static byte[] NumberToVariant(long number)
         {
