@@ -5,7 +5,7 @@ namespace Konata.Library.Protobuf
 {
     public static class ProtoSerializer
     {
-        public static byte[] Serialize(ProtoTreeRoot tree)
+        public static ByteBuffer Serialize(ProtoTreeRoot tree)
         {
             var buffer = new ByteBuffer();
             {
@@ -16,11 +16,13 @@ namespace Konata.Library.Protobuf
                         continue;
 
                     buffer.PutByte(Tag(split[split.Length - 1]));
-                    buffer.PutBytes(element._data, 1);
+                    if (element._needLength)
+                        buffer.PutBytes(VariantConv.NumberToVariant(element._data.Length));
+                    buffer.PutBytes(element._data);
                 }
             }
 
-            return buffer.GetBytes();
+            return buffer;
         }
 
         public static void DebugPrintTree(ProtoTreeRoot tree)

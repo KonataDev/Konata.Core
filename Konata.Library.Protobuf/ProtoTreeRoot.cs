@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
 using Konata.Library.IO;
 
 namespace Konata.Library.Protobuf
@@ -11,6 +11,7 @@ namespace Konata.Library.Protobuf
     {
         public string _path;
         public byte[] _data;
+        public bool _needLength;
     }
 
     public class ProtoTreeRoot
@@ -25,7 +26,7 @@ namespace Konata.Library.Protobuf
 
         public void addTree(string treePath, ProtoTreeRoot value)
         {
-            addLeaf(treePath, ProtoSerializer.Serialize(value));
+            addLeafByteBuffer(treePath, ProtoSerializer.Serialize(value));
         }
 
         public void addTree(string treePath, TreeRootWriter writer)
@@ -37,24 +38,44 @@ namespace Konata.Library.Protobuf
             addTree(treePath, newTree);
         }
 
-        public void addLeaf(string leafPath, string value)
+        public void addLeafString(string leafPath, string value)
         {
-            addLeaf(leafPath, Encoding.UTF8.GetBytes(value));
+            addLeafBytes(leafPath, Encoding.UTF8.GetBytes(value));
         }
 
-        public void addLeaf(string leafPath, long value)
+        public void addLeafFix32(string leafPath, int value)
         {
-            addLeaf(leafPath, ByteConverter.Int64ToBytes(value));
+            addLeafBytes(leafPath, ByteConverter.Int32ToBytes(value), false);
         }
 
-        public void addLeaf(string leafPath)
+        public void addLeafFix64(string leafPath, long value)
         {
-            addLeaf(leafPath, new byte[0]);
+            addLeafBytes(leafPath, ByteConverter.Int64ToBytes(value), false);
         }
 
-        private void addLeaf(string leafName, byte[] leafData)
+        public void addLeafVar(string leafPath, long value)
         {
-            _leaves.Add(new ProtoLeaf { _path = leafName, _data = leafData });
+            addLeafBytes(leafPath, VariantConv.NumberToVariant(value), false);
+        }
+
+        public void addLeafEmpty(string leafPath)
+        {
+            addLeafBytes(leafPath, null, false);
+        }
+
+        public void addLeafByteBuffer(string leafPath, ByteBuffer value)
+        {
+            addLeafBytes(leafPath, value.GetBytes());
+        }
+
+        public void addLeafBytes(string leafPath, byte[] value)
+        {
+            addLeafBytes(leafPath, value ?? new byte[0], true);
+        }
+
+        public void addLeafBytes(string leafPath, byte[] value, bool needLength)
+        {
+            _leaves.Add(new ProtoLeaf { _path = leafPath, _data = value, _needLength = needLength });
         }
     }
 }
