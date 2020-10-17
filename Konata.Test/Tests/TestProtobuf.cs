@@ -11,12 +11,12 @@ namespace Konata.Test.Tests
             var root1 = new ProtoTreeRoot();
             var root2 = new ProtoTreeRoot();
             var root3 = new ProtoTreeRoot();
-            root3.addLeaf("0A", "Hello Konata!");
+            root3.addLeafString("0A", "Hello Konata!");
             root2.addTree("0A", root3);
             root1.addTree("0A", root2);
             root.addTree("0A", root1);
 
-            Print(ProtoSerializer.Serialize(root));
+            Print(ProtoSerializer.Serialize(root).GetBytes());
 
             return true;
         }
