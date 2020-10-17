@@ -44,7 +44,6 @@
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
-    <Compile Include="Msf\Crypto\KeyRing.cs" />
     <Compile Include="Msf\Event.cs" />
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\Svc\SvcReqEmpty.cs" />

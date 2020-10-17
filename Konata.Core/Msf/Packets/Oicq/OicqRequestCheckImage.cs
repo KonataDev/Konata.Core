@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0002;
 
-        public OicqRequestCheckImage(uint uin, KeyRing keyring,
+        public OicqRequestCheckImage(uint uin, UserSigInfo sigInfo,
             string sigSission, string sigTicket)
 
             : base(OicqCommand, OicqSubCommand, uin,
                   OicqEncryptMethod.ECDH7, new XCaptcha(sigSission, sigTicket),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
         {
 
         }

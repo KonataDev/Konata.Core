@@ -38,7 +38,7 @@ namespace Konata.Msf.Services.StatSvc
         {
             var requestBody = new SvcReqRegister.XSvcRegister()
             {
-                _uin = core._uin,
+                _uin = core._sigInfo._uin,
                 _bid = 7,
                 _connType = 0,
                 _other = "",

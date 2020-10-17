@@ -12,12 +12,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0812;
         private const ushort OicqSubCommand = 0x0001;
 
-        public OicqRequestTransport(uint uin, KeyRing keyring, byte[] data, bool isMsf, uint appId,
+        public OicqRequestTransport(uint uin, UserSigInfo sigInfo, byte[] data, bool isMsf, uint appId,
             byte[] sigSession, byte[] sigSessionKey)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
                   new XTransport(data, isMsf, appId, 85, sigSession, sigSessionKey),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
         {
 
         }

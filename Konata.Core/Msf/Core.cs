@@ -18,24 +18,16 @@ namespace Konata.Msf
 
     public class Core
     {
-        internal uint _uin;
-        internal string _password;
-
         internal Bot _bot;
         internal SsoMan _ssoMan;
-        internal KeyRing _keyRing;
-        internal UserSigInfo _wtLogin;
+        internal UserSigInfo _sigInfo;
         internal OicqStatus _oicqStatus;
 
         public Core(Bot bot, uint uin, string password)
         {
-            _uin = uin;
-            _password = password;
-
             _bot = bot;
             _ssoMan = new SsoMan(this);
-            _keyRing = new KeyRing(uin, password);
-            _wtLogin = new UserSigInfo();
+            _sigInfo = new UserSigInfo(uin, password);
         }
 
         #region Core Methods

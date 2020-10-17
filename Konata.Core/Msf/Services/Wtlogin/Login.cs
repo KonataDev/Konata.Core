@@ -39,7 +39,7 @@ namespace Konata.Msf.Services.Wtlogin
 
             var packet = (Packet)args[0];
             var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
-                core._keyRing._shareKey);
+                core._sigInfo._shareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest._oicqCommand}");
             Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest._oicqVersion}");
@@ -82,7 +82,7 @@ namespace Konata.Msf.Services.Wtlogin
             Console.WriteLine("Submit OicqRequestTGTGT.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestTgtgt(core._uin, sequence, core._keyRing);
+            var request = new OicqRequestTgtgt(core._sigInfo._uin, sequence, core._sigInfo);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -100,8 +100,8 @@ namespace Konata.Msf.Services.Wtlogin
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckImage(core._uin, core._keyRing,
-                core._wtLogin._sigSession, ticket);
+            var request = new OicqRequestCheckImage(core._sigInfo._uin, core._sigInfo,
+                core._sigInfo._sigSession, ticket);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -119,9 +119,9 @@ namespace Konata.Msf.Services.Wtlogin
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckSms(core._uin, core._keyRing,
-                 core._wtLogin._sigSession, core._wtLogin._gSecret,
-                 core._wtLogin._smsToken, smsCode);
+            var request = new OicqRequestCheckSms(core._sigInfo._uin, core._sigInfo,
+                 core._sigInfo._sigSession, core._sigInfo._gSecret,
+                 core._sigInfo._smsToken, smsCode);
 
             core._ssoMan.PostMessage(this, request, sequence);
             return true;
@@ -137,8 +137,8 @@ namespace Konata.Msf.Services.Wtlogin
             Console.WriteLine("Request send SMS.");
 
             var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestRefreshSms(core._uin, core._keyRing,
-                 core._wtLogin._sigSession, core._wtLogin._smsToken);
+            var request = new OicqRequestRefreshSms(core._sigInfo._uin, core._sigInfo,
+                 core._sigInfo._sigSession, core._sigInfo._smsToken);
 
             core._ssoMan.PostMessage(this, request, sequence);
 
@@ -163,7 +163,7 @@ namespace Konata.Msf.Services.Wtlogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                core._wtLogin._sigSession = sigSession;
+                core._sigInfo._sigSession = sigSession;
                 core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigCaptchaURL,
                     DeviceInfo.Browser.UserAgent);
             }
@@ -201,9 +201,9 @@ namespace Konata.Msf.Services.Wtlogin
                     var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    core._wtLogin._smsPhone = $"+{smsCountryCode} {smsPhone}";
-                    core._wtLogin._smsToken = smsToken;
-                    core._wtLogin._sigSession = sigSession;
+                    core._sigInfo._smsPhone = $"+{smsCountryCode} {smsPhone}";
+                    core._sigInfo._smsToken = smsToken;
+                    core._sigInfo._sigSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
 
                     return true;
@@ -218,8 +218,8 @@ namespace Konata.Msf.Services.Wtlogin
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
 
-                    core._wtLogin._sigSession = sigSession;
-                    core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._wtLogin._smsPhone);
+                    core._sigInfo._sigSession = sigSession;
+                    core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._sigInfo._smsPhone);
 
                     return true;
                 }
@@ -264,7 +264,7 @@ namespace Konata.Msf.Services.Wtlogin
                 if (tlv119 != null && tlv161 != null)
                 {
                     var decrtpted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, core._keyRing._tgtgKey);
+                        TeaCryptor.Instance, core._sigInfo._tgtgKey);
 
                     var tlv119Unpacker = new TlvUnpacker(decrtpted, true);
 
@@ -316,14 +316,14 @@ namespace Konata.Msf.Services.Wtlogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
-                    core._keyRing._tgtKey = tgtKey;
-                    core._keyRing._tgtToken = tgtToken;
-                    core._keyRing._d2Key = d2Key;
-                    core._keyRing._d2Token = d2Token;
-                    core._keyRing._wtSessionTicketSig = wtSessionTicketSig;
-                    core._keyRing._wtSessionTicketKey = wtSessionTicketKey;
-                    core._keyRing._gtKey = gtKey;
-                    core._keyRing._stKey = stKey;
+                    core._sigInfo._tgtKey = tgtKey;
+                    core._sigInfo._tgtToken = tgtToken;
+                    core._sigInfo._d2Key = d2Key;
+                    core._sigInfo._d2Token = d2Token;
+                    core._sigInfo._wtSessionTicketSig = wtSessionTicketSig;
+                    core._sigInfo._wtSessionTicketKey = wtSessionTicketKey;
+                    core._sigInfo._gtKey = gtKey;
+                    core._sigInfo._stKey = stKey;
 
                     core._ssoMan.SetD2Pair(d2Token, d2Key);
                     core._ssoMan.SetTgtPair(tgtToken, tgtKey);

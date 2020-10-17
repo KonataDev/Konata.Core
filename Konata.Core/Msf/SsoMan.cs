@@ -150,7 +150,7 @@ namespace Konata.Msf
         internal uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
         {
             var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
-            var toService = new ToServiceMessage(10, _msfCore._uin, _d2Token, _d2Key, ssoMessage);
+            var toService = new ToServiceMessage(10, _msfCore._sigInfo._uin, _d2Token, _d2Key, ssoMessage);
 
             _pakMan.Emit(toService);
             return ssoSequence;
@@ -208,7 +208,7 @@ namespace Konata.Msf
                         ssoMessage = new SsoMessage(ssoData, _d2Key);
                         break;
                     case 2:
-                        ssoMessage = new SsoMessage(ssoData, _msfCore._keyRing._zeroKey);
+                        ssoMessage = new SsoMessage(ssoData, _msfCore._sigInfo._zeroKey);
                         break;
                 }
 

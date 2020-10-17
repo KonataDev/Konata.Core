@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace Konata.Msf.Services.PbMessageSvc
+namespace Konata.Msf.Services.MessageSvc
 {
-    internal class PbMessageWithDraw : Service
+    internal class PushRead : Service
     {
-        private PbMessageWithDraw()
+        private PushRead()
         {
-            Register("PbMessageSvc.PbMessageWithDraw", this);
+            Register("MessageSvc.PushReaded", this);
         }
 
-        public static Service Instance { get; } = new PbMessageWithDraw();
+        public static Service Instance { get; } = new PushRead();
 
         protected override bool OnRun(Core core, string method, params object[] args)
         {

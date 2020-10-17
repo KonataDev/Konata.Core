@@ -32,7 +32,7 @@ namespace Konata.Msf.Services.MessageSvc
         private bool Request_GetMsg(Core core)
         {
             var sequence = core._ssoMan.GetNewSequence();
-            var request = new ProtoGetMsg();
+            var request = new ProtoGetMsg(core._sigInfo._syncCookie);
 
             core._ssoMan.PostMessage(this, ProtoSerializer.Serialize(request), sequence);
 

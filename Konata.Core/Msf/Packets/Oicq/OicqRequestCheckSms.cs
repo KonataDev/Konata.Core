@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0007;
 
-        public OicqRequestCheckSms(uint uin, KeyRing keyring, string sigSession,
+        public OicqRequestCheckSms(uint uin, UserSigInfo sigInfo, string sigSession,
             byte[] gSecret, string smsToken, string smsCode)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
                   new XCheckSms(sigSession, gSecret, smsToken, smsCode),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
         {
 
         }

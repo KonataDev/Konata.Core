@@ -5,26 +5,20 @@ namespace Konata.Msf.Packets.Protobuf
 {
     public class ProtoGetMsg : ProtoTreeRoot
     {
-        public ProtoGetMsg()
+        public ProtoGetMsg(byte[] syncCookie)
         {
-            addLeafVar("08", 0);
-            addTree("12", (ProtoTreeRoot cookies) =>
-            {
-                cookies.addLeafVar("08", 1602783217);
-                cookies.addLeafVar("10", 1602783217);
-                cookies.addLeafVar("28", 2267374858);
-                cookies.addLeafVar("48", 1657171111);
-                cookies.addLeafVar("58", 1828320251);
-                cookies.addLeafVar("68", 1602783217);
-                cookies.addLeafVar("70", 0);
-            });
-            addLeafVar("18", 0);
-            addLeafVar("20", 20);
-            addLeafVar("28", 3);
-            addLeafVar("30", 1);
-            addLeafVar("38", 1);
-            addLeafVar("48", 0);
-            addLeafBytes("62", null);
+            addLeafVar("08", 0);                          // sync_flag
+            addLeafBytes("12", syncCookie);               // sync_cookie
+            addLeafVar("18", 0);                          // ramble_flag
+            addLeafVar("20", 20);                         // latest_ramble_number
+            addLeafVar("28", 3);                          // other_ramble_number
+            addLeafVar("30", 1);                          // online_sync_flag
+            addLeafVar("38", 1);                          // context_flag
+            // addLeafVar("40", 0);                       // whisper_session_id
+            addLeafVar("48", 0);                          // msg_req_type
+            // addLeafBytes("52", null);                  // pubaccount_cookie
+            // addLeafBytes("5A", null);                  // msg_ctrl_buf
+            addLeafBytes("62", null);                     // bytes_server_buf
         }
     }
 }
