@@ -9,19 +9,19 @@ namespace Konata.Library.Protobuf
 
     public struct ProtoLeaf
     {
-        public string _path;
-        public byte[] _data;
-        public bool _needLength;
+        public string path;
+        public byte[] data;
+        public bool needLength;
     }
 
     public class ProtoTreeRoot
     {
-        internal ProtoLeaves _leaves;
+        internal ProtoLeaves leaves;
         public delegate void TreeRootWriter(ProtoTreeRoot tree);
 
         public ProtoTreeRoot()
         {
-            _leaves = new ProtoLeaves();
+            leaves = new ProtoLeaves();
         }
 
         public void addTree(string treePath, ProtoTreeRoot value)
@@ -75,7 +75,7 @@ namespace Konata.Library.Protobuf
 
         public void addLeafBytes(string leafPath, byte[] value, bool needLength)
         {
-            _leaves.Add(new ProtoLeaf { _path = leafPath, _data = value, _needLength = needLength });
+            leaves.Add(new ProtoLeaf { path = leafPath, data = value, needLength = needLength });
         }
     }
 }

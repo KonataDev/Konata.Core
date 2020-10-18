@@ -9,16 +9,16 @@ namespace Konata.Library.Protobuf
         {
             var buffer = new ByteBuffer();
             {
-                foreach (var element in tree._leaves)
+                foreach (var element in tree.leaves)
                 {
-                    var split = element._path.Split('.');
+                    var split = element.path.Split('.');
                     if (split.Length <= 0)
                         continue;
 
                     buffer.PutByte(Tag(split[split.Length - 1]));
-                    if (element._needLength)
-                        buffer.PutBytes(VariantConv.NumberToVariant(element._data.Length));
-                    buffer.PutBytes(element._data);
+                    if (element.needLength)
+                        buffer.PutBytes(VariantConv.NumberToVariant(element.data.Length));
+                    buffer.PutBytes(element.data);
                 }
             }
 
