@@ -163,10 +163,21 @@ namespace Konata.Library.Protobuf
                         case ProtoType.Bit64: buffer.TakeBytes(out pbData, 8); break;
                         case ProtoType.LengthDelimited:
                             buffer.TakeBytes(out pbData, (uint)buffer.TakeVarIntValue(out var _));
-                            if (recursion && DeSerialize(pbPath, pbData, recursion))
-                                continue;
+
+                            try
+                            {
+                                if (recursion && !DeSerialize(pbPath, pbData, recursion))
+                                    break;
+                            }
+                            catch
+                            {
+                                break;
+                            }
+
                             break;
-                        default: return false; // 發生錯誤 此bytearray不可解
+
+                        // 發生錯誤 此bytearray不可解
+                        default: return false;
                     }
 
                     leaves[pbPath] = new ProtoLeaf { data = pbData };
