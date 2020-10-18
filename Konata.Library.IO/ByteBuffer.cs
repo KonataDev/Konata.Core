@@ -17,25 +17,25 @@ namespace Konata.Library.IO
             WithPrefix = 128,  // 包括數據長度和前綴長度
         }
 
-        private static readonly IOException _exEob =
+        private static readonly IOException eobException =
             new IOException("Insufficient buffer space.");
-        private static int _minBufBase = 8;
-        private static uint _minBufSize = 1U << _minBufBase;
+        private static int minBufferBase = 8;
+        private static uint minBufferSize = 1U << minBufferBase;
 
         protected byte[] buffer;
-        protected uint length;
-        private uint _rPos;
-        private uint _wPos;
+        protected uint bufferLength;
+        private uint readPosition;
+        private uint writePosition;
 
         public ByteBuffer(byte[] data = null)
         {
             buffer = null;
-            length = 0;
-            _rPos = 0;
-            _wPos = 0;
+            bufferLength = 0;
+            readPosition = 0;
+            writePosition = 0;
             if (data != null)
             {
-                length = (uint)data.Length;
+                bufferLength = (uint)data.Length;
                 WriteData(data);
             }
         }
@@ -345,9 +345,9 @@ namespace Konata.Library.IO
 
         public void PutEmpty(int count)
         {
-            uint minLength = _wPos + (uint)count;
-            ExtendBufferSize(minLength > length ? minLength : length);
-            _wPos = minLength;
+            uint minLength = writePosition + (uint)count;
+            ExtendBufferSize(minLength > bufferLength ? minLength : bufferLength);
+            writePosition = minLength;
         }
         #endregion
 
@@ -357,22 +357,22 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(1))
             {
-                value = ByteConverter.BytesToInt8(buffer, _rPos);
-                ++_rPos;
+                value = ByteConverter.BytesToInt8(buffer, readPosition);
+                ++readPosition;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public byte TakeByte(out byte value)
         {
             if (CheckAvailable(1))
             {
-                value = ByteConverter.BytesToUInt8(buffer, _rPos);
-                ++_rPos;
+                value = ByteConverter.BytesToUInt8(buffer, readPosition);
+                ++readPosition;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public short TakeShortBE(out short value)
@@ -389,11 +389,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(2))
             {
-                value = ByteConverter.BytesToInt16(buffer, _rPos, endian);
-                _rPos += 2;
+                value = ByteConverter.BytesToInt16(buffer, readPosition, endian);
+                readPosition += 2;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public ushort TakeUshortBE(out ushort value)
@@ -410,11 +410,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(2))
             {
-                value = ByteConverter.BytesToUInt16(buffer, _rPos, endian);
-                _rPos += 2;
+                value = ByteConverter.BytesToUInt16(buffer, readPosition, endian);
+                readPosition += 2;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public int TakeIntBE(out int value)
@@ -431,11 +431,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(4))
             {
-                value = ByteConverter.BytesToInt32(buffer, _rPos, endian);
-                _rPos += 4;
+                value = ByteConverter.BytesToInt32(buffer, readPosition, endian);
+                readPosition += 4;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public uint TakeUintBE(out uint value)
@@ -452,11 +452,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(4))
             {
-                value = ByteConverter.BytesToUInt32(buffer, _rPos, endian);
-                _rPos += 4;
+                value = ByteConverter.BytesToUInt32(buffer, readPosition, endian);
+                readPosition += 4;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public long TakeLongBE(out long value)
@@ -473,11 +473,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(8))
             {
-                value = ByteConverter.BytesToInt64(buffer, _rPos, endian);
-                _rPos += 8;
+                value = ByteConverter.BytesToInt64(buffer, readPosition, endian);
+                readPosition += 8;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public ulong TakeUlongBE(out ulong value)
@@ -494,11 +494,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(8))
             {
-                value = ByteConverter.BytesToUInt64(buffer, _rPos, endian);
-                _rPos += 8;
+                value = ByteConverter.BytesToUInt64(buffer, readPosition, endian);
+                readPosition += 8;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public float TakeFloatBE(out float value)
@@ -515,11 +515,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(4))
             {
-                value = ByteConverter.BytesToSingle(buffer, _rPos, endian);
-                _rPos += 4;
+                value = ByteConverter.BytesToSingle(buffer, readPosition, endian);
+                readPosition += 4;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public double TakeDoubleBE(out double value)
@@ -536,11 +536,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(8))
             {
-                value = ByteConverter.BytesToDouble(buffer, _rPos, endian);
-                _rPos += 8;
+                value = ByteConverter.BytesToDouble(buffer, readPosition, endian);
+                readPosition += 8;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public bool TakeBoolBE(out bool value, byte length)
@@ -557,11 +557,11 @@ namespace Konata.Library.IO
         {
             if (CheckAvailable(length))
             {
-                value = ByteConverter.BytesToBool(buffer, _rPos, length, endian);
-                _rPos += length;
+                value = ByteConverter.BytesToBool(buffer, readPosition, length, endian);
+                readPosition += length;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public string TakeString(out string value, Prefix prefixFlag)
@@ -576,40 +576,40 @@ namespace Konata.Library.IO
             uint preLen = ((uint)prefixFlag) & 15;
             switch (preLen)
             {
-            case 0: // Read to end.
-                length = this.length - _rPos;
-                break;
-            case 1:
-            case 2:
-            case 4:
-                if (CheckAvailable(preLen))
-                {
-                    length = preLen == 1 ? ByteConverter.BytesToUInt8(buffer, _rPos) :
-                             preLen == 2 ? ByteConverter.BytesToUInt16(buffer, _rPos, Endian.Big) :
-                                           ByteConverter.BytesToUInt32(buffer, _rPos, Endian.Big);
-                    _rPos += preLen;
-                    if (reduce)
-                    {
-                        if (length < preLen)
-                        {
-                            throw new IOException("Data length is less than prefix length.");
-                        }
-                        length -= preLen;
-                    }
+                case 0: // Read to end.
+                    length = RemainLength;
                     break;
-                }
-                throw _exEob;
-            default:
-                throw new ArgumentOutOfRangeException("Invalid prefix flag.");
+                case 1:
+                case 2:
+                case 4:
+                    if (CheckAvailable(preLen))
+                    {
+                        length = preLen == 1 ? ByteConverter.BytesToUInt8(buffer, readPosition) :
+                                 preLen == 2 ? ByteConverter.BytesToUInt16(buffer, readPosition, Endian.Big) :
+                                               ByteConverter.BytesToUInt32(buffer, readPosition, Endian.Big);
+                        readPosition += preLen;
+                        if (reduce)
+                        {
+                            if (length < preLen)
+                            {
+                                throw new IOException("Data length is less than prefix length.");
+                            }
+                            length -= preLen;
+                        }
+                        break;
+                    }
+                    throw eobException;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid prefix flag.");
             }
             if (CheckAvailable(length))
             {
                 value = new byte[length];
-                Buffer.BlockCopy(buffer, (int)_rPos, value, 0, (int)length);
-                _rPos += length;
+                Buffer.BlockCopy(buffer, (int)readPosition, value, 0, (int)length);
+                readPosition += length;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public byte[] TakeBytes(out byte[] value, uint length)
@@ -617,18 +617,18 @@ namespace Konata.Library.IO
             if (CheckAvailable(length))
             {
                 value = new byte[length];
-                Buffer.BlockCopy(buffer, (int)_rPos, value, 0, (int)length);
-                _rPos += length;
+                Buffer.BlockCopy(buffer, (int)readPosition, value, 0, (int)length);
+                readPosition += length;
                 return value;
             }
-            throw _exEob;
+            throw eobException;
         }
 
         public byte[] TakeAllBytes(out byte[] value)
         {
-            value = new byte[length - _rPos];
-            Buffer.BlockCopy(buffer, (int)_rPos, value, 0, value.Length);
-            _rPos = length;
+            value = new byte[bufferLength - readPosition];
+            Buffer.BlockCopy(buffer, (int)readPosition, value, 0, value.Length);
+            readPosition = bufferLength;
             return value;
         }
 
@@ -638,7 +638,56 @@ namespace Konata.Library.IO
         /// <param name="length"></param>
         public void EatBytes(uint length)
         {
-            _rPos += length;
+            if (CheckAvailable(length))
+            {
+                readPosition += length;
+            }
+            else
+            {
+                throw eobException;
+            }
+        }
+
+        public byte[] TakeVarIntBytes(out byte[] value)
+        {
+            value = null;
+            uint index = readPosition;
+            byte b;
+            do
+            {
+                if (index < bufferLength)
+                {
+                    b = buffer[index];
+                    ++index;
+                }
+                else
+                {
+                    throw eobException;
+                }
+            }
+            while ((b & 0b10000000) > 0);
+            return value = TakeBytes(out _, index - readPosition);
+        }
+
+        public ulong TakeVarIntValue(out ulong value)
+        {
+            value = 0;
+            byte b;
+            do
+            {
+                if (CheckAvailable(1))
+                {
+                    TakeByte(out b);
+                    value <<= 7;
+                    value |= b & 0b01111111u;
+                }
+                else
+                {
+                    throw eobException;
+                }
+            }
+            while ((b & 0b10000000) > 0);
+            return value;
         }
 
         #endregion
@@ -651,10 +700,10 @@ namespace Konata.Library.IO
         /// <returns></returns>
         public byte[] GetBytes()
         {
-            if (length > 0)
+            if (bufferLength > 0)
             {
-                var data = new byte[length];
-                Buffer.BlockCopy(buffer, 0, data, 0, (int)length);
+                var data = new byte[bufferLength];
+                Buffer.BlockCopy(buffer, 0, data, 0, (int)bufferLength);
                 return data;
             }
             return new byte[0];
@@ -666,26 +715,26 @@ namespace Konata.Library.IO
         /// <returns></returns>
         public override string ToString()
         {
-            return BitConverter.ToString(GetBytes()).Replace("-", " ");
+            return ByteConverter.Hex(GetBytes(), true);
         }
 
         #endregion
 
         public uint Length
         {
-            get { return length; }
+            get { return bufferLength; }
         }
 
         public uint RemainLength
         {
-            get { return length - _rPos; }
+            get { return bufferLength - readPosition; }
         }
 
         public static uint MinBufferBase
         {
             get
             {
-                return (uint)_minBufBase;
+                return (uint)minBufferBase;
             }
             set
             {
@@ -693,8 +742,8 @@ namespace Konata.Library.IO
                 {
                     throw new IOException("Minimum buffer base out of range: 0 <= MinBufferBase <= 30.");
                 }
-                _minBufBase = (int)value;
-                _minBufSize = 1U << _minBufBase;
+                minBufferBase = (int)value;
+                minBufferSize = 1U << minBufferBase;
             }
         }
 
@@ -702,7 +751,7 @@ namespace Konata.Library.IO
         {
             get
             {
-                return _minBufSize;
+                return minBufferSize;
             }
             set
             {
@@ -717,19 +766,19 @@ namespace Konata.Library.IO
                     ++b;
                     s <<= 1;
                 }
-                _minBufBase = b;
-                _minBufSize = s;
+                minBufferBase = b;
+                minBufferSize = s;
             }
         }
 
         private void ExtendBufferSize(uint minLength)
         {
-            uint size = minLength >> _minBufBase;
-            if ((minLength & (_minBufSize - 1)) > 0)
+            uint size = minLength >> minBufferBase;
+            if ((minLength & (minBufferSize - 1)) > 0)
             {
                 ++size;
             }
-            size <<= _minBufBase;
+            size <<= minBufferBase;
             if (buffer == null)
             {
                 buffer = new byte[size];
@@ -738,9 +787,9 @@ namespace Konata.Library.IO
             {
                 Array.Resize(ref buffer, (int)size);
             }
-            if (length < minLength)
+            if (bufferLength < minLength)
             {
-                length = minLength;
+                bufferLength = minLength;
             }
         }
 
@@ -750,38 +799,38 @@ namespace Konata.Library.IO
         /// <param name="data">數據</param>
         protected void WriteData(byte[] data)
         {
-            uint minLength = _wPos + (uint)data.Length;
-            ExtendBufferSize(minLength > length ? minLength : length);
-            Buffer.BlockCopy(data, 0, buffer, (int)_wPos, data.Length);
-            _wPos = minLength;
+            uint minLength = writePosition + (uint)data.Length;
+            ExtendBufferSize(minLength > bufferLength ? minLength : bufferLength);
+            Buffer.BlockCopy(data, 0, buffer, (int)writePosition, data.Length);
+            writePosition = minLength;
         }
 
         protected bool CheckAvailable(uint length = 0)
         {
-            return _rPos + length <= this.length;
+            return readPosition + length <= bufferLength;
         }
 
         protected static bool InsertPrefix(byte[] buffer, uint offset, uint value, Prefix prefixFlag, Endian endian = Endian.Big)
         {
             switch (prefixFlag)
             {
-            case Prefix.Uint8:
-                if (value <= byte.MaxValue)
-                {
-                    Buffer.BlockCopy(ByteConverter.UInt8ToBytes((byte)value), 0, buffer, (int)offset, 1);
+                case Prefix.Uint8:
+                    if (value <= byte.MaxValue)
+                    {
+                        Buffer.BlockCopy(ByteConverter.UInt8ToBytes((byte)value), 0, buffer, (int)offset, 1);
+                        return true;
+                    }
+                    break;
+                case Prefix.Uint16:
+                    if (value <= ushort.MaxValue)
+                    {
+                        Buffer.BlockCopy(ByteConverter.UInt16ToBytes((ushort)value, endian), 0, buffer, (int)offset, 2);
+                        return true;
+                    }
+                    break;
+                case Prefix.Uint32:
+                    Buffer.BlockCopy(ByteConverter.UInt32ToBytes(value, endian), 0, buffer, (int)offset, 4);
                     return true;
-                }
-                break;
-            case Prefix.Uint16:
-                if (value <= ushort.MaxValue)
-                {
-                    Buffer.BlockCopy(ByteConverter.UInt16ToBytes((ushort)value, endian), 0, buffer, (int)offset, 2);
-                    return true;
-                }
-                break;
-            case Prefix.Uint32:
-                Buffer.BlockCopy(ByteConverter.UInt32ToBytes(value, endian), 0, buffer, (int)offset, 4);
-                return true;
             }
             return false;
         }
