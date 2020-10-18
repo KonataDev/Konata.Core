@@ -40,7 +40,7 @@ namespace Konata.Test.Tests
                 });
             });
 
-            Print(ProtoSerializer.Serialize(root0).GetBytes());
+            Print(root0.Serialize().GetBytes());
 
             return true;
         }

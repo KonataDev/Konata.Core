@@ -16,7 +16,7 @@ namespace Konata.Test.Tests
             root1.addTree("0A", root2);
             root.addTree("0A", root1);
 
-            Print(ProtoSerializer.Serialize(root).GetBytes());
+            Print(root.Serialize().GetBytes());
 
             return true;
         }

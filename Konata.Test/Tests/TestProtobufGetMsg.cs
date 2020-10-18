@@ -10,7 +10,7 @@ namespace Konata.Test.Tests
         {
             var request = new ProtoGetMsg(new byte[38]);
 
-            Print(ProtoSerializer.Serialize(request).GetBytes());
+            Print(request.Serialize().GetBytes());
 
             return true;
         }
