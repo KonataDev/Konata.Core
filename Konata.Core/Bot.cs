@@ -11,23 +11,23 @@ namespace Konata
 
     public class Bot
     {
-        private bool _isExit;
-        private Core _msfCore;
+        private bool isExit;
+        private Core msfCore;
 
-        private EventProc _eventProc;
-        private EventQueue _eventQueue;
-        private EventMutex _eventLock;
+        private EventProc eventProc;
+        private EventQueue eventQueue;
+        private EventMutex eventLock;
 
         public delegate bool EventProc(EventType e, params object[] a);
 
         public Bot(uint uin, string password)
         {
-            _isExit = false;
+            isExit = false;
 
-            _eventLock = new EventMutex();
-            _eventQueue = new EventQueue();
+            eventLock = new EventMutex();
+            eventQueue = new EventQueue();
 
-            _msfCore = new Core(this, uin, password);
+            msfCore = new Core(this, uin, password);
         }
 
         /// <summary>
@@ -37,12 +37,12 @@ namespace Konata
         /// <returns></returns>
         public bool RegisterDelegate(EventProc callback)
         {
-            if (_eventProc != null)
+            if (eventProc != null)
             {
                 return false;
             }
 
-            _eventProc = callback;
+            eventProc = callback;
             return true;
         }
 
@@ -51,7 +51,7 @@ namespace Konata
         /// </summary>
         public void Run()
         {
-            if (_isExit)
+            if (isExit)
             {
                 return;
             }
@@ -60,11 +60,11 @@ namespace Konata
             PostEvent(EventFilter.User, EventType.BotStart);
 
             // 進入事件循環
-            _isExit = false;
-            while (!_isExit)
+            isExit = false;
+            while (!isExit)
             {
                 Event coreEvent;
-                if (!GetEvent(out coreEvent) || coreEvent._type == EventType.Idle)
+                if (!GetEvent(out coreEvent) || coreEvent.type == EventType.Idle)
                 {
                     Thread.Sleep(1);
                     continue;
@@ -81,7 +81,7 @@ namespace Konata
         {
             var e = (Event)o;
 
-            if (e._filter == EventFilter.System)
+            if (e.filter == EventFilter.System)
             {
                 OnSystemEvent(e);
                 return;
@@ -93,12 +93,12 @@ namespace Konata
 
         private void OnUserEvent(Event e)
         {
-            _eventProc(e._type, e._args);
+            eventProc(e.type, e.args);
         }
 
         private void OnSystemEvent(Event e)
         {
-            switch (e._type)
+            switch (e.type)
             {
                 case EventType.WtLogin: OnLogin(e); break;
                 case EventType.LoginFailed: OnLoginFailed(e); break;
@@ -112,67 +112,67 @@ namespace Konata
 
         private void OnLogin(Event e)
         {
-            _msfCore.Connect();
-            _msfCore.WtLoginTgtgt();
+            msfCore.Connect();
+            msfCore.WtLoginTgtgt();
         }
 
         private void OnLoginFailed(Event e)
         {
-            _msfCore.DisConnect();
+            msfCore.DisConnect();
         }
 
         private void OnHeartBeat(Event e)
         {
-            _msfCore.Heartbeat_Alive();
+            msfCore.Heartbeat_Alive();
         }
 
         private void OnWtLoginVerifySliderCaptcha(Event e)
         {
-            if (e._args == null
-                || e._args.Length != 1
-                || !(e._args[0] is string))
+            if (e.args == null
+                || e.args.Length != 1
+                || !(e.args[0] is string))
             {
                 return;
             }
 
-            _msfCore.WtLoginCheckSlider((string)e._args[0]);
+            msfCore.WtLoginCheckSlider((string)e.args[0]);
         }
 
         private void OnWtLoginVerifySmsCaptcha(Event e)
         {
-            if (e._args == null
-                || e._args.Length != 1
-                || !(e._args[0] is string))
+            if (e.args == null
+                || e.args.Length != 1
+                || !(e.args[0] is string))
             {
                 return;
             }
 
-            _msfCore.WtLoginCheckSms((string)e._args[0]);
+            msfCore.WtLoginCheckSms((string)e.args[0]);
         }
 
         private void OnWtLoginRefreshSms(Event e)
         {
-            if (e._args != null)
+            if (e.args != null)
             {
                 return;
             }
 
-            _msfCore.WtLoginRefreshSms();
+            msfCore.WtLoginRefreshSms();
         }
 
         private void OnWtLoginSuccess(Event e)
         {
-            if (e._args != null)
+            if (e.args != null)
             {
                 return;
             }
 
-            _msfCore.StatSvc_RegisterClient();
-            _msfCore.OidbSvc_0xdc9();
-            _msfCore.OidbSvc_0x480_9();
-            _msfCore.OidbSvc_0x5eb_22();
-            _msfCore.OidbSvc_0x5eb_15();
-            _msfCore.OidbSvc_oidb_0xd82();
+            msfCore.StatSvc_RegisterClient();
+            msfCore.OidbSvc_0xdc9();
+            msfCore.OidbSvc_0x480_9();
+            msfCore.OidbSvc_0x5eb_22();
+            msfCore.OidbSvc_0x5eb_15();
+            msfCore.OidbSvc_oidb_0xd82();
         }
 
         #endregion
@@ -215,11 +215,11 @@ namespace Konata
         /// <param name="e"></param>
         internal void PostEvent(Event e)
         {
-            _eventLock.WaitOne();
+            eventLock.WaitOne();
             {
-                _eventQueue.Enqueue(e);
+                eventQueue.Enqueue(e);
             }
-            _eventLock.ReleaseMutex();
+            eventLock.ReleaseMutex();
         }
 
         /// <summary>
@@ -261,19 +261,19 @@ namespace Konata
         /// <returns></returns>
         private bool GetEvent(out Event e)
         {
-            _eventLock.WaitOne();
+            eventLock.WaitOne();
             {
-                if (_eventQueue.Count <= 0)
+                if (eventQueue.Count <= 0)
                 {
-                    _eventLock.ReleaseMutex();
+                    eventLock.ReleaseMutex();
 
                     e = Event.Idle;
                     return false;
                 }
 
-                e = _eventQueue.Dequeue();
+                e = eventQueue.Dequeue();
             }
-            _eventLock.ReleaseMutex();
+            eventLock.ReleaseMutex();
 
             return true;
         }

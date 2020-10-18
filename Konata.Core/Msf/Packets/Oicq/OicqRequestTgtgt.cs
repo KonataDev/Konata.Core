@@ -15,8 +15,8 @@ namespace Konata.Msf.Packets.Oicq
 
         public OicqRequestTgtgt(uint uin, uint ssoseq, UserSigInfo sigInfo)
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH135,
-                new XTGTGT(uin, ssoseq, sigInfo._passwordMd5, sigInfo._tgtgKey,
-                    sigInfo._t106Key), sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
+                new XTGTGT(uin, ssoseq, sigInfo.PasswordMd5, sigInfo.TgtgKey,
+                    sigInfo.Tlv106Key), sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }

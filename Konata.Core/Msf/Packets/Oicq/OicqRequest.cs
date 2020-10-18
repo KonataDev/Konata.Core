@@ -31,34 +31,34 @@ namespace Konata.Msf.Packets.Oicq
 
     public class OicqRequest : Packet
     {
-        public readonly uint _uin;
-        public readonly ushort _oicqCommand;
-        public readonly ushort _oicqSubCommand;
-        public readonly ushort _oicqVersion;
-        public readonly OicqStatus _oicqStatus;
-        public readonly OicqRequestBody _oicqRequestBody;
-        public readonly OicqEncryptMethod _oicqEncryptMethod;
+        public readonly uint uin;
+        public readonly ushort oicqCommand;
+        public readonly ushort oicqSubCommand;
+        public readonly ushort oicqVersion;
+        public readonly OicqStatus oicqStatus;
+        public readonly OicqRequestBody oicqRequestBody;
+        public readonly OicqEncryptMethod oicqEncryptMethod;
 
         public OicqRequest(ushort command, ushort subCommand, uint uin,
             OicqEncryptMethod method, OicqRequestBody body,
             byte[] shareKey, byte[] randKey, byte[] publicKey)
             : base()
         {
-            _uin = uin;
-            _oicqVersion = 8001;
-            _oicqCommand = command;
-            _oicqSubCommand = subCommand;
-            _oicqRequestBody = body;
-            _oicqEncryptMethod = method;
+            this.uin = uin;
+            oicqVersion = 8001;
+            oicqCommand = command;
+            oicqSubCommand = subCommand;
+            oicqRequestBody = body;
+            oicqEncryptMethod = method;
 
             PutByte(0x02); // 頭部 0x02
             {
                 EnterBarrier(Prefix.Uint16, Endian.Big, 4);
                 {
-                    PutUshortBE(_oicqVersion);
-                    PutUshortBE(_oicqCommand);
+                    PutUshortBE(oicqVersion);
+                    PutUshortBE(oicqCommand);
                     PutUshortBE(1);
-                    PutUintBE(_uin);
+                    PutUintBE(this.uin);
                     PutByte(0x03);
                     PutByte((byte)method);
                     PutByte(0x00); // 永遠0
@@ -66,7 +66,7 @@ namespace Konata.Msf.Packets.Oicq
                     PutUintBE(AppInfo.appClientVersion);
                     PutUintBE(0);
 
-                    PutOicqRequestBody(_oicqRequestBody, shareKey, randKey, publicKey);
+                    PutOicqRequestBody(oicqRequestBody, shareKey, randKey, publicKey);
                 }
                 LeaveBarrier();
             }
@@ -81,16 +81,16 @@ namespace Konata.Msf.Packets.Oicq
             {
                 EatBytes(2);
 
-                TakeUshortBE(out _oicqVersion);
-                TakeUshortBE(out _oicqCommand);
+                TakeUshortBE(out oicqVersion);
+                TakeUshortBE(out oicqCommand);
                 EatBytes(2);
 
-                TakeUintBE(out _uin);
+                TakeUintBE(out uin);
 
                 EatBytes(2);
-                TakeByte(out var status); _oicqStatus = (OicqStatus)status;
+                TakeByte(out var status); oicqStatus = (OicqStatus)status;
 
-                TakeOicqRequestBody(out _oicqRequestBody, shareKey);
+                TakeOicqRequestBody(out oicqRequestBody, shareKey);
             }
             EatBytes(1);
         }

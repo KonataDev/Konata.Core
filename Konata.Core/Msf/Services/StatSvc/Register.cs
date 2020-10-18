@@ -1,10 +1,9 @@
 ﻿using System;
 using Konata.Msf.Packets.Svc;
-using Konata.Msf.Packets.Wup;
 
 namespace Konata.Msf.Services.StatSvc
 {
-    internal class Register : Service
+    public class Register : Service
     {
         private Register()
         {
@@ -13,7 +12,7 @@ namespace Konata.Msf.Services.StatSvc
 
         public static Service Instance { get; } = new Register();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             if (method != "")
                 throw new Exception("???");
@@ -21,7 +20,7 @@ namespace Konata.Msf.Services.StatSvc
             return Request_Register(core);
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;
@@ -38,52 +37,52 @@ namespace Konata.Msf.Services.StatSvc
         {
             var requestBody = new SvcReqRegister.XSvcRegister()
             {
-                _uin = core._sigInfo._uin,
-                _bid = 7,
-                _connType = 0,
-                _other = "",
-                _status = 11,
-                _onlinePush = 0,
-                _isOnline = 0,
-                _isShowOnline = 0,
-                _kikPC = 0,
-                _kikWeak = 0,
-                _timeStamp = 56,
-                _osVersion = 27,
-                _netType = 1,
-                _regType = 0,
-                _guid = DeviceInfo.Guid,
-                _localeID = 2052,
-                _slientPush = 0,
-                _devName = DeviceInfo.System.ModelName,
-                _devType = DeviceInfo.System.ModelName,
-                _osVer = DeviceInfo.System.OsVersion,
-                _openPush = 1,
-                _largeSeq = 99,
-                _oldSSOIp = 0,
-                _newSSOIp = 2081292189,
-                _channelNo = "",
-                _cpId = 0,
-                _vendorName = DeviceInfo.System.Manufacturer,
-                _vendorOSName = DeviceInfo.System.OsName,
-                _osIdfa = "",
-                _cmd0x769Reqbody = new byte[]
+                uin = core.SigInfo.Uin,
+                bid = 7,
+                connType = 0,
+                other = "",
+                status = 11,
+                onlinePush = 0,
+                isOnline = 0,
+                isShowOnline = 0,
+                kikPC = 0,
+                kikWeak = 0,
+                timeStamp = 56,
+                osVersion = 27,
+                netType = 1,
+                regType = 0,
+                guid = DeviceInfo.Guid,
+                localeID = 2052,
+                slientPush = 0,
+                devName = DeviceInfo.System.ModelName,
+                devType = DeviceInfo.System.ModelName,
+                osVer = DeviceInfo.System.OsVersion,
+                openPush = 1,
+                largeSeq = 99,
+                oldSSOIp = 0,
+                newSSOIp = 2081292189,
+                channelNo = "",
+                cpId = 0,
+                vendorName = DeviceInfo.System.Manufacturer,
+                vendorOSName = DeviceInfo.System.OsName,
+                osIdfa = "",
+                cmd0x769Reqbody = new byte[]
                 {
                     0x0A, 0x08, 0x08, 0x2E,
                     0x10, 0x9A, 0xEF, 0x9C,
                     0xFB, 0x05, 0x0A, 0x05,
                     0x08, 0x9B, 0x02, 0x10, 0x00
                 },
-                _isSetStatus = 0,
-                _extOnlineStatus = 0,
-                _batteryStatus = 0
+                isSetStatus = 0,
+                extOnlineStatus = 0,
+                batteryStatus = 0
             };
 
             var request = new SvcReqRegister(0, 0, 0, 0, requestBody.Encode());
-            var sequence = core._ssoMan.GetNewSequence();
-            core._ssoMan.PostMessage(this, request, sequence);
+            var sequence = core.SsoMan.GetNewSequence();
+            core.SsoMan.PostMessage(this, request, sequence);
 
-            return false;
+            return true;
         }
     }
 }

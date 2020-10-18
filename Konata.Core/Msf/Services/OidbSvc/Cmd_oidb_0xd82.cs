@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Services.OidbSvc
 {
-    internal class Cmd_oidb_0xd82 : Service
+    public class Cmd_oidb_0xd82 : Service
     {
         private Cmd_oidb_0xd82()
         {
@@ -11,12 +11,12 @@ namespace Konata.Msf.Services.OidbSvc
 
         public static Service Instance { get; } = new Cmd_oidb_0xd82();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             return false;
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;

@@ -16,7 +16,7 @@ namespace Konata.Msf.Packets.Oicq
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
                   new XTransport(data, isMsf, appId, 85, sigSession, sigSessionKey),
-                  sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
+                  sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }

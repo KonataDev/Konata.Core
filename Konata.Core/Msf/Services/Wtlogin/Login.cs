@@ -1,13 +1,12 @@
 ﻿using System;
-using Konata.Msf;
-using Konata.Msf.Packets.Oicq;
-using Konata.Msf.Packets.Tlv;
-using Konata.Msf.Crypto;
 using Konata.Utils;
+using Konata.Msf.Crypto;
+using Konata.Msf.Packets.Tlv;
+using Konata.Msf.Packets.Oicq;
 
 namespace Konata.Msf.Services.Wtlogin
 {
-    internal class Login : Service
+    public class Login : Service
     {
         private Login()
         {
@@ -16,7 +15,7 @@ namespace Konata.Msf.Services.Wtlogin
 
         public static Service Instance { get; } = new Login();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             switch (method)
             {
@@ -32,21 +31,21 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;
 
             var packet = (Packet)args[0];
             var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
-                core._sigInfo._shareKey);
+                core.SigInfo.ShareKey);
 
-            Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest._oicqCommand}");
-            Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest._oicqVersion}");
-            Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest._oicqStatus}");
+            Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
+            Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
+            Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest.oicqStatus}");
 
-            core._oicqStatus = oicqRequest._oicqStatus;
-            switch (oicqRequest._oicqStatus)
+            core.SigInfo.WtLoginStatus = oicqRequest.oicqStatus;
+            switch (oicqRequest.oicqStatus)
             {
                 case OicqStatus.OK:
                     return Handle_WtloginSuccess(core, oicqRequest);
@@ -77,14 +76,14 @@ namespace Konata.Msf.Services.Wtlogin
         /// 請求 OicqRequestTgtgt
         /// </summary>
         /// <param name="core"></param>
-        internal bool Request_TGTGT(Core core)
+        private bool Request_TGTGT(Core core)
         {
             Console.WriteLine("Submit OicqRequestTGTGT.");
 
-            var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestTgtgt(core._sigInfo._uin, sequence, core._sigInfo);
+            var sequence = core.SsoMan.GetServiceSequence(name);
+            var request = new OicqRequestTgtgt(core.SigInfo.Uin, sequence, core.SigInfo);
 
-            core._ssoMan.PostMessage(this, request, sequence);
+            core.SsoMan.PostMessage(this, request, sequence);
 
             return true;
         }
@@ -95,15 +94,15 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="core"></param>
         /// <param name="ticket"></param>
         /// <returns></returns>
-        internal bool Request_SliderCaptcha(Core core, string ticket)
+        private bool Request_SliderCaptcha(Core core, string ticket)
         {
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
-            var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckImage(core._sigInfo._uin, core._sigInfo,
-                core._sigInfo._sigSession, ticket);
+            var sequence = core.SsoMan.GetServiceSequence(name);
+            var request = new OicqRequestCheckImage(core.SigInfo.Uin, core.SigInfo,
+                core.SigInfo.WtLoginSession, ticket);
 
-            core._ssoMan.PostMessage(this, request, sequence);
+            core.SsoMan.PostMessage(this, request, sequence);
 
             return true;
         }
@@ -114,16 +113,16 @@ namespace Konata.Msf.Services.Wtlogin
         /// <param name="core"></param>
         /// <param name="smsCode"></param>
         /// <returns></returns>
-        internal bool Request_SmsCaptcha(Core core, string smsCode)
+        private bool Request_SmsCaptcha(Core core, string smsCode)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
-            var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckSms(core._sigInfo._uin, core._sigInfo,
-                 core._sigInfo._sigSession, core._sigInfo._gSecret,
-                 core._sigInfo._smsToken, smsCode);
+            var sequence = core.SsoMan.GetServiceSequence(name);
+            var request = new OicqRequestCheckSms(core.SigInfo.Uin, core.SigInfo,
+                 core.SigInfo.WtLoginSession, core.SigInfo.GSecret,
+                 core.SigInfo.WtLoginSmsToken, smsCode);
 
-            core._ssoMan.PostMessage(this, request, sequence);
+            core.SsoMan.PostMessage(this, request, sequence);
             return true;
         }
 
@@ -132,15 +131,15 @@ namespace Konata.Msf.Services.Wtlogin
         /// </summary>
         /// <param name="core"></param>
         /// <returns></returns>
-        internal bool Request_RefreshSms(Core core)
+        private bool Request_RefreshSms(Core core)
         {
             Console.WriteLine("Request send SMS.");
 
-            var sequence = core._ssoMan.GetServiceSequence(name);
-            var request = new OicqRequestRefreshSms(core._sigInfo._uin, core._sigInfo,
-                 core._sigInfo._sigSession, core._sigInfo._smsToken);
+            var sequence = core.SsoMan.GetServiceSequence(name);
+            var request = new OicqRequestRefreshSms(core.SigInfo.Uin, core.SigInfo,
+                 core.SigInfo.WtLoginSession, core.SigInfo.WtLoginSmsToken);
 
-            core._ssoMan.PostMessage(this, request, sequence);
+            core.SsoMan.PostMessage(this, request, sequence);
 
             return true;
         }
@@ -149,11 +148,11 @@ namespace Konata.Msf.Services.Wtlogin
 
         #region Event Handlers
 
-        internal bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
+        private bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do slider verification.");
 
-            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
             Tlv tlv104 = unpacker.TryGetTlv(0x104);
@@ -163,18 +162,18 @@ namespace Konata.Msf.Services.Wtlogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                core._sigInfo._sigSession = sigSession;
+                core.SigInfo.WtLoginSession = sigSession;
                 core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigCaptchaURL,
                     DeviceInfo.Browser.UserAgent);
             }
             return false;
         }
 
-        internal bool Handle_VerifySmsCaptcha(Core core, OicqRequest request)
+        private bool Handle_VerifySmsCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do sms verification.");
 
-            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
             if (unpacker.Count == 8 || unpacker.Count == 9)
@@ -201,9 +200,9 @@ namespace Konata.Msf.Services.Wtlogin
                     var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    core._sigInfo._smsPhone = $"+{smsCountryCode} {smsPhone}";
-                    core._sigInfo._smsToken = smsToken;
-                    core._sigInfo._sigSession = sigSession;
+                    core.SigInfo.WtLoginSmsPhone = $"+{smsCountryCode} {smsPhone}";
+                    core.SigInfo.WtLoginSmsToken = smsToken;
+                    core.SigInfo.WtLoginSession = sigSession;
                     core.PostSystemEvent(EventType.WtLoginSendSms);
 
                     return true;
@@ -218,8 +217,8 @@ namespace Konata.Msf.Services.Wtlogin
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
 
-                    core._sigInfo._sigSession = sigSession;
-                    core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core._sigInfo._smsPhone);
+                    core.SigInfo.WtLoginSession = sigSession;
+                    core.PostUserEvent(EventType.WtLoginVerifySmsCaptcha, core.SigInfo.WtLoginSmsPhone);
 
                     return true;
                 }
@@ -233,7 +232,7 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        internal bool Handle_VerifyImageCaptcha(Core core, OicqRequest request)
+        private bool Handle_VerifyImageCaptcha(Core core, OicqRequest request)
         {
             Console.WriteLine("Do image verification.");
 
@@ -242,18 +241,18 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        internal bool Handle_VerifyDeviceLock(Core core, OicqRequest request)
+        private bool Handle_VerifyDeviceLock(Core core, OicqRequest request)
         {
             Console.WriteLine("Do DeviceLock verification.");
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
 
-        internal bool Handle_WtloginSuccess(Core core, OicqRequest request)
+        private bool Handle_WtloginSuccess(Core core, OicqRequest request)
         {
             Console.WriteLine("Wtlogin success.");
 
-            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
             if (unpacker.Count == 2)
@@ -264,7 +263,7 @@ namespace Konata.Msf.Services.Wtlogin
                 if (tlv119 != null && tlv161 != null)
                 {
                     var decrtpted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, core._sigInfo._tgtgKey);
+                        TeaCryptor.Instance, core.SigInfo.TgtgKey);
 
                     var tlv119Unpacker = new TlvUnpacker(decrtpted, true);
 
@@ -316,18 +315,18 @@ namespace Konata.Msf.Services.Wtlogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
-                    core._sigInfo._tgtKey = tgtKey;
-                    core._sigInfo._tgtToken = tgtToken;
-                    core._sigInfo._d2Key = d2Key;
-                    core._sigInfo._d2Token = d2Token;
-                    core._sigInfo._wtSessionTicketSig = wtSessionTicketSig;
-                    core._sigInfo._wtSessionTicketKey = wtSessionTicketKey;
-                    core._sigInfo._gtKey = gtKey;
-                    core._sigInfo._stKey = stKey;
+                    core.SigInfo.TgtKey = tgtKey;
+                    core.SigInfo.TgtToken = tgtToken;
+                    core.SigInfo.D2Key = d2Key;
+                    core.SigInfo.D2Token = d2Token;
+                    core.SigInfo.WtSessionTicketSig = wtSessionTicketSig;
+                    core.SigInfo.WtSessionTicketKey = wtSessionTicketKey;
+                    core.SigInfo.GtKey = gtKey;
+                    core.SigInfo.StKey = stKey;
 
-                    core._ssoMan.SetD2Pair(d2Token, d2Key);
-                    core._ssoMan.SetTgtPair(tgtToken, tgtKey);
-                    core._ssoMan.DestroyServiceSequence(name);
+                    core.SsoMan.SetD2Pair(d2Token, d2Key);
+                    core.SsoMan.SetTgtPair(tgtToken, tgtKey);
+                    core.SsoMan.DestroyServiceSequence(name);
 
                     core.PostSystemEvent(EventType.WtLoginOK);
 
@@ -345,25 +344,25 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        internal bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
+        private bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Incorrect account or password.");
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
 
-        internal bool Handle_InvalidSmsCode(Core core, OicqRequest request)
+        private bool Handle_InvalidSmsCode(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Incorrect sms code.");
             core.PostSystemEvent(EventType.LoginFailed);
             return false;
         }
 
-        internal bool Handle_InvalidEnvironment(Core core, OicqRequest request)
+        private bool Handle_InvalidEnvironment(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Invalid login environment.");
 
-            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
             Tlv tlv146 = unpacker.TryGetTlv(0x146);
@@ -379,11 +378,11 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        internal bool Handle_LoginDenied(Core core, OicqRequest request)
+        private bool Handle_LoginDenied(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Login denied.");
 
-            var tlvs = request._oicqRequestBody.TakeAllBytes(out var _);
+            var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
             Tlv tlv146 = unpacker.TryGetTlv(0x146);
@@ -399,7 +398,7 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
-        internal bool Handle_UnknownOicqRequest(Core core, OicqRequest request)
+        private bool Handle_UnknownOicqRequest(Core core, OicqRequest request)
         {
             Console.WriteLine("[Error] Unknown OicqRequest received.");
             core.PostSystemEvent(EventType.LoginFailed);

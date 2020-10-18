@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Tlv;
 
 namespace Konata.Msf.Packets.Oicq
@@ -16,7 +15,7 @@ namespace Konata.Msf.Packets.Oicq
 
             : base(OicqCommand, OicqSubCommand, uin,
                   OicqEncryptMethod.ECDH7, new XCaptcha(sigSission, sigTicket),
-                  sigInfo._shareKey, sigInfo._randKey, sigInfo._defaultPublicKey)
+                  sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }

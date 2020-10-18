@@ -1,40 +1,24 @@
-﻿using System;
-using System.IO;
-using Konata.Utils;
-using Konata.Library.IO;
-using Konata.Msf.Crypto;
+﻿using Konata.Library.IO;
 using Konata.Library.Protobuf;
+using Konata.Msf.Crypto;
+using Konata.Utils;
+using System.IO;
 
 namespace Konata.Msf
 {
     public class Packet : ByteBuffer
     {
-        public Packet()
-            : base()
-        {
-
-        }
-
-        public Packet(byte[] data)
+        public Packet(byte[] data = null)
             : base(data)
         {
-            _pos = 0;
 
-            if (data != null)
-            {
-                _buffer = new byte[data.Length];
-                _length = (uint)data.Length;
-                Buffer.BlockCopy(data, 0, _buffer, 0, data.Length);
-            }
         }
 
         public Packet(byte[] data, ICryptor cryptor, byte[] cryptKey)
             : base()
         {
-            _pos = 0;
-
-            _buffer = cryptor.Decrypt(data, cryptKey);
-            _length = (uint)_buffer.Length;
+            buffer = cryptor.Decrypt(data, cryptKey);
+            length = (uint)buffer.Length;
         }
 
         public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
@@ -90,8 +74,6 @@ namespace Konata.Msf
             PutBytes(ProtoSerializer.Serialize(value).GetBytes());
         }
 
-        private uint _pos;
-
         public string TakeHexString(out string value, Prefix prefixFlag)
         {
             return value = Hex.Bytes2HexStr(TakeBytes(out byte[] _, prefixFlag));
@@ -111,10 +93,7 @@ namespace Konata.Msf
                 TakeUshortBE(out ushort len);
                 if (CheckAvailable(len))
                 {
-                    value = new byte[len];
-                    Buffer.BlockCopy(_buffer, (int)_pos, value, 0, len);
-                    _pos += len;
-                    return value;
+                    return TakeBytes(out value, len);
                 }
                 throw new IOException("Incomplete Tlv context.");
             }
@@ -130,15 +109,15 @@ namespace Konata.Msf
             return cryptor.Encrypt(GetBytes(), cryptKey);
         }
 
-        private uint _barExtLen;
-        private uint _barPos;
-        private Prefix _prefix;
-        private Endian _barLenEndian;
-        private bool _barEnc = false;
-        private byte[] _barEncBuffer;
-        private uint _barEncLength;
-        private ICryptor _barEncCryptor;
-        private byte[] _barEncKey;
+        private uint barExtLen;
+        private uint barPos;
+        private Prefix prefix;
+        private Endian barLenEndian;
+        private bool barEnc = false;
+        private byte[] barEncBuffer;
+        private uint barEncLength;
+        private ICryptor barEncCryptor;
+        private byte[] barEncKey;
 
         /// <summary>
         /// [進入屏障] 在這之後透過 PutMethods 方法組放入的數據將被計算長度
@@ -147,23 +126,23 @@ namespace Konata.Msf
         /// <param name="endian"></param>
         protected void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
         {
-            _barExtLen = extend;
-            _barPos = _length;
-            _prefix = prefixFlag;
-            _barLenEndian = endian;
+            barExtLen = extend;
+            barPos = length;
+            prefix = prefixFlag;
+            barLenEndian = endian;
             PutEmpty((int)prefixFlag);
         }
 
         protected void EnterBarrierEncrypted(Prefix prefixFlag, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
         {
             EnterBarrier(prefixFlag, endian, extend);
-            _barEnc = true;
-            _barEncBuffer = _buffer;
-            _barEncLength = _length;
-            _barEncCryptor = cryptor;
-            _barEncKey = cryptKey;
-            _buffer = null;
-            _length = 0;
+            barEnc = true;
+            barEncBuffer = buffer;
+            barEncLength = length;
+            barEncCryptor = cryptor;
+            barEncKey = cryptKey;
+            buffer = null;
+            length = 0;
         }
 
         /// <summary>
@@ -171,20 +150,20 @@ namespace Konata.Msf
         /// </summary>
         protected void LeaveBarrier()
         {
-            if (_barEnc)
+            if (barEnc)
             {
-                byte[] enc = GetEncryptedBytes(_barEncCryptor, _barEncKey);
-                _buffer = _barEncBuffer;
-                _length = _barEncLength;
+                byte[] enc = GetEncryptedBytes(barEncCryptor, barEncKey);
+                buffer = barEncBuffer;
+                length = barEncLength;
                 PutBytes(enc);
-                _barEnc = false;
-                _barEncBuffer = null;
-                _barEncLength = 0;
-                _barEncCryptor = null;
-                _barEncKey = null;
+                barEnc = false;
+                barEncBuffer = null;
+                barEncLength = 0;
+                barEncCryptor = null;
+                barEncKey = null;
             }
-            InsertPrefix(_buffer, _barPos,
-                _length + _barExtLen - _barPos - (uint)_prefix, _prefix, _barLenEndian);
+            InsertPrefix(buffer, barPos,
+                length + barExtLen - barPos - (uint)prefix, prefix, barLenEndian);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Konata.Msf
 {
     using Routine = Dictionary<string, Service>;
 
-    internal abstract partial class Service
+    public abstract partial class Service
     {
         private static readonly Routine map = new Routine();
 
@@ -22,7 +22,7 @@ namespace Konata.Msf
         /// <param name="method"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal static bool Run(Core core, string name, string method, params object[] args)
+        public static bool Run(Core core, string name, string method, params object[] args)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace Konata.Msf
         /// <param name="name"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal static bool Run(Core core, string name, params object[] args)
+        public static bool Run(Core core, string name, params object[] args)
         {
             return Run(core, name, "", args);
         }
@@ -53,7 +53,7 @@ namespace Konata.Msf
         /// <param name="name"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal static bool Handle(Core core, string name, params object[] args)
+        public static bool Handle(Core core, string name, params object[] args)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Konata.Msf
             }
         }
 
-        internal string name;
+        public string name;
 
         /// <summary>
         /// 需覆寫. 當服務被拉起時執行特定任務
@@ -75,7 +75,7 @@ namespace Konata.Msf
         /// <param name="method"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        protected abstract bool OnRun(Core core, string method, params object[] args);
+        public abstract bool OnRun(Core core, string method, params object[] args);
 
         /// <summary>
         /// 需覆寫. 當服務被拉起時並響應特定指令
@@ -83,14 +83,14 @@ namespace Konata.Msf
         /// <param name="core"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        protected abstract bool OnHandle(Core core, params object[] args);
+        public abstract bool OnHandle(Core core, params object[] args);
 
         /// <summary>
         /// 在繼承基類的類構造方法内調用. 注冊服務路由
         /// </summary>
         /// <param name="name">服務名稱</param>
         /// <param name="service">自身實例</param>
-        protected static void Register(string name, Service service)
+        public static void Register(string name, Service service)
         {
             service.name = name;
             map.Add(name.ToLower(), service);

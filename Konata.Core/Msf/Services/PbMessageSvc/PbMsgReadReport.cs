@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Services.PbMessageSvc
 {
-    internal class PbMsgReadReport : Service
+    public class PbMsgReadReport : Service
     {
         private PbMsgReadReport()
         {
@@ -11,7 +11,7 @@ namespace Konata.Msf.Services.PbMessageSvc
 
         public static Service Instance { get; } = new PbMsgReadReport();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             if (method != "")
                 throw new Exception("???");
@@ -19,7 +19,7 @@ namespace Konata.Msf.Services.PbMessageSvc
             return false;
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;

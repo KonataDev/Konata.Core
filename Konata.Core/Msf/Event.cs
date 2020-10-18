@@ -20,13 +20,16 @@ namespace Konata.Msf
         WtLoginVerifySmsCaptcha,
         WtLoginSendSms,
         HeartBeat,
+        PbPushNotify,
+        PbGetMsg,
+        PbPushGroupMsg,
+
 
         BotStart = 0x2000,
         LoginFailed,
         LoginSuccess,
         PrivateMessage,
         GroupMessage,
-
     }
 
     public class Event
@@ -34,24 +37,22 @@ namespace Konata.Msf
         public static readonly Event Idle =
             new Event(EventFilter.System, EventType.Idle);
 
-        public EventType _type;
-        public EventFilter _filter;
-        public object[] _args;
+        public EventType type;
+        public EventFilter filter;
+        public object[] args;
 
         public Event(EventFilter filter, EventType type,
             params object[] args)
         {
-            _type = type;
-            _filter = filter;
-            _args = args;
+            this.type = type;
+            this.filter = filter;
+            this.args = args;
         }
 
         public Event(EventFilter filter, EventType type)
         {
-            _type = type;
-            _filter = filter;
+            this.type = type;
+            this.filter = filter;
         }
     }
-
-
 }

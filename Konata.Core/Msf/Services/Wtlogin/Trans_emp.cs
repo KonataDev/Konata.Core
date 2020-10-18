@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Services.Wtlogin
 {
-    internal class Trans_emp : Service
+    public class Trans_emp : Service
     {
         private Trans_emp()
         {
@@ -11,7 +11,7 @@ namespace Konata.Msf.Services.Wtlogin
 
         public static Service Instance { get; } = new Trans_emp();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             switch (method)
             {
@@ -21,7 +21,7 @@ namespace Konata.Msf.Services.Wtlogin
             }
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;
@@ -34,7 +34,7 @@ namespace Konata.Msf.Services.Wtlogin
         /// </summary>
         /// <param name="core"></param>
         /// <returns></returns>
-        internal bool Request_Transport(Core core)
+        private bool Request_Transport(Core core)
         {
             return false;
         }

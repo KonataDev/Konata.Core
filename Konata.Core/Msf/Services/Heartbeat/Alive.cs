@@ -2,7 +2,7 @@
 
 namespace Konata.Msf.Services.Heartbeat
 {
-    internal class Alive : Service
+    public class Alive : Service
     {
         private Alive()
         {
@@ -11,7 +11,7 @@ namespace Konata.Msf.Services.Heartbeat
 
         public static Service Instance { get; } = new Alive();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             if (method != "")
                 throw new Exception("???");
@@ -19,7 +19,7 @@ namespace Konata.Msf.Services.Heartbeat
             return Request_Heartbeat(core);
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             return Handle_Heartbeat(core);
         }
@@ -33,8 +33,8 @@ namespace Konata.Msf.Services.Heartbeat
         private bool Request_Heartbeat(Core core)
         {
             var request = new Packet();
-            var sequence = core._ssoMan.GetNewSequence();
-            core._ssoMan.PostMessage(this, request, sequence);
+            var sequence = core.SsoMan.GetNewSequence();
+            core.SsoMan.PostMessage(this, request, sequence);
 
             return false;
         }

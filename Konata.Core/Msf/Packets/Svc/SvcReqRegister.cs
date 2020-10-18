@@ -17,48 +17,48 @@ namespace Konata.Msf.Packets.Svc
 
         public class XSvcRegister : SvcReqBody
         {
-            public byte _isOnline = 0;
-            public byte _isSetStatus = 0;
-            public byte _isShowOnline = 0;
-            public byte _kikPC = 0;
-            public byte _kikWeak = 0;
-            public byte _onlinePush = 0;
-            public byte _openPush = 1;
-            public byte _regType = 0;
-            public byte _setMute = 0;
-            public byte _slientPush = 0;
-            public byte[] _cmd0x769Reqbody;
-            public byte _connType = 0;
-            public byte _netType = 0;
-            public int _batteryStatus = 0;
-            public long _largeSeq = 0;
-            public long _lastWatchStartTime = 0;
-            public int _localeID = 2052;
-            public long _osVersion = 0;
-            public int _status = 11;
-            public long _bid = 0;
-            public long _cpId = 0;
-            public long _uin = 0;
+            public byte isOnline = 0;
+            public byte isSetStatus = 0;
+            public byte isShowOnline = 0;
+            public byte kikPC = 0;
+            public byte kikWeak = 0;
+            public byte onlinePush = 0;
+            public byte openPush = 1;
+            public byte regType = 0;
+            public byte setMute = 0;
+            public byte slientPush = 0;
+            public byte[] cmd0x769Reqbody;
+            public byte connType = 0;
+            public byte netType = 0;
+            public int batteryStatus = 0;
+            public long largeSeq = 0;
+            public long lastWatchStartTime = 0;
+            public int localeID = 2052;
+            public long osVersion = 0;
+            public int status = 11;
+            public long bid = 0;
+            public long cpId = 0;
+            public long uin = 0;
 
-            public string _buildVer = "";
-            public string _channelNo = "";
-            public string _other = "";
-            public string _devName = "";
-            public string _devType = "";
-            public string _osIdfa = "";
-            public string _osVer = "";
-            public string _vendorName = "";
-            public string _vendorOSName = "";
+            public string buildVer = "";
+            public string channelNo = "";
+            public string other = "";
+            public string devName = "";
+            public string devType = "";
+            public string osIdfa = "";
+            public string osVer = "";
+            public string vendorName = "";
+            public string vendorOSName = "";
 
-            public long _timeStamp = 0;
-            public long _extOnlineStatus = 0;
-            public long _newSSOIp = 0;
-            public long _oldSSOIp = 0;
+            public long timeStamp = 0;
+            public long extOnlineStatus = 0;
+            public long newSSOIp = 0;
+            public long oldSSOIp = 0;
 
-            public ArrayList _bindUin = null;
-            public byte[] _devParam = null;
-            public byte[] _guid = null;
-            public byte[] _serverBuf = null;
+            public ArrayList bindUin = null;
+            public byte[] devParam = null;
+            public byte[] guid = null;
+            public byte[] serverBuf = null;
 
             public XSvcRegister()
                 : base()
@@ -70,104 +70,104 @@ namespace Konata.Msf.Packets.Svc
             {
                 PutJceTypeHeader(JceType.StructBegin, 0);
                 {
-                    Write(_uin, 0);
-                    Write(_bid, 1);
-                    Write(_connType, 2);
-                    Write(_other, 3);
-                    Write(_status, 4);
-                    Write(_onlinePush, 5);
-                    Write(_isOnline, 6);
-                    Write(_isShowOnline, 7);
-                    Write(_kikPC, 8);
-                    Write(_kikWeak, 9);
-                    Write(_timeStamp, 10);
-                    Write(_osVersion, 11);
-                    Write(_netType, 12);
+                    Write(uin, 0);
+                    Write(bid, 1);
+                    Write(connType, 2);
+                    Write(other, 3);
+                    Write(status, 4);
+                    Write(onlinePush, 5);
+                    Write(isOnline, 6);
+                    Write(isShowOnline, 7);
+                    Write(kikPC, 8);
+                    Write(kikWeak, 9);
+                    Write(timeStamp, 10);
+                    Write(osVersion, 11);
+                    Write(netType, 12);
 
-                    if (_buildVer != null)
+                    if (buildVer != null)
                     {
-                        Write(_buildVer, 13);
+                        Write(buildVer, 13);
                     }
 
-                    Write(_regType, 14);
+                    Write(regType, 14);
 
-                    if (_devParam != null)
+                    if (devParam != null)
                     {
-                        Write(_devParam, 15);
+                        Write(devParam, 15);
                     }
 
-                    if (_guid != null)
+                    if (guid != null)
                     {
-                        Write(_guid, 16);
+                        Write(guid, 16);
                     }
 
-                    Write(_localeID, 17);
-                    Write(_slientPush, 18);
+                    Write(localeID, 17);
+                    Write(slientPush, 18);
 
-                    if (_devName != null)
+                    if (devName != null)
                     {
-                        Write(_devName, 19);
+                        Write(devName, 19);
                     }
 
-                    if (_devType != null)
+                    if (devType != null)
                     {
-                        Write(_devType, 20);
+                        Write(devType, 20);
                     }
 
-                    if (_osVer != null)
+                    if (osVer != null)
                     {
-                        Write(_osVer, 21);
+                        Write(osVer, 21);
                     }
 
-                    Write(_openPush, 22);
-                    Write(_largeSeq, 23);
-                    Write(_lastWatchStartTime, 24);
+                    Write(openPush, 22);
+                    Write(largeSeq, 23);
+                    Write(lastWatchStartTime, 24);
 
-                    if (_bindUin != null)
+                    if (bindUin != null)
                     {
-                        // Write(_bindUin, 25);
+                        // Write(bindUin, 25);
                     }
 
-                    Write(_oldSSOIp, 26);
-                    Write(_newSSOIp, 27);
+                    Write(oldSSOIp, 26);
+                    Write(newSSOIp, 27);
 
-                    if (_channelNo != null)
+                    if (channelNo != null)
                     {
-                        Write(_channelNo, 28);
+                        Write(channelNo, 28);
                     }
 
-                    Write(_cpId, 29);
+                    Write(cpId, 29);
 
-                    if (_vendorName != null)
+                    if (vendorName != null)
                     {
-                        Write(_vendorName, 30);
+                        Write(vendorName, 30);
                     }
 
-                    if (_vendorOSName != null)
+                    if (vendorOSName != null)
                     {
-                        Write(_vendorOSName, 31);
+                        Write(vendorOSName, 31);
                     }
 
-                    if (_osIdfa != null)
+                    if (osIdfa != null)
                     {
-                        Write(_osIdfa, 32);
+                        Write(osIdfa, 32);
                     }
 
-                    if (_cmd0x769Reqbody != null)
+                    if (cmd0x769Reqbody != null)
                     {
-                        Write(_cmd0x769Reqbody, 33);
+                        Write(cmd0x769Reqbody, 33);
                     }
 
-                    Write(_isSetStatus, 34);
+                    Write(isSetStatus, 34);
 
-                    if (_serverBuf != null)
+                    if (serverBuf != null)
                     {
-                        Write(_serverBuf, 35);
+                        Write(serverBuf, 35);
                     }
 
-                    Write(_setMute, 36);
-                    Write(_extOnlineStatus, 38);
-                    Write(_batteryStatus, 39);
+                    Write(setMute, 36);
+                    Write(extOnlineStatus, 38);
+                    Write(batteryStatus, 39);
                 }
                 PutJceTypeHeader(JceType.StructEnd, 0);
 

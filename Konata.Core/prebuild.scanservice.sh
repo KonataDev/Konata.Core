@@ -18,7 +18,7 @@ using System;
 
 namespace Konata.Msf
 {
-    internal abstract partial class Service
+    public abstract partial class Service
     {
         static bool TouchServices()
         {

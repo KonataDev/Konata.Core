@@ -3,50 +3,65 @@ using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
 using Konata.Msf.Crypto;
+using Konata.Msf.Packets.Oicq;
+using Konata.Msf.Packets.Protobuf;
+using Konata.Library.Protobuf;
 
 namespace Konata.Msf
 {
     public class UserSigInfo
     {
-        public uint _uin;
+        public uint Uin { get; private set; }
 
-        public byte[] _gSecret;
-        public string _dPassword;
+        public byte[] PasswordMd5 { get; private set; }
 
-        public string _smsToken;
-        public string _smsPhone;
+        public byte[] SyncCookie { get; set; }
 
-        public string _sigSession;
+        #region WtLogin
 
-        internal readonly byte[] _passwordMd5;
+        public byte[] GSecret { get; private set; }
 
-        internal readonly byte[] _t106Key;
+        public string DPassword { get; private set; }
 
-        internal readonly byte[] _tgtgKey =
+        public string WtLoginSmsToken { get; set; }
+
+        public string WtLoginSmsPhone { get; set; }
+
+        public string WtLoginSession { get; set; }
+
+        public OicqStatus WtLoginStatus { get; set; }
+
+        #endregion
+
+        #region Keys And Tokens
+
+        public byte[] Tlv106Key { get; private set; }
+
+        public byte[] TgtgKey { get; private set; } =
         {
             0x2E, 0x39, 0x9A, 0x9C, 0xF2, 0x57, 0x12, 0xF8,
             0x1E, 0x5B, 0x63, 0x2E, 0xB3, 0xB3, 0xF7, 0x9F
         };
 
-        internal readonly byte[] _randKey =
+        public byte[] RandKey { get; private set; } =
         {
             0xE2, 0xED, 0x53, 0x77, 0xAD, 0xFD, 0x99, 0x83,
             0x56, 0xEB, 0x8B, 0x4C, 0x62, 0x7C, 0x22, 0xC4
         };
 
-        internal readonly byte[] _shareKey =
+        public byte[] ShareKey { get; private set; } =
         {
             0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2,
             0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7
         };
 
-        internal readonly byte[] _zeroKey =
+        public byte[] ZeroKey { get; private set; } =
         {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         };
 
-        internal readonly byte[] _defaultPublicKey =
+        public byte[] DefaultPublicKey { get; private set; } =
         {
             0x02, 0x0B, 0x03, 0xCF, 0x3D, 0x99, 0x54, 0x1F,
             0x29, 0xFF, 0xEC, 0x28, 0x1B, 0xEB, 0xBD, 0x4E,
@@ -54,7 +69,7 @@ namespace Konata.Msf
             0x28
         };
 
-        internal readonly byte[] _serverPublicKey =
+        public byte[] ServerPublicKey { get; private set; } =
         {
             0x04, 0x92, 0x8D, 0x88, 0x50, 0x67, 0x30, 0x88,
             0xB3, 0x43, 0x26, 0x4E, 0x0C, 0x6B, 0xAC, 0xB8,
@@ -65,34 +80,40 @@ namespace Konata.Msf
             0xA8
         };
 
-        internal byte[] _tgtKey;
-        internal byte[] _tgtToken;
+        public byte[] TgtKey { get; set; }
 
-        internal byte[] _d2Key;
-        internal byte[] _d2Token;
+        public byte[] TgtToken { get; set; }
 
-        internal byte[] _wtSessionTicketSig;
-        internal byte[] _wtSessionTicketKey;
+        public byte[] D2Key { get; set; }
 
-        internal byte[] _gtKey;
-        internal byte[] _stKey;
+        public byte[] D2Token { get; set; }
 
-        internal byte[] _syncCookie;
+        public byte[] GtKey { get; set; }
+
+        public byte[] StKey { get; set; }
+
+        public byte[] WtSessionTicketSig { get; set; }
+
+        public byte[] WtSessionTicketKey { get; set; }
+
+        #endregion
 
         public UserSigInfo(uint uin, string password)
         {
-            _uin = uin;
+            Uin = uin;
 
-            _passwordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
-            _t106Key = new Md5Cryptor().Encrypt(_passwordMd5
+            PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
+            Tlv106Key = new Md5Cryptor().Encrypt(PasswordMd5
                         .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
                         .Concat(BitConverter.GetBytes(uin).Reverse()).ToArray());
 
-            _dPassword = MakeDpassword();
-            _gSecret = MakeGSecret(DeviceInfo.System.Imei, _dPassword, null);
+            DPassword = MakeDpassword();
+            GSecret = MakeGSecret(DeviceInfo.System.Imei, DPassword, null);
+
+            SyncCookie = MakeSyncCookie();
         }
 
-        public static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
+        private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
         {
             byte[] buffer;
             var imeiByte = Encoding.UTF8.GetBytes(imei);
@@ -117,7 +138,7 @@ namespace Konata.Msf
             return new Md5Cryptor().Encrypt(buffer);
         }
 
-        public static string MakeDpassword()
+        private static string MakeDpassword()
         {
             try
             {
@@ -146,6 +167,12 @@ namespace Konata.Msf
             {
                 return "1234567890123456";
             }
+        }
+
+        private byte[] MakeSyncCookie()
+        {
+            return ProtoSerializer.Serialize(
+                new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
         }
     }
 }
