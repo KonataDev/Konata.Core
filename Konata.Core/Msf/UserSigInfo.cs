@@ -171,8 +171,7 @@ namespace Konata.Msf
 
         private byte[] MakeSyncCookie()
         {
-            return ProtoSerializer.Serialize(
-                new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
+            return new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds()).Serialize().GetBytes();
         }
     }
 }

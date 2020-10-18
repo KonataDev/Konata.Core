@@ -34,7 +34,7 @@ namespace Konata.Msf.Services.MessageSvc
             var sequence = core.SsoMan.GetNewSequence();
             var request = new ProtoGetMsg(core.SigInfo.SyncCookie);
 
-            core.SsoMan.PostMessage(this, ProtoSerializer.Serialize(request), sequence);
+            core.SsoMan.PostMessage(this, request.Serialize(), sequence);
 
             return true;
         }

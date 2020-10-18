@@ -18,7 +18,7 @@ namespace Konata.Msf
             : base()
         {
             buffer = cryptor.Decrypt(data, cryptKey);
-            length = (uint)buffer.Length;
+            bufferLength = (uint)buffer.Length;
         }
 
         public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
@@ -71,7 +71,7 @@ namespace Konata.Msf
         /// <param name="value"></param>
         public void PutProtoNode(ProtoTreeRoot value)
         {
-            PutBytes(ProtoSerializer.Serialize(value).GetBytes());
+            PutBytes(value.Serialize().GetBytes());
         }
 
         public string TakeHexString(out string value, Prefix prefixFlag)
@@ -127,7 +127,7 @@ namespace Konata.Msf
         protected void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
         {
             barExtLen = extend;
-            barPos = length;
+            barPos = bufferLength;
             prefix = prefixFlag;
             barLenEndian = endian;
             PutEmpty((int)prefixFlag);
@@ -138,11 +138,11 @@ namespace Konata.Msf
             EnterBarrier(prefixFlag, endian, extend);
             barEnc = true;
             barEncBuffer = buffer;
-            barEncLength = length;
+            barEncLength = bufferLength;
             barEncCryptor = cryptor;
             barEncKey = cryptKey;
             buffer = null;
-            length = 0;
+            bufferLength = 0;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Konata.Msf
             {
                 byte[] enc = GetEncryptedBytes(barEncCryptor, barEncKey);
                 buffer = barEncBuffer;
-                length = barEncLength;
+                bufferLength = barEncLength;
                 PutBytes(enc);
                 barEnc = false;
                 barEncBuffer = null;
@@ -163,7 +163,7 @@ namespace Konata.Msf
                 barEncKey = null;
             }
             InsertPrefix(buffer, barPos,
-                length + barExtLen - barPos - (uint)prefix, prefix, barLenEndian);
+                bufferLength + barExtLen - barPos - (uint)prefix, prefix, barLenEndian);
         }
     }
 }
