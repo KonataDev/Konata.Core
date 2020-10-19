@@ -2,16 +2,16 @@
 
 namespace Konata.Msf.Services.MessageSvc
 {
-    internal class PushReaded : Service
+    public class PushRead : Service
     {
-        private PushReaded()
+        private PushRead()
         {
             Register("MessageSvc.PushReaded", this);
         }
 
-        public static Service Instance { get; } = new PushReaded();
+        public static Service Instance { get; } = new PushRead();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             if (method != "")
                 throw new Exception("???");
@@ -19,7 +19,7 @@ namespace Konata.Msf.Services.MessageSvc
             return false;
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;

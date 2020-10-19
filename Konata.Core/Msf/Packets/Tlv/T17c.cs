@@ -11,7 +11,7 @@ namespace Konata.Msf.Packets.Tlv
         {
             _smsCode = smsCode;
 
-            PutString(_smsCode, 2);
+            PutString(_smsCode, Prefix.Uint16);
         }
 
         public T17cBody(byte[] data)

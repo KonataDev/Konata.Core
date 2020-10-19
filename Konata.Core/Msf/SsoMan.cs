@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
-using System.Collections.Generic;
 using Konata.Library.IO;
 
 namespace Konata.Msf
@@ -13,7 +13,7 @@ namespace Konata.Msf
     using SsoSeqLock = Mutex;
     using SsoSeqDict = Dictionary<string, uint>;
 
-    internal class SsoMan
+    public class SsoMan
     {
         private Core _msfCore;
         private PacketMan _pakMan;
@@ -30,7 +30,7 @@ namespace Konata.Msf
         private byte[] _tgtKey;
         private byte[] _tgtToken;
 
-        internal SsoMan(Core core)
+        public SsoMan(Core core)
         {
             _ssoSequence = 25900;
             _ssoSession = 0x54B87ADC;
@@ -49,12 +49,12 @@ namespace Konata.Msf
         /// 初始化SSO管理者並連接伺服器等待數據發送。
         /// </summary>
         /// <returns></returns>
-        internal bool Connect()
+        public bool Connect()
         {
             return _pakMan.OpenSocket();
         }
 
-        internal bool DisConnect()
+        public bool DisConnect()
         {
             return _pakMan.CloseSocket();
         }
@@ -63,7 +63,7 @@ namespace Konata.Msf
         /// 获取SSO序列
         /// </summary>
         /// <returns></returns>
-        internal uint GetSequence()
+        public uint GetSequence()
         {
             return (uint)_ssoSequence;
         }
@@ -72,7 +72,7 @@ namespace Konata.Msf
         /// 獲取新的SSO序列
         /// </summary>
         /// <returns></returns>
-        internal uint GetNewSequence()
+        public uint GetNewSequence()
         {
             Interlocked.CompareExchange(ref _ssoSequence, 10000, 0x7FFFFFFF);
             return (uint)Interlocked.Add(ref _ssoSequence, 1);
@@ -82,7 +82,7 @@ namespace Konata.Msf
         /// 從服務名獲取SSO序列號, 如果沒有則會申請新的
         /// </summary>
         /// <returns></returns>
-        internal uint GetServiceSequence(string name)
+        public uint GetServiceSequence(string name)
         {
             uint sequence;
 
@@ -107,7 +107,7 @@ namespace Konata.Msf
         /// 移除SSO序列號
         /// </summary>
         /// <returns></returns>
-        internal void DestroyServiceSequence(string name)
+        public void DestroyServiceSequence(string name)
         {
             _ssoSeqLock.WaitOne();
             {
@@ -117,14 +117,14 @@ namespace Konata.Msf
         }
 
         [Obsolete]
-        internal void SetTgtPair(byte[] tgtToken, byte[] tgtkey)
+        public void SetTgtPair(byte[] tgtToken, byte[] tgtkey)
         {
             _tgtKey = tgtkey;
             _tgtToken = tgtToken;
         }
 
         [Obsolete]
-        internal void SetD2Pair(byte[] d2Token, byte[] d2Key)
+        public void SetD2Pair(byte[] d2Token, byte[] d2Key)
         {
             _d2Key = d2Key;
             _d2Token = d2Token;
@@ -136,7 +136,7 @@ namespace Konata.Msf
         /// <param name="service">服務名</param>
         /// <param name="packet">請求數據</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, ByteBuffer packet)
+        public uint PostMessage(Service service, ByteBuffer packet)
         {
             return PostMessage(service, packet, GetNewSequence());
         }
@@ -147,10 +147,10 @@ namespace Konata.Msf
         /// <param name="packet">請求數據</param>
         /// <param name="ssoSequence">SSO序列號</param>
         /// <returns></returns>
-        internal uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
+        public uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
         {
             var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
-            var toService = new ToServiceMessage(10, _msfCore._uin, _d2Token, _d2Key, ssoMessage);
+            var toService = new ToServiceMessage(10, _msfCore.SigInfo.Uin, _d2Token, _d2Key, ssoMessage);
 
             _pakMan.Emit(toService);
             return ssoSequence;
@@ -162,7 +162,7 @@ namespace Konata.Msf
         /// <param name="service">服務名</param>
         /// <param name="packet">請求數據</param>
         /// <returns></returns>
-        internal uint SendMessage(Service service, Packet packet)
+        public uint SendMessage(Service service, Packet packet)
         {
             return SendMessage(service, packet, GetNewSequence());
         }
@@ -174,7 +174,7 @@ namespace Konata.Msf
         /// <param name="packet">請求數據</param>
         /// <param name="ssoSequence">SSO序列號</param>
         /// <returns></returns>
-        internal uint SendMessage(Service service, Packet packet, uint ssoSequence)
+        public uint SendMessage(Service service, Packet packet, uint ssoSequence)
         {
             return 0;
         }
@@ -183,7 +183,7 @@ namespace Konata.Msf
         /// 阻塞等待某序號的訊息從伺服器返回。
         /// </summary>
         /// <param name="ssoSequence"></param>
-        internal Packet WaitForMessage(uint ssoSequence)
+        public Packet WaitForMessage(uint ssoSequence)
         {
             return null;
         }
@@ -192,7 +192,7 @@ namespace Konata.Msf
         /// 處理來自伺服器發送的SSO訊息, 並派遣到對應的服務路由
         /// </summary>
         /// <param name="fromService"></param>
-        internal void OnFromServiceMessage(FromServiceMessage fromService)
+        public void OnFromServiceMessage(FromServiceMessage fromService)
         {
             try
             {
@@ -208,15 +208,15 @@ namespace Konata.Msf
                         ssoMessage = new SsoMessage(ssoData, _d2Key);
                         break;
                     case 2:
-                        ssoMessage = new SsoMessage(ssoData, _msfCore._keyRing._zeroKey);
+                        ssoMessage = new SsoMessage(ssoData, _msfCore.SigInfo.ZeroKey);
                         break;
                 }
 
-                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage._header._ssoSequence}");
-                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage._header._ssoSession}");
-                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage._header._ssoCommand}");
+                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage.ssoHeader.ssoSequence}");
+                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage.ssoHeader.ssoSession}");
+                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage.ssoHeader.ssoCommand}");
 
-                Service.Handle(_msfCore, ssoMessage._header._ssoCommand, ssoMessage._packet);
+                Service.Handle(_msfCore, ssoMessage.ssoHeader.ssoCommand, ssoMessage.ssoWupBuffer);
             }
             catch (Exception e)
             {

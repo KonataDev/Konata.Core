@@ -349,5 +349,65 @@ namespace Konata.Library.IO
             Array.Reverse(temp);
             return temp;
         }
+
+#pragma warning disable CS0675
+        public static long VarintToNumber(byte[] varint)
+        {
+            var number = 0L;
+
+            for (int i = varint.Length - 1; i >= 0; --i)
+            {
+                number |= (varint[i] & 0b01111111) << (i * 7);
+            }
+
+            return number;
+        }
+#pragma warning restore CS0675
+
+        public static byte[] NumberToVarint(long number)
+        {
+            byte[] buffer;
+
+            if (number >= 127)
+            {
+                var len = 0;
+                buffer = new byte[10];
+
+                do
+                {
+                    buffer[len] = (byte)((number & 127) | 128);
+                    number >>= 7;
+                    ++len;
+                } while (number > 127);
+
+                buffer[len] = (byte)number;
+                Array.Resize(ref buffer, len + 1);
+            }
+            else
+            {
+                buffer = new byte[1] { (byte)number };
+            }
+
+            return buffer;
+        }
+
+        public static string Hex(byte[] data, bool space = false)
+        {
+            return BitConverter.ToString(data).Replace("-", space ? " " : "");
+        }
+
+        public static byte[] UnHex(string hex)
+        {
+            hex = hex.Replace(" ", "");
+
+            int length = hex.Length;
+            byte[] bytes = new byte[length / 2];
+
+            for (int i = 0; i < length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+            return bytes;
+        }
     }
 }

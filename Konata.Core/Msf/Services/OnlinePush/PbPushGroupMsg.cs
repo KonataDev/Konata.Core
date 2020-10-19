@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Konata.Msf.Services.OnlinePush
 {
-    internal class PbPushGroupMsg : Service
+    public class PbPushGroupMsg : Service
     {
         private PbPushGroupMsg()
         {
@@ -12,12 +12,12 @@ namespace Konata.Msf.Services.OnlinePush
 
         public static Service Instance { get; } = new PbPushGroupMsg();
 
-        protected override bool OnRun(Core core, string method, params object[] args)
+        public override bool OnRun(Core core, string method, params object[] args)
         {
             return false;
         }
 
-        protected override bool OnHandle(Core core, params object[] args)
+        public override bool OnHandle(Core core, params object[] args)
         {
             if (args == null || args.Length == 0)
                 return false;

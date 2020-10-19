@@ -15,7 +15,7 @@ namespace Konata.Msf.Packets.Tlv
 
             PutByte(1);
             PutUintBE(_buildTime);
-            PutString(_sdkVersion, 2);
+            PutString(_sdkVersion, Prefix.Uint16);
         }
 
         public T177Body(byte[] data)

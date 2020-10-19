@@ -1,12 +1,12 @@
 ﻿using System;
-using Konata.Msf.Utils.Crypt;
+using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets
 {
     public class ToServiceMessage : Packet
     {
-        private Body _body;
         private Header _header;
+        private Body _body;
 
         // About packetType
         // 0x0A d2Token field always be d2Token

@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Tlv;
 
 namespace Konata.Msf.Packets.Oicq
@@ -11,12 +10,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0008;
 
-        public OicqRequestRefreshSms(uint uin, KeyRing keyring,
+        public OicqRequestRefreshSms(uint uin, UserSigInfo sigInfo,
             string sigSession, string smsToken)
 
             : base(OicqCommand, OicqSubCommand, uin,
                   OicqEncryptMethod.ECDH7, new XRefreshSms(sigSession, smsToken),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }

@@ -1,4 +1,4 @@
-﻿using Konata.Msf.Utils.Crypt;
+﻿using Konata.Msf.Crypto;
 
 namespace Konata.Msf.Packets.Tlv
 {
@@ -13,8 +13,8 @@ namespace Konata.Msf.Packets.Tlv
             _wifiSsid = wifiSsid;
             _wifiBssidMd5 = new Md5Cryptor().Encrypt(wifiBssid);
 
-            PutBytes(_wifiBssidMd5, 2, 16);
-            PutString(_wifiSsid, 2, 32);
+            PutBytes(_wifiBssidMd5, Prefix.Uint16, 16);
+            PutString(_wifiSsid, Prefix.Uint16, 32);
         }
 
         public T202Body(byte[] data)

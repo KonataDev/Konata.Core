@@ -17,7 +17,7 @@ echo using System;                                   >> %TARGET%
 echo.                                                >> %TARGET%
 echo namespace Konata.Msf                            >> %TARGET%
 echo {                                               >> %TARGET%
-echo     internal abstract partial class Service     >> %TARGET%
+echo     public abstract partial class Service       >> %TARGET%
 echo     {                                           >> %TARGET%
 echo         static bool TouchServices()             >> %TARGET%
 echo         {                                       >> %TARGET%

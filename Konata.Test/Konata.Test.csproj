@@ -43,7 +43,9 @@
     <Compile Include="Tests\TestJceWriter.cs" />
     <Compile Include="Tests\TestProtobuf.cs" />
     <Compile Include="Tests\TestProtobufDeviceReport.cs" />
+    <Compile Include="Tests\TestProtobufGetMsg.cs" />
     <Compile Include="Tests\TestProtobufMatryoshka.cs" />
+    <Compile Include="Tests\TestProtobufSerialize.cs" />
     <Compile Include="Tests\TestSvcReqEmpty.cs" />
     <Compile Include="Tests\TestSvcReqRegister.cs" />
   </ItemGroup>

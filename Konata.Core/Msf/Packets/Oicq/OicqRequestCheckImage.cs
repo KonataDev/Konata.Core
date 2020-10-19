@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Tlv;
 
 namespace Konata.Msf.Packets.Oicq
@@ -11,12 +10,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0002;
 
-        public OicqRequestCheckImage(uint uin, KeyRing keyring,
+        public OicqRequestCheckImage(uint uin, UserSigInfo sigInfo,
             string sigSission, string sigTicket)
 
             : base(OicqCommand, OicqSubCommand, uin,
                   OicqEncryptMethod.ECDH7, new XCaptcha(sigSission, sigTicket),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }

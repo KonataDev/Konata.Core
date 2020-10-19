@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace Konata.Msf.Services.MessageSvc
+namespace Konata.Msf.Services.PbMessageSvc
 {
-    public class PbDeleteMsg : Service
+    public class PbMsgReadReport : Service
     {
-        private PbDeleteMsg()
+        private PbMsgReadReport()
         {
-            Register("MessageSvc.PbDeleteMsg", this);
+            Register("PbMessageSvc.PbMsgReadedReport", this);
         }
 
-        public static Service Instance { get; } = new PbDeleteMsg();
+        public static Service Instance { get; } = new PbMsgReadReport();
 
         public override bool OnRun(Core core, string method, params object[] args)
         {
@@ -23,6 +23,13 @@ namespace Konata.Msf.Services.MessageSvc
         {
             if (args == null || args.Length == 0)
                 return false;
+
+            return false;
+        }
+
+        private bool Request_PbMsgReadedReport(Core core,
+            uint fromUin, uint sentTime, byte[] syncCookie)
+        {
 
             return false;
         }

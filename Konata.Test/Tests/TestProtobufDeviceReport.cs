@@ -19,7 +19,7 @@ namespace Konata.Test.Tests
                 "G9009WKEU1BOL1",
                 "lineage_kltechnduo-userdebug 8.1.0 OPM2.171026.006.H1 c0ab6bb259");
 
-            Print(ProtoSerializer.Serialize(report));
+            Print(report.Serialize().GetBytes());
 
             return true;
         }

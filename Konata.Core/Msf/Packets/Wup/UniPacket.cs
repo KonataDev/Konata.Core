@@ -7,41 +7,41 @@ namespace Konata.Msf.Packets.Wup
 {
     public class UniPacket : JceOutputStream
     {
-        public readonly UniPacketBody _packageBody;
-        public readonly ushort _packageVersion;
-        public readonly string _packageServantName;
-        public readonly string _packageFuncName;
-        public readonly byte _packagePacketType;
-        public readonly ushort _packageMessageType;
-        public readonly ushort _packageRequestId;
-        public readonly ushort _packageOldRespIret;
-        public readonly ushort _packageTimeout;
-        public readonly Dictionary<string, string> _packageContext;
-        public readonly Dictionary<string, string> _packageStatus;
+        public readonly UniPacketBody packageBody;
+        public readonly ushort packageVersion;
+        public readonly string packageServantName;
+        public readonly string packageFuncName;
+        public readonly byte packagePacketType;
+        public readonly ushort packageMessageType;
+        public readonly ushort packageRequestId;
+        public readonly ushort packageOldRespIret;
+        public readonly ushort packageTimeout;
+        public readonly Dictionary<string, string> packageContext;
+        public readonly Dictionary<string, string> packageStatus;
 
         public UniPacket(bool useVersion3, string servantName, string funcName,
             byte packetType, ushort messageType, ushort requestId, ushort oldRespIret,
             UniPacketBody body)
         {
-            _packageBody = body;
-            _packageServantName = servantName;
-            _packageFuncName = funcName;
-            _packagePacketType = packetType;
-            _packageMessageType = messageType;
-            _packageRequestId = requestId;
-            _packageOldRespIret = oldRespIret;
-            _packageVersion = (ushort)(useVersion3 ? 3 : 2);
+            packageBody = body;
+            packageServantName = servantName;
+            packageFuncName = funcName;
+            packagePacketType = packetType;
+            packageMessageType = messageType;
+            packageRequestId = requestId;
+            packageOldRespIret = oldRespIret;
+            packageVersion = (ushort)(useVersion3 ? 3 : 2);
 
-            Write(_packageVersion, 1);
-            Write(_packagePacketType, 2);
-            Write(_packageMessageType, 3);
-            Write(_packageRequestId, 4);
-            Write(_packageServantName, 5);
-            Write(_packageFuncName, 6);
-            Write((ByteBuffer)_packageBody, 7);
-            Write(_packageTimeout, 8);
-            Write(_packageContext, 9);
-            Write(_packageStatus, 10);
+            Write(packageVersion, 1);
+            Write(packagePacketType, 2);
+            Write(packageMessageType, 3);
+            Write(packageRequestId, 4);
+            Write(packageServantName, 5);
+            Write(packageFuncName, 6);
+            Write((ByteBuffer)packageBody, 7);
+            Write(packageTimeout, 8);
+            Write(packageContext, 9);
+            Write(packageStatus, 10);
         }
     }
 

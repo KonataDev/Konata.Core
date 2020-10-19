@@ -28,7 +28,7 @@ namespace Konata.Test.Tests
                                             {
                                                 root9.addTree("0A", (ProtoTreeRoot root10) =>
                                                 {
-                                                    root10.addLeaf("0A", "I'm a matryoshka!");
+                                                    root10.addLeafString("0A", "I'm a matryoshka!");
                                                 });
                                             });
                                         });
@@ -40,7 +40,7 @@ namespace Konata.Test.Tests
                 });
             });
 
-            Print(ProtoSerializer.Serialize(root0));
+            Print(root0.Serialize().GetBytes());
 
             return true;
         }

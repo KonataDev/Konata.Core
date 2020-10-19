@@ -8,15 +8,15 @@ namespace Konata.Msf.Packets.Protobuf
             string codeName, string incremental, string fingerprint,
             string bootId, string androidId, string baseBand, string innerVersion)
         {
-            addLeaf("0A", bootLoader);
-            addLeaf("12", version);
-            addLeaf("1A", codeName);
-            addLeaf("22", incremental);
-            addLeaf("2A", fingerprint);
-            addLeaf("32", bootId);
-            addLeaf("3A", androidId);
-            addLeaf("42", baseBand);
-            addLeaf("4A", innerVersion);
+            addLeafString("0A", bootLoader);
+            addLeafString("12", version);
+            addLeafString("1A", codeName);
+            addLeafString("22", incremental);
+            addLeafString("2A", fingerprint);
+            addLeafString("32", bootId);
+            addLeafString("3A", androidId);
+            addLeafString("42", baseBand);
+            addLeafString("4A", innerVersion);
         }
     }
 }

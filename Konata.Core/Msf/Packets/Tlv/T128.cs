@@ -29,9 +29,9 @@ namespace Konata.Msf.Packets.Tlv
             PutBoolBE(_isGuidAvaliable, 1);
             PutBoolBE(_isGuidChanged, 1);
             PutUintBE(_guidFlag);
-            PutString(_deviceModel, 2, 32);
-            PutBytes(_guid, 2, 16);
-            PutString(_deviceBrand, 2, 16);
+            PutString(_deviceModel, Prefix.Uint16, 32);
+            PutBytes(_guid, Prefix.Uint16, 16);
+            PutString(_deviceBrand, Prefix.Uint16, 16);
         }
 
         public T128Body(byte[] data)

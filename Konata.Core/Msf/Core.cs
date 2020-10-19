@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Oicq;
 
 namespace Konata.Msf
@@ -18,24 +17,17 @@ namespace Konata.Msf
 
     public class Core
     {
-        internal uint _uin;
-        internal string _password;
+        public Bot Bot { get; private set; }
 
-        internal Bot _bot;
-        internal SsoMan _ssoMan;
-        internal KeyRing _keyRing;
-        internal UserSigInfo _wtLogin;
-        internal OicqStatus _oicqStatus;
+        public SsoMan SsoMan { get; private set; }
+
+        public UserSigInfo SigInfo { get; private set; }
 
         public Core(Bot bot, uint uin, string password)
         {
-            _uin = uin;
-            _password = password;
-
-            _bot = bot;
-            _ssoMan = new SsoMan(this);
-            _keyRing = new KeyRing(uin, password);
-            _wtLogin = new UserSigInfo();
+            Bot = bot;
+            SsoMan = new SsoMan(this);
+            SigInfo = new UserSigInfo(uin, password);
         }
 
         #region Core Methods
@@ -46,7 +38,7 @@ namespace Konata.Msf
         /// <returns></returns>
         public bool Connect()
         {
-            return _ssoMan.Connect();
+            return SsoMan.Connect();
         }
 
         /// <summary>
@@ -55,7 +47,7 @@ namespace Konata.Msf
         /// <returns></returns>
         public bool DisConnect()
         {
-            return _ssoMan.DisConnect();
+            return SsoMan.DisConnect();
         }
 
         /// <summary>
@@ -150,7 +142,7 @@ namespace Konata.Msf
 
         #endregion
 
-        #region Event Metods
+        #region Event Methods
 
         /// <summary>
         /// 發送用戶事件. 該事件會被派發到用戶層
@@ -159,7 +151,7 @@ namespace Konata.Msf
         /// <param name="args"></param>
         public void PostUserEvent(EventType type, params object[] args)
         {
-            _bot.PostUserEvent(type, args);
+            Bot.PostUserEvent(type, args);
         }
 
         /// <summary>
@@ -168,7 +160,7 @@ namespace Konata.Msf
         /// <param name="type"></param>
         public void PostUserEvent(EventType type)
         {
-            _bot.PostUserEvent(type, null);
+            Bot.PostUserEvent(type, null);
         }
 
         /// <summary>
@@ -178,7 +170,7 @@ namespace Konata.Msf
         /// <param name="args"></param>
         public void PostSystemEvent(EventType type, params object[] args)
         {
-            _bot.PostSystemEvent(type, args);
+            Bot.PostSystemEvent(type, args);
         }
 
         /// <summary>
@@ -187,7 +179,7 @@ namespace Konata.Msf
         /// <param name="type"></param>
         public void PostSystemEvent(EventType type)
         {
-            _bot.PostSystemEvent(type, null);
+            Bot.PostSystemEvent(type, null);
         }
 
         #endregion

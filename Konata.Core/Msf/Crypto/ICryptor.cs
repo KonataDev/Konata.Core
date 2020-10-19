@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Msf.Utils.Crypt
+namespace Konata.Msf.Crypto
 {
     public interface ICryptor
     {

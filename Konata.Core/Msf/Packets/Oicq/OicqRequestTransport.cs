@@ -3,7 +3,6 @@ using System.IO;
 using System.IO.Compression;
 using Konata.Library.IO;
 using Konata.Msf.Crypto;
-using Konata.Msf.Utils.Crypt;
 
 namespace Konata.Msf.Packets.Oicq
 {
@@ -12,12 +11,12 @@ namespace Konata.Msf.Packets.Oicq
         private const ushort OicqCommand = 0x0812;
         private const ushort OicqSubCommand = 0x0001;
 
-        public OicqRequestTransport(uint uin, KeyRing keyring, byte[] data, bool isMsf, uint appId,
+        public OicqRequestTransport(uint uin, UserSigInfo sigInfo, byte[] data, bool isMsf, uint appId,
             byte[] sigSession, byte[] sigSessionKey)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,
                   new XTransport(data, isMsf, appId, 85, sigSession, sigSessionKey),
-                  keyring._shareKey, keyring._randKey, keyring._defaultPublicKey)
+                  sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
         }
@@ -33,14 +32,14 @@ namespace Konata.Msf.Packets.Oicq
                 PutUshortBE((ushort)data.Length);
                 PutUintBE(appId);
                 PutUintBE(role);
-                PutBytes(sigSession, 2);
+                PutBytes(sigSession);
 
                 PutByte(0x00);
 
                 PutUintBE((uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds());
                 PutByte(0x00);
                 PutByte(0x01);
-                EnterBarrierEncrypted(2, Endian.Big, TeaCryptor.Instance, sigSessionKey);
+                EnterBarrierEncrypted(Prefix.Uint16, Endian.Big, TeaCryptor.Instance, sigSessionKey);
                 {
                     var output = new MemoryStream();
                     var deflate = new DeflateStream(output, CompressionLevel.Fastest);
