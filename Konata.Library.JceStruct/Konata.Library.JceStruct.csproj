@@ -37,7 +37,9 @@
   <ItemGroup>
     <Compile Include="JceInputStream.cs" />
     <Compile Include="JceOutputStream.cs" />
+    <Compile Include="JceTreeRoot.cs" />
     <Compile Include="JceType.cs" />
+    <Compile Include="JceUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
