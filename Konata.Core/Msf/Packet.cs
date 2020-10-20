@@ -21,12 +21,6 @@ namespace Konata.Msf
             bufferLength = (uint)buffer.Length;
         }
 
-        public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
-        {
-            var data = Hex.HexStr2Bytes(value);
-            PutBytes(data, prefixFlag, limitedLength);
-        }
-
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
         {
             WriteData(cryptor.Encrypt(value, cryptKey));
