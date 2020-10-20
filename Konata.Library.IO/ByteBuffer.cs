@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Konata.Library.IO
@@ -306,9 +307,27 @@ namespace Konata.Library.IO
             WriteData(ByteConverter.BoolToBytes(value, length, endian));
         }
 
+        /// <summary>
+        /// 放入字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefixFlag"></param>
+        /// <param name="limitedLength"></param>
         public void PutString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
             PutBytes(Encoding.UTF8.GetBytes(value), prefixFlag, limitedLength); // 把字符串当作byte[]
+        }
+
+        /// <summary>
+        /// 放入 Hex字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefixFlag"></param>
+        /// <param name="limitedLength"></param>
+        public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
+        {
+            var data = ByteConverter.UnHex(value);
+            PutBytes(data, prefixFlag, limitedLength);
         }
 
         public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
@@ -695,7 +714,7 @@ namespace Konata.Library.IO
         #region GetMethods 獲取數據 此方法組不會對緩衝區造成影響
 
         /// <summary>
-        /// 獲取打包數據
+        /// 獲取數據
         /// </summary>
         /// <returns></returns>
         public byte[] GetBytes()
@@ -716,6 +735,31 @@ namespace Konata.Library.IO
         public override string ToString()
         {
             return ByteConverter.Hex(GetBytes(), true);
+        }
+
+        #endregion
+
+        #region PeekMetods 查看數據 此方法組不會對緩衝區造成影響
+
+        public byte PeekByte(out byte value)
+        {
+            if (CheckAvailable(1))
+            {
+                value = ByteConverter.BytesToUInt8(buffer, readPosition);
+                return value;
+            }
+            throw eobException;
+        }
+
+        public byte[] PeekBytes(uint length, out byte[] value)
+        {
+            if (CheckAvailable(length))
+            {
+                value = new byte[length];
+                Array.Copy(buffer, readPosition, value, 0, length);
+                return value;
+            }
+            throw eobException;
         }
 
         #endregion
