@@ -175,7 +175,7 @@ namespace Konata.Library.JceStruct
                     value = ByteConverter.BytesToInt64(leafData, 0, Endian.Big); break;
 
                 default:
-                case JceType.ZeroTag:
+                //case JceType.ZeroTag:
                     value = 0; break;
             }
             return value;
@@ -225,9 +225,9 @@ namespace Konata.Library.JceStruct
                         case JceType.Short:
                             buffer.TakeBytes(out jceData, 2); break;
                         case JceType.Int:
-                            buffer.TakeBytes(out jceData, 3); break;
-                        case JceType.Long:
                             buffer.TakeBytes(out jceData, 4); break;
+                        case JceType.Long:
+                            buffer.TakeBytes(out jceData, 8); break;
                         case JceType.Float:
                             buffer.TakeBytes(out jceData, 4); break;
                         case JceType.Double:
