@@ -42,7 +42,6 @@ namespace Konata.Test.Tests
             Print(deroot2.getLeafString("4A.22", out var _));
             Print(deroot2.getLeafString("4A.0A.22", out var _));
 
-
             return true;
         }
     }

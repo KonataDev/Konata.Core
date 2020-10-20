@@ -40,6 +40,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="Tests\TestJceStruct.cs" />
     <Compile Include="Tests\TestJceWriter.cs" />
     <Compile Include="Tests\TestProtobuf.cs" />
     <Compile Include="Tests\TestProtobufDeviceReport.cs" />
