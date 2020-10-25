@@ -7,10 +7,12 @@ using Konata.Library.IO;
 namespace Konata.Library.JceStruct
 {
     using JceLeaves = Dictionary<byte, JceLeaf>;
+    using JceKvMap = Dictionary<byte[], byte[]>;
 
     public struct JceLeaf
     {
         public byte[] data;
+        public JceKvMap map;
         public JceType type;
     }
 
@@ -32,6 +34,7 @@ namespace Konata.Library.JceStruct
         }
 
         #region Add Methods
+        //Jason_Ren H 
 
         public void AddTree(byte treeIndex, JceTreeRoot value)
         {
@@ -175,7 +178,7 @@ namespace Konata.Library.JceStruct
                     value = ByteConverter.BytesToInt64(leafData, 0, Endian.Big); break;
 
                 default:
-                //case JceType.ZeroTag:
+                    //case JceType.ZeroTag:
                     value = 0; break;
             }
             return value;
@@ -246,37 +249,30 @@ namespace Konata.Library.JceStruct
                             break;
                         case JceType.Map:
                             {
-                                // 因爲tag始終為0 所以忽略
-                                buffer.EatBytes(JceUtils.UnTag(
-                                    buffer.PeekBytes(2, out var _), out var lenType, out var _));
+                                leaves[jceTag] = new JceLeaf { type = jceType, map = new JceKvMap() };
 
-                                long length = 0;
+                                // 解析鍵值對長度
+                                buffer.EatBytes(JceUtils.JceToNumber(buffer, out var _,
+                                    out var _, out var length));
 
-                                switch (lenType)
-                                {
-                                    case JceType.ZeroTag:
-                                        length = buffer.TakeByte(out var _); break;
-                                    case JceType.Byte:
-                                        length = buffer.TakeByte(out var _); break;
-                                    case JceType.Short:
-                                        length = buffer.TakeShortBE(out var _); break;
-                                    case JceType.Int:
-                                        length = buffer.TakeShortBE(out var _); break;
-                                    case JceType.Long:
-                                        length = buffer.TakeShortBE(out var _); break;
-                                }
+                                byte[] tempData = null;
 
                                 // 嘗試解析鍵值對
-                                // 但是這裡只需要把完整數據解析出來
-                                // 無需構造實際的鍵值對象
-
-                                // 這裡只支援非基礎類型的Key
-                                for (int i = 0; i < length; ++i)
+                                // 但是這裡只需要把數據解析出來
+                                // 而無需構造實際的對象
+                                for (int i = 0; i < length * 2; ++i)
                                 {
+                                    buffer.EatBytes(JceUtils.UnJceStandardType(buffer, out var kvType,
+                                    out var kvTag, out var kvData));
 
+                                    // 臨時保存 鍵數據
+                                    if (i % 2 == 0)
+                                        tempData = kvData;
+                                    else
+                                        leaves[jceTag].map.Add(tempData, kvData);
                                 }
 
-                                buffer.TakeBytes(out jceData, (uint)length);
+                                continue;
                             }
                             break;
                         case JceType.List: break;

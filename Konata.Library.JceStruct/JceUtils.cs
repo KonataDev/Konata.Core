@@ -37,6 +37,87 @@ namespace Konata.Library.JceStruct
             return buffer;
         }
 
+        internal static uint UnJceStandardType(ByteBuffer buffer, out JceType type,
+            out byte tag, out byte[] data)
+        {
+            data = null;
+            uint length =
+                UnTag(buffer.PeekBytes(2, out var _), out type, out tag);
+
+            switch (type)
+            {
+                case JceType.ZeroTag:
+                    data = null;
+                    length += 0;
+                    break;
+                case JceType.Byte:
+                    buffer.PeekBytes(length, 1, out data);
+                    length += 1;
+                    break;
+                case JceType.Short:
+                    buffer.PeekBytes(length, 2, out data);
+                    length += 3;
+                    break;
+                case JceType.Int:
+                    buffer.PeekBytes(length, 4, out data);
+                    length += 4;
+                    break;
+                case JceType.Long:
+                    buffer.PeekBytes(length, 8, out data);
+                    length += 8;
+                    break;
+                case JceType.Float:
+                    buffer.PeekBytes(length, 4, out data);
+                    length += 4;
+                    break;
+                case JceType.Double:
+                    buffer.PeekBytes(length, 8, out data);
+                    length += 8;
+                    break;
+                case JceType.String1:
+                    buffer.PeekByte(length, out var str1len);
+                    buffer.PeekBytes(length + 1, str1len, out data);
+                    length += (uint)str1len + 1;
+                    break;
+                case JceType.String4:
+                    buffer.PeekIntBE(length, out var str4len);
+                    buffer.PeekBytes(length + 4, (uint)str4len, out data);
+                    length += (uint)str4len + 4;
+                    break;
+            }
+
+            return length;
+        }
+
+        internal static uint JceToNumber(ByteBuffer buffer, out JceType type,
+            out byte tag, out long value)
+        {
+            value = 0;
+            var length = UnJceStandardType(buffer, out type, out tag, out var data);
+
+            switch (type)
+            {
+                case JceType.ZeroTag:
+                    value = 0;
+                    break;
+                case JceType.Byte:
+                    value = ByteConverter.BytesToInt8(data, 0);
+                    break;
+                case JceType.Short:
+                    value = ByteConverter.BytesToInt16(data, 0);
+                    break;
+                case JceType.Int:
+                    value = ByteConverter.BytesToInt32(data, 0);
+                    break;
+                case JceType.Long:
+                    value = ByteConverter.BytesToInt64(data, 0);
+                    break;
+                default: throw new Exception("invalid data, not a number.");
+            }
+
+            return length;
+        }
+
         internal static byte[] NumberToJce(long value,
             out JceType type, out byte[] buffer)
         {
