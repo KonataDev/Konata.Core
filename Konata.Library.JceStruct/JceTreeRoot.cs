@@ -214,8 +214,7 @@ namespace Konata.Library.JceStruct
                 while (buffer.RemainLength > 0)
                 {
                     // 讀取JceStruct類型和索引
-                    buffer.EatBytes(JceUtils.UnTag(
-                        buffer.PeekBytes(2, out var _), out var jceType, out var jceTag));
+                    buffer.EatBytes(JceUtils.UnTag(buffer, 0, out var jceType, out var jceTag));
                     var jceData = new byte[0];
 
                     // 解析JceStruct數據類型
@@ -262,7 +261,7 @@ namespace Konata.Library.JceStruct
                                 // 而無需構造實際的對象
                                 for (int i = 0; i < length * 2; ++i)
                                 {
-                                    buffer.EatBytes(JceUtils.UnJceStandardType(buffer, out var kvType,
+                                    buffer.EatBytes(JceUtils.UnJceStandardType(buffer, 0, out var kvType,
                                     out var kvTag, out var kvData));
 
                                     // 臨時保存 鍵數據
@@ -276,15 +275,42 @@ namespace Konata.Library.JceStruct
                             }
                             break;
                         case JceType.List: break;
-                        case JceType.StructBegin: break;
-                        case JceType.StructEnd: break;
+                        case JceType.StructBegin:
+                            {
+                                // 令牌計數器
+                                var tokenCount = 1;
+                                uint byteOffset = 0;
+
+                                while (buffer.RemainLength > 0)
+                                {
+                                    byteOffset += JceUtils.UnJceStandardType(buffer, byteOffset, out var type,
+                                        out var tag, out var _);
+
+                                    if (type == JceType.StructBegin)
+                                    {
+                                        ++tokenCount;
+                                    }
+                                    else if (type == JceType.StructEnd)
+                                    {
+                                        --tokenCount;
+
+                                        if (tokenCount == 0)
+                                        {
+                                            buffer.TakeBytes(out jceData, byteOffset - 1);
+                                            buffer.EatBytes(1);
+                                        }
+                                    }
+
+                                }
+
+                            }
+                            break;
                         case JceType.SimpleList:
                             {
                                 buffer.EatBytes(1);
 
                                 // 因爲tag始終為0 所以忽略
-                                buffer.EatBytes(JceUtils.UnTag(
-                                    buffer.PeekBytes(2, out var _), out var lenType, out var _));
+                                buffer.EatBytes(JceUtils.UnTag(buffer, 0, out var lenType, out var _));
 
                                 long length = 0;
 

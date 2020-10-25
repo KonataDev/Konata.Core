@@ -7,14 +7,17 @@ namespace Konata.Library.JceStruct
 {
     internal static class JceUtils
     {
-        internal static byte UnTag(byte[] data, out JceType type, out byte tag)
+        internal static byte UnTag(ByteBuffer buffer, uint offset,
+            out JceType type, out byte tag)
         {
-            tag = (byte)((data[0] & 240) >> 4);
-            type = (JceType)(data[0] & 15);
+            var data = buffer.PeekByte(offset, out var _);
+
+            tag = (byte)((data & 240) >> 4);
+            type = (JceType)(data & 15);
 
             if (tag == 15)
             {
-                tag = data[1];
+                tag = buffer.PeekByte(offset + 1, out var _);
                 return 2;
             }
 
@@ -37,12 +40,11 @@ namespace Konata.Library.JceStruct
             return buffer;
         }
 
-        internal static uint UnJceStandardType(ByteBuffer buffer, out JceType type,
+        internal static uint UnJceStandardType(ByteBuffer buffer, uint offset, out JceType type,
             out byte tag, out byte[] data)
         {
             data = null;
-            uint length =
-                UnTag(buffer.PeekBytes(2, out var _), out type, out tag);
+            uint length = UnTag(buffer, offset, out type, out tag);
 
             switch (type)
             {
@@ -51,37 +53,37 @@ namespace Konata.Library.JceStruct
                     length += 0;
                     break;
                 case JceType.Byte:
-                    buffer.PeekBytes(length, 1, out data);
+                    buffer.PeekBytes(offset + length, 1, out data);
                     length += 1;
                     break;
                 case JceType.Short:
-                    buffer.PeekBytes(length, 2, out data);
-                    length += 3;
+                    buffer.PeekBytes(offset + length, 2, out data);
+                    length += 2;
                     break;
                 case JceType.Int:
-                    buffer.PeekBytes(length, 4, out data);
+                    buffer.PeekBytes(offset + length, 4, out data);
                     length += 4;
                     break;
                 case JceType.Long:
-                    buffer.PeekBytes(length, 8, out data);
+                    buffer.PeekBytes(offset + length, 8, out data);
                     length += 8;
                     break;
                 case JceType.Float:
-                    buffer.PeekBytes(length, 4, out data);
+                    buffer.PeekBytes(offset + length, 4, out data);
                     length += 4;
                     break;
                 case JceType.Double:
-                    buffer.PeekBytes(length, 8, out data);
+                    buffer.PeekBytes(offset + length, 8, out data);
                     length += 8;
                     break;
                 case JceType.String1:
-                    buffer.PeekByte(length, out var str1len);
-                    buffer.PeekBytes(length + 1, str1len, out data);
+                    buffer.PeekByte(offset + length, out var str1len);
+                    buffer.PeekBytes(offset + length + 1, str1len, out data);
                     length += (uint)str1len + 1;
                     break;
                 case JceType.String4:
-                    buffer.PeekIntBE(length, out var str4len);
-                    buffer.PeekBytes(length + 4, (uint)str4len, out data);
+                    buffer.PeekIntBE(offset + length, out var str4len);
+                    buffer.PeekBytes(offset + length + 4, (uint)str4len, out data);
                     length += (uint)str4len + 4;
                     break;
             }
@@ -93,7 +95,7 @@ namespace Konata.Library.JceStruct
             out byte tag, out long value)
         {
             value = 0;
-            var length = UnJceStandardType(buffer, out type, out tag, out var data);
+            var length = UnJceStandardType(buffer, 0, out type, out tag, out var data);
 
             switch (type)
             {
