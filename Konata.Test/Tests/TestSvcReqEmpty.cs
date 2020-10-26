@@ -8,7 +8,7 @@ namespace Konata.Test.Tests
         public override bool Run()
         {
             var req = new SvcReqEmpty();
-            Print(req.ToString());
+            Print(req);
 
             return true;
         }
