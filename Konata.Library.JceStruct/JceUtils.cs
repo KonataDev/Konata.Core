@@ -120,6 +120,29 @@ namespace Konata.Library.JceStruct
             return length;
         }
 
+        internal static object JceToObject(byte[] buffer, Type type, out object value)
+        {
+            if (type == typeof(byte))
+                return value = buffer[0];
+            else if (type == typeof(sbyte))
+                return value = ByteConverter.BytesToInt8(buffer, 0);
+            else if (type == typeof(short))
+                return value = ByteConverter.BytesToInt16(buffer, 0, Endian.Big);
+            else if (type == typeof(ushort))
+                return value = ByteConverter.BytesToUInt16(buffer, 0, Endian.Big);
+            else if (type == typeof(int))
+                return value = ByteConverter.BytesToInt32(buffer, 0, Endian.Big);
+            else if (type == typeof(uint))
+                return value = ByteConverter.BytesToUInt32(buffer, 0, Endian.Big);
+            else if (type == typeof(long))
+                return value = ByteConverter.BytesToInt64(buffer, 0, Endian.Big);
+            else if (type == typeof(string))
+                return value = Encoding.UTF8.GetString(buffer);
+            else if (type == typeof(byte[]))
+                return value = buffer;
+            else throw new Exception($"not supported this type. {type}");
+        }
+
         internal static byte[] NumberToJce(long value,
             out JceType type, out byte[] buffer)
         {
