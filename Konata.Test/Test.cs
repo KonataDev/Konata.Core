@@ -9,14 +9,21 @@ namespace Konata.Test
 
         public abstract bool Run();
 
-        public void Print(params string[] args)
+        public void Print(params object[] args)
         {
-            Console.WriteLine($"[ .... ] {string.Join(" ", args)}");
-        }
+            Console.Write($"[ .... ] ");
+            {
+                foreach (var element in args)
+                {
+                    if (element.GetType() == typeof(byte[]))
+                        Console.Write(Hex.Bytes2HexStr((byte[])element));
+                    else
+                        Console.Write(element.ToString());
 
-        public void Print(byte[] arg)
-        {
-            Print(Hex.Bytes2HexStr(arg));
+                    Console.Write(" ");
+                }
+            }
+            Console.Write("\n");
         }
     }
 }

@@ -306,9 +306,27 @@ namespace Konata.Library.IO
             WriteData(ByteConverter.BoolToBytes(value, length, endian));
         }
 
+        /// <summary>
+        /// 放入字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefixFlag"></param>
+        /// <param name="limitedLength"></param>
         public void PutString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
             PutBytes(Encoding.UTF8.GetBytes(value), prefixFlag, limitedLength); // 把字符串当作byte[]
+        }
+
+        /// <summary>
+        /// 放入 Hex字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefixFlag"></param>
+        /// <param name="limitedLength"></param>
+        public void PutHexString(string value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
+        {
+            var data = ByteConverter.UnHex(value);
+            PutBytes(data, prefixFlag, limitedLength);
         }
 
         public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
@@ -695,7 +713,7 @@ namespace Konata.Library.IO
         #region GetMethods 獲取數據 此方法組不會對緩衝區造成影響
 
         /// <summary>
-        /// 獲取打包數據
+        /// 獲取數據
         /// </summary>
         /// <returns></returns>
         public byte[] GetBytes()
@@ -715,7 +733,62 @@ namespace Konata.Library.IO
         /// <returns></returns>
         public override string ToString()
         {
-            return ByteConverter.Hex(GetBytes(), true);
+            return ByteConverter.Hex(PeekBytes(RemainLength, out var _), true);
+        }
+
+        #endregion
+
+        #region PeekMetods 查看數據 此方法組不會對緩衝區造成影響
+
+        public byte PeekByte(uint offset, out byte value)
+        {
+            if (CheckAvailable(offset + 1))
+            {
+                value = ByteConverter.BytesToUInt8(buffer, readPosition + offset);
+                return value;
+            }
+            throw eobException;
+        }
+
+        public byte PeekByte(out byte value)
+        {
+            return PeekByte(0, out value);
+        }
+
+        public int PeekInt(uint offset, out int value, Endian endian)
+        {
+            if (CheckAvailable(offset + 4))
+            {
+                value = ByteConverter.BytesToInt32(buffer, readPosition + offset, endian);
+                return value;
+            }
+            throw eobException;
+        }
+
+        public int PeekIntBE(out int value)
+        {
+            return PeekInt(0, out value, Endian.Big);
+        }
+
+        public int PeekIntBE(uint offset, out int value)
+        {
+            return PeekInt(offset, out value, Endian.Big);
+        }
+
+        public byte[] PeekBytes(uint offset, uint length, out byte[] value)
+        {
+            if (CheckAvailable(offset + length))
+            {
+                value = new byte[length];
+                Array.Copy(buffer, readPosition + offset, value, 0, length);
+                return value;
+            }
+            throw eobException;
+        }
+
+        public byte[] PeekBytes(uint length, out byte[] value)
+        {
+            return PeekBytes(0, length, out value);
         }
 
         #endregion
