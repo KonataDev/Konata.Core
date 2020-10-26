@@ -59,20 +59,20 @@ namespace Konata.Library.JceStruct
             }
 
             var leafData = newTree.Serialize().GetBytes();
-            AddLeafBytes(treeIndex, JceType.StructBegin,
+            AddLeaf(treeIndex, JceType.StructBegin,
                 leafData.Concat(JceUtils.Tag(JceType.StructEnd, 0)).ToArray());
         }
 
         public void AddLeafString(byte leafIndex, string value)
         {
             JceUtils.StringToJce(value, out var leafType, out var leafData);
-            AddLeafBytes(leafIndex, leafType, leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
         public void AddLeafNumber(byte leafIndex, long value)
         {
             JceUtils.NumberToJce(value, out var leafType, out var leafData);
-            AddLeafBytes(leafIndex, leafType, leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
         public void AddLeafMap<K, V>(byte leafIndex, Dictionary<K, V> value)
@@ -106,33 +106,34 @@ namespace Konata.Library.JceStruct
                 }
             }
 
-            AddLeafBytes(leafIndex, JceType.Map, leafData);
+            AddLeaf(leafIndex, JceType.Map, leafData);
         }
 
         public void AddLeafObject(byte leafIndex, byte[] value)
         {
             JceUtils.BytesToJce(value, out var leafType, out var leafData);
-            AddLeafBytes(leafIndex, leafType, leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
         public void AddLeafFloat(byte leafIndex, float value)
         {
             JceUtils.FloatToJce(value, out var leafType, out var leafData);
-            AddLeafBytes(leafIndex, leafType, leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
         public void AddLeafDouble(byte leafIndex, double value)
         {
             JceUtils.DoubleToJce(value, out var leafType, out var leafData);
-            AddLeafBytes(leafIndex, leafType, leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
         public void AddLeafBytes(byte leafIndex, byte[] value)
         {
-            AddLeafBytes(leafIndex, JceType.Byte, value);
+            JceUtils.BytesToJce(value, out var leafType, out var leafData);
+            AddLeaf(leafIndex, leafType, leafData);
         }
 
-        private void AddLeafBytes(byte leafIndex, JceType type, byte[] value)
+        private void AddLeaf(byte leafIndex, JceType type, byte[] value)
         {
             leaves.Add(leafIndex, new JceLeaf { data = value ?? new byte[0], type = type });
         }
