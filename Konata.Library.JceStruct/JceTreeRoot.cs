@@ -102,7 +102,7 @@ namespace Konata.Library.JceStruct
                 }
                 else
                 {
-                    leafData = JceUtils.NumberToJce(0, out var _, out var _);
+                    leafData = JceUtils.Tag(JceType.ZeroTag, 0);
                 }
             }
 
