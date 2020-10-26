@@ -28,11 +28,10 @@ namespace Konata.Msf.Packets.Svc
         public SvcReqBody(string funcName, SvcReqBody body)
             : base()
         {
-            var dict = new Dictionary<string, SvcReqBody>();
-            dict.Add(funcName, body);
+            AddLeafMap(0, new Dictionary<string, SvcReqBody>
             {
-                Write(dict, 0);
-            }
+                [funcName] = body
+            });
         }
     }
 }

@@ -68,108 +68,82 @@ namespace Konata.Msf.Packets.Svc
 
             public XSvcRegister Encode()
             {
-                PutJceTypeHeader(JceType.StructBegin, 0);
+                AddStruct(0, (JceTreeRoot s) =>
                 {
-                    Write(uin, 0);
-                    Write(bid, 1);
-                    Write(connType, 2);
-                    Write(other, 3);
-                    Write(status, 4);
-                    Write(onlinePush, 5);
-                    Write(isOnline, 6);
-                    Write(isShowOnline, 7);
-                    Write(kikPC, 8);
-                    Write(kikWeak, 9);
-                    Write(timeStamp, 10);
-                    Write(osVersion, 11);
-                    Write(netType, 12);
+                    s.AddLeafNumber(0, uin);
+                    s.AddLeafNumber(1, bid);
+                    s.AddLeafNumber(2, connType);
+                    s.AddLeafString(3, other);
+                    s.AddLeafNumber(4, status);
+                    s.AddLeafNumber(5, onlinePush);
+                    s.AddLeafNumber(6, isOnline);
+                    s.AddLeafNumber(7, isShowOnline);
+                    s.AddLeafNumber(8, kikPC);
+                    s.AddLeafNumber(9, kikWeak);
+                    s.AddLeafNumber(10, timeStamp);
+                    s.AddLeafNumber(11, osVersion);
+                    s.AddLeafNumber(12, netType);
 
                     if (buildVer != null)
-                    {
-                        Write(buildVer, 13);
-                    }
+                        s.AddLeafString(13, buildVer);
 
-                    Write(regType, 14);
+                    s.AddLeafNumber(14, regType);
 
                     if (devParam != null)
-                    {
-                        Write(devParam, 15);
-                    }
+                        s.AddLeafBytes(15, devParam);
 
                     if (guid != null)
-                    {
-                        Write(guid, 16);
-                    }
+                        s.AddLeafBytes(16, guid);
 
-                    Write(localeID, 17);
-                    Write(slientPush, 18);
+                    s.AddLeafNumber(17, localeID);
+                    s.AddLeafNumber(18, slientPush);
 
                     if (devName != null)
-                    {
-                        Write(devName, 19);
-                    }
+                        s.AddLeafString(19, devName);
 
                     if (devType != null)
-                    {
-                        Write(devType, 20);
-                    }
+                        s.AddLeafString(20, devType);
 
                     if (osVer != null)
-                    {
-                        Write(osVer, 21);
-                    }
+                        s.AddLeafString(21, osVer);
 
-                    Write(openPush, 22);
-                    Write(largeSeq, 23);
-                    Write(lastWatchStartTime, 24);
+                    s.AddLeafNumber(22, openPush);
+                    s.AddLeafNumber(23, largeSeq);
+                    s.AddLeafNumber(24, lastWatchStartTime);
 
-                    if (bindUin != null)
-                    {
-                        // Write(bindUin, 25);
-                    }
+                    // if (bindUin != null)
+                    //    leaf.Write(25, bindUin);
 
-                    Write(oldSSOIp, 26);
-                    Write(newSSOIp, 27);
+                    s.AddLeafNumber(26, oldSSOIp);
+                    s.AddLeafNumber(27, newSSOIp);
 
                     if (channelNo != null)
-                    {
-                        Write(channelNo, 28);
-                    }
+                        s.AddLeafString(28, channelNo);
 
-                    Write(cpId, 29);
+                    s.AddLeafNumber(29, cpId);
 
                     if (vendorName != null)
-                    {
-                        Write(vendorName, 30);
-                    }
+                        s.AddLeafString(30, vendorName);
 
                     if (vendorOSName != null)
-                    {
-                        Write(vendorOSName, 31);
-                    }
+                        s.AddLeafString(31, vendorOSName);
 
                     if (osIdfa != null)
-                    {
-                        Write(osIdfa, 32);
-                    }
+                        s.AddLeafString(32, osIdfa);
 
                     if (cmd0x769Reqbody != null)
-                    {
-                        Write(cmd0x769Reqbody, 33);
-                    }
+                        s.AddLeafBytes(33, cmd0x769Reqbody);
 
-                    Write(isSetStatus, 34);
+                    s.AddLeafNumber(34, isSetStatus);
 
                     if (serverBuf != null)
-                    {
-                        Write(serverBuf, 35);
-                    }
+                        s.AddLeafBytes(35, serverBuf);
 
-                    Write(setMute, 36);
-                    Write(extOnlineStatus, 38);
-                    Write(batteryStatus, 39);
-                }
-                PutJceTypeHeader(JceType.StructEnd, 0);
+                    s.AddLeafNumber(36, setMute);
+                    s.AddLeafNumber(38, extOnlineStatus);
+                    s.AddLeafNumber(39, batteryStatus);
+
+                });
 
                 return this;
             }
