@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -148,6 +149,14 @@ namespace Konata.Library.JceStruct
             }
         }
 
+        public void GetLeafStruct(byte leafIndex, JceTreeRootReader reader)
+        {
+            var newTree = new JceTreeRoot(leaves[leafIndex].data);
+            {
+                reader(newTree);
+            }
+        }
+
         public string GetLeafString(byte leafIndex, out string value)
         {
             GetLeafBytes(leafIndex, out var leafType, out var leafData);
@@ -181,6 +190,20 @@ namespace Konata.Library.JceStruct
                     //case JceType.ZeroTag:
                     value = 0; break;
             }
+            return value;
+        }
+
+        public Dictionary<K, V> GetLeafMap<K, V>(byte leafIndex)
+        {
+            var value = new Dictionary<K, V>();
+            var types = value.GetType().GetGenericArguments();
+
+            foreach (var element in leaves[leafIndex].map)
+            {
+                value.Add((K)JceUtils.JceToObject(element.Key, types[0], out var _),
+                    (V)JceUtils.JceToObject(element.Value, types[1], out var _));
+            }
+
             return value;
         }
 
