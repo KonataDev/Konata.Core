@@ -733,18 +733,54 @@ namespace Konata.Library.IO
         /// <returns></returns>
         public override string ToString()
         {
-            return ByteConverter.Hex(GetBytes(), true);
+            return ByteConverter.Hex(PeekBytes(RemainLength, out var _), true);
         }
 
         #endregion
 
         #region PeekMetods 查看數據 此方法組不會對緩衝區造成影響
 
+        public byte PeekByte(uint offset, out byte value)
+        {
+            if (CheckAvailable(offset + 1))
+            {
+                value = ByteConverter.BytesToUInt8(buffer, readPosition + offset);
+                return value;
+            }
+            throw eobException;
+        }
+
         public byte PeekByte(out byte value)
         {
-            if (CheckAvailable(1))
+            return PeekByte(0, out value);
+        }
+
+        public int PeekInt(uint offset, out int value, Endian endian)
+        {
+            if (CheckAvailable(offset + 4))
             {
-                value = ByteConverter.BytesToUInt8(buffer, readPosition);
+                value = ByteConverter.BytesToInt32(buffer, readPosition + offset, endian);
+                return value;
+            }
+            throw eobException;
+        }
+
+        public int PeekIntBE(out int value)
+        {
+            return PeekInt(0, out value, Endian.Big);
+        }
+
+        public int PeekIntBE(uint offset, out int value)
+        {
+            return PeekInt(offset, out value, Endian.Big);
+        }
+
+        public byte[] PeekBytes(uint offset, uint length, out byte[] value)
+        {
+            if (CheckAvailable(offset + length))
+            {
+                value = new byte[length];
+                Array.Copy(buffer, readPosition + offset, value, 0, length);
                 return value;
             }
             throw eobException;
@@ -752,13 +788,7 @@ namespace Konata.Library.IO
 
         public byte[] PeekBytes(uint length, out byte[] value)
         {
-            if (CheckAvailable(length))
-            {
-                value = new byte[length];
-                Array.Copy(buffer, readPosition, value, 0, length);
-                return value;
-            }
-            throw eobException;
+            return PeekBytes(0, length, out value);
         }
 
         #endregion
