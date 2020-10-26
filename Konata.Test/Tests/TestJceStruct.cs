@@ -70,19 +70,25 @@ namespace Konata.Test.Tests
                     Print("    ", deroot2.GetLeafString(5, out var _));
                     Print("    ", deroot2.GetLeafNumber(6, out var _).ToString());
 
-                    //deroot2.GetTree(7, (JceTreeRoot deroot3) =>
-                    //{
-                    //    Print("  [-]", deroot3.GetLeafNumber(0, out var _).ToString());
-                    //    // deroot3.GetLeafMap<Dictionary<string, int>>(1);
+                    deroot2.GetTree(7, (JceTreeRoot deroot3) =>
+                    {
+                        Print("  [-]", deroot3.GetLeafNumber(0, out var _).ToString());
+                        
+                        Print("  [-] Map <string, ushort>");
+                        foreach (var element in deroot3.GetLeafMap<string, ushort>(1))
+                        {
+                            Print($"      [{element.Key}] => {element.Value}");
+                        }
 
-                    //    //root3.AddStruct(2, (JceTreeRoot s) =>
-                    //    //{
-                    //    //    s.AddLeafNumber(0, 0);
-                    //    //    s.AddLeafNumber(1, 0);
-                    //    //    s.AddLeafNumber(2, 0);
-                    //    //    s.AddLeafNumber(3, 0);
-                    //    //});
-                    //});
+                        Print("  [-] Struct");
+                        deroot3.GetLeafStruct(2, (JceTreeRoot s) =>
+                        {
+                            Print("     ", s.GetLeafNumber(0, out var _).ToString());
+                            Print("     ", s.GetLeafNumber(1, out var _).ToString());
+                            Print("     ", s.GetLeafNumber(2, out var _).ToString());
+                            Print("     ", s.GetLeafNumber(3, out var _).ToString());
+                        });
+                    });
                 });
             }
 
