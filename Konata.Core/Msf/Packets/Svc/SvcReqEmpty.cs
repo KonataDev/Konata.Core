@@ -17,11 +17,10 @@ namespace Konata.Msf.Packets.Svc
             public XSvcEmpty()
                 : base()
             {
-                PutJceTypeHeader(JceType.StructBegin, 0);
+                AddStruct(0, (JceTreeRoot leaf) =>
                 {
-                    Write("This is an empty request.", 0);
-                }
-                PutJceTypeHeader(JceType.StructEnd, 0);
+                    leaf.AddLeafString(0, "This is an empty request.");
+                });
             }
         }
     }

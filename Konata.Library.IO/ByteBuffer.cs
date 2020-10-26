@@ -329,6 +329,17 @@ namespace Konata.Library.IO
             PutBytes(data, prefixFlag, limitedLength);
         }
 
+        /// <summary>
+        /// 放入 ByteBuffer
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="prefixFlag"></param>
+        /// <param name="limitedLength"></param>
+        public void PutByteBuffer(ByteBuffer value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
+        {
+            PutBytes(value.GetBytes(), prefixFlag, limitedLength);
+        }
+
         public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
             prefixFlag &= (Prefix)7;

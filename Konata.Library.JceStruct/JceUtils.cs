@@ -238,6 +238,8 @@ namespace Konata.Library.JceStruct
                     return BytesToJce(bytes, out type, out buffer);
                 case ByteBuffer byteBuffer:
                     return BytesToJce(byteBuffer.GetBytes(), out type, out buffer);
+                case JceTreeRoot treeRoot:
+                    return BytesToJce(treeRoot.Serialize().GetBytes(), out type, out buffer);
                 default: throw new Exception("Not supported Jce Type.");
             }
         }

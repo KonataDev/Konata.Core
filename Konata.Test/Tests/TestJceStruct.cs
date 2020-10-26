@@ -53,10 +53,10 @@ namespace Konata.Test.Tests
 
             var deroot = new JceTreeRoot(data);
             {
-                Print("[-]", deroot.GetLeafNumber(1, out var _).ToString());
-                Print("   ", deroot.GetLeafNumber(2, out var _).ToString());
-                Print("   ", deroot.GetLeafNumber(3, out var _).ToString());
-                Print("   ", deroot.GetLeafNumber(4, out var _).ToString());
+                Print("[-]", deroot.GetLeafNumber(1, out var _));
+                Print("   ", deroot.GetLeafNumber(2, out var _));
+                Print("   ", deroot.GetLeafNumber(3, out var _));
+                Print("   ", deroot.GetLeafNumber(4, out var _));
                 Print("   ", deroot.GetLeafString(5, out var _));
                 Print("   ", deroot.GetLeafString(6, out var _));
 
@@ -68,11 +68,11 @@ namespace Konata.Test.Tests
                     Print("    ", deroot2.GetLeafString(3, out var _));
                     Print("    ", deroot2.GetLeafString(4, out var _));
                     Print("    ", deroot2.GetLeafString(5, out var _));
-                    Print("    ", deroot2.GetLeafNumber(6, out var _).ToString());
+                    Print("    ", deroot2.GetLeafNumber(6, out var _));
 
                     deroot2.GetTree(7, (JceTreeRoot deroot3) =>
                     {
-                        Print("  [-]", deroot3.GetLeafNumber(0, out var _).ToString());
+                        Print("  [-]", deroot3.GetLeafNumber(0, out var _));
                         
                         Print("  [-] Map <string, ushort>");
                         foreach (var element in deroot3.GetLeafMap<string, ushort>(1))
@@ -83,10 +83,10 @@ namespace Konata.Test.Tests
                         Print("  [-] Struct");
                         deroot3.GetLeafStruct(2, (JceTreeRoot s) =>
                         {
-                            Print("     ", s.GetLeafNumber(0, out var _).ToString());
-                            Print("     ", s.GetLeafNumber(1, out var _).ToString());
-                            Print("     ", s.GetLeafNumber(2, out var _).ToString());
-                            Print("     ", s.GetLeafNumber(3, out var _).ToString());
+                            Print("     ", s.GetLeafNumber(0, out var _));
+                            Print("     ", s.GetLeafNumber(1, out var _));
+                            Print("     ", s.GetLeafNumber(2, out var _));
+                            Print("     ", s.GetLeafNumber(3, out var _));
                         });
                     });
                 });

@@ -5,7 +5,7 @@ using Konata.Library.JceStruct;
 
 namespace Konata.Msf.Packets.Wup
 {
-    public class UniPacket : JceOutputStream
+    public class UniPacket : ByteBuffer
     {
         public readonly UniPacketBody packageBody;
         public readonly ushort packageVersion;
@@ -18,6 +18,8 @@ namespace Konata.Msf.Packets.Wup
         public readonly ushort packageTimeout;
         public readonly Dictionary<string, string> packageContext;
         public readonly Dictionary<string, string> packageStatus;
+
+        private JceTreeRoot root;
 
         public UniPacket(bool useVersion3, string servantName, string funcName,
             byte packetType, ushort messageType, ushort requestId, ushort oldRespIret,
@@ -32,20 +34,24 @@ namespace Konata.Msf.Packets.Wup
             packageOldRespIret = oldRespIret;
             packageVersion = (ushort)(useVersion3 ? 3 : 2);
 
-            Write(packageVersion, 1);
-            Write(packagePacketType, 2);
-            Write(packageMessageType, 3);
-            Write(packageRequestId, 4);
-            Write(packageServantName, 5);
-            Write(packageFuncName, 6);
-            Write((ByteBuffer)packageBody, 7);
-            Write(packageTimeout, 8);
-            Write(packageContext, 9);
-            Write(packageStatus, 10);
+            root = new JceTreeRoot();
+            {
+                root.AddLeafNumber(1, packageVersion);
+                root.AddLeafNumber(2, packagePacketType);
+                root.AddLeafNumber(3, packageMessageType);
+                root.AddLeafNumber(4, packageRequestId);
+                root.AddLeafString(5, packageServantName);
+                root.AddLeafString(6, packageFuncName);
+                root.AddTree(7, packageBody);
+                root.AddLeafNumber(8, packageTimeout);
+                root.AddLeafMap(9, packageContext);
+                root.AddLeafMap(10, packageStatus);
+            }
+            PutByteBuffer(root.Serialize());
         }
     }
 
-    public class UniPacketBody : JceOutputStream
+    public class UniPacketBody : JceTreeRoot
     {
         public UniPacketBody()
             : base()
