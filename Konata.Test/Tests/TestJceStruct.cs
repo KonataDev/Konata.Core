@@ -44,6 +44,9 @@ namespace Konata.Test.Tests
                             s.AddLeafNumber(2, 0);
                             s.AddLeafNumber(3, 0);
                         });
+
+                        root3.AddLeafBytes(3, new byte[] { 0x00, 0x01, 0x02 });
+
                     });
                 });
             }
@@ -73,7 +76,7 @@ namespace Konata.Test.Tests
                     deroot2.GetTree(7, (JceTreeRoot deroot3) =>
                     {
                         Print("  [-]", deroot3.GetLeafNumber(0, out var _));
-                        
+
                         Print("  [-] Map <string, ushort>");
                         foreach (var element in deroot3.GetLeafMap<string, ushort>(1))
                         {
