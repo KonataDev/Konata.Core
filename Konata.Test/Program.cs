@@ -29,15 +29,23 @@ namespace Konata.Test
                 }
                 finally
                 {
-                    Console.WriteLine($"{(testResult ? "[  OK  ] Pass" : "[FAILED] Test failed")} => {testName}");
-
-                    if (testExpection != null)
+                    if (testResult)
                     {
-                        Console.WriteLine(testExpection.Message);
-                        Console.WriteLine(testExpection.StackTrace);
+                        Console.WriteLine($"[  OK  ] Pass => {testName}");
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine($"[FAILED] Test failed => {testName}");
+
+                        if (testExpection != null)
+                        {
+                            Console.Error.WriteLine("");
+                            Console.Error.WriteLine(testExpection.Message);
+                            Console.Error.WriteLine(testExpection.StackTrace);
+                        }
                     }
 
-                    Console.WriteLine();
+                    Console.WriteLine("");
                 }
             }
             Console.ReadKey();
