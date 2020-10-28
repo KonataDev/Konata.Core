@@ -160,7 +160,7 @@ namespace Konata.Library.JceStruct
 
         public string GetLeafString(byte leafIndex, out string value)
         {
-            GetLeafBytes(leafIndex, out var leafType, out var leafData);
+            GetLeaf(leafIndex, out var leafType, out var leafData);
             if (leafType == JceType.String1 || leafType == JceType.String4)
             {
                 value = Encoding.UTF8.GetString(leafData);
@@ -175,7 +175,7 @@ namespace Konata.Library.JceStruct
 
         public long GetLeafNumber(byte leafIndex, out long value)
         {
-            GetLeafBytes(leafIndex, out var leafType, out var leafData);
+            GetLeaf(leafIndex, out var leafType, out var leafData);
             switch (leafType)
             {
                 case JceType.Byte:
@@ -208,7 +208,12 @@ namespace Konata.Library.JceStruct
             return value;
         }
 
-        public byte[] GetLeafBytes(byte leafIndex, out JceType type, out byte[] value)
+        public byte[] GetLeafBytes(byte leafIndex, out byte[] value)
+        {
+            return value = GetLeaf(leafIndex, out var _, out var _);
+        }
+
+        public byte[] GetLeaf(byte leafIndex, out JceType type, out byte[] value)
         {
             type = leaves[leafIndex].type;
             value = leaves[leafIndex].data;
@@ -307,8 +312,10 @@ namespace Konata.Library.JceStruct
 
                                 while (buffer.RemainLength > 0)
                                 {
-                                    byteOffset += JceUtils.UnJceStandardType(buffer, byteOffset, out var type,
-                                        out var tag, out var _);
+                                    //byteOffset += JceUtils.UnJceStandardType(buffer, byteOffset, out var type,
+                                    //    out var tag, out var _);
+
+                                    byteOffset += JceUtils.UnTag(buffer, byteOffset, out var type, out var tag);
 
                                     if (type == JceType.StructBegin)
                                     {
@@ -322,6 +329,7 @@ namespace Konata.Library.JceStruct
                                         {
                                             buffer.TakeBytes(out jceData, byteOffset - 1);
                                             buffer.EatBytes(1);
+                                            break;
                                         }
                                     }
 
