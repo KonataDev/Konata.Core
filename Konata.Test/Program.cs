@@ -9,7 +9,13 @@ namespace Konata.Test
     {
         static void Main(string[] args)
         {
-            foreach (var element in GetAllTests())
+            var allTests = GetAllTests();
+
+            var testCount = allTests.Count();
+            var testPassCount = 0;
+            var testFailedCount = 0;
+
+            foreach (var element in allTests)
             {
                 var testResult = false;
                 var testName = $"Konata.Test.{element.Name}";
@@ -29,18 +35,34 @@ namespace Konata.Test
                 }
                 finally
                 {
-                    Console.WriteLine($"{(testResult ? "[  OK  ] Pass" : "[FAILED] Test failed")} => {testName}");
-
-                    if (testExpection != null)
+                    if (testResult)
                     {
-                        Console.WriteLine(testExpection.Message);
-                        Console.WriteLine(testExpection.StackTrace);
+                        ++testPassCount;
+                        Console.WriteLine($"[  OK  ] Pass => {testName}");
+                    }
+                    else
+                    {
+                        ++testFailedCount;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        {
+                            Console.Error.WriteLine($"[FAILED] Test failed => {testName}");
+
+                            if (testExpection != null)
+                            {
+                                Console.Error.WriteLine("");
+                                Console.Error.WriteLine(testExpection.Message);
+                                Console.Error.WriteLine(testExpection.StackTrace);
+                            }
+                        }
+                        Console.ResetColor();
                     }
 
-                    Console.WriteLine();
+                    Console.WriteLine("");
                 }
             }
-            Console.ReadKey();
+
+            Console.WriteLine($"Test statistics for the project: ");
+            Console.WriteLine($"Tests = { testCount}, Pass = { testPassCount}, Failed = { testFailedCount} ({(float)testPassCount / testCount * 100F}% pass)");
         }
 
         static IEnumerable<Type> GetAllTests()

@@ -1,6 +1,5 @@
 ﻿using System;
 using Konata.Msf.Packets.Svc;
-using Konata.Library.JceStruct;
 
 namespace Konata.Test.Tests
 {

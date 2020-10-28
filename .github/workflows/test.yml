@@ -1,0 +1,22 @@
+name: Test
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore the nuget packages
+        run: nuget restore
+
+      - name: Build the test program
+        run: msbuild Konata.Test
+        
+      - name: Running Test
+        run: mono ./Konata.Test/bin/Debug/Konata.Test.exe
