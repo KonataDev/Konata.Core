@@ -91,6 +91,8 @@ namespace Konata.Test.Tests
                             Print("     ", s.GetLeafNumber(2, out var _));
                             Print("     ", s.GetLeafNumber(3, out var _));
                         });
+
+                        Print("     ", deroot3.GetLeafBytes(3, out var _));
                     });
                 });
             }
