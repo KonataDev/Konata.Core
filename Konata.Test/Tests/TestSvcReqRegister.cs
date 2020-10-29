@@ -7,7 +7,7 @@ namespace Konata.Test.Tests
     {
         public override bool Run()
         {
-            var requestBody = new SvcReqRegister.XSvcRegister()
+            var info = new RegisterInfo()
             {
                 uin = 2842875712,
                 bid = 7,
@@ -56,7 +56,7 @@ namespace Konata.Test.Tests
                 batteryStatus = 0
             };
 
-            var request = new SvcReqRegister(0, 0, 0, 0, requestBody.Encode());
+            var request = new SvcReqRegister(0, 0, 0, 0, info);
             Print(request.ToString());
 
             return true;
