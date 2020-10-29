@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Msf.Packets.Svc;
+using Konata.Msf.Packets.SvcReq;
 
 namespace Konata.Msf.Services.StatSvc
 {

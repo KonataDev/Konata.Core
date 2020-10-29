@@ -33,6 +33,10 @@ namespace Konata.Msf.Services.MessageSvc
             packet.TakeUintBE(out len);
             var unipacket = new UniPacket(packet.TakeBytes(out var _, len - 4));
 
+            if (unipacket.packageFuncName != "PushNotify")
+                return false;
+
+
             return false;
         }
 
