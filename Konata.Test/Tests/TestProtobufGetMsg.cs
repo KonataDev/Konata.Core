@@ -9,8 +9,7 @@ namespace Konata.Test.Tests
         public override bool Run()
         {
             var request = new ProtoGetMsg(new byte[38]);
-
-            Print(request.Serialize().GetBytes());
+            Print(request);
 
             return true;
         }
