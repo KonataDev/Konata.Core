@@ -3,7 +3,7 @@ using System.Collections;
 using Konata.Library.JceStruct;
 using Konata.Msf.Packets.Wup;
 
-namespace Konata.Msf.Packets.Svc
+namespace Konata.Msf.Packets.SvcReq
 {
     public struct RegisterInfo
     {
