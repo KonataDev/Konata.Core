@@ -162,7 +162,7 @@ namespace Konata.Library.Protobuf
                         case ProtoType.Bit32: buffer.TakeBytes(out pbData, 4); break;
                         case ProtoType.Bit64: buffer.TakeBytes(out pbData, 8); break;
                         case ProtoType.LengthDelimited:
-                            buffer.TakeBytes(out pbData, (uint)buffer.TakeVarIntValue(out var _));
+                            buffer.TakeBytes(out pbData, (uint)buffer.TakeVarIntValueLE(out var _));
 
                             try
                             {

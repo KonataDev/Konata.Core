@@ -698,7 +698,7 @@ namespace Konata.Library.IO
             return value = TakeBytes(out _, index - readPosition);
         }
 
-        public ulong TakeVarIntValue(out ulong value)
+        public ulong TakeVarIntValueBE(out ulong value)
         {
             value = 0;
             byte b;
@@ -709,6 +709,28 @@ namespace Konata.Library.IO
                     TakeByte(out b);
                     value <<= 7;
                     value |= b & 0b01111111u;
+                }
+                else
+                {
+                    throw eobException;
+                }
+            }
+            while ((b & 0b10000000) > 0);
+            return value;
+        }
+
+        public ulong TakeVarIntValueLE(out ulong value)
+        {
+            value = 0;
+            int count = 0;
+            byte b;
+            do
+            {
+                if (CheckAvailable(1))
+                {
+                    TakeByte(out b);
+                    value |= (b & 0b01111111u) << (count * 7);
+                    ++count;
                 }
                 else
                 {
