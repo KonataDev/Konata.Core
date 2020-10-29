@@ -37,21 +37,25 @@ namespace Konata.Library.JceStruct
         #region Add Methods
         //Jason_Ren H 
 
-        public void AddTree(byte treeIndex, JceTreeRoot value)
+        public JceTreeRoot AddTree(byte treeIndex, JceTreeRoot value)
         {
             AddLeafObject(treeIndex, value.Serialize().GetBytes());
+
+            return this;
         }
 
-        public void AddTree(byte treeIndex, JceTreeRootWriter writer)
+        public JceTreeRoot AddTree(byte treeIndex, JceTreeRootWriter writer)
         {
             var newTree = new JceTreeRoot();
             {
                 writer(newTree);
             }
             AddTree(treeIndex, newTree);
+
+            return this;
         }
 
-        public void AddStruct(byte treeIndex, JceTreeRootWriter writer)
+        public JceTreeRoot AddStruct(byte treeIndex, JceTreeRootWriter writer)
         {
             var newTree = new JceTreeRoot();
             {
@@ -61,21 +65,27 @@ namespace Konata.Library.JceStruct
             var leafData = newTree.Serialize().GetBytes();
             AddLeaf(treeIndex, JceType.StructBegin,
                 leafData.Concat(JceUtils.Tag(JceType.StructEnd, 0)).ToArray());
+
+            return this;
         }
 
-        public void AddLeafString(byte leafIndex, string value)
+        public JceTreeRoot AddLeafString(byte leafIndex, string value)
         {
             JceUtils.StringToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
-        public void AddLeafNumber(byte leafIndex, long value)
+        public JceTreeRoot AddLeafNumber(byte leafIndex, long value)
         {
             JceUtils.NumberToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
-        public void AddLeafMap<K, V>(byte leafIndex, Dictionary<K, V> value)
+        public JceTreeRoot AddLeafMap<K, V>(byte leafIndex, Dictionary<K, V> value)
         {
             byte[] leafData;
             {
@@ -107,30 +117,40 @@ namespace Konata.Library.JceStruct
             }
 
             AddLeaf(leafIndex, JceType.Map, leafData);
+
+            return this;
         }
 
-        public void AddLeafObject(byte leafIndex, byte[] value)
+        public JceTreeRoot AddLeafObject(byte leafIndex, byte[] value)
         {
             JceUtils.BytesToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
-        public void AddLeafFloat(byte leafIndex, float value)
+        public JceTreeRoot AddLeafFloat(byte leafIndex, float value)
         {
             JceUtils.FloatToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
-        public void AddLeafDouble(byte leafIndex, double value)
+        public JceTreeRoot AddLeafDouble(byte leafIndex, double value)
         {
             JceUtils.DoubleToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
-        public void AddLeafBytes(byte leafIndex, byte[] value)
+        public JceTreeRoot AddLeafBytes(byte leafIndex, byte[] value)
         {
             JceUtils.BytesToJce(value, out var leafType, out var leafData);
             AddLeaf(leafIndex, leafType, leafData);
+
+            return this;
         }
 
         private void AddLeaf(byte leafIndex, JceType type, byte[] value)
@@ -148,6 +168,11 @@ namespace Konata.Library.JceStruct
             {
                 reader(newTree);
             }
+        }
+
+        public void GetTree(byte leafIndex, out JceTreeRoot tree)
+        {
+            tree = new JceTreeRoot(leaves[leafIndex].data);
         }
 
         public void GetLeafStruct(byte leafIndex, JceTreeRootReader reader)
@@ -192,6 +217,11 @@ namespace Konata.Library.JceStruct
                     value = 0; break;
             }
             return value;
+        }
+
+        public T GetLeafNumber<T>(byte leafIndex, out T value)
+        {
+            return value = (T)Convert.ChangeType(GetLeafNumber(leafIndex, out var _), typeof(T));
         }
 
         public Dictionary<K, V> GetLeafMap<K, V>(byte leafIndex)
