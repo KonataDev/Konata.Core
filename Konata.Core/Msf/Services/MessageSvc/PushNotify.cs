@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Msf.Packets.Wup;
+using Konata.Library.IO;
 
 namespace Konata.Msf.Services.MessageSvc
 {
@@ -23,6 +25,13 @@ namespace Konata.Msf.Services.MessageSvc
         {
             if (args == null || args.Length == 0)
                 return false;
+
+            // 未知多餘頭部
+            var packet = (Packet)args[0];
+            packet.TakeUintBE(out var len);
+            packet.EatBytes(len - 4);
+            packet.TakeUintBE(out len);
+            var unipacket = new UniPacket(packet.TakeBytes(out var _, len - 4));
 
             return false;
         }

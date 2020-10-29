@@ -21,7 +21,7 @@ namespace Konata.Msf.Packets.Wup
 
         private JceTreeRoot root;
 
-        public UniPacket(bool useVersion3, string servantName, string funcName,
+        public UniPacket(string servantName, string funcName,
             byte packetType, ushort messageType, ushort requestId, ushort oldRespIret,
             UniPacketBody body)
         {
@@ -32,7 +32,7 @@ namespace Konata.Msf.Packets.Wup
             packageMessageType = messageType;
             packageRequestId = requestId;
             packageOldRespIret = oldRespIret;
-            packageVersion = (ushort)(useVersion3 ? 3 : 2);
+            packageVersion = (ushort)((body is UniPacketBodyV2) ? 2 : 3);
 
             root = new JceTreeRoot();
             {
@@ -49,6 +49,21 @@ namespace Konata.Msf.Packets.Wup
             }
             PutByteBuffer(root.Serialize());
         }
+
+        public UniPacket(byte[] data)
+        {
+            root = new JceTreeRoot(data);
+            {
+                root.GetLeafNumber(1, out packageVersion);
+                root.GetLeafNumber(2, out packagePacketType);
+                root.GetLeafNumber(3, out packageMessageType);
+                root.GetLeafNumber(4, out packageRequestId);
+                root.GetLeafString(5, out packageServantName);
+                root.GetLeafString(6, out packageFuncName);
+                root.GetTree(7, out var body); packageBody = (UniPacketBody)body;
+                root.GetLeafNumber(8, out packageTimeout);
+            }
+        }
     }
 
     public class UniPacketBody : JceTreeRoot
@@ -57,6 +72,38 @@ namespace Konata.Msf.Packets.Wup
             : base()
         {
 
+        }
+    }
+
+    public class UniPacketBodyV2 : UniPacketBody
+    {
+        public UniPacketBodyV2(string reqName, string funcName, JceTreeRoot body)
+            : base()
+        {
+            AddLeafMap(0, new Dictionary<string, JceTreeRoot>
+            {
+                [reqName] = new Func<JceTreeRoot>(() =>
+                {
+                    var req = new JceTreeRoot();
+                    req.AddLeafMap(1, new Dictionary<string, JceTreeRoot>
+                    {
+                        [funcName] = body
+                    });
+                    return req;
+                })()
+            });
+        }
+    }
+
+    public class UniPacketBodyV3 : UniPacketBody
+    {
+        public UniPacketBodyV3(string funcName, JceTreeRoot body)
+            : base()
+        {
+            AddLeafMap(0, new Dictionary<string, JceTreeRoot>
+            {
+                [funcName] = body
+            });
         }
     }
 }

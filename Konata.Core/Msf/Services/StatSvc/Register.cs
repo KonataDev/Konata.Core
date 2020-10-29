@@ -35,7 +35,7 @@ namespace Konata.Msf.Services.StatSvc
 
         private bool Request_Register(Core core)
         {
-            var requestBody = new SvcReqRegister.XSvcRegister()
+            var info = new RegisterInfo()
             {
                 uin = core.SigInfo.Uin,
                 bid = 7,
@@ -78,7 +78,7 @@ namespace Konata.Msf.Services.StatSvc
                 batteryStatus = 0
             };
 
-            var request = new SvcReqRegister(0, 0, 0, 0, requestBody.Encode());
+            var request = new SvcReqRegister(0, 0, 0, 0, info);
             var sequence = core.SsoMan.GetNewSequence();
             core.SsoMan.PostMessage(this, request, sequence);
 
