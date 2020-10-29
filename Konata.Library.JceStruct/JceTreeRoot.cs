@@ -36,6 +36,12 @@ namespace Konata.Library.JceStruct
 
         #region Add Methods
         //Jason_Ren H 
+        public JceTreeRoot AddTree(byte treeIndex, byte[] value)
+        {
+            AddLeafObject(treeIndex, value);
+
+            return this;
+        }
 
         public JceTreeRoot AddTree(byte treeIndex, JceTreeRoot value)
         {
@@ -168,6 +174,11 @@ namespace Konata.Library.JceStruct
             {
                 reader(newTree);
             }
+        }
+
+        public void GetTree(byte leafIndex, out byte[] tree)
+        {
+            tree = leaves[leafIndex].data;
         }
 
         public void GetTree(byte leafIndex, out JceTreeRoot tree)
