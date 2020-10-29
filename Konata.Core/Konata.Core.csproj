@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
+    <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
     <Compile Include="Msf\Services\PbMessageSvc\PbMsgReadReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
