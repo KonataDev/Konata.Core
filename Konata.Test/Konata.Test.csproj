@@ -46,6 +46,7 @@
     <Compile Include="Tests\TestProtobufDeviceReport.cs" />
     <Compile Include="Tests\TestProtobufGetMsg.cs" />
     <Compile Include="Tests\TestProtobufMatryoshka.cs" />
+    <Compile Include="Tests\TestProtobufMsgWithDraw.cs" />
     <Compile Include="Tests\TestProtobufSerialize.cs" />
     <Compile Include="Tests\TestSvcReqEmpty.cs" />
     <Compile Include="Tests\TestSvcReqRegister.cs" />
