@@ -48,7 +48,8 @@ namespace Konata.Library.Protobuf
 
         public void addLeafString(string leafPath, string value)
         {
-            addLeafBytes(leafPath, Encoding.UTF8.GetBytes(value));
+            if (value != null)
+                addLeafBytes(leafPath, Encoding.UTF8.GetBytes(value));
         }
 
         public void addLeafFix32(string leafPath, int value)
