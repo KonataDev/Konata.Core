@@ -1,5 +1,4 @@
 ﻿using System;
-using Konata.Library.Protobuf;
 using Konata.Msf.Packets.Protobuf;
 
 namespace Konata.Msf.Services.MessageSvc
@@ -31,10 +30,8 @@ namespace Konata.Msf.Services.MessageSvc
 
         private bool Request_PbGetMsg(Core core)
         {
-            var sequence = core.SsoMan.GetNewSequence();
             var request = new ProtoGetMsg(core.SigInfo.SyncCookie);
-
-            core.SsoMan.PostMessage(this, request.Serialize(), sequence);
+            core.SsoMan.PostMessage(this, request.Serialize());
 
             return true;
         }

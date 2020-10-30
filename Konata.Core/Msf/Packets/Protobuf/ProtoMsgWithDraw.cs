@@ -12,21 +12,21 @@ namespace Konata.Msf.Packets.Protobuf
         public ProtoMsgWithDraw(uint group, uint msgId)
             : base()
         {
-            addTree("12", (ProtoTreeRoot t) =>
+            AddTree("12", (ProtoTreeRoot t) =>
             {
-                t.addLeafVar("08", 1);
-                t.addLeafVar("10", 0);
-                t.addLeafVar("18", group);
+                t.AddLeafVar("08", 1);
+                t.AddLeafVar("10", 0);
+                t.AddLeafVar("18", group);
 
-                t.addTree("22", (ProtoTreeRoot t2) =>
+                t.AddTree("22", (ProtoTreeRoot t2) =>
                 {
-                    t2.addLeafVar("08", 7499);
-                    t2.addLeafVar("10", msgId);
+                    t2.AddLeafVar("08", 7499);
+                    t2.AddLeafVar("10", msgId);
                 });
 
-                t.addTree("2A", (ProtoTreeRoot t2) =>
+                t.AddTree("2A", (ProtoTreeRoot t2) =>
                 {
-                    t2.addLeafVar("08", 0);
+                    t2.AddLeafVar("08", 0);
                 });
             });
         }

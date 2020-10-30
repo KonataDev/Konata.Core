@@ -32,57 +32,62 @@ namespace Konata.Library.Protobuf
 
         #region Add Methods
 
-        public void addTree(string treePath, ProtoTreeRoot value)
+        public void AddTree(string treePath, ProtoTreeRoot value)
         {
-            addLeafByteBuffer(treePath, value.Serialize());
+            AddLeafByteBuffer(treePath, value.Serialize());
         }
 
-        public void addTree(string treePath, TreeRootWriter writer)
+        public void AddTree(string treePath, TreeRootWriter writer)
         {
             var newTree = new ProtoTreeRoot();
             {
                 writer(newTree);
             }
-            addTree(treePath, newTree);
+            AddTree(treePath, newTree);
         }
 
-        public void addLeafString(string leafPath, string value)
+        public void AddLeafString(string leafPath, string value)
         {
             if (value != null)
-                addLeafBytes(leafPath, Encoding.UTF8.GetBytes(value));
+                AddLeafBytes(leafPath, Encoding.UTF8.GetBytes(value));
         }
 
-        public void addLeafFix32(string leafPath, int value)
+        public void AddLeafFix32(string leafPath, int? value)
         {
-            addLeafBytes(leafPath, ByteConverter.Int32ToBytes(value), false);
+            if (value != null)
+                AddLeaf(leafPath, ByteConverter.Int32ToBytes((int)value), false);
         }
 
-        public void addLeafFix64(string leafPath, long value)
+        public void AddLeafFix64(string leafPath, long? value)
         {
-            addLeafBytes(leafPath, ByteConverter.Int64ToBytes(value), false);
+            if (value != null)
+                AddLeaf(leafPath, ByteConverter.Int64ToBytes((long)value), false);
         }
 
-        public void addLeafVar(string leafPath, long value)
+        public void AddLeafVar(string leafPath, long? value)
         {
-            addLeafBytes(leafPath, ByteConverter.NumberToVarint(value), false);
+            if (value != null)
+                AddLeaf(leafPath, ByteConverter.NumberToVarint((long)value), false);
         }
 
-        public void addLeafEmpty(string leafPath)
+        public void AddLeafByteBuffer(string leafPath, ByteBuffer value)
         {
-            addLeafBytes(leafPath, null, false);
+            if (value != null)
+                AddLeafBytes(leafPath, value.GetBytes());
         }
 
-        public void addLeafByteBuffer(string leafPath, ByteBuffer value)
+        public void AddLeafBytes(string leafPath, byte[] value)
         {
-            addLeafBytes(leafPath, value.GetBytes());
+            if (value != null)
+                AddLeaf(leafPath, value, true);
         }
 
-        public void addLeafBytes(string leafPath, byte[] value)
+        public void AddLeafEmpty(string leafPath)
         {
-            addLeafBytes(leafPath, value ?? new byte[0], true);
+            AddLeaf(leafPath, null, false);
         }
 
-        public void addLeafBytes(string leafPath, byte[] value, bool needLength)
+        private void AddLeaf(string leafPath, byte[] value, bool needLength)
         {
             leaves.Add(leafPath, new ProtoLeaf { data = value, needLength = needLength });
         }
@@ -91,7 +96,7 @@ namespace Konata.Library.Protobuf
 
         #region Get Methods
 
-        public void getTree(string treePath, TreeRootReader reader)
+        public void GetTree(string treePath, TreeRootReader reader)
         {
             var newTree = new ProtoTreeRoot(leaves[treePath].data);
             {
@@ -99,27 +104,27 @@ namespace Konata.Library.Protobuf
             }
         }
 
-        public string getLeafString(string leafPath, out string value)
+        public string GetLeafString(string leafPath, out string value)
         {
-            return value = Encoding.UTF8.GetString(getLeafBytes(leafPath, out var _));
+            return value = Encoding.UTF8.GetString(GetLeaf(leafPath, out var _));
         }
 
-        public int getLeafFix32(string leafPath, out int value)
+        public int GetLeafFix32(string leafPath, out int value)
         {
-            return value = ByteConverter.BytesToInt32(getLeafBytes(leafPath, out var _), 0, Endian.Little);
+            return value = ByteConverter.BytesToInt32(GetLeaf(leafPath, out var _), 0, Endian.Little);
         }
 
-        public long getLeafFix64(string leafPath, out long value)
+        public long GetLeafFix64(string leafPath, out long value)
         {
-            return value = ByteConverter.BytesToInt64(getLeafBytes(leafPath, out var _), 0, Endian.Little);
+            return value = ByteConverter.BytesToInt64(GetLeaf(leafPath, out var _), 0, Endian.Little);
         }
 
-        public long getLeafVar(string leafPath, out long value)
+        public long GetLeafVar(string leafPath, out long value)
         {
-            return value = ByteConverter.VarintToNumber(getLeafBytes(leafPath, out var _));
+            return value = ByteConverter.VarintToNumber(GetLeaf(leafPath, out var _));
         }
 
-        public byte[] getLeafBytes(string leafPath, out byte[] value)
+        public byte[] GetLeaf(string leafPath, out byte[] value)
         {
             return value = leaves[leafPath].data;
         }

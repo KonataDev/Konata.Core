@@ -32,13 +32,13 @@ namespace Konata.Msf.Services.OnlinePush
         {
             var root = new ProtoTreeRoot(pbData, true);
             {
-                root.getLeafString("0A.0A.4A.42", out var groupName);
-                root.getLeafVar("0A.0A.4A.08", out var groupNumber);
+                root.GetLeafString("0A.0A.4A.42", out var groupName);
+                root.GetLeafVar("0A.0A.4A.08", out var groupNumber);
 
-                root.getLeafString("0A.0A.4A.22", out var memberName);
-                root.getLeafVar("0A.0A.08", out var memberNumber);
+                root.GetLeafString("0A.0A.4A.22", out var memberName);
+                root.GetLeafVar("0A.0A.08", out var memberNumber);
 
-                root.getLeafString("0A.1A.0A.12.0A.0A", out var groupMsg);
+                root.GetLeafString("0A.1A.0A.12.0A.0A", out var groupMsg);
 
                 Console.WriteLine($"{groupName}[{groupNumber}] - {memberName}[{memberNumber}]: {groupMsg}");
             }

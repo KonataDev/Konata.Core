@@ -36,12 +36,15 @@ namespace Konata.Msf.Services.MessageSvc
             if (unipacket.packageFuncName != "PushNotify")
                 return false;
 
-
-            return false;
+            return Handle_Notify(core);
         }
 
         private bool Handle_Notify(Core core)
         {
+
+
+
+
             // TODO: MessageSvc.PbGetMsg
             return true;
         }
