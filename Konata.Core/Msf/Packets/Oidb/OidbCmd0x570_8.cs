@@ -11,12 +11,12 @@ namespace Konata.Msf.Packets.Oidb
     {
         public OidbCmd0x570_8(uint group, uint uin, uint sec)
 
-            : base(0x570, 0x08, (ByteBuffer t) =>
+            : base(0x570, 0x08, (ByteBuffer root) =>
             {
-                t.PutUintBE(group);
-                t.PutHexString("20 00 01");
-                t.PutUintBE(uin);
-                t.PutUintBE(sec);
+                root.PutUintBE(group);
+                root.PutHexString("20 00 01");
+                root.PutUintBE(uin);
+                root.PutUintBE(sec);
             })
         {
 

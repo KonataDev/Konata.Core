@@ -11,11 +11,12 @@ namespace Konata.Msf.Packets.Oidb
     public class OidbCmd0x899_0 : OidbSSOPkg
     {
         public OidbCmd0x899_0(uint group)
-            : base(0x899, 0x00, (ProtoTreeRoot t) =>
+
+            : base(0x899, 0x00, (ProtoTreeRoot root) =>
             {
-                t.addLeafVar("08", group); // uint64_group_code
-                t.addLeafVar("10", 0);     // uint64_start_uin
-                t.addLeafVar("18", 2);     // uint32_identify_flag
+                root.addLeafVar("08", group); // uint64_group_code
+                root.addLeafVar("10", 0);     // uint64_start_uin
+                root.addLeafVar("18", 2);     // uint32_identify_flag
 
                 //  8 uint64_group_code
                 // 16 uint64_start_uin
@@ -26,7 +27,7 @@ namespace Konata.Msf.Packets.Oidb
                 // 56 uint32_filter_method
                 // 64 uint32_online_flag
 
-                t.addTree("2A", (ProtoTreeRoot memberlist) =>
+                root.addTree("2A", (ProtoTreeRoot memberlist) =>
                 {
                     memberlist.addLeafVar("08", 0);   // uint64_member_uin
                     memberlist.addLeafVar("9001", 1); // uint32_privilege
