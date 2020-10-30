@@ -63,6 +63,10 @@ namespace Konata.Test
 
             Console.WriteLine($"Test statistics for the project: ");
             Console.WriteLine($"Tests = { testCount}, Pass = { testPassCount}, Failed = { testFailedCount} ({(float)testPassCount / testCount * 100F}% pass)");
+
+#if DEBUG
+            Console.Read();
+#endif
         }
 
         static IEnumerable<Type> GetAllTests()

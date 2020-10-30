@@ -8,27 +8,27 @@ namespace Konata.Test.Tests
         public override bool Run()
         {
             var root0 = new ProtoTreeRoot();
-            root0.addTree("0A", (ProtoTreeRoot root1) =>
+            root0.AddTree("0A", (ProtoTreeRoot root1) =>
             {
-                root1.addTree("0A", (ProtoTreeRoot root2) =>
+                root1.AddTree("0A", (ProtoTreeRoot root2) =>
                 {
-                    root2.addTree("0A", (ProtoTreeRoot root3) =>
+                    root2.AddTree("0A", (ProtoTreeRoot root3) =>
                     {
-                        root3.addTree("0A", (ProtoTreeRoot root4) =>
+                        root3.AddTree("0A", (ProtoTreeRoot root4) =>
                         {
-                            root4.addTree("0A", (ProtoTreeRoot root5) =>
+                            root4.AddTree("0A", (ProtoTreeRoot root5) =>
                             {
-                                root5.addTree("0A", (ProtoTreeRoot root6) =>
+                                root5.AddTree("0A", (ProtoTreeRoot root6) =>
                                 {
-                                    root6.addTree("0A", (ProtoTreeRoot root7) =>
+                                    root6.AddTree("0A", (ProtoTreeRoot root7) =>
                                     {
-                                        root7.addTree("0A", (ProtoTreeRoot root8) =>
+                                        root7.AddTree("0A", (ProtoTreeRoot root8) =>
                                         {
-                                            root8.addTree("0A", (ProtoTreeRoot root9) =>
+                                            root8.AddTree("0A", (ProtoTreeRoot root9) =>
                                             {
-                                                root9.addTree("0A", (ProtoTreeRoot root10) =>
+                                                root9.AddTree("0A", (ProtoTreeRoot root10) =>
                                                 {
-                                                    root10.addLeafString("0A", "I'm a matryoshka!");
+                                                    root10.AddLeafString("0A", "I'm a matryoshka!");
                                                 });
                                             });
                                         });
