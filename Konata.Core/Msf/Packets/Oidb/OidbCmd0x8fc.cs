@@ -151,7 +151,7 @@ namespace Konata.Msf.Packets.Oidb
                 root.AddLeafVar("70", tribe_level);
                 root.AddLeafVar("78", tribe_point);
                 root.AddTree("8201", rpt_rich_card_name.BuildTree());
-                root.AddLeafBytes("8A01", comm_rich_card_name);
+                root.AddTree("8A01", comm_rich_card_name.BuildTree());
             }
         }
 
