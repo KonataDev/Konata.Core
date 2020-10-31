@@ -43,6 +43,7 @@
     <Compile Include="Tests\TestJceStruct.cs" />
     <Compile Include="Tests\TestOidbCmd0x570_8.cs" />
     <Compile Include="Tests\TestOidbCmd0x88d_0.cs" />
+    <Compile Include="Tests\TestOidbCmd0x899_0.cs" />
     <Compile Include="Tests\TestProtobuf.cs" />
     <Compile Include="Tests\TestProtobufDeviceReport.cs" />
     <Compile Include="Tests\TestProtobufGetMsg.cs" />
