@@ -35,9 +35,23 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JceTreeRoot.cs" />
-    <Compile Include="JceType.cs" />
-    <Compile Include="JceUtils.cs" />
+    <Compile Include="Jce.Buffer.cs" />
+    <Compile Include="Jce.cs" />
+    <Compile Include="Jce.Double.cs" />
+    <Compile Include="Jce.Float.cs" />
+    <Compile Include="Jce.IIndexable.cs" />
+    <Compile Include="Jce.Int16.cs" />
+    <Compile Include="Jce.Int32.cs" />
+    <Compile Include="Jce.Int64.cs" />
+    <Compile Include="Jce.Int8.cs" />
+    <Compile Include="Jce.IObject.cs" />
+    <Compile Include="Jce.KeyValuePair.cs" />
+    <Compile Include="Jce.List.cs" />
+    <Compile Include="Jce.Map.cs" />
+    <Compile Include="Jce.SimpleList.cs" />
+    <Compile Include="Jce.String.cs" />
+    <Compile Include="Jce.Struct.cs" />
+    <Compile Include="Jce.Type.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

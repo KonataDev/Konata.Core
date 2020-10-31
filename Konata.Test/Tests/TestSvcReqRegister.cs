@@ -56,8 +56,8 @@ namespace Konata.Test.Tests
                 batteryStatus = 0
             };
 
-            var request = new SvcReqRegister(0, 0, 0, 0, info);
-            Print(request.ToString());
+            //var request = new SvcReqRegister(0, 0, 0, 0, info);
+            //Print(request.ToString());
 
             return true;
         }
