@@ -46,9 +46,6 @@ namespace Konata.Msf.Packets.Oidb
                 root.AddLeafVar("08", groupUin);
                 root.AddLeafVar("10", startUin);
                 root.AddLeafVar("18", identFlag);
-                root.AddLeafVar("30", memberNum);
-                root.AddLeafVar("38", filerMethod);
-                root.AddLeafVar("40", 0);
                 root.AddTree("2A", (ProtoTreeRoot list) =>
                 {
                     // 0x08 uint64_member_uin
@@ -91,6 +88,9 @@ namespace Konata.Msf.Packets.Oidb
                     list.AddLeafVar("9001", memberList.privilege);
                     list.AddLeafBytes("9A01", memberList.rich_info);
                 });
+                root.AddLeafVar("30", memberNum);
+                root.AddLeafVar("38", filerMethod);
+                root.AddLeafVar("40", null);
             })
         {
 
@@ -98,25 +98,62 @@ namespace Konata.Msf.Packets.Oidb
 
         public struct MemberList
         {
-            public long? member_uin;      // 0x08
-            public uint? uin_flag;        // 0x10
-            public uint? uin_flagex;      // 0x18
-            public uint? uin_mobile_flag; // 0x20
-            public uint? uin_arch_flag;   // 0x28
-            public uint? join_time;       // 0x30
-            public uint? old_msg_seq;     // 0x38
-            public uint? new_msg_seq;     // 0x40
-            public uint? last_speak_time; // 0x48
-            public uint? level;           // 0x50
-            public uint? point;           // 0x58
-            public uint? shutup_timestap; // 0x60
-            public uint? flagex2;         // 0x68
-            public byte[] special_title;  // 0x72
-            public uint? special_title_expire_time;  // 0x78
-            public uint? active_day;      // 0x8001
-            public byte[] uin_key;        // 0x8A01
-            public uint? privilege;       // 0x9001
-            public byte[] rich_info;      // 0x9A01
+            // 0x08
+            public long? member_uin;
+
+            // 0x10
+            public uint? uin_flag;
+
+            // 0x18
+            public uint? uin_flagex;
+
+            // 0x20
+            public uint? uin_mobile_flag;
+
+            // 0x28
+            public uint? uin_arch_flag;
+
+            // 0x30
+            public uint? join_time;
+
+            // 0x38
+            public uint? old_msg_seq;
+
+            // 0x40
+            public uint? new_msg_seq;
+
+            // 0x48
+            public uint? last_speak_time;
+
+            // 0x50
+            public uint? level;
+
+            // 0x58
+            public uint? point;
+
+            // 0x60
+            public uint? shutup_timestap;
+
+            // 0x68
+            public uint? flagex2;
+
+            // 0x72
+            public byte[] special_title;
+
+            // 0x78
+            public uint? special_title_expire_time;
+
+            // 0x8001
+            public uint? active_day;
+
+            // 0x8A01
+            public byte[] uin_key;
+
+            // 0x9001
+            public uint? privilege;
+
+            // 0x9A01
+            public byte[] rich_info;
         }
     }
 }
