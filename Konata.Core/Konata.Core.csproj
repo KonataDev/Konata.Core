@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{47052D6B-7E37-4CD2-8658-102BEDCE394D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Konata</RootNamespace>
+    <AssemblyName>Konata.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x55c_1.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x899_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0_1.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_2.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_3.cs" />
+    <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
+    <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
+    <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
+    <Compile Include="Msf\Services\PbMessageSvc\PbMsgReadReport.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Bot.cs" />
+    <Compile Include="AppInfo.cs" />
+    <Compile Include="Msf\Core.cs" />
+    <Compile Include="Msf\Event.cs" />
+    <Compile Include="Msf\Packets\FromServiceMessage.cs" />
+    <Compile Include="Msf\Packets\SvcReq\SvcReqEmpty.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PbDeleteMsg.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PbGetMsg.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PbSendMsg.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PushForceOffline.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PushNotify.cs" />
+    <Compile Include="Msf\Services\MessageSvc\PushRead.cs" />
+    <Compile Include="Msf\Services\MessageSvc\RequestPushStatus.cs" />
+    <Compile Include="Msf\Services\OnlinePush\PbPushGroupMsg.cs" />
+    <Compile Include="Msf\Services\PbMessageSvc\PbMessageWithDraw.cs" />
+    <Compile Include="Msf\Packets\SvcReq\SvcReqRegister.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestRefreshSms.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestTransport.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbSSOPkg.cs" />
+    <Compile Include="Msf\Packets\Tlv\T103.cs" />
+    <Compile Include="Msf\Packets\Tlv\T10a.cs" />
+    <Compile Include="Msf\Packets\Tlv\T10c.cs" />
+    <Compile Include="Msf\Packets\Tlv\T10d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T10e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T114.cs" />
+    <Compile Include="Msf\Packets\Tlv\T118.cs" />
+    <Compile Include="Msf\Packets\Tlv\T119.cs" />
+    <Compile Include="Msf\Packets\Tlv\T11a.cs" />
+    <Compile Include="Msf\Packets\Tlv\T11d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T11f.cs" />
+    <Compile Include="Msf\Packets\Tlv\T120.cs" />
+    <Compile Include="Msf\Packets\Tlv\T130.cs" />
+    <Compile Include="Msf\Packets\Tlv\T133.cs" />
+    <Compile Include="Msf\Packets\Tlv\T134.cs" />
+    <Compile Include="Msf\Packets\Tlv\T138.cs" />
+    <Compile Include="Msf\Packets\Tlv\T143.cs" />
+    <Compile Include="Msf\Packets\Tlv\T146.cs" />
+    <Compile Include="Msf\Packets\Tlv\T161.cs" />
+    <Compile Include="Msf\Packets\Tlv\T163.cs" />
+    <Compile Include="Msf\Packets\Tlv\T16a.cs" />
+    <Compile Include="Msf\Packets\Tlv\T16d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T174.cs" />
+    <Compile Include="Msf\Packets\Tlv\T178.cs" />
+    <Compile Include="Msf\Packets\Tlv\T179.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17a.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17b.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17c.cs" />
+    <Compile Include="Msf\Packets\Tlv\T197.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T17e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T198.cs" />
+    <Compile Include="Msf\Packets\Tlv\T203.cs" />
+    <Compile Include="Msf\Packets\Tlv\T204.cs" />
+    <Compile Include="Msf\Packets\Tlv\T305.cs" />
+    <Compile Include="Msf\Packets\Tlv\T322.cs" />
+    <Compile Include="Msf\Packets\Tlv\T401.cs" />
+    <Compile Include="Msf\Packets\Tlv\T403.cs" />
+    <Compile Include="Msf\Packets\Tlv\T508.cs" />
+    <Compile Include="Msf\Packets\Tlv\T512.cs" />
+    <Compile Include="Msf\Packets\Tlv\T522.cs" />
+    <Compile Include="Msf\Packets\Tlv\T528.cs" />
+    <Compile Include="Msf\Packets\Tlv\T537.cs" />
+    <Compile Include="Msf\Packets\Tlv\T550.cs" />
+    <Compile Include="Msf\Packets\Tlv\TlvUnpacker.cs" />
+    <Compile Include="Msf\Packets\Wup\UniPacket.cs" />
+    <Compile Include="Msf\Service.cs" />
+    <Compile Include="Msf\Packets\Protobuf\DeviceReport.cs" />
+    <Compile Include="Msf\Packets\Tlv\T1.cs" />
+    <Compile Include="Msf\Packets\Tlv\T100.cs" />
+    <Compile Include="Msf\Packets\Tlv\T104.cs" />
+    <Compile Include="Msf\Packets\Tlv\T106.cs" />
+    <Compile Include="Msf\Packets\Tlv\T107.cs" />
+    <Compile Include="Msf\Packets\Tlv\T108.cs" />
+    <Compile Include="Msf\Packets\Tlv\T109.cs" />
+    <Compile Include="Msf\Packets\Tlv\T116.cs" />
+    <Compile Include="Msf\Packets\Tlv\T124.cs" />
+    <Compile Include="Msf\Packets\Tlv\T128.cs" />
+    <Compile Include="Msf\Packets\Tlv\T141.cs" />
+    <Compile Include="Msf\Packets\Tlv\T142.cs" />
+    <Compile Include="Msf\Packets\Tlv\T144.cs" />
+    <Compile Include="Msf\Packets\Tlv\T145.cs" />
+    <Compile Include="Msf\Packets\Tlv\T147.cs" />
+    <Compile Include="Msf\Packets\Tlv\T148.cs" />
+    <Compile Include="Msf\Packets\Tlv\T153.cs" />
+    <Compile Include="Msf\Packets\Tlv\T154.cs" />
+    <Compile Include="Msf\Packets\Tlv\T166.cs" />
+    <Compile Include="Msf\Packets\Tlv\T16e.cs" />
+    <Compile Include="Msf\Packets\Tlv\T177.cs" />
+    <Compile Include="Msf\Packets\Tlv\T18.cs" />
+    <Compile Include="Msf\Packets\Tlv\T187.cs" />
+    <Compile Include="Msf\Packets\Tlv\T188.cs" />
+    <Compile Include="Msf\Packets\Tlv\T191.cs" />
+    <Compile Include="Msf\Packets\Tlv\T192.cs" />
+    <Compile Include="Msf\Packets\Tlv\T193.cs" />
+    <Compile Include="Msf\Packets\Tlv\T194.cs" />
+    <Compile Include="Msf\Packets\Tlv\T2.cs" />
+    <Compile Include="Msf\Packets\Tlv\T202.cs" />
+    <Compile Include="Msf\Packets\Tlv\T318.cs" />
+    <Compile Include="Msf\Packets\Tlv\T511.cs" />
+    <Compile Include="Msf\Packets\Tlv\T516.cs" />
+    <Compile Include="Msf\Packets\Tlv\T521.cs" />
+    <Compile Include="Msf\Packets\Tlv\T525.cs" />
+    <Compile Include="Msf\Packets\Tlv\T52d.cs" />
+    <Compile Include="Msf\Packets\Tlv\T536.cs" />
+    <Compile Include="Msf\Packets\Tlv\T544.cs" />
+    <Compile Include="Msf\Packets\Tlv\T545.cs" />
+    <Compile Include="Msf\Packets\Tlv\T8.cs" />
+    <Compile Include="Msf\Packets\Tlv\Tlv.cs" />
+    <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
+    <Compile Include="Msf\Services\Heartbeat\Alive.cs" />
+    <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Cmd_0x480_9.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Cmd_0x5eb_22.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Cmd_0xdc9.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Cmd_oidb_0xd82.cs" />
+    <Compile Include="Msf\Services\StatSvc\Register.cs" />
+    <Compile Include="Msf\Services\Wtlogin\Login.cs" />
+    <Compile Include="Msf\Network\PacketMan.cs" />
+    <Compile Include="Msf\Packet.cs" />
+    <Compile Include="Msf\Services\Wtlogin\Trans_emp.cs" />
+    <Compile Include="Msf\ServiceTouch.cs" />
+    <Compile Include="Msf\SsoMan.cs" />
+    <Compile Include="Msf\Crypto\EncryptType.cs" />
+    <Compile Include="Msf\Types.cs" />
+    <Compile Include="Msf\Network\NetworkType.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
+    <Compile Include="Msf\Packets\ToServiceMessage.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />
+    <Compile Include="Msf\Packets\Oicq\OicqRequestTgtgt.cs" />
+    <Compile Include="Msf\Crypto\ICryptor.cs" />
+    <Compile Include="Msf\Crypto\Md5Cryptor.cs" />
+    <Compile Include="Msf\Crypto\TeaCryptor.cs" />
+    <Compile Include="DeviceInfo.cs" />
+    <Compile Include="Msf\UserSigInfo.cs" />
+    <Compile Include="Utils\Guid.cs" />
+    <Compile Include="Utils\Hex.cs" />
+    <Compile Include="Msf\Packets\Tlv\TlvPacker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Konata.Library.Ecdh\Konata.Library.Ecdh.csproj">
+      <Project>{b84755a0-a7e6-4d19-8ee9-8e46c2402e4f}</Project>
+      <Name>Konata.Library.Ecdh</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konata.Library.IO\Konata.Library.IO.csproj">
+      <Project>{c20fa6f6-b931-4e81-92f7-da3ef6c67d59}</Project>
+      <Name>Konata.Library.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konata.Library.JceStruct\Konata.Library.JceStruct.csproj">
+      <Project>{0de72ce8-6e94-4404-a037-053b44cb9d2f}</Project>
+      <Name>Konata.Library.JceStruct</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konata.Library.Protobuf\Konata.Library.Protobuf.csproj">
+      <Project>{096c848e-e868-4c40-89fd-25d4da781a4d}</Project>
+      <Name>Konata.Library.Protobuf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konata.Library.TeaEncrypt\Konata.Library.TeaEncrypt.csproj">
+      <Project>{7784b744-3b0c-44b2-8cca-02ad73a59932}</Project>
+      <Name>Konata.Library.TeaEncrypt</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">$(ProjectDir)prebuild.scanservice.bat --out $(ProjectDir)</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">bash $(ProjectDir)prebuild.scanservice.sh --out $(ProjectDir)</PreBuildEvent>
+  </PropertyGroup>
+</Project>
