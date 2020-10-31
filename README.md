@@ -25,8 +25,8 @@
  - [ ] OidbSvc.0x6d6_2 (groupFile)
  - [x] OidbSvc.0x88d_0 (groupInfo)
  - [ ] OidbSvc.0x89a_0 (groupSetting)
- - [ ] OidbSvc.0x8a0_0 (kick)
- - [ ] OidbSvc.0x8fc_2 (setTitle)
+ - [x] OidbSvc.0x8a0_0 (kick)
+ - [x] OidbSvc.0x8fc_2 (setTitle)
  - [ ] OidbSvc.0xdc9
  - [ ] ~OidbSvc.oidb_0x758 (invite)~
  - [ ] OidbSvc.oidb_0xd82
