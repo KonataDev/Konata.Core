@@ -42,9 +42,15 @@ namespace Konata.Library.Protobuf
 
         #region Add Methods
 
+        public void AddTree(ProtoTreeRoot value)
+        {
+            leaves = value.leaves;
+        }
+
         public void AddTree(string treePath, ProtoTreeRoot value)
         {
-            AddLeafByteBuffer(treePath, value.Serialize());
+            if (value != null)
+                AddLeafByteBuffer(treePath, value.Serialize());
         }
 
         public void AddTree(string treePath, TreeRootWriter writer)
