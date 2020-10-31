@@ -78,9 +78,9 @@ namespace Konata.Msf.Services.StatSvc
                 batteryStatus = 0
             };
 
-            var request = new SvcReqRegister(0, 0, 0, 0, info);
-            var sequence = core.SsoMan.GetNewSequence();
-            core.SsoMan.PostMessage(this, request, sequence);
+            //var request = new SvcReqRegister(0, 0, 0, 0, info);
+            //var sequence = core.SsoMan.GetNewSequence();
+            //core.SsoMan.PostMessage(this, request, sequence);
 
             return true;
         }
