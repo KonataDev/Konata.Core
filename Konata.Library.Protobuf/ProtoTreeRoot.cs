@@ -5,23 +5,33 @@ using Konata.Library.IO;
 
 namespace Konata.Library.Protobuf
 {
-    using ProtoLeaves = Dictionary<string, ProtoLeaf>;
+    using ProtoLeaves = SortedDictionary<string, ProtoLeaf>;
 
-    public struct ProtoLeaf
+    internal struct ProtoLeaf
     {
         public byte[] data;
         public bool needLength;
     }
 
+    internal class ProtoComparer : IComparer<string>
+    {
+        public int Compare(string x, string y)
+        {
+            var xval = ByteConverter.VarintToNumber(ByteConverter.UnHex(x));
+            var yval = ByteConverter.VarintToNumber(ByteConverter.UnHex(y));
+            return xval < yval ? -1 : 1;
+        }
+    }
+
     public class ProtoTreeRoot
     {
-        internal ProtoLeaves leaves;
+        private ProtoLeaves leaves;
         public delegate void TreeRootWriter(ProtoTreeRoot tree);
         public delegate void TreeRootReader(ProtoTreeRoot tree);
 
         public ProtoTreeRoot()
         {
-            leaves = new ProtoLeaves();
+            leaves = new ProtoLeaves(new ProtoComparer());
         }
 
         public ProtoTreeRoot(byte[] data, bool recursion = false)
@@ -133,6 +143,7 @@ namespace Konata.Library.Protobuf
 
         public ByteBuffer Serialize()
         {
+
             var buffer = new ByteBuffer();
             {
                 foreach (var element in leaves)
