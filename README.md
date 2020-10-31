@@ -10,8 +10,7 @@
  - [x] 驗證圖形滑塊
  - [x] 驗證SMS
  - [ ] 驗證設備鎖
- - [ ] OnlinePush
- - [ ] HeartBeat
+ - [ ] HeartBeat.Alive
  - [x] WtLogin.login
  - [ ] WtLogin.trans_emp
  - [x] StatSvc.register
@@ -20,7 +19,7 @@
  - [ ] StatSvc.SimpleGet
  - [ ] OidbSvc.0x480_9
  - [ ] OidbSvc.0x4ff_9
- - [ ] OidbSvc.0x55c_1 (setAdmin)
+ - [x] OidbSvc.0x55c_1 (setAdmin)
  - [x] OidbSvc.0x570_8 (mute)
  - [ ] OidbSvc.0x5eb_22
  - [ ] OidbSvc.0x6d6_2 (groupFile)
