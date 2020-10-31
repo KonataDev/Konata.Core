@@ -12,7 +12,7 @@ namespace Konata.Msf.Packets.Oidb
 
             : base(0x8fc, svcType, null, (ProtoTreeRoot root) =>
             {
-                root.AddTree(reqBody.BuildTree());
+                root.AddTree(reqBody?.BuildTree());
             })
         {
 
@@ -61,7 +61,7 @@ namespace Konata.Msf.Packets.Oidb
 
             public override void Write(ProtoTreeRoot root)
             {
-                root.AddTree("0A", rpt_rich_card_name.BuildTree());
+                root.AddTree("0A", rpt_rich_card_name?.BuildTree());
             }
         }
 
@@ -150,8 +150,8 @@ namespace Konata.Msf.Packets.Oidb
                 root.AddLeafString("6A", job);
                 root.AddLeafVar("70", tribe_level);
                 root.AddLeafVar("78", tribe_point);
-                root.AddTree("8201", rpt_rich_card_name.BuildTree());
-                root.AddTree("8A01", comm_rich_card_name.BuildTree());
+                root.AddTree("8201", rpt_rich_card_name?.BuildTree());
+                root.AddTree("8A01", comm_rich_card_name?.BuildTree());
             }
         }
 
@@ -188,12 +188,12 @@ namespace Konata.Msf.Packets.Oidb
             {
                 root.AddLeafVar("08", group_code);
                 root.AddLeafVar("10", show_flag);
-                root.AddTree("1A", rpt_mem_level_info.BuildTree());
-                root.AddTree("22", rpt_level_name.BuildTree());
+                root.AddTree("1A", rpt_mem_level_info?.BuildTree());
+                root.AddTree("22", rpt_level_name?.BuildTree());
                 root.AddLeafVar("28", update_time);
                 root.AddLeafVar("30", office_mode);
                 root.AddLeafVar("38", group_open_appid);
-                root.AddTree("42", msg_client_info.BuildTree());
+                root.AddTree("42", msg_client_info?.BuildTree());
                 root.AddLeafBytes("4A", auth_key);
             }
         }
