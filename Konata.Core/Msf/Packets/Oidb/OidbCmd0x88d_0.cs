@@ -3,7 +3,7 @@
 namespace Konata.Msf.Packets.Oidb
 {
     /// <summary>
-    /// 拉取群管理員
+    /// 拉取群聊資料
     /// </summary>
 
     public class OidbCmd0x88d_0 : OidbCmd0x88d
