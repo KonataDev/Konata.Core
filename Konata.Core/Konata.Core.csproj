@@ -39,9 +39,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x55c_1.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d_0.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x899_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_2.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_3.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />

@@ -11,13 +11,13 @@ namespace Konata.Msf.Packets.Oidb
     public class OidbSSOPkg : Packet
     {
         public readonly ProtoTreeRoot root;
-        public readonly int svcCmd;
-        public readonly int svcType;
-        public readonly int? svcResult;
+        public readonly uint svcCmd;
+        public readonly uint svcType;
+        public readonly uint? svcResult;
         public readonly string errorMsg;
         public readonly string clientVer;
 
-        public OidbSSOPkg(int cmd, int type, int? result, OidbPayloadWriter writer)
+        public OidbSSOPkg(uint cmd, uint type, uint? result, OidbPayloadWriter writer)
         {
             svcCmd = cmd;
             svcType = type;
@@ -41,7 +41,7 @@ namespace Konata.Msf.Packets.Oidb
             PutByteBuffer(root.Serialize());
         }
 
-        public OidbSSOPkg(int cmd, int type, int? result, OidbByteBufferWriter writer)
+        public OidbSSOPkg(uint cmd, uint type, uint? result, OidbByteBufferWriter writer)
         {
             svcCmd = cmd;
             svcType = type;
@@ -68,6 +68,21 @@ namespace Konata.Msf.Packets.Oidb
         public OidbSSOPkg(byte[] data)
         {
 
+        }
+
+    }
+
+    public abstract class OidbStruct
+    {
+        public abstract void Write(ProtoTreeRoot root);
+
+        public ProtoTreeRoot BuildTree()
+        {
+            var tree = new ProtoTreeRoot();
+            {
+                Write(tree);
+            }
+            return tree;
         }
     }
 }
