@@ -7,13 +7,13 @@ namespace Konata.Msf.Packets.Protobuf
     {
         public SyncCookie(long timeStamp)
         {
-            addLeafVar("08", timeStamp);
-            addLeafVar("10", timeStamp);
-            addLeafVar("28", 2267374858);
-            addLeafVar("48", 1657171111);
-            addLeafVar("58", 1828320251);
-            addLeafVar("68", timeStamp);
-            addLeafVar("70", 0);
+            AddLeafVar("08", timeStamp);
+            AddLeafVar("10", timeStamp);
+            AddLeafVar("28", 2267374858);
+            AddLeafVar("48", 1657171111);
+            AddLeafVar("58", 1828320251);
+            AddLeafVar("68", timeStamp);
+            AddLeafVar("70", 0);
         }
     }
 }

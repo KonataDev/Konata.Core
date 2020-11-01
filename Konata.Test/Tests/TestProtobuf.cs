@@ -11,10 +11,10 @@ namespace Konata.Test.Tests
             var root1 = new ProtoTreeRoot();
             var root2 = new ProtoTreeRoot();
             var root3 = new ProtoTreeRoot();
-            root3.addLeafString("0A", "Hello Konata!");
-            root2.addTree("0A", root3);
-            root1.addTree("0A", root2);
-            root.addTree("0A", root1);
+            root3.AddLeafString("0A", "Hello Konata!");
+            root2.AddTree("0A", root3);
+            root1.AddTree("0A", root2);
+            root.AddTree("0A", root1);
 
             Print(root.Serialize().GetBytes());
 

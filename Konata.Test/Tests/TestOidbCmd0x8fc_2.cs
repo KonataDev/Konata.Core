@@ -1,0 +1,26 @@
+﻿using System;
+using System.Linq;
+using Konata.Msf.Packets.Oidb;
+
+namespace Konata.Test.Tests
+{
+    class TestOidbCmd0x8fc_2 : Test
+    {
+        public override bool Run()
+        {
+            var packet = new OidbCmd0x8fc_2(2333, 23333, "咕咕");
+
+            Print(packet);
+            Assert(Enumerable.SequenceEqual(packet.GetBytes(), new byte[]
+            {
+                0x08, 0xFC, 0x11, 0x10, 0x02, 0x22, 0x1B, 0x08,
+                0x9D, 0x12, 0x1A, 0x16, 0x08, 0xA5, 0xB6, 0x01,
+                0x2A, 0x06, 0xE5, 0x92, 0x95, 0xE5, 0x92, 0x95,
+                0x30, 0xFF, 0x3A, 0x06, 0xE5, 0x92, 0x95, 0xE5,
+                0x92, 0x95
+            }));
+
+            return true;
+        }
+    }
+}

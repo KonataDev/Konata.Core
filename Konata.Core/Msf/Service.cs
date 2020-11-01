@@ -61,7 +61,8 @@ namespace Konata.Msf
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 return false;
             }
         }

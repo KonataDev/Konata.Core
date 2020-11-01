@@ -39,7 +39,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x899.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x55c_1.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x899_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0_0.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8a0_1.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_2.cs" />
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_3.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
+    <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
     <Compile Include="Msf\Services\PbMessageSvc\PbMsgReadReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,8 +61,7 @@
     <Compile Include="Msf\Core.cs" />
     <Compile Include="Msf\Event.cs" />
     <Compile Include="Msf\Packets\FromServiceMessage.cs" />
-    <Compile Include="Msf\Packets\Svc\SvcReqEmpty.cs" />
-    <Compile Include="Msf\Packets\Svc\SvcReq.cs" />
+    <Compile Include="Msf\Packets\SvcReq\SvcReqEmpty.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbDeleteMsg.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbGetMsg.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbSendMsg.cs" />
@@ -59,7 +71,7 @@
     <Compile Include="Msf\Services\MessageSvc\RequestPushStatus.cs" />
     <Compile Include="Msf\Services\OnlinePush\PbPushGroupMsg.cs" />
     <Compile Include="Msf\Services\PbMessageSvc\PbMessageWithDraw.cs" />
-    <Compile Include="Msf\Packets\Svc\SvcReqRegister.cs" />
+    <Compile Include="Msf\Packets\SvcReq\SvcReqRegister.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestRefreshSms.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestTransport.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbSSOPkg.cs" />

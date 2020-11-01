@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Konata.Library.IO
@@ -698,7 +699,7 @@ namespace Konata.Library.IO
             return value = TakeBytes(out _, index - readPosition);
         }
 
-        public ulong TakeVarIntValue(out ulong value)
+        public ulong TakeVarIntValueBE(out ulong value)
         {
             value = 0;
             byte b;
@@ -709,6 +710,28 @@ namespace Konata.Library.IO
                     TakeByte(out b);
                     value <<= 7;
                     value |= b & 0b01111111u;
+                }
+                else
+                {
+                    throw eobException;
+                }
+            }
+            while ((b & 0b10000000) > 0);
+            return value;
+        }
+
+        public ulong TakeVarIntValueLE(out ulong value)
+        {
+            value = 0;
+            int count = 0;
+            byte b;
+            do
+            {
+                if (CheckAvailable(1))
+                {
+                    TakeByte(out b);
+                    value |= (b & 0b01111111u) << (count * 7);
+                    ++count;
                 }
                 else
                 {
@@ -943,6 +966,26 @@ namespace Konata.Library.IO
             buffer.PutBytes(a.GetBytes());
             buffer.PutBytes(b);
             return buffer;
+        }
+
+        public static bool operator ==(ByteBuffer a, ByteBuffer b)
+        {
+            return a is null ? b is null : a.Equals(b);
+        }
+
+        public static bool operator !=(ByteBuffer a, ByteBuffer b)
+        {
+            return !(a == b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            ByteBuffer other = (ByteBuffer)obj;
+            return !(other is null)
+                && Length == other.Length
+                && (buffer == null
+                || other.buffer == null
+                || Enumerable.SequenceEqual(buffer, other.buffer));
         }
 
         #endregion

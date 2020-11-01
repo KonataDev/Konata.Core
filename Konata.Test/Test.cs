@@ -1,8 +1,19 @@
-﻿using Konata.Utils;
-using System;
+﻿using System;
+using System.Linq;
+using Konata.Utils;
+using Konata.Library.IO;
 
 namespace Konata.Test
 {
+    public class TestNotPassedException : Exception
+    {
+        public TestNotPassedException(string msg)
+            : base(msg)
+        {
+
+        }
+    }
+
     public abstract class Test
     {
         public Test() { }
@@ -24,6 +35,12 @@ namespace Konata.Test
                 }
             }
             Console.Write("\n");
+        }
+
+        public void Assert(bool logic)
+        {
+            if (!logic)
+                throw new TestNotPassedException("Assert fault.");
         }
     }
 }
