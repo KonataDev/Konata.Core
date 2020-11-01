@@ -17,8 +17,8 @@
  - [ ] StatSvc.GetOnlineStatus
  - [ ] StatSvc.SetStatusFromClient
  - [ ] StatSvc.SimpleGet
- - [ ] OidbSvc.0x480_9
- - [ ] OidbSvc.0x4ff_9
+ - [ ] ~OidbSvc.0x480_9~
+ - [ ] ~OidbSvc.0x4ff_9~
  - [x] OidbSvc.0x55c_1 (setAdmin)
  - [x] OidbSvc.0x570_8 (mute)
  - [ ] OidbSvc.0x5eb_22
@@ -52,4 +52,5 @@
  - [ ] ConfigPushSvc.PushReq
  - [ ] ConfigPushSvc.PushDomain
  - [ ] QualityTest.PushList
+ - [ ] VisitorSvc.ReqFavorite
  - [ ] [更多](../../projects/1)...
