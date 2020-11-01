@@ -107,6 +107,7 @@ namespace Konata
                 case EventType.WtLoginVerifySliderCaptcha: OnWtLoginVerifySliderCaptcha(e); break;
                 case EventType.WtLoginVerifySmsCaptcha: OnWtLoginVerifySmsCaptcha(e); break;
                 case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
+                case EventType.KickMember: OnKickMember(e); break;
             }
         }
 
@@ -128,34 +129,32 @@ namespace Konata
 
         private void OnWtLoginVerifySliderCaptcha(Event e)
         {
-            if (e.args == null
-                || e.args.Length != 1
-                || !(e.args[0] is string))
-            {
+            if (e.args == null)
                 return;
-            }
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is string ticket)
+                msfCore.WtLoginCheckSlider(ticket);
 
-            msfCore.WtLoginCheckSlider((string)e.args[0]);
+            return;
         }
 
         private void OnWtLoginVerifySmsCaptcha(Event e)
         {
-            if (e.args == null
-                || e.args.Length != 1
-                || !(e.args[0] is string))
-            {
+            if (e.args == null)
                 return;
-            }
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is string smsCode)
+                msfCore.WtLoginCheckSms(smsCode);
 
-            msfCore.WtLoginCheckSms((string)e.args[0]);
+            return;
         }
 
         private void OnWtLoginRefreshSms(Event e)
         {
             if (e.args != null)
-            {
                 return;
-            }
 
             msfCore.WtLoginRefreshSms();
         }
@@ -163,11 +162,23 @@ namespace Konata
         private void OnWtLoginSuccess(Event e)
         {
             if (e.args != null)
-            {
                 return;
-            }
 
             msfCore.StatSvc_RegisterClient();
+        }
+
+        private void OnKickMember(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is bool preventRequest)
+                msfCore.OidbSvc_0x8a0_1(groupUin, memberUin, preventRequest);
+
+            return;
         }
 
         #endregion
@@ -177,28 +188,32 @@ namespace Konata
         /// <summary>
         /// 執行登錄
         /// </summary>
-        public void Login()
-        {
+        public void Login() =>
             PostEvent(EventFilter.System, EventType.WtLogin);
-        }
 
         /// <summary>
         /// 提交滑塊驗證碼
         /// </summary>
         /// <param name="ticket"></param>
-        public void SubmitSliderTicket(string ticket)
-        {
+        public void SubmitSliderTicket(string ticket) =>
             PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha, ticket);
-        }
 
         /// <summary>
         /// 提交SMS驗證碼
         /// </summary>
         /// <param name="smsCode"></param>
-        public void SubmitSmsCode(string smsCode)
-        {
+        public void SubmitSmsCode(string smsCode) =>
             PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha, smsCode);
-        }
+
+        /// <summary>
+        /// 移除群成員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="preventRequest"></param>
+        public void KickGroupMember(uint groupUin, uint memberUin, bool preventRequest) =>
+            PostEvent(EventFilter.System, EventType.KickMember, groupUin,
+                memberUin, preventRequest);
 
         #endregion
 

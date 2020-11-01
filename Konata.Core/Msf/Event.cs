@@ -23,6 +23,7 @@ namespace Konata.Msf
         PbPushNotify,
         PbGetMsg,
         PbPushGroupMsg,
+        KickMember,
 
 
         BotStart = 0x2000,
