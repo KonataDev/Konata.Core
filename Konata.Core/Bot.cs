@@ -108,6 +108,7 @@ namespace Konata
                 case EventType.WtLoginVerifySmsCaptcha: OnWtLoginVerifySmsCaptcha(e); break;
                 case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
                 case EventType.KickGroupMember: OnKickGroupMember(e); break;
+                case EventType.PromoteGroupAdmin: OnPromoteGroupAdmin(e); break;
             }
         }
 
@@ -181,6 +182,20 @@ namespace Konata
             return;
         }
 
+        private void OnPromoteGroupAdmin(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is bool promoteAdmin)
+                msfCore.OidbSvc_0x55c_1(groupUin, memberUin, promoteAdmin);
+
+            return;
+        }
+
         #endregion
 
         #region Protocol Interoperation Methods
@@ -214,6 +229,16 @@ namespace Konata
         public void KickGroupMember(uint groupUin, uint memberUin, bool preventRequest) =>
             PostEvent(EventFilter.System, EventType.KickGroupMember, groupUin,
                 memberUin, preventRequest);
+
+        /// <summary>
+        /// 設置群管理員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="promoteAdmin"></param>
+        public void PromoteGroupAdmin(uint groupUin, uint memberUin, bool promoteAdmin) =>
+            PostEvent(EventFilter.System, EventType.PromoteGroupAdmin, groupUin,
+                memberUin, promoteAdmin);
 
         #endregion
 
