@@ -36,109 +36,86 @@ namespace Konata.Msf
         /// 連接到伺服器
         /// </summary>
         /// <returns></returns>
-        public bool Connect()
-        {
-            return SsoMan.Connect();
-        }
+        public bool Connect() =>
+            SsoMan.Connect();
 
         /// <summary>
         /// 斷開連接
         /// </summary>
         /// <returns></returns>
-        public bool DisConnect()
-        {
-            return SsoMan.DisConnect();
-        }
+        public bool DisConnect() =>
+            SsoMan.DisConnect();
 
         /// <summary>
         /// 請求登錄
         /// </summary>
         /// <returns></returns>
-        public bool WtLoginTgtgt()
-        {
-            return Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
-        }
+        public bool WtLoginTgtgt() =>
+             Service.Run(this, "Wtlogin.Login", "Request_TGTGT");
 
         /// <summary>
         /// 提交滑塊驗證碼
         /// </summary>
         /// <param name="ticket"></param>
         /// <returns></returns>
-        public bool WtLoginCheckSlider(string ticket)
-        {
-            return Service.Run(this, "Wtlogin.Login", "Request_SliderCaptcha", ticket);
-        }
+        public bool WtLoginCheckSlider(string ticket) =>
+            Service.Run(this, "Wtlogin.Login", "Request_SliderCaptcha", ticket);
 
         /// <summary>
         /// 提交SMS驗證碼
         /// </summary>
         /// <param name="smsCode"></param>
         /// <returns></returns>
-        public bool WtLoginCheckSms(string smsCode)
-        {
-            return Service.Run(this, "Wtlogin.Login", "Request_SmsCaptcha", smsCode);
-        }
+        public bool WtLoginCheckSms(string smsCode) =>
+            Service.Run(this, "Wtlogin.Login", "Request_SmsCaptcha", smsCode);
 
         /// <summary>
         /// 刷新SMS驗證碼
         /// </summary>
         /// <returns></returns>
-        public bool WtLoginRefreshSms()
-        {
-            return Service.Run(this, "Wtlogin.Login", "Request_RefreshSms");
-        }
+        public bool WtLoginRefreshSms() =>
+            Service.Run(this, "Wtlogin.Login", "Request_RefreshSms");
 
         /// <summary>
         /// 注冊客戶端
         /// </summary>
         /// <returns></returns>
-        public bool StatSvc_RegisterClient()
-        {
-            return Service.Run(this, "StatSvc.register");
-        }
+        public bool StatSvc_RegisterClient() =>
+            Service.Run(this, "StatSvc.register");
 
         /// <summary>
         /// 獲取在綫狀態
         /// </summary>
         /// <returns></returns>
-        public bool StatSvc_GetOnlineStatus()
-        {
-            return Service.Run(this, "StatSvc.GetOnlineStatus");
-        }
+        public bool StatSvc_GetOnlineStatus() =>
+            Service.Run(this, "StatSvc.GetOnlineStatus");
 
         /// <summary>
         /// 發送心跳
         /// </summary>
         /// <returns></returns>
-        public bool Heartbeat_Alive()
-        {
-            return Service.Run(this, "Heartbeat.Alive");
-        }
+        public bool Heartbeat_Alive() =>
+            Service.Run(this, "Heartbeat.Alive");
 
-        public bool OidbSvc_0xdc9()
-        {
-            return Service.Run(this, "OidbSvc.0xdc9");
-        }
+        /// <summary>
+        /// 批量移除群成員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="preventRequest"></param>
+        /// <returns></returns>
+        public bool OidbSvc_0x8a0_0(uint groupUin, uint[] memberUin, bool preventRequest) =>
+            Service.Run(this, "OidbSvc.0x8a0_0", groupUin, memberUin, preventRequest);
 
-        public bool OidbSvc_0x480_9()
-        {
-            return Service.Run(this, "OidbSvc.0x480_9");
-        }
-
-        public bool OidbSvc_0x5eb_22()
-        {
-            return Service.Run(this, "OidbSvc.0x5eb_22");
-        }
-
-        public bool OidbSvc_0x5eb_15()
-        {
-            return Service.Run(this, "OidbSvc.0x5eb_15");
-        }
-
-        public bool OidbSvc_oidb_0xd82()
-        {
-            return Service.Run(this, "OidbSvc.oidb_0xd82");
-        }
+        /// <summary>
+        /// 移除單個群成員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="preventRequest"></param>
+        /// <returns></returns>
+        public bool OidbSvc_0x8a0_1(uint groupUin, uint memberUin, bool preventRequest) =>
+            Service.Run(this, "OidbSvc.0x8a0_1", groupUin, memberUin, preventRequest);
 
         #endregion
 

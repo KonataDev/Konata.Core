@@ -168,11 +168,6 @@ namespace Konata
             }
 
             msfCore.StatSvc_RegisterClient();
-            msfCore.OidbSvc_0xdc9();
-            msfCore.OidbSvc_0x480_9();
-            msfCore.OidbSvc_0x5eb_22();
-            msfCore.OidbSvc_0x5eb_15();
-            msfCore.OidbSvc_oidb_0xd82();
         }
 
         #endregion
