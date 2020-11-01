@@ -110,6 +110,7 @@ namespace Konata
                 case EventType.KickGroupMember: OnKickGroupMember(e); break;
                 case EventType.PromoteGroupAdmin: OnPromoteGroupAdmin(e); break;
                 case EventType.MuteGroupMember: OnMuteGroupMember(e); break;
+                case EventType.GiveGroupMemberSpecialTitle: OnGiveGroupMemberSpecialTitle(e); break;
             }
         }
 
@@ -211,6 +212,22 @@ namespace Konata
             return;
         }
 
+        private void OnGiveGroupMemberSpecialTitle(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3
+                || e.args.Length != 4)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is string specitalTitle)
+                msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specitalTitle,
+                    e.args.Length == 4 ? ((int?)e.args[3]) : null);
+
+            return;
+        }
+
         #endregion
 
         #region Protocol Interoperation Methods
@@ -256,7 +273,7 @@ namespace Konata
                 memberUin, promoteAdmin);
 
         /// <summary>
-        /// 設置群禁言
+        /// 設置群成員禁言
         /// </summary>
         /// <param name="groupUin"></param>
         /// <param name="memberUin"></param>
@@ -264,6 +281,18 @@ namespace Konata
         public void MuteGroupMember(uint groupUin, uint memberUin, uint timeSeconds) =>
             PostEvent(EventFilter.System, EventType.MuteGroupMember, groupUin,
                 memberUin, timeSeconds);
+
+        /// <summary>
+        /// 設置群成員頭銜
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="specitalTitle"></param>
+        /// <param name="expiredTime"></param>
+        public void GiveGroupMemberSpecialTitle(uint groupUin, uint memberUin,
+            string specitalTitle, int? expiredTime) =>
+            PostEvent(EventFilter.System, EventType.GiveGroupMemberSpecialTitle, groupUin,
+               memberUin, specitalTitle, expiredTime);
 
         #endregion
 
