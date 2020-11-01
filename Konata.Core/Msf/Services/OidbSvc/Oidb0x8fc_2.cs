@@ -24,9 +24,9 @@ namespace Konata.Msf.Services.OidbSvc
 
             if (args[0] is uint groupUin
                 && args[1] is uint memberUin
-                && args[2] is string specitalTitle)
+                && args[2] is string specialTitle)
                 return Request_0x8fc_2(core, groupUin, memberUin,
-                    specitalTitle, args.Length == 4 ? ((int?)args[3]) : null);
+                    specialTitle, args.Length == 4 ? ((int?)args[3]) : null);
 
             return false;
         }
@@ -37,10 +37,10 @@ namespace Konata.Msf.Services.OidbSvc
         }
 
         private bool Request_0x8fc_2(Core core, uint groupUin, uint memberUin,
-            string specitalTitle, int? expiredTime)
+            string specialTitle, int? expiredTime)
         {
             var oidbPacket = new OidbCmd0x8fc_2(groupUin, memberUin,
-                specitalTitle, expiredTime);
+                specialTitle, expiredTime);
             core.SsoMan.PostMessage(this, oidbPacket);
 
             return true;

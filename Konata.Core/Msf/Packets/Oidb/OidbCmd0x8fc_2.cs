@@ -9,7 +9,7 @@ namespace Konata.Msf.Packets.Oidb
     public class OidbCmd0x8fc_2 : OidbCmd0x8fc
     {
         public OidbCmd0x8fc_2(uint groupUin, uint memberUin,
-            string specitalTitle, int? expiredTime = null)
+            string specialTitle, int? expiredTime = null)
 
             : base(0x02, new ReqBody
             {
@@ -17,8 +17,8 @@ namespace Konata.Msf.Packets.Oidb
                 rpt_mem_level_info = new MemberInfo
                 {
                     uin = memberUin,
-                    uin_name = specitalTitle,
-                    special_title = specitalTitle,
+                    uin_name = specialTitle,
+                    special_title = specialTitle,
                     special_title_expire_time = expiredTime ?? -1
                 }
             })

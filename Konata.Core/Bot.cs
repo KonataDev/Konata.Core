@@ -221,8 +221,8 @@ namespace Konata
                 return;
             if (e.args[0] is uint groupUin
                 && e.args[1] is uint memberUin
-                && e.args[2] is string specitalTitle)
-                msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specitalTitle,
+                && e.args[2] is string specialTitle)
+                msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specialTitle,
                     e.args.Length == 4 ? ((int?)e.args[3]) : null);
 
             return;
