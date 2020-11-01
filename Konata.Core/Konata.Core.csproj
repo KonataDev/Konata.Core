@@ -54,6 +54,7 @@
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x55c_1.cs" />
     <Compile Include="Msf\Services\OidbSvc\Oidb0x8a0_0.cs" />
     <Compile Include="Msf\Services\OidbSvc\Oidb0x8a0_1.cs" />
     <Compile Include="Msf\Services\PbMessageSvc\PbMsgReadReport.cs" />
