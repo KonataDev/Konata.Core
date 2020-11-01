@@ -19,16 +19,16 @@ namespace Konata.Library.JceStruct
                 switch (obj.Type)
                 {
                 case Type.Byte:
-                    buffer.PutSbyte((Int8)obj);
+                    buffer.PutSbyte(((Number)obj).ValueByte);
                     break;
                 case Type.Short:
-                    buffer.PutShortBE((Int16)obj);
+                    buffer.PutShortBE(((Number)obj).ValueShort);
                     break;
                 case Type.Int:
-                    buffer.PutIntBE((Int32)obj);
+                    buffer.PutIntBE(((Number)obj).ValueInt);
                     break;
                 case Type.Long:
-                    buffer.PutLongBE((Int64)obj);
+                    buffer.PutLongBE((Number)obj);
                     break;
                 case Type.Float:
                     buffer.PutFloatBE((Float)obj);
@@ -45,7 +45,7 @@ namespace Konata.Library.JceStruct
                 case Type.Map:
                     {
                         Map map = (Map)obj;
-                        buffer.PutJceIntMin(map.Count);
+                        PutObject(0, (Number)map.Count);
                         if (map.Count > 0)
                         {
                             buffer.PutJceHead(0, map.KeyType);
@@ -64,7 +64,7 @@ namespace Konata.Library.JceStruct
                 case Type.List:
                     {
                         List list = (List)obj;
-                        buffer.PutJceIntMin(list.Count);
+                        PutObject(0, (Number)list.Count);
                         if (list.Count > 0)
                         {
                             buffer.PutJceHead(0, list.ValueType);
@@ -83,7 +83,7 @@ namespace Konata.Library.JceStruct
                     break;
                 case Type.SimpleList:
                     buffer.PutByte(0);
-                    buffer.PutJceIntMin(((SimpleList)obj).Length);
+                    PutObject(0, (Number)((SimpleList)obj).Length);
                     buffer.PutBytes(((SimpleList)obj).Value);
                     break;
                 default:
@@ -126,13 +126,13 @@ namespace Konata.Library.JceStruct
                 switch (type)
                 {
                 case Type.Byte:
-                    return (Int8)buffer.TakeSbyte(out _);
+                    return (Number)buffer.TakeSbyte(out _);
                 case Type.Short:
-                    return (Int16)buffer.TakeShortBE(out _);
+                    return (Number)buffer.TakeShortBE(out _);
                 case Type.Int:
-                    return (Int32)buffer.TakeIntBE(out _);
+                    return (Number)buffer.TakeIntBE(out _);
                 case Type.Long:
-                    return (Int64)buffer.TakeLongBE(out _);
+                    return (Number)buffer.TakeLongBE(out _);
                 case Type.Float:
                     return (Float)buffer.TakeFloatBE(out _);
                 case Type.Double:
@@ -187,7 +187,7 @@ namespace Konata.Library.JceStruct
                 case Type.StructEnd:
                     return null;
                 case Type.ZeroTag:
-                    return (Int8)0;
+                    return default(Number);
                 case Type.SimpleList:
                     buffer.EatBytes(1);
                     return (SimpleList)buffer.TakeBytes(out _, (uint)TakeJceInt());
