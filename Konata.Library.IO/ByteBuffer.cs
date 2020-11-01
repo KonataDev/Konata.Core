@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Konata.Library.IO
@@ -965,6 +966,26 @@ namespace Konata.Library.IO
             buffer.PutBytes(a.GetBytes());
             buffer.PutBytes(b);
             return buffer;
+        }
+
+        public static bool operator ==(ByteBuffer a, ByteBuffer b)
+        {
+            return a is null ? b is null : a.Equals(b);
+        }
+
+        public static bool operator !=(ByteBuffer a, ByteBuffer b)
+        {
+            return !(a == b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            ByteBuffer other = (ByteBuffer)obj;
+            return !(other is null)
+                && Length == other.Length
+                && (buffer == null
+                || other.buffer == null
+                || Enumerable.SequenceEqual(buffer, other.buffer));
         }
 
         #endregion
