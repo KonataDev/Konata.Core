@@ -127,6 +127,16 @@ namespace Konata.Msf
         public bool OidbSvc_0x55c_1(uint groupUin, uint memberUin, bool promoteAdmin) =>
             Service.Run(this, "OidbSvc.0x55c_1", groupUin, memberUin, promoteAdmin);
 
+        /// <summary>
+        /// 設置群禁言
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="timeSeconds"></param>
+        /// <returns></returns>
+        public bool OidbSvc_0x570_8(uint groupUin, uint memberUin, uint timeSeconds) =>
+            Service.Run(this, "OidbSvc.0x570_8", groupUin, memberUin, timeSeconds);
+
         #endregion
 
         #region Event Methods

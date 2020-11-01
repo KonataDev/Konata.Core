@@ -25,6 +25,7 @@ namespace Konata.Msf
         PbPushGroupMsg,
         KickGroupMember,
         PromoteGroupAdmin,
+        MuteGroupMember,
 
 
         BotStart = 0x2000,

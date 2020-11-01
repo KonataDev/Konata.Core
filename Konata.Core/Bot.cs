@@ -109,6 +109,7 @@ namespace Konata
                 case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
                 case EventType.KickGroupMember: OnKickGroupMember(e); break;
                 case EventType.PromoteGroupAdmin: OnPromoteGroupAdmin(e); break;
+                case EventType.MuteGroupMember: OnMuteGroupMember(e); break;
             }
         }
 
@@ -172,7 +173,7 @@ namespace Konata
         {
             if (e.args == null)
                 return;
-            if (e.args.Length != 1)
+            if (e.args.Length != 3)
                 return;
             if (e.args[0] is uint groupUin
                 && e.args[1] is uint memberUin
@@ -186,12 +187,26 @@ namespace Konata
         {
             if (e.args == null)
                 return;
-            if (e.args.Length != 1)
+            if (e.args.Length != 3)
                 return;
             if (e.args[0] is uint groupUin
                 && e.args[1] is uint memberUin
                 && e.args[2] is bool promoteAdmin)
                 msfCore.OidbSvc_0x55c_1(groupUin, memberUin, promoteAdmin);
+
+            return;
+        }
+
+        private void OnMuteGroupMember(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is uint timeSeconds)
+                msfCore.OidbSvc_0x570_8(groupUin, memberUin, timeSeconds);
 
             return;
         }
@@ -239,6 +254,16 @@ namespace Konata
         public void PromoteGroupAdmin(uint groupUin, uint memberUin, bool promoteAdmin) =>
             PostEvent(EventFilter.System, EventType.PromoteGroupAdmin, groupUin,
                 memberUin, promoteAdmin);
+
+        /// <summary>
+        /// 設置群禁言
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="timeSeconds"></param>
+        public void MuteGroupMember(uint groupUin, uint memberUin, uint timeSeconds) =>
+            PostEvent(EventFilter.System, EventType.MuteGroupMember, groupUin,
+                memberUin, timeSeconds);
 
         #endregion
 
