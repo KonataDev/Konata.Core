@@ -287,12 +287,12 @@ namespace Konata
         /// </summary>
         /// <param name="groupUin"></param>
         /// <param name="memberUin"></param>
-        /// <param name="specitalTitle"></param>
+        /// <param name="specialTitle"></param>
         /// <param name="expiredTime"></param>
         public void GiveGroupMemberSpecialTitle(uint groupUin, uint memberUin,
-            string specitalTitle, int? expiredTime) =>
+            string specialTitle, int? expiredTime) =>
             PostEvent(EventFilter.System, EventType.GiveGroupMemberSpecialTitle, groupUin,
-               memberUin, specitalTitle, expiredTime);
+               memberUin, specialTitle, expiredTime);
 
         #endregion
 
