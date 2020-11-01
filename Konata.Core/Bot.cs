@@ -107,7 +107,7 @@ namespace Konata
                 case EventType.WtLoginVerifySliderCaptcha: OnWtLoginVerifySliderCaptcha(e); break;
                 case EventType.WtLoginVerifySmsCaptcha: OnWtLoginVerifySmsCaptcha(e); break;
                 case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
-                case EventType.KickMember: OnKickMember(e); break;
+                case EventType.KickGroupMember: OnKickGroupMember(e); break;
             }
         }
 
@@ -167,7 +167,7 @@ namespace Konata
             msfCore.StatSvc_RegisterClient();
         }
 
-        private void OnKickMember(Event e)
+        private void OnKickGroupMember(Event e)
         {
             if (e.args == null)
                 return;
@@ -212,7 +212,7 @@ namespace Konata
         /// <param name="memberUin"></param>
         /// <param name="preventRequest"></param>
         public void KickGroupMember(uint groupUin, uint memberUin, bool preventRequest) =>
-            PostEvent(EventFilter.System, EventType.KickMember, groupUin,
+            PostEvent(EventFilter.System, EventType.KickGroupMember, groupUin,
                 memberUin, preventRequest);
 
         #endregion
