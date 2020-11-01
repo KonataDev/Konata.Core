@@ -10,6 +10,7 @@ namespace Konata.Msf.Packets.Oidb
     public class OidbCmd0x8a0_0 : OidbCmd0x8a0
     {
         public OidbCmd0x8a0_0(uint groupUin, uint[] memberUin, bool preventRequest)
+
             : base(0x00, new ReqBody
             {
                 group_code = groupUin,
