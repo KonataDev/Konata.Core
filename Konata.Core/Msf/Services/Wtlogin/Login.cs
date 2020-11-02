@@ -1,8 +1,10 @@
 ﻿using System;
 using Konata.Utils;
 using Konata.Msf.Crypto;
+using Konata.Msf.Packets;
 using Konata.Msf.Packets.Tlv;
 using Konata.Msf.Packets.Oicq;
+using Konata.Msf.Packets.Sso;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -36,8 +38,7 @@ namespace Konata.Msf.Services.Wtlogin
             if (args == null || args.Length == 0)
                 return false;
 
-            var packet = (Packet)args[0];
-            var oicqRequest = new OicqRequest(packet.TakeAllBytes(out byte[] _),
+            var oicqRequest = new OicqRequest((byte[])args[0],
                 core.SigInfo.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
@@ -80,12 +81,14 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Submit OicqRequestTGTGT.");
 
-            var sequence = core.SsoMan.GetServiceSequence(name);
-            var request = new OicqRequestTgtgt(core.SigInfo.Uin, sequence, core.SigInfo);
+            var ssoSeq = core.SsoMan.GetServiceSequence(name);
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            core.SsoMan.PostMessage(this, request, sequence);
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
+                new OicqRequestTgtgt(core.SigInfo.Uin, ssoSeq, core.SigInfo));
 
-            return true;
+            return core.SsoMan.PostMessage(
+                RequestFlag.WtLoginExchange, ssoMessage);
         }
 
         /// <summary>
@@ -98,13 +101,15 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
-            var sequence = core.SsoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckImage(core.SigInfo.Uin, core.SigInfo,
-                core.SigInfo.WtLoginSession, ticket);
+            var ssoSeq = core.SsoMan.GetServiceSequence(name);
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            core.SsoMan.PostMessage(this, request, sequence);
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
+                new OicqRequestCheckImage(core.SigInfo.Uin, core.SigInfo,
+                    core.SigInfo.WtLoginSession, ticket));
 
-            return true;
+            return core.SsoMan.PostMessage(
+                RequestFlag.WtLoginExchange, ssoMessage);
         }
 
         /// <summary>
@@ -117,13 +122,16 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
-            var sequence = core.SsoMan.GetServiceSequence(name);
-            var request = new OicqRequestCheckSms(core.SigInfo.Uin, core.SigInfo,
-                 core.SigInfo.WtLoginSession, core.SigInfo.GSecret,
-                 core.SigInfo.WtLoginSmsToken, smsCode);
+            var ssoSeq = core.SsoMan.GetServiceSequence(name);
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            core.SsoMan.PostMessage(this, request, sequence);
-            return true;
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
+                new OicqRequestCheckSms(core.SigInfo.Uin, core.SigInfo,
+                    core.SigInfo.WtLoginSession, core.SigInfo.GSecret,
+                    core.SigInfo.WtLoginSmsToken, smsCode));
+
+            return core.SsoMan.PostMessage(
+                RequestFlag.WtLoginExchange, ssoMessage);
         }
 
         /// <summary>
@@ -135,13 +143,15 @@ namespace Konata.Msf.Services.Wtlogin
         {
             Console.WriteLine("Request send SMS.");
 
-            var sequence = core.SsoMan.GetServiceSequence(name);
-            var request = new OicqRequestRefreshSms(core.SigInfo.Uin, core.SigInfo,
-                 core.SigInfo.WtLoginSession, core.SigInfo.WtLoginSmsToken);
+            var ssoSeq = core.SsoMan.GetServiceSequence(name);
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            core.SsoMan.PostMessage(this, request, sequence);
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
+                new OicqRequestRefreshSms(core.SigInfo.Uin, core.SigInfo,
+                    core.SigInfo.WtLoginSession, core.SigInfo.WtLoginSmsToken));
 
-            return true;
+            return core.SsoMan.PostMessage(
+                RequestFlag.WtLoginExchange, ssoMessage);
         }
 
         #endregion
@@ -324,10 +334,7 @@ namespace Konata.Msf.Services.Wtlogin
                     core.SigInfo.GtKey = gtKey;
                     core.SigInfo.StKey = stKey;
 
-                    core.SsoMan.SetD2Pair(d2Token, d2Key);
-                    core.SsoMan.SetTgtPair(tgtToken, tgtKey);
                     core.SsoMan.DestroyServiceSequence(name);
-
                     core.PostSystemEvent(EventType.WtLoginOK);
 
                     Console.WriteLine($"gtKey => {Hex.Bytes2HexStr(gtKey)}");

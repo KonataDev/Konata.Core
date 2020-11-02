@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Msf.Packets;
+using Konata.Msf.Packets.Sso;
 using Konata.Msf.Packets.Oidb;
 
 namespace Konata.Msf.Services.OidbSvc
@@ -39,11 +41,15 @@ namespace Konata.Msf.Services.OidbSvc
         private bool Request_0x8fc_2(Core core, uint groupUin, uint memberUin,
             string specialTitle, int? expiredTime)
         {
-            var oidbPacket = new OidbCmd0x8fc_2(groupUin, memberUin,
-                specialTitle, expiredTime);
-            core.SsoMan.PostMessage(this, oidbPacket);
+            var ssoSeq = core.SsoMan.GetNewSequence();
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            return true;
+            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
+                new OidbCmd0x8fc_2(groupUin, memberUin,
+                specialTitle, expiredTime));
+
+            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
+                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
         }
     }
 }
