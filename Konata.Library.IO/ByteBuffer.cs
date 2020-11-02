@@ -614,7 +614,7 @@ namespace Konata.Library.IO
         {
             uint length;
             bool reduce = (prefixFlag & Prefix.WithPrefix) > 0;
-            uint preLen = ((uint)prefixFlag) & 15;
+            uint preLen = ((uint)prefixFlag) & 0b0111;
             switch (preLen)
             {
                 case 0: // Read to end.
@@ -810,6 +810,16 @@ namespace Konata.Library.IO
             throw eobException;
         }
 
+        public uint PeekUint(uint offset, out uint value, Endian endian)
+        {
+            if (CheckAvailable(offset + 4))
+            {
+                value = ByteConverter.BytesToUInt32(buffer, readPosition + offset, endian);
+                return value;
+            }
+            throw eobException;
+        }
+
         public int PeekIntBE(out int value)
         {
             return PeekInt(0, out value, Endian.Big);
@@ -818,6 +828,16 @@ namespace Konata.Library.IO
         public int PeekIntBE(uint offset, out int value)
         {
             return PeekInt(offset, out value, Endian.Big);
+        }
+
+        public uint PeekUintBE(out uint value)
+        {
+            return PeekUint(0, out value, Endian.Big);
+        }
+
+        public uint PeekUintBE(uint offset, out uint value)
+        {
+            return PeekUint(offset, out value, Endian.Big);
         }
 
         public byte[] PeekBytes(uint offset, uint length, out byte[] value)
