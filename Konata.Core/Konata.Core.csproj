@@ -54,6 +54,10 @@
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
+    <Compile Include="Msf\Packets\ServiceMessage.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessageTypeA.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessageTypeB.cs" />
     <Compile Include="Msf\Services\OidbSvc\Oidb0x55c_1.cs" />
     <Compile Include="Msf\Services\OidbSvc\Oidb0x570_8.cs" />
     <Compile Include="Msf\Services\OidbSvc\Oidb0x8a0_0.cs" />
@@ -65,7 +69,6 @@
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
     <Compile Include="Msf\Event.cs" />
-    <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\SvcReq\SvcReqEmpty.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbDeleteMsg.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbGetMsg.cs" />
@@ -182,8 +185,6 @@
     <Compile Include="Msf\Crypto\EncryptType.cs" />
     <Compile Include="Msf\Types.cs" />
     <Compile Include="Msf\Network\NetworkType.cs" />
-    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
-    <Compile Include="Msf\Packets\ToServiceMessage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />
