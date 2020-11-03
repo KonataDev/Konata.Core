@@ -9,7 +9,7 @@ namespace Konata.Library.JceStruct
             public Buffer(byte[] data = null) : base(data) { }
 
             /// <summary>
-            /// Put JCE head data.
+            /// Write JCE head data.
             /// </summary>
             /// <param name="tag">Tag.</param>
             /// <param name="type">JCE type.</param>
@@ -27,7 +27,7 @@ namespace Konata.Library.JceStruct
             }
 
             /// <summary>
-            /// Take JCE head data.
+            /// Read JCE head data.
             /// </summary>
             /// <param name="type">JCE type.</param>
             /// <returns>Tag.</returns>
