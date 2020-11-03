@@ -4,30 +4,19 @@
     {
         public struct Float : IObject
         {
-            public Type Type
-            {
-                get
-                {
-                    return Value == 0 ? Type.ZeroTag : Type.Float;
-                }
-            }
+            public Type Type => Value == 0 ? Type.ZeroTag : Type.Float;
+
+            public BaseType BaseType => BaseType.Float;
 
             public float Value { get; set; }
 
-            public Float(float value)
-            {
-                Value = value;
-            }
+            public Float(float value) => Value = value;
 
-            public static implicit operator float(Float value)
-            {
-                return value.Value;
-            }
+            public override bool Equals(object obj) => obj is Float other && Value.Equals(other.Value);
 
-            public static implicit operator Float(float value)
-            {
-                return new Float(value);
-            }
+            public static implicit operator float(Float value) => value.Value;
+
+            public static implicit operator Float(float value) => new Float(value);
         }
     }
 }

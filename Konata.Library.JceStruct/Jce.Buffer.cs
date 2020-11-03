@@ -9,7 +9,7 @@ namespace Konata.Library.JceStruct
             public Buffer(byte[] data = null) : base(data) { }
 
             /// <summary>
-            /// Put JCE head data.
+            /// Write JCE head data.
             /// </summary>
             /// <param name="tag">Tag.</param>
             /// <param name="type">JCE type.</param>
@@ -27,39 +27,7 @@ namespace Konata.Library.JceStruct
             }
 
             /// <summary>
-            /// Put an integer value in minimum length.
-            /// </summary>
-            /// <param name="value">Value to be put.</param>
-            public void PutJceIntMin(long value, byte tag = 0)
-            {
-                if (value == 0)
-                {
-                    PutJceHead(tag, Type.ZeroTag);
-                }
-                else if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
-                {
-                    PutJceHead(tag, Type.Byte);
-                    PutSbyte((sbyte)value);
-                }
-                else if (value >= short.MinValue && value <= short.MaxValue)
-                {
-                    PutJceHead(tag, Type.Short);
-                    PutShortBE((short)value);
-                }
-                else if (value >= int.MinValue && value <= int.MaxValue)
-                {
-                    PutJceHead(tag, Type.Int);
-                    PutIntBE((int)value);
-                }
-                else
-                {
-                    PutJceHead(tag, Type.Long);
-                    PutLongBE(value);
-                }
-            }
-
-            /// <summary>
-            /// Take JCE head data.
+            /// Read JCE head data.
             /// </summary>
             /// <param name="type">JCE type.</param>
             /// <returns>Tag.</returns>

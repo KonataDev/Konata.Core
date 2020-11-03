@@ -5,6 +5,8 @@
         public interface IObject
         {
             Type Type { get; }
+
+            BaseType BaseType { get; }
         }
     }
 }
