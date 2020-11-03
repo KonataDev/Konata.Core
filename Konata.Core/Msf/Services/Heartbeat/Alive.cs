@@ -32,9 +32,9 @@ namespace Konata.Msf.Services.Heartbeat
 
         private bool Request_Heartbeat(Core core)
         {
-            var request = new Packet();
-            var sequence = core.SsoMan.GetNewSequence();
-            core.SsoMan.PostMessage(this, request, sequence);
+            //var request = new Packet();
+            //var sequence = core.SsoMan.GetNewSequence();
+            //core.SsoMan.PostMessage(this, request, sequence);
 
             return false;
         }

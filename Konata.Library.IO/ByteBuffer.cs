@@ -10,12 +10,12 @@ namespace Konata.Library.IO
         public enum Prefix
         {
             None = 0, // 前綴類型
-            Uint8 = 1,
-            Uint16 = 2,
-            Uint32 = 4,
+            Uint8 = 0b0001,
+            Uint16 = 0b0010,
+            Uint32 = 0b0100,
 
-            LengthOnly = 64, // 只包括數據長度
-            WithPrefix = 128,  // 包括數據長度和前綴長度
+            LengthOnly = 0, // 只包括數據長度
+            WithPrefix = 0b1000,  // 包括數據長度和前綴長度
         }
 
         private static readonly IOException eobException =
@@ -25,8 +25,8 @@ namespace Konata.Library.IO
 
         protected byte[] buffer;
         protected uint bufferLength;
-        private uint readPosition;
-        private uint writePosition;
+        protected uint readPosition;
+        protected uint writePosition;
 
         public ByteBuffer(byte[] data = null)
         {
@@ -343,29 +343,40 @@ namespace Konata.Library.IO
 
         public void PutBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
         {
-            prefixFlag &= (Prefix)7;
+            int prefixLength = (int)prefixFlag & 0b0111;
             bool limited = limitedLength > 0; // 是否限制长度
             byte[] array; // 处理后的数据
             if (limited) // 限制长度时，写入数据长度=前缀+限制
             {
                 limitedLength = (byte)value.Length;
-                array = new byte[(uint)prefixFlag + limitedLength];
+                array = new byte[prefixLength + limitedLength];
                 int len = value.Length > limitedLength ? limitedLength : value.Length;
-                Buffer.BlockCopy(value, 0, array, (int)prefixFlag, len);
+                if (len > 0)
+                {
+                    Buffer.BlockCopy(value, 0, array, prefixLength, len);
+                }
             }
-            else if (prefixFlag > Prefix.None) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
+            else if (prefixLength > 0) // 不限制长度且有前缀时，写入数据长度=前缀+value长度
             {
-                array = new byte[(uint)prefixFlag + value.Length];
-                Buffer.BlockCopy(value, 0, array, (int)prefixFlag, value.Length);
+                array = new byte[prefixLength + value.Length];
+                if (value.Length > 0)
+                {
+                    Buffer.BlockCopy(value, 0, array, prefixLength, value.Length);
+                }
             }
             else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
             {
                 WriteData(value);
                 return;
             }
-            if (prefixFlag > Prefix.None) // 添加前缀，使用大端序
+            if (prefixLength > 0) // 添加前缀，使用大端序
             {
-                if (!InsertPrefix(array, 0, (uint)value.Length, prefixFlag))
+                int len = value.Length;
+                if ((prefixFlag & Prefix.WithPrefix) > 0)
+                {
+                    len += prefixLength;
+                }
+                if (!InsertPrefix(array, 0, (uint)len, (Prefix)prefixLength))
                 {
                     throw new IOException("Given prefix length is too small for value bytes."); // 给定的prefix不够填充value.Length，终止写入
                 }
@@ -603,7 +614,7 @@ namespace Konata.Library.IO
         {
             uint length;
             bool reduce = (prefixFlag & Prefix.WithPrefix) > 0;
-            uint preLen = ((uint)prefixFlag) & 15;
+            uint preLen = ((uint)prefixFlag) & 0b0111;
             switch (preLen)
             {
                 case 0: // Read to end.
@@ -799,6 +810,16 @@ namespace Konata.Library.IO
             throw eobException;
         }
 
+        public uint PeekUint(uint offset, out uint value, Endian endian)
+        {
+            if (CheckAvailable(offset + 4))
+            {
+                value = ByteConverter.BytesToUInt32(buffer, readPosition + offset, endian);
+                return value;
+            }
+            throw eobException;
+        }
+
         public int PeekIntBE(out int value)
         {
             return PeekInt(0, out value, Endian.Big);
@@ -807,6 +828,16 @@ namespace Konata.Library.IO
         public int PeekIntBE(uint offset, out int value)
         {
             return PeekInt(offset, out value, Endian.Big);
+        }
+
+        public uint PeekUintBE(out uint value)
+        {
+            return PeekUint(0, out value, Endian.Big);
+        }
+
+        public uint PeekUintBE(uint offset, out uint value)
+        {
+            return PeekUint(offset, out value, Endian.Big);
         }
 
         public byte[] PeekBytes(uint offset, uint length, out byte[] value)

@@ -118,7 +118,7 @@ namespace Konata.Msf
         /// </summary>
         /// <param name="prefixFlag"></param>
         /// <param name="endian"></param>
-        protected void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
+        public void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
         {
             barExtLen = extend;
             barPos = bufferLength;
@@ -127,7 +127,7 @@ namespace Konata.Msf
             PutEmpty((int)prefixFlag);
         }
 
-        protected void EnterBarrierEncrypted(Prefix prefixFlag, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
+        public void EnterBarrierEncrypted(Prefix prefixFlag, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
         {
             EnterBarrier(prefixFlag, endian, extend);
             barEnc = true;
@@ -137,18 +137,20 @@ namespace Konata.Msf
             barEncKey = cryptKey;
             buffer = null;
             bufferLength = 0;
+            writePosition = 0;
         }
 
         /// <summary>
         /// [離開屏障] 會立即在加入的數據前寫入長度
         /// </summary>
-        protected void LeaveBarrier()
+        public void LeaveBarrier()
         {
             if (barEnc)
             {
                 byte[] enc = GetEncryptedBytes(barEncCryptor, barEncKey);
                 buffer = barEncBuffer;
                 bufferLength = barEncLength;
+                writePosition = bufferLength;
                 PutBytes(enc);
                 barEnc = false;
                 barEncBuffer = null;

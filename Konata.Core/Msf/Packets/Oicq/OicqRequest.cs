@@ -106,7 +106,7 @@ namespace Konata.Msf.Packets.Oicq
             PutUshortBE(0x0101);
             PutBytes(randKey);
             PutUshortBE(0x0102);
-            PutBytes(publicKey);
+            PutBytes(publicKey, Prefix.Uint16);
             PutPacketEncrypted(body, TeaCryptor.Instance, shareKey);
         }
     }
