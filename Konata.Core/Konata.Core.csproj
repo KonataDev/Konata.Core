@@ -39,6 +39,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msf\Packets\Oidb\OidbCmd0x899.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x55c_1.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x88d.cs" />
@@ -53,13 +54,21 @@
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
+    <Compile Include="Msf\Packets\ServiceMessage.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessageTypeA.cs" />
+    <Compile Include="Msf\Packets\Sso\SsoMessageTypeB.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x55c_1.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x570_8.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x8a0_0.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x8a0_1.cs" />
+    <Compile Include="Msf\Services\OidbSvc\Oidb0x8fc_2.cs" />
     <Compile Include="Msf\Services\PbMessageSvc\PbMsgReadReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
     <Compile Include="Msf\Core.cs" />
     <Compile Include="Msf\Event.cs" />
-    <Compile Include="Msf\Packets\FromServiceMessage.cs" />
     <Compile Include="Msf\Packets\SvcReq\SvcReqEmpty.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbDeleteMsg.cs" />
     <Compile Include="Msf\Services\MessageSvc\PbGetMsg.cs" />
@@ -166,10 +175,6 @@
     <Compile Include="Msf\Services\GrayUinPro\Check.cs" />
     <Compile Include="Msf\Services\Heartbeat\Alive.cs" />
     <Compile Include="Msf\Services\JsApiSvr\WebView\WhiteList.cs" />
-    <Compile Include="Msf\Services\OidbSvc\Cmd_0x480_9.cs" />
-    <Compile Include="Msf\Services\OidbSvc\Cmd_0x5eb_22.cs" />
-    <Compile Include="Msf\Services\OidbSvc\Cmd_0xdc9.cs" />
-    <Compile Include="Msf\Services\OidbSvc\Cmd_oidb_0xd82.cs" />
     <Compile Include="Msf\Services\StatSvc\Register.cs" />
     <Compile Include="Msf\Services\Wtlogin\Login.cs" />
     <Compile Include="Msf\Network\PacketMan.cs" />
@@ -180,8 +185,6 @@
     <Compile Include="Msf\Crypto\EncryptType.cs" />
     <Compile Include="Msf\Types.cs" />
     <Compile Include="Msf\Network\NetworkType.cs" />
-    <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
-    <Compile Include="Msf\Packets\ToServiceMessage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequest.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckImage.cs" />
     <Compile Include="Msf\Packets\Oicq\OicqRequestCheckSms.cs" />

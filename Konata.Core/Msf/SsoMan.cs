@@ -3,7 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
-using Konata.Library.IO;
+using Konata.Msf.Packets.Sso;
 
 namespace Konata.Msf
 {
@@ -15,34 +15,26 @@ namespace Konata.Msf
 
     public class SsoMan
     {
-        private Core _msfCore;
-        private PacketMan _pakMan;
+        private Core msfCore;
+        private PacketMan pakMan;
 
-        private SsoSeqDict _ssoSeqDict;
-        private SsoSeqLock _ssoSeqLock;
+        private SsoSeqDict ssoSeqDict;
+        private SsoSeqLock ssoSeqLock;
 
-        private SsoRequence _ssoSequence;
-        private SsoSession _ssoSession;
-
-        private byte[] _d2Key;
-        private byte[] _d2Token;
-
-        private byte[] _tgtKey;
-        private byte[] _tgtToken;
+        private SsoRequence ssoSequence;
+        private SsoSession ssoSession;
 
         public SsoMan(Core core)
         {
-            _ssoSequence = 25900;
-            _ssoSession = 0x54B87ADC;
+            ssoSequence = 25900;
+            ssoSession = 0x54B87ADC;
 
-            _ssoSeqDict = new SsoSeqDict();
-            _ssoSeqLock = new SsoSeqLock();
+            ssoSeqDict = new SsoSeqDict();
+            ssoSeqLock = new SsoSeqLock();
 
-            _msfCore = core;
-            _pakMan = new PacketMan(this);
+            msfCore = core;
+            pakMan = new PacketMan(this);
 
-            _d2Token = new byte[0];
-            _tgtToken = new byte[0];
         }
 
         /// <summary>
@@ -51,12 +43,12 @@ namespace Konata.Msf
         /// <returns></returns>
         public bool Connect()
         {
-            return _pakMan.OpenSocket();
+            return pakMan.OpenSocket();
         }
 
         public bool DisConnect()
         {
-            return _pakMan.CloseSocket();
+            return pakMan.CloseSocket();
         }
 
         /// <summary>
@@ -65,7 +57,7 @@ namespace Konata.Msf
         /// <returns></returns>
         public uint GetSequence()
         {
-            return (uint)_ssoSequence;
+            return (uint)ssoSequence;
         }
 
         /// <summary>
@@ -74,8 +66,8 @@ namespace Konata.Msf
         /// <returns></returns>
         public uint GetNewSequence()
         {
-            Interlocked.CompareExchange(ref _ssoSequence, 10000, 0x7FFFFFFF);
-            return (uint)Interlocked.Add(ref _ssoSequence, 1);
+            Interlocked.CompareExchange(ref ssoSequence, 10000, 0x7FFFFFFF);
+            return (uint)Interlocked.Add(ref ssoSequence, 1);
         }
 
         /// <summary>
@@ -86,20 +78,20 @@ namespace Konata.Msf
         {
             uint sequence;
 
-            _ssoSeqLock.WaitOne();
+            ssoSeqLock.WaitOne();
             {
-                if (_ssoSeqDict.ContainsKey(name))
+                if (ssoSeqDict.ContainsKey(name))
                 {
-                    sequence = _ssoSeqDict[name];
+                    sequence = ssoSeqDict[name];
                     goto ret;
                 }
 
                 sequence = GetNewSequence();
-                _ssoSeqDict.Add(name, sequence);
+                ssoSeqDict.Add(name, sequence);
             }
 
         ret:
-            _ssoSeqLock.ReleaseMutex();
+            ssoSeqLock.ReleaseMutex();
             return sequence;
         }
 
@@ -109,114 +101,71 @@ namespace Konata.Msf
         /// <returns></returns>
         public void DestroyServiceSequence(string name)
         {
-            _ssoSeqLock.WaitOne();
+            ssoSeqLock.WaitOne();
             {
-                _ssoSeqDict.Remove(name);
+                ssoSeqDict.Remove(name);
             }
-            _ssoSeqLock.ReleaseMutex();
-        }
-
-        [Obsolete]
-        public void SetTgtPair(byte[] tgtToken, byte[] tgtkey)
-        {
-            _tgtKey = tgtkey;
-            _tgtToken = tgtToken;
-        }
-
-        [Obsolete]
-        public void SetD2Pair(byte[] d2Token, byte[] d2Key)
-        {
-            _d2Key = d2Key;
-            _d2Token = d2Token;
+            ssoSeqLock.ReleaseMutex();
         }
 
         /// <summary>
-        /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
+        /// 發送SSO訊息至伺服器。
         /// </summary>
-        /// <param name="service">服務名</param>
-        /// <param name="packet">請求數據</param>
+        /// <param name="reqFlag"></param>
+        /// <param name="reqMsg"></param>
+        /// <param name="d2Token"></param>
+        /// <param name="d2Key"></param>
         /// <returns></returns>
-        public uint PostMessage(Service service, ByteBuffer packet)
+        public bool PostMessage(RequestFlag reqFlag, SsoMessage reqMsg,
+            byte[] d2Token = null, byte[] d2Key = null)
         {
-            return PostMessage(service, packet, GetNewSequence());
+            var toService = new ServiceMessage(reqFlag,
+                 reqMsg.GetPacketType(), reqMsg.GetSequence(), d2Token, d2Key)
+                .SetUin(msfCore.SigInfo.Uin)
+                .SetPayload(reqMsg.GetPayload());
+
+            return pakMan.Emit(toService);
         }
 
-        /// 發送SSO訊息至伺服器。本接口不會阻塞等待。
-        /// </summary>
-        /// <param name="service">服務名</param>
-        /// <param name="packet">請求數據</param>
-        /// <param name="ssoSequence">SSO序列號</param>
-        /// <returns></returns>
-        public uint PostMessage(Service service, ByteBuffer packet, uint ssoSequence)
+        public uint GetSsoSession()
         {
-            var ssoMessage = new SsoMessage(ssoSequence, _ssoSession, service.name, _tgtToken, packet);
-            var toService = new ToServiceMessage(10, _msfCore.SigInfo.Uin, _d2Token, _d2Key, ssoMessage);
-
-            _pakMan.Emit(toService);
-            return ssoSequence;
-        }
-
-        /// <summary>
-        /// 發送SSO訊息至伺服器。本接口會阻塞等待。
-        /// </summary>
-        /// <param name="service">服務名</param>
-        /// <param name="packet">請求數據</param>
-        /// <returns></returns>
-        public uint SendMessage(Service service, Packet packet)
-        {
-            return SendMessage(service, packet, GetNewSequence());
-        }
-
-        /// <summary>
-        /// 發送SSO訊息至伺服器。本接口會阻塞等待。
-        /// </summary>
-        /// <param name="service">服務名</param>
-        /// <param name="packet">請求數據</param>
-        /// <param name="ssoSequence">SSO序列號</param>
-        /// <returns></returns>
-        public uint SendMessage(Service service, Packet packet, uint ssoSequence)
-        {
-            return 0;
-        }
-
-        /// <summary>
-        /// 阻塞等待某序號的訊息從伺服器返回。
-        /// </summary>
-        /// <param name="ssoSequence"></param>
-        public Packet WaitForMessage(uint ssoSequence)
-        {
-            return null;
+            return ssoSession;
         }
 
         /// <summary>
         /// 處理來自伺服器發送的SSO訊息, 並派遣到對應的服務路由
         /// </summary>
         /// <param name="fromService"></param>
-        public void OnFromServiceMessage(FromServiceMessage fromService)
+        public void OnFromServiceMessage(ServiceMessage fromService)
         {
             try
             {
-                var ssoData = fromService.TakeAllBytes(out byte[] _);
+                var pktType = fromService.GetPacketType();
+                var pktFlag = fromService.GetPacketFlag();
+                var selectKey = new byte[0];
+                var payloadData = new byte[0];
 
-                SsoMessage ssoMessage = null;
-                switch (fromService._encryptType)
+                switch (pktFlag)
                 {
-                    case 0:
-                        ssoMessage = new SsoMessage(ssoData);
+                    case RequestFlag.DefaultEmpty:
+                        selectKey = null;
                         break;
-                    case 1:
-                        ssoMessage = new SsoMessage(ssoData, _d2Key);
+                    case RequestFlag.D2Authentication:
+                        selectKey = msfCore.SigInfo.D2Key;
                         break;
-                    case 2:
-                        ssoMessage = new SsoMessage(ssoData, _msfCore.SigInfo.ZeroKey);
+                    case RequestFlag.WtLoginExchange:
+                        selectKey = msfCore.SigInfo.ZeroKey;
                         break;
                 }
 
-                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage.ssoHeader.ssoSequence}");
-                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage.ssoHeader.ssoSession}");
-                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage.ssoHeader.ssoCommand}");
+                payloadData = fromService.GetPayload(selectKey);
+                var ssoMessage = new SsoMessage(payloadData, pktType);
 
-                Service.Handle(_msfCore, ssoMessage.ssoHeader.ssoCommand, ssoMessage.ssoWupBuffer);
+                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage.GetSequence()}");
+                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage.GetSession()}");
+                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage.GetCommand()}");
+
+                Service.Handle(msfCore, ssoMessage.GetCommand(), ssoMessage.GetPayload());
             }
             catch (Exception e)
             {

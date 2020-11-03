@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using Konata.Library.IO;
 using Konata.Msf.Packets;
 using Konata.Utils;
 
@@ -36,18 +37,18 @@ namespace Konata.Msf.Network
             new MsfServer { url = "203.205.255.221", port = 8080 },
         };
 
-        private SsoMan _ssoMan;
-        private Socket _socket;
+        private SsoMan ssoMan;
+        private Socket socket;
 
-        private int _packetLength;
+        private int packetLength;
 
-        private int _recvLength;
-        private byte[] _recvBuffer;
-        private ReceiveStatus _recvStatus;
+        private int recvLength;
+        private byte[] recvBuffer;
+        private ReceiveStatus recvStatus;
 
         public PacketMan(SsoMan ssoMan)
         {
-            _ssoMan = ssoMan;
+            this.ssoMan = ssoMan;
         }
 
         /// <summary>
@@ -56,12 +57,12 @@ namespace Konata.Msf.Network
         /// <returns></returns>
         public bool OpenSocket()
         {
-            _recvBuffer = new byte[2048];
-            _recvStatus = ReceiveStatus.Idle;
+            recvBuffer = new byte[2048];
+            recvStatus = ReceiveStatus.Idle;
 
-            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _socket.Connect(_msfServers[0].url, _msfServers[0].port);
-            _socket.BeginReceive(_recvBuffer, 0, _recvBuffer.Length, SocketFlags.None, OnReceive, null);
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.Connect(_msfServers[0].url, _msfServers[0].port);
+            socket.BeginReceive(recvBuffer, 0, recvBuffer.Length, SocketFlags.None, OnReceive, null);
 
             return true;
         }
@@ -72,54 +73,82 @@ namespace Konata.Msf.Network
         /// <returns></returns>
         public bool CloseSocket()
         {
-            if (_recvStatus == ReceiveStatus.Stop)
+            if (recvStatus == ReceiveStatus.Stop)
             {
                 return false;
             }
 
-            _socket.Close();
-            _recvStatus = ReceiveStatus.Stop;
+            socket.Close();
+            recvStatus = ReceiveStatus.Stop;
             return true;
         }
 
-        public void Emit(ToServiceMessage message)
+        public bool Emit(ServiceMessage message)
         {
-            OnSend(message.GetBytes());
+            var packet = message.BuildToService();
+            var packetLen = packet.Length;
+
+            var sendBuffer = new ByteBuffer();
+            {
+                sendBuffer.PutUintBE(packetLen);
+                sendBuffer.PutByteBuffer(packet);
+            }
+            return OnSend(sendBuffer.GetBytes());
         }
 
-        private void OnSend(byte[] data)
+        private bool OnSend(byte[] data)
         {
-            if (_recvStatus == ReceiveStatus.Stop)
-            {
-                return;
-            }
+            if (recvStatus == ReceiveStatus.Stop)
+                return false;
 
-            _socket.Send(data);
             Console.WriteLine($"Send =>\n{Hex.Bytes2HexStr(data)}\n");
+            return socket.Send(data) != 0;
+        }
+
+        private void OnPacket(byte[] data)
+        {
+            var packet = new ByteBuffer(data);
+            {
+                packet.PeekUintBE(out var length);
+                {
+                    if (length != packet.Length)
+                        throw new Exception("Invalid packet received.");
+                    packet.TakeUintBE(out length);
+                }
+
+                var fromService = new ServiceMessage(packet.TakeAllBytes(out var _));
+                Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}");
+                Console.WriteLine($"  [FromService] len => {data.Length}");
+                Console.WriteLine($"  [FromService] pktType => {fromService.GetPacketType()}");
+                Console.WriteLine($"  [FromService] pktFlag => {fromService.GetPacketFlag()}");
+                Console.WriteLine($"  [FromService] uin => {fromService.GetUin()}");
+
+                ssoMan.OnFromServiceMessage(fromService);
+            }
         }
 
         private void OnReceive(IAsyncResult result)
         {
             try
             {
-                _recvLength += _socket.EndReceive(result);
+                recvLength += socket.EndReceive(result);
 
-                if (_recvStatus == ReceiveStatus.Idle)
+                if (recvStatus == ReceiveStatus.Idle)
                 {
-                    if (_recvLength < 4) return;
-                    _packetLength = BitConverter.ToInt32(_recvBuffer.Take(4).Reverse().ToArray(), 0);
-                    Array.Resize(ref _recvBuffer, _packetLength);
-                    _recvStatus = ReceiveStatus.RecvBody;
+                    if (recvLength < 4) return;
+                    packetLength = BitConverter.ToInt32(recvBuffer.Take(4).Reverse().ToArray(), 0);
+                    Array.Resize(ref recvBuffer, packetLength);
+                    recvStatus = ReceiveStatus.RecvBody;
                 }
 
-                if (_recvStatus == ReceiveStatus.RecvBody)
+                if (recvStatus == ReceiveStatus.RecvBody)
                 {
-                    if (_recvLength == _packetLength)
+                    if (recvLength == packetLength)
                     {
-                        _recvLength = 0;
-                        _recvStatus = ReceiveStatus.Idle;
+                        recvLength = 0;
+                        recvStatus = ReceiveStatus.Idle;
 
-                        OnPacket(_recvBuffer);
+                        OnPacket(recvBuffer);
                     }
                 }
             }
@@ -129,25 +158,12 @@ namespace Konata.Msf.Network
             }
             finally
             {
-                if (_recvStatus != ReceiveStatus.Stop)
+                if (recvStatus != ReceiveStatus.Stop)
                 {
-                    _socket.BeginReceive(_recvBuffer, _recvLength, _recvBuffer.Length - _recvLength,
+                    socket.BeginReceive(recvBuffer, recvLength, recvBuffer.Length - recvLength,
                         SocketFlags.None, OnReceive, null);
                 }
             }
-        }
-
-        private void OnPacket(byte[] data)
-        {
-            var serviceMessage = new FromServiceMessage(data);
-
-            Console.WriteLine($"Recv =>\n{Hex.Bytes2HexStr(data)}");
-            Console.WriteLine($"  [ToService] len => {serviceMessage._length}");
-            Console.WriteLine($"  [ToService] packetType => {serviceMessage._packetType}");
-            Console.WriteLine($"  [ToService] encryptType => {serviceMessage._encryptType}");
-            Console.WriteLine($"  [ToService] uinString => {serviceMessage._uinString}");
-
-            _ssoMan.OnFromServiceMessage(serviceMessage);
         }
     }
 }

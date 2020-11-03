@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Msf.Packets;
+using Konata.Msf.Packets.Sso;
 using Konata.Msf.Packets.Protobuf;
 
 namespace Konata.Msf.Services.MessageSvc
@@ -30,10 +32,14 @@ namespace Konata.Msf.Services.MessageSvc
 
         private bool Request_PbGetMsg(Core core)
         {
-            var request = new ProtoGetMsg(core.SigInfo.SyncCookie);
-            core.SsoMan.PostMessage(this, request.Serialize());
+            var ssoSeq = core.SsoMan.GetNewSequence();
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            return true;
+            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
+                new ProtoGetMsg(core.SigInfo.SyncCookie).Serialize());
+
+            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
+                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
         }
 
         private bool Handle_PbGetMsg(Core core)

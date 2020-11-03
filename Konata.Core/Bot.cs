@@ -107,6 +107,10 @@ namespace Konata
                 case EventType.WtLoginVerifySliderCaptcha: OnWtLoginVerifySliderCaptcha(e); break;
                 case EventType.WtLoginVerifySmsCaptcha: OnWtLoginVerifySmsCaptcha(e); break;
                 case EventType.WtLoginOK: OnWtLoginSuccess(e); break;
+                case EventType.KickGroupMember: OnKickGroupMember(e); break;
+                case EventType.PromoteGroupAdmin: OnPromoteGroupAdmin(e); break;
+                case EventType.MuteGroupMember: OnMuteGroupMember(e); break;
+                case EventType.GiveGroupMemberSpecialTitle: OnGiveGroupMemberSpecialTitle(e); break;
             }
         }
 
@@ -128,34 +132,32 @@ namespace Konata
 
         private void OnWtLoginVerifySliderCaptcha(Event e)
         {
-            if (e.args == null
-                || e.args.Length != 1
-                || !(e.args[0] is string))
-            {
+            if (e.args == null)
                 return;
-            }
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is string ticket)
+                msfCore.WtLoginCheckSlider(ticket);
 
-            msfCore.WtLoginCheckSlider((string)e.args[0]);
+            return;
         }
 
         private void OnWtLoginVerifySmsCaptcha(Event e)
         {
-            if (e.args == null
-                || e.args.Length != 1
-                || !(e.args[0] is string))
-            {
+            if (e.args == null)
                 return;
-            }
+            if (e.args.Length != 1)
+                return;
+            if (e.args[0] is string smsCode)
+                msfCore.WtLoginCheckSms(smsCode);
 
-            msfCore.WtLoginCheckSms((string)e.args[0]);
+            return;
         }
 
         private void OnWtLoginRefreshSms(Event e)
         {
             if (e.args != null)
-            {
                 return;
-            }
 
             msfCore.WtLoginRefreshSms();
         }
@@ -163,16 +165,67 @@ namespace Konata
         private void OnWtLoginSuccess(Event e)
         {
             if (e.args != null)
-            {
                 return;
-            }
 
             msfCore.StatSvc_RegisterClient();
-            msfCore.OidbSvc_0xdc9();
-            msfCore.OidbSvc_0x480_9();
-            msfCore.OidbSvc_0x5eb_22();
-            msfCore.OidbSvc_0x5eb_15();
-            msfCore.OidbSvc_oidb_0xd82();
+        }
+
+        private void OnKickGroupMember(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is bool preventRequest)
+                msfCore.OidbSvc_0x8a0_1(groupUin, memberUin, preventRequest);
+
+            return;
+        }
+
+        private void OnPromoteGroupAdmin(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is bool promoteAdmin)
+                msfCore.OidbSvc_0x55c_1(groupUin, memberUin, promoteAdmin);
+
+            return;
+        }
+
+        private void OnMuteGroupMember(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is uint timeSeconds)
+                msfCore.OidbSvc_0x570_8(groupUin, memberUin, timeSeconds);
+
+            return;
+        }
+
+        private void OnGiveGroupMemberSpecialTitle(Event e)
+        {
+            if (e.args == null)
+                return;
+            if (e.args.Length != 3
+                || e.args.Length != 4)
+                return;
+            if (e.args[0] is uint groupUin
+                && e.args[1] is uint memberUin
+                && e.args[2] is string specialTitle)
+                msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specialTitle,
+                    e.args.Length == 4 ? ((int?)e.args[3]) : null);
+
+            return;
         }
 
         #endregion
@@ -182,28 +235,64 @@ namespace Konata
         /// <summary>
         /// 執行登錄
         /// </summary>
-        public void Login()
-        {
+        public void Login() =>
             PostEvent(EventFilter.System, EventType.WtLogin);
-        }
 
         /// <summary>
         /// 提交滑塊驗證碼
         /// </summary>
         /// <param name="ticket"></param>
-        public void SubmitSliderTicket(string ticket)
-        {
+        public void SubmitSliderTicket(string ticket) =>
             PostEvent(EventFilter.System, EventType.WtLoginVerifySliderCaptcha, ticket);
-        }
 
         /// <summary>
         /// 提交SMS驗證碼
         /// </summary>
         /// <param name="smsCode"></param>
-        public void SubmitSmsCode(string smsCode)
-        {
+        public void SubmitSmsCode(string smsCode) =>
             PostEvent(EventFilter.System, EventType.WtLoginVerifySmsCaptcha, smsCode);
-        }
+
+        /// <summary>
+        /// 移除群成員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="preventRequest"></param>
+        public void KickGroupMember(uint groupUin, uint memberUin, bool preventRequest) =>
+            PostEvent(EventFilter.System, EventType.KickGroupMember, groupUin,
+                memberUin, preventRequest);
+
+        /// <summary>
+        /// 設置群管理員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="promoteAdmin"></param>
+        public void PromoteGroupAdmin(uint groupUin, uint memberUin, bool promoteAdmin) =>
+            PostEvent(EventFilter.System, EventType.PromoteGroupAdmin, groupUin,
+                memberUin, promoteAdmin);
+
+        /// <summary>
+        /// 設置群成員禁言
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="timeSeconds"></param>
+        public void MuteGroupMember(uint groupUin, uint memberUin, uint timeSeconds) =>
+            PostEvent(EventFilter.System, EventType.MuteGroupMember, groupUin,
+                memberUin, timeSeconds);
+
+        /// <summary>
+        /// 設置群成員頭銜
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="specialTitle"></param>
+        /// <param name="expiredTime"></param>
+        public void GiveGroupMemberSpecialTitle(uint groupUin, uint memberUin,
+            string specialTitle, int? expiredTime) =>
+            PostEvent(EventFilter.System, EventType.GiveGroupMemberSpecialTitle, groupUin,
+               memberUin, specialTitle, expiredTime);
 
         #endregion
 
