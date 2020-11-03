@@ -71,6 +71,8 @@ namespace Konata.Msf.Packets
 
         public byte[] GetPayload(byte[] key)
         {
+            if (key == null)
+                return svcPayload;
             return TeaCryptor.Instance.Decrypt(svcPayload, key);
         }
 

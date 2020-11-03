@@ -14,11 +14,11 @@ namespace Konata.Msf.Packets.Sso
 
     public class SsoMessage
     {
-        private uint ssoSequence;
-        private RequestPktType ssoPktType;
-        private ByteBuffer ssoPayload;
-        private string ssoCommand;
         private uint ssoSession;
+        private uint ssoSequence;
+        private string ssoCommand;
+        private ByteBuffer ssoPayload;
+        private RequestPktType ssoPktType;
 
         public SsoMessage(uint ssoseq, string ssoCmd, uint ssoSess,
             RequestPktType type, SsoPayloadWriter writer)

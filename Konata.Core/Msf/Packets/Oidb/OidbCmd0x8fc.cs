@@ -98,7 +98,7 @@ namespace Konata.Msf.Packets.Oidb
             public string special_title;
 
             // 0x30
-            public int? special_title_expire_time;
+            public uint? special_title_expire_time;
 
             // 0x3A
             public string uin_name;
