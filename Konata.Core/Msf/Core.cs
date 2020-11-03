@@ -146,7 +146,7 @@ namespace Konata.Msf
         /// <param name="expiredTime"></param>
         /// <returns></returns>
         public bool OidbSvc_0x8fc_2(uint groupUin, uint memberUin,
-            string specialTitle, int? expiredTime) =>
+            string specialTitle, uint? expiredTime) =>
             Service.Run(this, "OidbSvc.0x8fc_2", groupUin, memberUin, specialTitle, expiredTime);
 
         #endregion
