@@ -35,10 +35,10 @@ namespace Konata.Library.JceStruct
                     buffer.PutDoubleBE((Double)obj);
                     break;
                 case Type.String1:
-                    buffer.PutString((String)obj, ByteBuffer.Prefix.Uint8);
+                    buffer.PutString((string)(String)obj, ByteBuffer.Prefix.Uint8);
                     break;
                 case Type.String4:
-                    buffer.PutString((String)obj, ByteBuffer.Prefix.Uint32);
+                    buffer.PutString((string)(String)obj, ByteBuffer.Prefix.Uint32);
                     break;
                 case Type.Map:
                     {

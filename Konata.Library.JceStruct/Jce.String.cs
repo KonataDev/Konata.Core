@@ -16,9 +16,9 @@
                 obj is String other &&
                 Value == other.Value;
 
-            public static implicit operator string(String value) => value.Value;
+            public static explicit operator string(String value) => value.Value;
 
-            public static implicit operator String(string value) => new String(value);
+            public static explicit operator String(string value) => new String(value);
         }
     }
 }
