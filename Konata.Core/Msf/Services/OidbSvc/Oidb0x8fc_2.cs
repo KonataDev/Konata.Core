@@ -28,7 +28,7 @@ namespace Konata.Msf.Services.OidbSvc
                 && args[1] is uint memberUin
                 && args[2] is string specialTitle)
                 return Request_0x8fc_2(core, groupUin, memberUin,
-                    specialTitle, args.Length == 4 ? ((int?)args[3]) : null);
+                    specialTitle, args.Length == 4 ? ((uint?)args[3]) : null);
 
             return false;
         }
@@ -39,7 +39,7 @@ namespace Konata.Msf.Services.OidbSvc
         }
 
         private bool Request_0x8fc_2(Core core, uint groupUin, uint memberUin,
-            string specialTitle, int? expiredTime)
+            string specialTitle, uint? expiredTime)
         {
             var ssoSeq = core.SsoMan.GetNewSequence();
             var ssoSession = core.SsoMan.GetSsoSession();

@@ -223,7 +223,7 @@ namespace Konata
                 && e.args[1] is uint memberUin
                 && e.args[2] is string specialTitle)
                 msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specialTitle,
-                    e.args.Length == 4 ? ((int?)e.args[3]) : null);
+                    e.args.Length == 4 ? ((uint?)e.args[3]) : null);
 
             return;
         }
