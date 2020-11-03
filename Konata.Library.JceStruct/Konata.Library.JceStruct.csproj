@@ -35,6 +35,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Jce.BaseType.cs" />
     <Compile Include="Jce.Buffer.cs" />
     <Compile Include="Jce.cs" />
     <Compile Include="Jce.Double.cs" />

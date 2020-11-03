@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
@@ -7,13 +8,9 @@ namespace Konata.Library.JceStruct
     {
         public sealed class Struct : SortedDictionary<byte, IObject>, IIndexable
         {
-            public Type Type
-            {
-                get
-                {
-                    return Type.StructBegin;
-                }
-            }
+            public Type Type => Type.StructBegin;
+
+            public BaseType BaseType => BaseType.Struct;
 
             public IObject this[string path]
             {
@@ -58,15 +55,13 @@ namespace Konata.Library.JceStruct
 
             public Struct(IDictionary<byte, IObject> data) : base(data) { }
 
-            public static implicit operator byte[](Struct data)
-            {
-                return Serialize(data);
-            }
+            public override bool Equals(object obj) =>
+                obj is Struct other &&
+                Enumerable.SequenceEqual(this, other);
 
-            public static implicit operator Struct(byte[] data)
-            {
-                return Deserialize(data);
-            }
+            public static implicit operator byte[](Struct data) => Serialize(data);
+
+            public static implicit operator Struct(byte[] data) => Deserialize(data);
         }
     }
 }

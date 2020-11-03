@@ -1,23 +1,54 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
     {
-        public sealed class Map : SortedList<IObject, IObject>, IIndexable
+        public sealed class Map : IDictionary<IObject, IObject>, IIndexable
         {
-            public Type Type
+            public Type Type => Type.Map;
+
+            public BaseType BaseType => BaseType.Map;
+
+            public ICollection<IObject> Keys => keys;
+
+            public ICollection<IObject> Values => values;
+
+            public int Count => keys.Count;
+
+            public bool IsReadOnly => false;
+
+            public IObject this[IObject key]
             {
                 get
                 {
-                    return Type.Map;
+                    int index = keys.IndexOf(key);
+                    if (index >= 0)
+                    {
+                        return values[index];
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException();
+                    }
+                }
+                set
+                {
+                    int index = keys.IndexOf(key);
+                    if (index >= 0)
+                    {
+
+                        values[index] = value;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException();
+                    }
                 }
             }
-
-            public Type KeyType { get; }
-
-            public Type ValueType { get; }
 
             public IObject this[string path]
             {
@@ -38,7 +69,7 @@ namespace Konata.Library.JceStruct
                                 switch (kv)
                                 {
                                 case 0:
-                                    if (Keys[i] is IIndexable key)
+                                    if (keys[i] is IIndexable key)
                                     {
                                         return key[path];
                                     }
@@ -47,7 +78,7 @@ namespace Konata.Library.JceStruct
                                         throw new InvalidCastException();
                                     }
                                 case 1:
-                                    if (Values[i] is IIndexable value)
+                                    if (values[i] is IIndexable value)
                                     {
                                         return value[path];
                                     }
@@ -65,9 +96,9 @@ namespace Konata.Library.JceStruct
                                 switch (kv)
                                 {
                                 case 0:
-                                    return Keys[i];
+                                    return keys[i];
                                 case 1:
-                                    return Values[i];
+                                    return values[i];
                                 default:
                                     throw new ArgumentOutOfRangeException();
                                 }
@@ -83,7 +114,7 @@ namespace Konata.Library.JceStruct
                         int i = int.Parse(path);
                         if (i < Count)
                         {
-                            return new KeyValuePair(Keys[i], Values[i]);
+                            return new KeyValuePair(keys[i], values[i]);
                         }
                         else
                         {
@@ -93,32 +124,153 @@ namespace Konata.Library.JceStruct
                 }
             }
 
-            public Map(Type keyType = Type.None, Type valueType = Type.None) : base()
+            public Map(IDictionary<IObject, IObject> map = null)
             {
-                KeyType = keyType;
-                ValueType = valueType;
+                if (map is object)
+                {
+                    foreach (KeyValuePair<IObject, IObject> pair in map)
+                    {
+                        if (pair.Key is null || pair.Value is null)
+                        {
+                            throw new ArgumentNullException("Invalid input key or value: Contains null object.");
+                        }
+                        if (pair.Key.BaseType > BaseType.MaxValue || pair.Value.BaseType > BaseType.MaxValue)
+                        {
+                            throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
+                        }
+                    }
+                    keys.AddRange(map.Keys);
+                    values.AddRange(map.Values);
+                }
             }
 
-            public Map(Type keyType, Type valueType, IDictionary<IObject, IObject> map) : base(map)
+            public Map(List<IObject> keys, List<IObject> values)
             {
-                KeyType = keyType;
-                ValueType = valueType;
+                if (keys is null || values is null)
+                {
+                    throw new ArgumentNullException("Input lists cannot be null.");
+                }
+                if (keys.Count != values.Count)
+                {
+                    throw new ArgumentException("Input lists have different counts.");
+                }
+                for (int i = 0, count = keys.Count; i < count; ++i)
+                {
+                    IObject key = keys[i];
+                    IObject value = values[i];
+                    if (key is null || value is null)
+                    {
+                        throw new ArgumentNullException("Invalid input key or value: Contains null object.");
+                    }
+                    if (key.BaseType > BaseType.MaxValue || value.BaseType > BaseType.MaxValue)
+                    {
+                        throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
+                    }
+                }
+                this.keys.AddRange(keys);
+                this.values.AddRange(values);
             }
 
-            //public long TakeNumber(IObject key)
-            //{
+            public bool ContainsKey(IObject key) => keys.Contains(key);
 
-            //}
+            public void Add(IObject key, IObject value)
+            {
+                if (key is null || value is null)
+                {
+                    throw new ArgumentNullException("Invalid input key or value: object is null.");
+                }
+                if (key.BaseType == BaseType.None || value.BaseType == BaseType.None)
+                {
+                    throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
+                }
+                if (keys.IndexOf(key) >= 0)
+                {
+                    throw new ArgumentException("An element with the same key already exists.");
+                }
+                keys.Add(key);
+                values.Add(value);
+            }
 
-            //public string TakeString(IObject key)
-            //{
+            public bool Remove(IObject key)
+            {
+                int index = keys.IndexOf(key);
+                if (index >= 0)
+                {
+                    keys.RemoveAt(index);
+                    values.RemoveAt(index);
+                    return true;
+                }
+                return false;
+            }
 
-            //}
+            public bool TryGetValue(IObject key, out IObject value)
+            {
+                int index = keys.IndexOf(key);
+                if (index >= 0)
+                {
+                    value = values[index];
+                    return true;
+                }
+                value = default;
+                return false;
+            }
 
-            //public Map TakeMap(IObject key)
-            //{
+            public void Add(KeyValuePair<IObject, IObject> item) =>
+                Add(item.Key, item.Value);
 
-            //}
+            public void Clear()
+            {
+                keys.Clear();
+                values.Clear();
+            }
+
+            public bool Contains(KeyValuePair<IObject, IObject> item)
+            {
+                int index = keys.IndexOf(item.Key);
+                return index >= 0 && Equals(values[index], item.Value);
+            }
+
+            public void CopyTo(KeyValuePair<IObject, IObject>[] array, int arrayIndex) =>
+                KeyValuePairs.CopyTo(array, arrayIndex);
+
+            public bool Remove(KeyValuePair<IObject, IObject> item)
+            {
+                int index = keys.IndexOf(item.Key);
+                if (index >= 0 && values[index].Equals(item.Value))
+                {
+                    keys.RemoveAt(index);
+                    values.RemoveAt(index);
+                    return true;
+                }
+                return false;
+            }
+
+            public IEnumerator<KeyValuePair<IObject, IObject>> GetEnumerator() =>
+                (IEnumerator<KeyValuePair<IObject, IObject>>)KeyValuePairs;
+
+            public override bool Equals(object obj) =>
+                obj is Map other &&
+                Enumerable.SequenceEqual(keys, other.keys) &&
+                Enumerable.SequenceEqual(values, other.values);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            private readonly List<IObject> keys = new List<IObject>();
+            private readonly List<IObject> values = new List<IObject>();
+
+            private List<KeyValuePair<IObject, IObject>> KeyValuePairs
+            {
+                get
+                {
+                    int count = Count;
+                    List<KeyValuePair<IObject, IObject>> pairs = new List<KeyValuePair<IObject, IObject>>(count);
+                    for (int i = 0; i < count; ++i)
+                    {
+                        pairs.Add(new KeyValuePair<IObject, IObject>(keys[i], values[i]));
+                    }
+                    return pairs;
+                }
+            }
         }
     }
 }

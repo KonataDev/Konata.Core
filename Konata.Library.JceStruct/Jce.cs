@@ -10,13 +10,11 @@ namespace Konata.Library.JceStruct
         {
             Buffer buffer = new Buffer();
 
-            void PutObject(byte tag, IObject obj, bool writeHead = true)
+            void PutObject(IObject obj, byte tag = 0)
             {
-                if (writeHead)
-                {
-                    buffer.PutJceHead(tag, obj.Type);
-                }
-                switch (obj.Type)
+                Type type = obj.Type;
+                buffer.PutJceHead(tag, type);
+                switch (type)
                 {
                 case Type.Byte:
                     buffer.PutSbyte(((Number)obj).ValueByte);
@@ -45,18 +43,16 @@ namespace Konata.Library.JceStruct
                 case Type.Map:
                     {
                         Map map = (Map)obj;
-                        PutObject(0, (Number)map.Count);
+                        PutObject((Number)map.Count);
                         if (map.Count > 0)
                         {
-                            buffer.PutJceHead(0, map.KeyType);
                             foreach (IObject key in map.Keys)
                             {
-                                PutObject(0, key, false);
+                                PutObject(key);
                             }
-                            buffer.PutJceHead(1, map.ValueType);
                             foreach (IObject value in map.Values)
                             {
-                                PutObject(1, value, false);
+                                PutObject(value, 1);
                             }
                         }
                     }
@@ -64,13 +60,12 @@ namespace Konata.Library.JceStruct
                 case Type.List:
                     {
                         List list = (List)obj;
-                        PutObject(0, (Number)list.Count);
+                        PutObject((Number)list.Count);
                         if (list.Count > 0)
                         {
-                            buffer.PutJceHead(0, list.ValueType);
                             foreach (IObject value in list)
                             {
-                                PutObject(0, value, false);
+                                PutObject(value);
                             }
                         }
                     }
@@ -83,7 +78,7 @@ namespace Konata.Library.JceStruct
                     break;
                 case Type.SimpleList:
                     buffer.PutByte(0);
-                    PutObject(0, (Number)((SimpleList)obj).Length);
+                    PutObject((Number)((SimpleList)obj).Length);
                     buffer.PutBytes(((SimpleList)obj).Value);
                     break;
                 default:
@@ -93,7 +88,7 @@ namespace Konata.Library.JceStruct
 
             foreach (KeyValuePair<byte, IObject> pair in jce)
             {
-                PutObject(pair.Key, pair.Value);
+                PutObject(pair.Value, pair.Key);
             }
             return buffer.GetBytes();
         }
@@ -120,9 +115,9 @@ namespace Konata.Library.JceStruct
                 }
             }
 
-            IObject TakeJceObject(out byte tag, Type type = Type.None)
+            IObject TakeJceObject(out byte tag)
             {
-                tag = type == Type.None ? buffer.TakeJceHead(out type) : (byte)0;
+                tag = buffer.TakeJceHead(out Type type);
                 switch (type)
                 {
                 case Type.Byte:
@@ -146,24 +141,17 @@ namespace Konata.Library.JceStruct
                         int count = TakeJceInt();
                         if (count > 0)
                         {
-                            buffer.TakeJceHead(out Type keyType);
-                            List keys = new List(keyType, count);
+                            List<IObject> keys = new List<IObject>(count);
                             for (int i = 0; i < count; ++i)
                             {
-                                keys.Add(TakeJceObject(out _, keyType));
+                                keys.Add(TakeJceObject(out _));
                             }
-                            buffer.TakeJceHead(out Type valueType);
-                            List values = new List(valueType, count);
+                            List<IObject> values = new List<IObject>(count);
                             for (int i = 0; i < count; ++i)
                             {
-                                values.Add(TakeJceObject(out _, valueType));
+                                values.Add(TakeJceObject(out _));
                             }
-                            Map map = new Map(keyType, valueType);
-                            for (int i = 0; i < count; ++i)
-                            {
-                                map.Add(keys[i], values[i]);
-                            }
-                            return map;
+                            return new Map(keys, values);
                         }
                         return new Map();
                     }
@@ -172,11 +160,10 @@ namespace Konata.Library.JceStruct
                         int count = TakeJceInt();
                         if (count > 0)
                         {
-                            buffer.TakeJceHead(out Type valueType);
-                            List list = new List(valueType, count);
+                            List list = new List(count);
                             for (int i = 0; i < count; ++i)
                             {
-                                list.Add(TakeJceObject(out _, valueType));
+                                list.Add(TakeJceObject(out _));
                             }
                             return list;
                         }
@@ -185,7 +172,7 @@ namespace Konata.Library.JceStruct
                 case Type.StructBegin:
                     return TakeJceStruct();
                 case Type.StructEnd:
-                    return null;
+                    return null; // Null object is only allowed here.
                 case Type.ZeroTag:
                     return default(Number);
                 case Type.SimpleList:
@@ -202,7 +189,7 @@ namespace Konata.Library.JceStruct
                 while (buffer.RemainLength > 0)
                 {
                     IObject obj = TakeJceObject(out byte tag);
-                    if (obj == null) // Meets JceType.StructEnd
+                    if (obj is null) // Meets JceType.StructEnd.
                     {
                         break;
                     }

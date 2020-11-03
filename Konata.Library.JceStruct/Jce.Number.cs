@@ -6,17 +6,14 @@ namespace Konata.Library.JceStruct
     {
         public struct Number : IObject
         {
-            public Type Type
-            {
-                get
-                {
-                    return Value == 0 ? Type.ZeroTag :
-                        Value >= sbyte.MinValue && Value <= sbyte.MaxValue ? Type.Byte :
-                        Value >= short.MinValue && Value <= short.MaxValue ? Type.Short :
-                        Value >= int.MinValue && Value <= int.MaxValue ? Type.Int :
-                        Type.Long;
-                }
-            }
+            public Type Type =>
+                Value == 0 ? Type.ZeroTag :
+                Value >= sbyte.MinValue && Value <= sbyte.MaxValue ? Type.Byte :
+                Value >= short.MinValue && Value <= short.MaxValue ? Type.Short :
+                Value >= int.MinValue && Value <= int.MaxValue ? Type.Int :
+                Type.Long;
+
+            public BaseType BaseType => BaseType.Number;
 
             public long Value { get; set; }
 
@@ -35,10 +32,7 @@ namespace Konata.Library.JceStruct
                         throw new InvalidCastException();
                     }
                 }
-                set
-                {
-                    Value = value;
-                }
+                set => Value = value;
             }
 
             public short ValueShort
@@ -55,10 +49,7 @@ namespace Konata.Library.JceStruct
                         throw new InvalidCastException();
                     }
                 }
-                set
-                {
-                    Value = value;
-                }
+                set => Value = value;
             }
 
             public sbyte ValueByte
@@ -74,41 +65,24 @@ namespace Konata.Library.JceStruct
                         throw new InvalidCastException();
                     }
                 }
-                set
-                {
-                    Value = value;
-                }
+                set => Value = value;
             }
 
-            public Number(long value)
-            {
-                Value = value;
-            }
+            public Number(long value) => Value = value;
 
-            public static implicit operator long(Number value)
-            {
-                return value.Value;
-            }
+            public override bool Equals(object obj) =>
+                obj is Number other &&
+                Value.Equals(other.Value);
 
-            public static implicit operator Number(long value)
-            {
-                return new Number(value);
-            }
+            public static implicit operator long(Number value) => value.Value;
 
-            public static implicit operator Number(int value)
-            {
-                return new Number(value);
-            }
+            public static implicit operator Number(long value) => new Number(value);
 
-            public static implicit operator Number(short value)
-            {
-                return new Number(value);
-            }
+            public static implicit operator Number(int value) => new Number(value);
 
-            public static implicit operator Number(sbyte value)
-            {
-                return new Number(value);
-            }
+            public static implicit operator Number(short value) => new Number(value);
+
+            public static implicit operator Number(sbyte value) => new Number(value);
         }
     }
 }
