@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+#pragma warning disable CS0661
+#pragma warning disable CS0659
+
 namespace Konata.Library.IO
 {
     public class ByteBuffer
@@ -1022,3 +1025,6 @@ namespace Konata.Library.IO
         #endregion
     }
 }
+
+#pragma warning restore CS0661
+#pragma warning restore CS0659
