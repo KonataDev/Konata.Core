@@ -30,7 +30,7 @@ namespace Konata.Library.JceStruct
                         Value.CopyTo(valueContent, 0);
                         try
                         {
-                            valueStruct = valueContent;
+                            valueStruct = Deserialize(valueContent);
                         }
                         catch
                         {
@@ -52,13 +52,13 @@ namespace Konata.Library.JceStruct
                 obj is SimpleList other &&
                 Enumerable.SequenceEqual(Value, other.Value);
 
-            public static implicit operator byte[](SimpleList value) => value.Value;
+            public static explicit operator byte[](SimpleList value) => value.Value;
 
-            public static implicit operator SimpleList(byte[] value) => new SimpleList(value);
+            public static explicit operator SimpleList(byte[] value) => new SimpleList(value);
 
-            public static implicit operator Struct(SimpleList value) => value.Value;
+            public static explicit operator Struct(SimpleList value) => Deserialize(value.Value);
 
-            public static implicit operator SimpleList(Struct value) => new SimpleList(value);
+            public static explicit operator SimpleList(Struct value) => new SimpleList(Serialize(value));
 
             private Struct valueStruct;
             private byte[] valueContent;

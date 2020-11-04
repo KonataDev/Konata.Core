@@ -12,6 +12,8 @@
 
             public Float(float value) => Value = value;
 
+            public override string ToString() => Value.ToString();
+
             public override bool Equals(object obj) => obj is Float other && Value.Equals(other.Value);
 
             public static implicit operator float(Float value) => value.Value;

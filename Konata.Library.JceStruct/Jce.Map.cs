@@ -37,15 +37,23 @@ namespace Konata.Library.JceStruct
                 }
                 set
                 {
+                    if (key is null || value is null)
+                    {
+                        throw new ArgumentNullException("Invalid input key or value: object is null.");
+                    }
+                    if (key.BaseType > BaseType.MaxValue || value.BaseType > BaseType.MaxValue)
+                    {
+                        throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
+                    }
                     int index = keys.IndexOf(key);
                     if (index >= 0)
                     {
-
                         values[index] = value;
                     }
                     else
                     {
-                        throw new KeyNotFoundException();
+                        keys.Add(key);
+                        values.Add(value);
                     }
                 }
             }
@@ -144,33 +152,6 @@ namespace Konata.Library.JceStruct
                 }
             }
 
-            public Map(List<IObject> keys, List<IObject> values)
-            {
-                if (keys is null || values is null)
-                {
-                    throw new ArgumentNullException("Input lists cannot be null.");
-                }
-                if (keys.Count != values.Count)
-                {
-                    throw new ArgumentException("Input lists have different counts.");
-                }
-                for (int i = 0, count = keys.Count; i < count; ++i)
-                {
-                    IObject key = keys[i];
-                    IObject value = values[i];
-                    if (key is null || value is null)
-                    {
-                        throw new ArgumentNullException("Invalid input key or value: Contains null object.");
-                    }
-                    if (key.BaseType > BaseType.MaxValue || value.BaseType > BaseType.MaxValue)
-                    {
-                        throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
-                    }
-                }
-                this.keys.AddRange(keys);
-                this.values.AddRange(values);
-            }
-
             public bool ContainsKey(IObject key) => keys.Contains(key);
 
             public void Add(IObject key, IObject value)
@@ -179,7 +160,7 @@ namespace Konata.Library.JceStruct
                 {
                     throw new ArgumentNullException("Invalid input key or value: object is null.");
                 }
-                if (key.BaseType == BaseType.None || value.BaseType == BaseType.None)
+                if (key.BaseType > BaseType.MaxValue || value.BaseType > BaseType.MaxValue)
                 {
                     throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
                 }
@@ -245,8 +226,7 @@ namespace Konata.Library.JceStruct
                 return false;
             }
 
-            public IEnumerator<KeyValuePair<IObject, IObject>> GetEnumerator() =>
-                (IEnumerator<KeyValuePair<IObject, IObject>>)KeyValuePairs;
+            public IEnumerator<KeyValuePair<IObject, IObject>> GetEnumerator() => KeyValuePairs.GetEnumerator();
 
             public override bool Equals(object obj) =>
                 obj is Map other &&

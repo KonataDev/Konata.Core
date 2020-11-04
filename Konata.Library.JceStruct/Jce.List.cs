@@ -24,12 +24,10 @@ namespace Konata.Library.JceStruct
                 {
                     if (value is null)
                     {
-                        Clear();
                         throw new ArgumentNullException("Invalid input item: Contains null object.");
                     }
                     if (value.BaseType > BaseType.MaxValue)
                     {
-                        Clear();
                         throw new ArgumentException("Invalid input item: Unsupported JCE type.");
                     }
                     list[index] = value;

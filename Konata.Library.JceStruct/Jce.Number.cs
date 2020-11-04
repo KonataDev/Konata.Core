@@ -70,19 +70,21 @@ namespace Konata.Library.JceStruct
 
             public Number(long value) => Value = value;
 
+            public override string ToString() => Value.ToString();
+
             public override bool Equals(object obj) =>
                 obj is Number other &&
                 Value.Equals(other.Value);
 
             public static implicit operator long(Number value) => value.Value;
 
-            public static implicit operator Number(long value) => new Number(value);
+            public static explicit operator Number(long value) => new Number(value);
 
-            public static implicit operator Number(int value) => new Number(value);
+            public static explicit operator Number(int value) => new Number(value);
 
-            public static implicit operator Number(short value) => new Number(value);
+            public static explicit operator Number(short value) => new Number(value);
 
-            public static implicit operator Number(sbyte value) => new Number(value);
+            public static explicit operator Number(sbyte value) => new Number(value);
         }
     }
 }

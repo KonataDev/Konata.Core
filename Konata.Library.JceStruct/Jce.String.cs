@@ -12,6 +12,8 @@
 
             public String(string value) => Value = value;
 
+            public override string ToString() => Value;
+
             public override bool Equals(object obj) =>
                 obj is String other &&
                 Value == other.Value;

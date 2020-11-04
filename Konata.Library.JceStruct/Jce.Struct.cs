@@ -59,9 +59,9 @@ namespace Konata.Library.JceStruct
                 obj is Struct other &&
                 Enumerable.SequenceEqual(this, other);
 
-            public static implicit operator byte[](Struct data) => Serialize(data);
+            public static explicit operator byte[](Struct data) => Serialize(data);
 
-            public static implicit operator Struct(byte[] data) => Deserialize(data);
+            public static explicit operator Struct(byte[] data) => Deserialize(data);
         }
     }
 }

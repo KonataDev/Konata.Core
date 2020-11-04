@@ -26,7 +26,7 @@ namespace Konata.Library.JceStruct
                     buffer.PutIntBE(((Number)obj).ValueInt);
                     break;
                 case Type.Long:
-                    buffer.PutLongBE((Number)obj);
+                    buffer.PutLongBE(((Number)obj).Value);
                     break;
                 case Type.Float:
                     buffer.PutFloatBE((Float)obj);
@@ -46,13 +46,10 @@ namespace Konata.Library.JceStruct
                         PutObject((Number)map.Count);
                         if (map.Count > 0)
                         {
-                            foreach (IObject key in map.Keys)
+                            foreach (KeyValuePair<IObject, IObject> pair in map)
                             {
-                                PutObject(key);
-                            }
-                            foreach (IObject value in map.Values)
-                            {
-                                PutObject(value, 1);
+                                PutObject(pair.Key);
+                                PutObject(pair.Value, 1);
                             }
                         }
                     }
@@ -139,35 +136,22 @@ namespace Konata.Library.JceStruct
                 case Type.Map:
                     {
                         int count = TakeJceInt();
-                        if (count > 0)
+                        Map map = new Map();
+                        for (int i = 0; i < count; ++i)
                         {
-                            List<IObject> keys = new List<IObject>(count);
-                            for (int i = 0; i < count; ++i)
-                            {
-                                keys.Add(TakeJceObject(out _));
-                            }
-                            List<IObject> values = new List<IObject>(count);
-                            for (int i = 0; i < count; ++i)
-                            {
-                                values.Add(TakeJceObject(out _));
-                            }
-                            return new Map(keys, values);
+                            map.Add(TakeJceObject(out _), TakeJceObject(out _));
                         }
-                        return new Map();
+                        return map;
                     }
                 case Type.List:
                     {
                         int count = TakeJceInt();
-                        if (count > 0)
+                        List list = new List(count);
+                        for (int i = 0; i < count; ++i)
                         {
-                            List list = new List(count);
-                            for (int i = 0; i < count; ++i)
-                            {
-                                list.Add(TakeJceObject(out _));
-                            }
-                            return list;
+                            list.Add(TakeJceObject(out _));
                         }
-                        return new List();
+                        return list;
                     }
                 case Type.StructBegin:
                     return TakeJceStruct();

@@ -12,6 +12,8 @@
 
             public Double(double value) => Value = value;
 
+            public override string ToString() => Value.ToString();
+
             public override bool Equals(object obj) => obj is Double other && Value.Equals(other.Value);
 
             public static implicit operator double(Double value) => value.Value;
