@@ -21,7 +21,7 @@ namespace Konata.Library.JceStruct
                 }
                 else
                 {
-                    PutByte((byte)(0xF | (int)type));
+                    PutByte((byte)(0xF0 | (int)type));
                     PutByte(tag);
                 }
             }
