@@ -73,7 +73,13 @@ namespace Konata.Msf.Packets
         {
             if (key == null)
                 return svcPayload;
-            return TeaCryptor.Instance.Decrypt(svcPayload, key);
+
+            var decrypt = TeaCryptor.Instance.Decrypt(svcPayload, key);
+
+            if (decrypt == null)
+                throw new Exception("Invalid sso message. Can not decrypt.");
+
+            return decrypt;
         }
 
         public uint GetUin() =>
