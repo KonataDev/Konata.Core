@@ -23,13 +23,13 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                    case Type.ZeroTag:
-                    case Type.Byte:
-                    case Type.Short:
-                    case Type.Int:
-                        return (int)Value;
-                    default:
-                        throw new InvalidCastException();
+                        case Type.ZeroTag:
+                        case Type.Byte:
+                        case Type.Short:
+                        case Type.Int:
+                            return (int)Value;
+                        default:
+                            throw new InvalidCastException();
                     }
                 }
                 set => Value = value;
@@ -41,12 +41,12 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                    case Type.ZeroTag:
-                    case Type.Byte:
-                    case Type.Short:
-                        return (short)Value;
-                    default:
-                        throw new InvalidCastException();
+                        case Type.ZeroTag:
+                        case Type.Byte:
+                        case Type.Short:
+                            return (short)Value;
+                        default:
+                            throw new InvalidCastException();
                     }
                 }
                 set => Value = value;
@@ -58,11 +58,11 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                    case Type.ZeroTag:
-                    case Type.Byte:
-                        return (sbyte)Value;
-                    default:
-                        throw new InvalidCastException();
+                        case Type.ZeroTag:
+                        case Type.Byte:
+                            return (sbyte)Value;
+                        default:
+                            throw new InvalidCastException();
                     }
                 }
                 set => Value = value;

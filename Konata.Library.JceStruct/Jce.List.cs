@@ -30,6 +30,10 @@ namespace Konata.Library.JceStruct
                     {
                         throw new ArgumentException("Invalid input item: Unsupported JCE type.");
                     }
+                    if (value.Type == Type.Null)
+                    {
+                        return;
+                    }
                     list[index] = value;
                 }
             }
@@ -106,14 +110,11 @@ namespace Konata.Library.JceStruct
                 {
                     throw new ArgumentException("Invalid input item: Unsupported JCE type.");
                 }
-                try
+                if (item.Type == Type.Null)
                 {
-                    list.Insert(index, item);
+                    return;
                 }
-                catch
-                {
-                    throw;
-                }
+                list.Insert(index, item);
             }
 
             public void RemoveAt(int index) => list.RemoveAt(index);
@@ -127,6 +128,10 @@ namespace Konata.Library.JceStruct
                 if (item.BaseType > BaseType.MaxValue)
                 {
                     throw new ArgumentException("Invalid input item: Unsupported JCE type.");
+                }
+                if (item.Type == Type.Null)
+                {
+                    return;
                 }
                 list.Add(item);
             }

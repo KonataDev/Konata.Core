@@ -8,7 +8,7 @@ namespace Konata.Library.JceStruct
     {
         public struct SimpleList : IIndexable
         {
-            public Type Type => Type.SimpleList;
+            public Type Type => Value is null ? Type.Null : Type.SimpleList;
 
             public BaseType BaseType => BaseType.ByteArray;
 

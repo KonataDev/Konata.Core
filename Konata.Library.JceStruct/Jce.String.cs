@@ -4,7 +4,7 @@
     {
         public struct String : IObject
         {
-            public Type Type => Value.Length <= byte.MaxValue ? Type.String1 : Type.String4;
+            public Type Type => Value is null ? Type.Null : Value.Length <= byte.MaxValue ? Type.String1 : Type.String4;
 
             public BaseType BaseType => BaseType.String;
 

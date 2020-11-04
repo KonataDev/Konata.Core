@@ -45,6 +45,10 @@ namespace Konata.Library.JceStruct
                     {
                         throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
                     }
+                    if (key.Type == Type.Null || value.Type == Type.Null)
+                    {
+                        return;
+                    }
                     int index = keys.IndexOf(key);
                     if (index >= 0)
                     {
@@ -76,26 +80,26 @@ namespace Konata.Library.JceStruct
                                 path = path.Substring(kvdot + 1);
                                 switch (kv)
                                 {
-                                case 0:
-                                    if (keys[i] is IIndexable key)
-                                    {
-                                        return key[path];
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidCastException();
-                                    }
-                                case 1:
-                                    if (values[i] is IIndexable value)
-                                    {
-                                        return value[path];
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidCastException();
-                                    }
-                                default:
-                                    throw new ArgumentOutOfRangeException();
+                                    case 0:
+                                        if (keys[i] is IIndexable key)
+                                        {
+                                            return key[path];
+                                        }
+                                        else
+                                        {
+                                            throw new InvalidCastException();
+                                        }
+                                    case 1:
+                                        if (values[i] is IIndexable value)
+                                        {
+                                            return value[path];
+                                        }
+                                        else
+                                        {
+                                            throw new InvalidCastException();
+                                        }
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
                                 }
                             }
                             else
@@ -103,12 +107,12 @@ namespace Konata.Library.JceStruct
                                 int kv = int.Parse(path);
                                 switch (kv)
                                 {
-                                case 0:
-                                    return keys[i];
-                                case 1:
-                                    return values[i];
-                                default:
-                                    throw new ArgumentOutOfRangeException();
+                                    case 0:
+                                        return keys[i];
+                                    case 1:
+                                        return values[i];
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
                                 }
                             }
                         }
@@ -163,6 +167,10 @@ namespace Konata.Library.JceStruct
                 if (key.BaseType > BaseType.MaxValue || value.BaseType > BaseType.MaxValue)
                 {
                     throw new ArgumentException("Invalid input key or value: Unsupported JCE type.");
+                }
+                if (key.Type == Type.Null || value.Type == Type.Null)
+                {
+                    return;
                 }
                 if (keys.IndexOf(key) >= 0)
                 {

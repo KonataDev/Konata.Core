@@ -18,7 +18,7 @@
             StructEnd,
             ZeroTag,
             SimpleList,
-            Unknown = byte.MaxValue
+            Null = byte.MaxValue
         }
     }
 }
