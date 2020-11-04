@@ -169,7 +169,8 @@ namespace Konata.Msf
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Unknown message.\n{e.StackTrace}");
+                Console.WriteLine($"Unknown message received.");
+                Console.WriteLine($"{e.Message}\n{e.StackTrace}");
             }
         }
     }

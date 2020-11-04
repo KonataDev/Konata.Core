@@ -1,21 +1,42 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
     {
-        public sealed class List : List<IObject>, IIndexable
+        public sealed class List : IList<IObject>, IIndexable
         {
-            public Type Type
+            public Type Type => Type.List;
+
+            public BaseType BaseType => BaseType.List;
+
+            public int Count => list.Count;
+
+            public bool IsReadOnly => false;
+
+            public IObject this[int index]
             {
-                get
+                get => list[index];
+                set
                 {
-                    return Type.List;
+                    if (value is null)
+                    {
+                        throw new ArgumentNullException("Invalid input item: Contains null object.");
+                    }
+                    if (value.BaseType > BaseType.MaxValue)
+                    {
+                        throw new ArgumentException("Invalid input item: Unsupported JCE type.");
+                    }
+                    if (value.Type == Type.Null)
+                    {
+                        return;
+                    }
+                    list[index] = value;
                 }
             }
-
-            public Type ValueType { get; }
 
             public IObject this[string path]
             {
@@ -38,7 +59,7 @@ namespace Konata.Library.JceStruct
                         }
                         else
                         {
-                            throw new KeyNotFoundException();
+                            throw new IndexOutOfRangeException();
                         }
                     }
                     else
@@ -56,20 +77,86 @@ namespace Konata.Library.JceStruct
                 }
             }
 
-            public List(Type valueType = Type.None) : base()
+            public List(int capacity) => list.Capacity = capacity;
+
+            public List(IEnumerable<IObject> collection = null)
             {
-                ValueType = valueType;
+                if (collection is object)
+                {
+                    foreach (var item in collection)
+                    {
+                        if (item is null)
+                        {
+                            throw new ArgumentNullException("Invalid input item: Contains null object.");
+                        }
+                        if (item.BaseType > BaseType.MaxValue)
+                        {
+                            throw new ArgumentException("Invalid input item: Unsupported JCE type.");
+                        }
+                    }
+                    list.AddRange(collection);
+                }
             }
 
-            public List(Type valueType, int count) : base(count)
+            public int IndexOf(IObject item) => list.IndexOf(item);
+
+            public void Insert(int index, IObject item)
             {
-                ValueType = valueType;
+                if (item is null)
+                {
+                    throw new ArgumentNullException("Invalid input item: object is null.");
+                }
+                if (item.BaseType > BaseType.MaxValue)
+                {
+                    throw new ArgumentException("Invalid input item: Unsupported JCE type.");
+                }
+                if (item.Type == Type.Null)
+                {
+                    return;
+                }
+                list.Insert(index, item);
             }
 
-            public List(Type valueType, IEnumerable<IObject> list) : base(list)
+            public void RemoveAt(int index) => list.RemoveAt(index);
+
+            public void Add(IObject item)
             {
-                ValueType = valueType;
+                if (item is null)
+                {
+                    throw new ArgumentNullException("Invalid input item: object is null.");
+                }
+                if (item.BaseType > BaseType.MaxValue)
+                {
+                    throw new ArgumentException("Invalid input item: Unsupported JCE type.");
+                }
+                if (item.Type == Type.Null)
+                {
+                    return;
+                }
+                list.Add(item);
             }
+
+            public void Clear() => list.Clear();
+
+            public bool Contains(IObject item) => list.Contains(item);
+
+            public void CopyTo(IObject[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
+
+            public bool Remove(IObject item) => list.Remove(item);
+
+            public IEnumerator<IObject> GetEnumerator() => list.GetEnumerator();
+
+            public override bool Equals(object obj) =>
+                obj is List other &&
+                Enumerable.SequenceEqual(list, other.list);
+
+            public static implicit operator List<IObject>(List value) => new List<IObject>(value);
+
+            public static implicit operator List(List<IObject> value) => new List(value);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            private readonly List<IObject> list = new List<IObject>();
         }
     }
 }

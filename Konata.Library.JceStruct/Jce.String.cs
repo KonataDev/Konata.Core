@@ -4,30 +4,23 @@
     {
         public struct String : IObject
         {
-            public Type Type
-            {
-                get
-                {
-                    return /*Value == null || Value.Length == 0 ? Type.ZeroTag : */Value.Length <= sbyte.MaxValue ? Type.String1 : Type.String4;
-                }
-            }
+            public Type Type => Value is null ? Type.Null : Value.Length <= byte.MaxValue ? Type.String1 : Type.String4;
+
+            public BaseType BaseType => BaseType.String;
 
             public string Value { get; set; }
 
-            public String(string value)
-            {
-                Value = value;
-            }
+            public String(string value) => Value = value;
 
-            public static implicit operator string(String value)
-            {
-                return value.Value;
-            }
+            public override string ToString() => Value;
 
-            public static implicit operator String(string value)
-            {
-                return new String(value);
-            }
+            public override bool Equals(object obj) =>
+                obj is String other &&
+                Value == other.Value;
+
+            public static explicit operator string(String value) => value.Value;
+
+            public static explicit operator String(string value) => new String(value);
         }
     }
 }

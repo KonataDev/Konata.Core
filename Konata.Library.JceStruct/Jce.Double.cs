@@ -4,30 +4,21 @@
     {
         public struct Double : IObject
         {
-            public Type Type
-            {
-                get
-                {
-                    return Value == 0 ? Type.ZeroTag : Type.Double;
-                }
-            }
+            public Type Type => Value == 0 ? Type.ZeroTag : Type.Double;
+
+            public BaseType BaseType => BaseType.Double;
 
             public double Value { get; set; }
 
-            public Double(double value)
-            {
-                Value = value;
-            }
+            public Double(double value) => Value = value;
 
-            public static implicit operator double(Double value)
-            {
-                return value.Value;
-            }
+            public override string ToString() => Value.ToString();
 
-            public static implicit operator Double(double value)
-            {
-                return new Double(value);
-            }
+            public override bool Equals(object obj) => obj is Double other && Value.Equals(other.Value);
+
+            public static implicit operator double(Double value) => value.Value;
+
+            public static implicit operator Double(double value) => new Double(value);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using Konata.Library.JceStruct;
 using Konata.Msf.Packets.Wup;
+using Konata.Library.JceStruct;
 
 namespace Konata.Msf.Packets.SvcReq
 {
@@ -53,101 +53,57 @@ namespace Konata.Msf.Packets.SvcReq
 
     public class SvcReqRegister : UniPacket
     {
-        //public SvcReqRegister(byte packetType, ushort messageType,
-        //    ushort requestId, ushort oldRespIret, RegisterInfo info)
+        public SvcReqRegister(RegisterInfo info)
 
-        //    : base("PushService", "SvcReqRegister", packetType, messageType,
-        //          requestId, oldRespIret, new XSvcRegister(info))
-        //{
+        : base("PushService", "SvcReqRegister", 0x00, 0x00, 0x00, 0x00,
+            (out Jce.Struct w) => w = new Jce.Struct
+            {
+                [0] = (Jce.Number)info.uin,
+                [1] = (Jce.Number)info.bid,
+                [2] = (Jce.Number)info.connType,
+                [3] = (Jce.String)info.other,
+                [4] = (Jce.Number)info.status,
+                [5] = (Jce.Number)info.onlinePush,
+                [6] = (Jce.Number)info.isOnline,
+                [7] = (Jce.Number)info.isShowOnline,
+                [8] = (Jce.Number)info.kikPC,
+                [9] = (Jce.Number)info.kikWeak,
+                [10] = (Jce.Number)info.timeStamp,
+                [11] = (Jce.Number)info.osVersion,
+                [12] = (Jce.Number)info.netType,
 
-        //}
+                [13] = (Jce.String)info.buildVer,
+                [14] = (Jce.Number)info.regType,
+                [15] = (Jce.SimpleList)info.devParam,
+                [16] = (Jce.SimpleList)info.guid,
+                [17] = (Jce.Number)info.localeID,
+                [18] = (Jce.Number)info.slientPush,
 
-        //public class XSvcRegister : UniPacketBodyV3
-        //{
-        //    public XSvcRegister(RegisterInfo info)
-        //        : base("SvcReqRegister", new Func<JceTreeRoot>(() =>
-        //        {
-        //            return new JceTreeRoot()
-        //            .AddStruct(0, (JceTreeRoot s) =>
-        //            {
-        //                s.AddLeafNumber(0, info.uin);
-        //                s.AddLeafNumber(1, info.bid);
-        //                s.AddLeafNumber(2, info.connType);
-        //                s.AddLeafString(3, info.other);
-        //                s.AddLeafNumber(4, info.status);
-        //                s.AddLeafNumber(5, info.onlinePush);
-        //                s.AddLeafNumber(6, info.isOnline);
-        //                s.AddLeafNumber(7, info.isShowOnline);
-        //                s.AddLeafNumber(8, info.kikPC);
-        //                s.AddLeafNumber(9, info.kikWeak);
-        //                s.AddLeafNumber(10, info.timeStamp);
-        //                s.AddLeafNumber(11, info.osVersion);
-        //                s.AddLeafNumber(12, info.netType);
+                [19] = (Jce.String)info.devName,
+                [20] = (Jce.String)info.devType,
+                [21] = (Jce.String)info.osVer,
 
-        //                if (info.buildVer != null)
-        //                    s.AddLeafString(13, info.buildVer);
+                [22] = (Jce.Number)info.openPush,
+                [23] = (Jce.Number)info.largeSeq,
+                [24] = (Jce.Number)info.lastWatchStartTime,
 
-        //                s.AddLeafNumber(14, info.regType);
+                [26] = (Jce.Number)info.oldSSOIp,
+                [27] = (Jce.Number)info.newSSOIp,
+                [28] = (Jce.String)info.channelNo,
+                [29] = (Jce.Number)info.cpId,
+                [30] = (Jce.String)info.vendorName,
 
-        //                if (info.devParam != null)
-        //                    s.AddLeafBytes(15, info.devParam);
+                [31] = (Jce.String)info.vendorOSName,
+                [32] = (Jce.String)info.osIdfa,
+                [33] = (Jce.SimpleList)info.cmd0x769Reqbody,
+                [34] = (Jce.Number)info.isSetStatus,
+                [35] = (Jce.SimpleList)info.serverBuf,
+                [36] = (Jce.Number)info.setMute,
+                [38] = (Jce.Number)info.extOnlineStatus,
+                [39] = (Jce.Number)info.batteryStatus,
+            })
+        {
 
-        //                if (info.guid != null)
-        //                    s.AddLeafBytes(16, info.guid);
-
-        //                s.AddLeafNumber(17, info.localeID);
-        //                s.AddLeafNumber(18, info.slientPush);
-
-        //                if (info.devName != null)
-        //                    s.AddLeafString(19, info.devName);
-
-        //                if (info.devType != null)
-        //                    s.AddLeafString(20, info.devType);
-
-        //                if (info.osVer != null)
-        //                    s.AddLeafString(21, info.osVer);
-
-        //                s.AddLeafNumber(22, info.openPush);
-        //                s.AddLeafNumber(23, info.largeSeq);
-        //                s.AddLeafNumber(24, info.lastWatchStartTime);
-
-        //                // if (info.bindUin != null)
-        //                //    leaf.Write(25, info.bindUin);
-
-        //                s.AddLeafNumber(26, info.oldSSOIp);
-        //                s.AddLeafNumber(27, info.newSSOIp);
-
-        //                if (info.channelNo != null)
-        //                    s.AddLeafString(28, info.channelNo);
-
-        //                s.AddLeafNumber(29, info.cpId);
-
-        //                if (info.vendorName != null)
-        //                    s.AddLeafString(30, info.vendorName);
-
-        //                if (info.vendorOSName != null)
-        //                    s.AddLeafString(31, info.vendorOSName);
-
-        //                if (info.osIdfa != null)
-        //                    s.AddLeafString(32, info.osIdfa);
-
-        //                if (info.cmd0x769Reqbody != null)
-        //                    s.AddLeafBytes(33, info.cmd0x769Reqbody);
-
-        //                s.AddLeafNumber(34, info.isSetStatus);
-
-        //                if (info.serverBuf != null)
-        //                    s.AddLeafBytes(35, info.serverBuf);
-
-        //                s.AddLeafNumber(36, info.setMute);
-        //                s.AddLeafNumber(38, info.extOnlineStatus);
-        //                s.AddLeafNumber(39, info.batteryStatus);
-        //            });
-
-        //        })())
-        //    {
-
-        //    }
-        //}
+        }
     }
 }

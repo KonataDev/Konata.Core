@@ -8,51 +8,54 @@ namespace Konata.Test.Tests
     {
         public override bool Run()
         {
-            //var root = new JceTreeRoot();
-            //{
-            //    root.AddLeafNumber(1, 2);
-            //    root.AddLeafNumber(2, 0);
-            //    root.AddLeafNumber(3, 0);
-            //    root.AddLeafNumber(4, 0);
-            //    root.AddLeafString(5, "PushService");
-            //    root.AddLeafString(6, "SvcReqRegister");
+            var root = new Jce.Struct
+            {
+                [1] = (Jce.Number)2,
+                [2] = (Jce.Number)0,
+                [3] = (Jce.Number)0,
+                [4] = (Jce.Number)0,
+                [5] = (Jce.String)"PushService",
+                [6] = (Jce.String)"SvcReqRegister",
 
-            //    root.AddTree(7, (JceTreeRoot root2) =>
-            //    {
-            //        root2.AddLeafString(0, "Test");
-            //        root2.AddLeafString(1, "Test");
-            //        root2.AddLeafString(2, "Test");
-            //        root2.AddLeafString(3, "Test");
-            //        root2.AddLeafString(4, "Test");
-            //        root2.AddLeafString(5, "Test");
-            //        root2.AddLeafNumber(6, 2333);
+                [7] = (Jce.Struct)new Jce.Struct
+                {
+                    [0] = (Jce.String)"Test",
+                    [1] = (Jce.String)"Test",
+                    [2] = (Jce.String)"Test",
+                    [3] = (Jce.String)"Test",
+                    [4] = (Jce.String)"Test",
+                    [5] = (Jce.String)"Test",
+                    [6] = (Jce.Number)2333,
 
-            //        root2.AddTree(7, (JceTreeRoot root3) =>
-            //        {
-            //            root3.AddLeafNumber(0, 2333);
-            //            root3.AddLeafMap(1, new Dictionary<string, int>
-            //            {
-            //                ["test"] = 233,
-            //                ["=w="] = 234,
-            //                ["dict_test"] = 235
-            //            });
+                    [7] = (Jce.Struct)new Jce.Struct
+                    {
+                        [0] = (Jce.Number)2333,
 
-            //            root3.AddStruct(2, (JceTreeRoot s) =>
-            //            {
-            //                s.AddLeafNumber(0, 0);
-            //                s.AddLeafNumber(1, 0);
-            //                s.AddLeafNumber(2, 0);
-            //                s.AddLeafNumber(3, 0);
-            //            });
+                        [1] = (Jce.Map)new Jce.Map
+                        {
+                            [(Jce.String)"test"] = (Jce.Number)233,
+                            [(Jce.String)"=w="] = (Jce.Number)234,
+                            [(Jce.String)"dict_test"] = (Jce.Number)235
+                        },
 
-            //            root3.AddLeafBytes(3, new byte[] { 0x00, 0x01, 0x02 });
+                        [2] = (Jce.Struct)new Jce.Struct
+                        {
+                            [0] = (Jce.Number)0,
+                            [1] = (Jce.Number)0,
+                            [2] = (Jce.Number)0,
+                            [3] = (Jce.Number)0,
+                        },
 
-            //        });
-            //    });
-            //}
+                        [3] = (Jce.SimpleList)new Jce.SimpleList(new byte[]
+                        {
+                            0x00, 0x01, 0x02
+                        })
+                    }
+                }
+            };
 
-            //var data = root.Serialize().GetBytes();
-            //Print(data);
+            var data = Jce.Serialize(root);
+            Print(data);
 
             //var deroot = new JceTreeRoot(data);
             //{
