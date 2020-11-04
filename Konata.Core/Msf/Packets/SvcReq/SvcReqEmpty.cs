@@ -6,28 +6,14 @@ namespace Konata.Msf.Packets.SvcReq
 {
     public class SvcReqEmpty : UniPacket
     {
-        //public SvcReqEmpty()
-        //    : base("PushService", "SvcReqEmpty", 0, 0, 0, 0,
-        //          new XSvcEmpty())
-        //{
+        public SvcReqEmpty()
+            : base("PushService", "SvcReqEmpty", 0x00, 0x00, 0x00, 0x00,
+                  (out Jce.Struct w) => w = new Jce.Struct
+                  {
+                      [0] = (Jce.String)"This is an empty request."
+                  })
+        {
 
-        //}
-
-        //public class XSvcEmpty : UniPacketBodyV3
-        //{
-        //    public XSvcEmpty()
-        //        : base("SvcReqEmpty", new Func<JceTreeRoot>(() =>
-        //        {
-        //            return new JceTreeRoot()
-        //            .AddStruct(0, (JceTreeRoot leaf) =>
-        //            {
-        //                leaf.AddLeafString(0, "This is an empty request.");
-        //            });
-
-        //        })())
-        //    {
-
-        //    }
-        //}
+        }
     }
 }
