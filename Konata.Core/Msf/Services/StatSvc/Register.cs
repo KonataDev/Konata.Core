@@ -1,4 +1,6 @@
 ﻿using System;
+using Konata.Msf.Packets;
+using Konata.Msf.Packets.Sso;
 using Konata.Msf.Packets.SvcReq;
 
 namespace Konata.Msf.Services.StatSvc
@@ -15,7 +17,7 @@ namespace Konata.Msf.Services.StatSvc
         public override bool OnRun(Core core, string method, params object[] args)
         {
             if (method != "")
-                throw new Exception("???");
+                return false;
 
             return Request_Register(core);
         }
@@ -60,7 +62,7 @@ namespace Konata.Msf.Services.StatSvc
                 openPush = 1,
                 largeSeq = 99,
                 oldSSOIp = 0,
-                newSSOIp = 2081292189,
+                newSSOIp = 0,
                 channelNo = "",
                 cpId = 0,
                 vendorName = DeviceInfo.System.Manufacturer,
@@ -78,11 +80,15 @@ namespace Konata.Msf.Services.StatSvc
                 batteryStatus = 0
             };
 
-            //var request = new SvcReqRegister(0, 0, 0, 0, info);
-            //var sequence = core.SsoMan.GetNewSequence();
-            //core.SsoMan.PostMessage(this, request, sequence);
+            var ssoSeq = core.SsoMan.GetNewSequence();
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            return true;
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession,
+                core.SigInfo.TgtToken, new SvcReqRegister(info));
+
+            return core.SsoMan.PostMessage(
+                RequestFlag.D2Authentication, ssoMessage,
+                core.SigInfo.D2Token, core.SigInfo.D2Key);
         }
     }
 }
