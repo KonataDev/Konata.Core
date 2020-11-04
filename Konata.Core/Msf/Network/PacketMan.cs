@@ -85,13 +85,10 @@ namespace Konata.Msf.Network
 
         public bool Emit(ServiceMessage message)
         {
-            var packet = message.BuildToService();
-            var packetLen = packet.Length;
-
             var sendBuffer = new ByteBuffer();
             {
-                sendBuffer.PutUintBE(packetLen);
-                sendBuffer.PutByteBuffer(packet);
+                sendBuffer.PutByteBuffer(message.BuildToService(),
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
             }
             return OnSend(sendBuffer.GetBytes());
         }
