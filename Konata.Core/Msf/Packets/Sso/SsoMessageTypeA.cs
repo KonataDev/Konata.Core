@@ -38,7 +38,7 @@ namespace Konata.Msf.Packets.Sso
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(unknownString,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes1,
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
