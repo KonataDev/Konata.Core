@@ -33,7 +33,7 @@ namespace Konata.Msf.Packets
             switch (reqFlag)
             {
                 case RequestFlag.DefaultEmpty:
-                    keyData = new byte[0];
+                    keyData = null;
                     headExtra = new byte[0];
                     break;
                 case RequestFlag.D2Authentication:
@@ -108,8 +108,11 @@ namespace Konata.Msf.Packets
                 toService.PutString(headUin,
                     ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-                toService.PutEncryptedBytes(svcPayload,
-                    TeaCryptor.Instance, keyData);
+                if (keyData == null)
+                    toService.PutBytes(svcPayload);
+                else
+                    toService.PutEncryptedBytes(svcPayload,
+                        TeaCryptor.Instance, keyData);
             }
             return toService;
         }
