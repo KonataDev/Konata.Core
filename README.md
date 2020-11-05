@@ -37,6 +37,13 @@
  - [ ] ProfileService.Pb.ReqSystemMsgNew.Group
  - [ ] ProfileService.Pb.ReqSystemMsgAction.Friend
  - [ ] ProfileService.Pb.ReqSystemMsgAction.Group
+ - [ ] friendlist.getFriendGroupList
+ - [x] friendlist.GetTroopListReqV2
+ - [ ] friendlist.GetTroopMemberListReq
+ - [ ] friendlist.getUserAddFriendSetting
+ - [ ] ~friendlist.addFriend~
+ - [ ] ~friendlist.delFriend~
+ - [x] friendlist.ModifyGroupCardReq
  - [x] OnlinePush.PbPushGroupMsg
  - [ ] OnlinePush.PbPushDisMsg
  - [ ] OnlinePush.ReqPush

@@ -333,6 +333,7 @@ namespace Konata.Msf.Services.Wtlogin
                     core.SigInfo.WtSessionTicketKey = wtSessionTicketKey;
                     core.SigInfo.GtKey = gtKey;
                     core.SigInfo.StKey = stKey;
+                    core.SigInfo.UinName = userNickname;
 
                     core.SsoMan.DestroyServiceSequence(name);
                     core.PostSystemEvent(EventType.WtLoginOK);

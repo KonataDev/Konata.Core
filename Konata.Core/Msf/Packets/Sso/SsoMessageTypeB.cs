@@ -10,20 +10,27 @@ namespace Konata.Msf.Packets.Sso
 
             : base(sequence, command, session, RequestPktType.TypeB, (ByteBuffer w) =>
             {
-                byte[] unknownBytes0 = { };
-                byte[] sessionBytes = ByteConverter.UInt32ToBytes(session, Endian.Big);
+                var head = new ByteBuffer();
+                {
+                    byte[] unknownBytes0 = { };
+                    byte[] sessionBytes = ByteConverter.UInt32ToBytes(session, Endian.Big);
 
-                w.PutString(command,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    head.PutString(command,
+                       ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-                w.PutBytes(sessionBytes,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    head.PutBytes(sessionBytes,
+                       ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-                w.PutBytes(unknownBytes0,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    head.PutBytes(unknownBytes0,
+                       ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
+                    head.PutByteBuffer(payload,
+                       ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                }
+                w.PutByteBuffer(head,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 w.PutByteBuffer(payload,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
             })
         {
 

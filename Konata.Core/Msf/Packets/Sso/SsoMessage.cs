@@ -76,7 +76,8 @@ namespace Konata.Msf.Packets.Sso
                         throw new Exception("Invalid sso message.");
                 }
 
-                r.TakeAllBytes(out var bytes);
+                r.TakeBytes(out var bytes, 
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 {
                     ssoPayload = new ByteBuffer(bytes);
                 }

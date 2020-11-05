@@ -161,9 +161,9 @@ namespace Konata.Msf
                 payloadData = fromService.GetPayload(selectKey);
                 var ssoMessage = new SsoMessage(payloadData, pktType);
 
-                Console.WriteLine($"  [ssoMessage] ssoSeq => {ssoMessage.GetSequence()}");
-                Console.WriteLine($"  [ssoMessage] ssoSession => {ssoMessage.GetSession()}");
-                Console.WriteLine($"  [ssoMessage] ssoCommand => {ssoMessage.GetCommand()}");
+                Console.WriteLine($"  [SsoMessage] ssoSeq => {ssoMessage.GetSequence()}");
+                Console.WriteLine($"  [SsoMessage] ssoSession => {ssoMessage.GetSession()}");
+                Console.WriteLine($"  [SsoMessage] ssoCommand => {ssoMessage.GetCommand()}");
 
                 Service.Handle(msfCore, ssoMessage.GetCommand(), ssoMessage.GetPayload());
             }

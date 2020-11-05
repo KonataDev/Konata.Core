@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+
+#pragma warning disable CS0659 
 
 namespace Konata.Library.JceStruct
 {
@@ -160,3 +162,5 @@ namespace Konata.Library.JceStruct
         }
     }
 }
+
+#pragma warning restore CS0659 

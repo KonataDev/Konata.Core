@@ -23,31 +23,31 @@ namespace Konata.Msf.Packets.Sso
                     head.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
 
                     head.PutBytes(tgtoken ?? new byte[0],
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(command,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(sessionBytes,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(DeviceInfo.System.Imei,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes0,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(unknownString,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint16);
+                        ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes1,
-                        ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 }
 
                 w.PutByteBuffer(head,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 w.PutByteBuffer(payload,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
             })
         {
 

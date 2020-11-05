@@ -13,6 +13,8 @@ namespace Konata.Msf
     {
         public uint Uin { get; private set; }
 
+        public string UinName { get; set; }
+
         public byte[] PasswordMd5 { get; private set; }
 
         public byte[] SyncCookie { get; set; }

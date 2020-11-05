@@ -1,5 +1,7 @@
 ﻿using System;
 
+#pragma warning disable CS0659 
+
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
@@ -88,3 +90,5 @@ namespace Konata.Library.JceStruct
         }
     }
 }
+
+#pragma warning restore CS0659 

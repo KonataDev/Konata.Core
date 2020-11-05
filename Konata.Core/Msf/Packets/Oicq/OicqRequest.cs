@@ -75,8 +75,6 @@ namespace Konata.Msf.Packets.Oicq
 
         public OicqRequest(byte[] data, byte[] shareKey) : base(data)
         {
-            EatBytes(4);
-
             EatBytes(1);
             {
                 EatBytes(2);

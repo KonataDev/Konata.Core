@@ -1,5 +1,8 @@
 ﻿using System;
-using Konata.Msf.Packets.SvcReq;
+using Konata.Msf.Packets;
+using Konata.Msf.Packets.Sso;
+using Konata.Msf.Packets.SvcRequest;
+using Konata.Msf.Packets.SvcResponse;
 
 namespace Konata.Msf.Services.StatSvc
 {
@@ -14,22 +17,21 @@ namespace Konata.Msf.Services.StatSvc
 
         public override bool OnRun(Core core, string method, params object[] args)
         {
-            if (method != "")
-                throw new Exception("???");
+            if (args.Length != 0)
+                return false;
 
             return Request_Register(core);
         }
 
         public override bool OnHandle(Core core, params object[] args)
         {
-            if (args == null || args.Length == 0)
+            if (args == null)
                 return false;
+            if (args.Length != 1)
+                return false;
+            if (args[0] is byte[] payload)
+                return Handle_Register(core, new SvcRspRegister(payload));
 
-            return Handle_Register(core);
-        }
-
-        private bool Handle_Register(Core core)
-        {
             return false;
         }
 
@@ -60,7 +62,7 @@ namespace Konata.Msf.Services.StatSvc
                 openPush = 1,
                 largeSeq = 99,
                 oldSSOIp = 0,
-                newSSOIp = 2081292189,
+                newSSOIp = 0,
                 channelNo = "",
                 cpId = 0,
                 vendorName = DeviceInfo.System.Manufacturer,
@@ -78,11 +80,30 @@ namespace Konata.Msf.Services.StatSvc
                 batteryStatus = 0
             };
 
-            //var request = new SvcReqRegister(0, 0, 0, 0, info);
-            //var sequence = core.SsoMan.GetNewSequence();
-            //core.SsoMan.PostMessage(this, request, sequence);
+            var ssoSeq = core.SsoMan.GetNewSequence();
+            var ssoSession = core.SsoMan.GetSsoSession();
 
-            return true;
+            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession,
+                core.SigInfo.TgtToken, new SvcReqRegister(info));
+
+            return core.SsoMan.PostMessage(
+                RequestFlag.D2Authentication, ssoMessage,
+                core.SigInfo.D2Token, core.SigInfo.D2Key);
+        }
+
+        private bool Handle_Register(Core core, SvcRspRegister response)
+        {
+            if (response.status)
+            {
+                Console.WriteLine($"Account {core.SigInfo.UinName }[{core.SigInfo.Uin}] now online. ");
+                Console.WriteLine($" Login IP Address {response.ipAddress}");
+                core.PostSystemEvent(EventType.StatSvcOnline);
+
+                return true;
+            }
+
+            core.PostSystemEvent(EventType.StatSvcOffline);
+            return false;
         }
     }
 }

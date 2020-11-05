@@ -149,6 +149,14 @@ namespace Konata.Msf
             string specialTitle, uint? expiredTime) =>
             Service.Run(this, "OidbSvc.0x8fc_2", groupUin, memberUin, specialTitle, expiredTime);
 
+        /// <summary>
+        /// 拉取好友列表
+        /// </summary>
+        /// <param name="selfUin"></param>
+        /// <returns></returns>
+        public bool GetTroopListReqV2(uint selfUin) =>
+            Service.Run(this, "friendlist.GetTroopListReqV2", selfUin);
+
         #endregion
 
         #region Event Methods
