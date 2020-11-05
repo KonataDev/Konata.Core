@@ -2,7 +2,7 @@
 using Konata.Msf.Packets.Wup;
 using Konata.Library.JceStruct;
 
-namespace Konata.Msf.Packets.SvcReq
+namespace Konata.Msf.Packets.SvcRequest
 {
     public class SvcReqEmpty : UniPacket
     {
