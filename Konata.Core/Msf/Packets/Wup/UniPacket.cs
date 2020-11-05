@@ -18,15 +18,15 @@ namespace Konata.Msf.Packets.Wup
         public readonly string packageFuncName;
         public readonly byte packagePacketType;
         public readonly ushort packageMessageType;
-        public readonly ushort packageRequestId;
+        public readonly uint packageRequestId;
         public readonly ushort packageOldRespIret;
         public readonly ushort packageTimeout;
         public readonly Dictionary<string, string> packageContext;
         public readonly Dictionary<string, string> packageStatus;
 
         public UniPacket(string servantName, string funcName,
-            byte packetType, ushort messageType, ushort requestId,
-            ushort oldRespIret, UniPacketPayloadWriter writer)
+            byte packetType, ushort messageType, uint requestId,
+            UniPacketPayloadWriter writer)
         {
             packageVersion = 0x03;
             packageFuncName = funcName;
@@ -34,7 +34,6 @@ namespace Konata.Msf.Packets.Wup
             packagePacketType = packetType;
             packageMessageType = messageType;
             packageRequestId = requestId;
-            packageOldRespIret = oldRespIret;
 
             packagePayload = new Jce.Struct();
             {
@@ -65,7 +64,7 @@ namespace Konata.Msf.Packets.Wup
 
         public UniPacket(string servantName, string funcName, string servantNameV2,
             byte packetType, ushort messageType, ushort requestId,
-            ushort oldRespIret, UniPacketPayloadWriter writer)
+            UniPacketPayloadWriter writer)
         {
             packageVersion = 0x02;
             packageFuncName = funcName;
@@ -74,7 +73,6 @@ namespace Konata.Msf.Packets.Wup
             packagePacketType = packetType;
             packageMessageType = messageType;
             packageRequestId = requestId;
-            packageOldRespIret = oldRespIret;
 
             packagePayload = new Jce.Struct();
             {
@@ -126,7 +124,7 @@ namespace Konata.Msf.Packets.Wup
                     case 0x03:
                         packagePayload = (Jce.Struct)root["7.0.0.1"];
                         break;
-                    
+
                     // case 0x01:
                     default:
                         throw new Exception("Unsupported unipacket type.");
