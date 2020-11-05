@@ -1,7 +1,8 @@
 ﻿using System;
 using Konata.Msf.Packets;
 using Konata.Msf.Packets.Sso;
-using Konata.Msf.Packets.SvcReq;
+using Konata.Msf.Packets.SvcRequest;
+using Konata.Msf.Packets.SvcResponse;
 
 namespace Konata.Msf.Services.StatSvc
 {
@@ -16,7 +17,7 @@ namespace Konata.Msf.Services.StatSvc
 
         public override bool OnRun(Core core, string method, params object[] args)
         {
-            if (method != "")
+            if (args.Length != 0)
                 return false;
 
             return Request_Register(core);
@@ -24,14 +25,13 @@ namespace Konata.Msf.Services.StatSvc
 
         public override bool OnHandle(Core core, params object[] args)
         {
-            if (args == null || args.Length == 0)
+            if (args == null)
                 return false;
+            if (args.Length != 1)
+                return false;
+            if (args[0] is byte[] payload)
+                return Handle_Register(core, new SvcRspRegister(payload));
 
-            return Handle_Register(core);
-        }
-
-        private bool Handle_Register(Core core)
-        {
             return false;
         }
 
@@ -89,6 +89,21 @@ namespace Konata.Msf.Services.StatSvc
             return core.SsoMan.PostMessage(
                 RequestFlag.D2Authentication, ssoMessage,
                 core.SigInfo.D2Token, core.SigInfo.D2Key);
+        }
+
+        private bool Handle_Register(Core core, SvcRspRegister response)
+        {
+            if (response.status)
+            {
+                Console.WriteLine($"Account {core.SigInfo.UinName }[{core.SigInfo.Uin}] now online. ");
+                Console.WriteLine($" Login IP Address {response.ipAddress}");
+                core.PostSystemEvent(EventType.StatSvcOnline);
+
+                return true;
+            }
+
+            core.PostSystemEvent(EventType.StatSvcOffline);
+            return false;
         }
     }
 }

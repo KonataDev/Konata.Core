@@ -19,6 +19,8 @@ namespace Konata.Msf
         WtLoginVerifyImageCaptcha,
         WtLoginVerifySmsCaptcha,
         WtLoginSendSms,
+        StatSvcOnline,
+        StatSvcOffline,
         HeartBeat,
         PbPushNotify,
         PbGetMsg,
@@ -27,7 +29,6 @@ namespace Konata.Msf
         PromoteGroupAdmin,
         MuteGroupMember,
         GiveGroupMemberSpecialTitle,
-
 
         BotStart = 0x2000,
         LoginFailed,
