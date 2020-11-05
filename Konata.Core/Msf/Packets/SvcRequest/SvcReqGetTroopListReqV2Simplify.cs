@@ -8,8 +8,9 @@ namespace Konata.Msf.Packets.SvcRequest
     {
         public SvcReqGetTroopListReqV2Simplify(uint selfUin)
 
-            : base("mqq.IMService.FriendListServiceServantObj",
-                  "GetTroopListReqV2Simplify", 0x00, 0x00, 117456266,
+            : base(0x03, "mqq.IMService.FriendListServiceServantObj",
+                  "GetTroopListReqV2Simplify", "GetTroopListReqV2Simplify",
+                  0x00, 0x00, 117456266,
                   (out Jce.Struct w) => w = new Jce.Struct
                   {
                       [0] = (Jce.Number)selfUin,
