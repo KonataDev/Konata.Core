@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Msf.Packets.SvcReq;
+using Konata.Msf.Packets.SvcRequest;
 
 namespace Konata.Test.Tests
 {
