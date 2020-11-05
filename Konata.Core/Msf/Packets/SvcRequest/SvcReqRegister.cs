@@ -55,7 +55,8 @@ namespace Konata.Msf.Packets.SvcRequest
     {
         public SvcReqRegister(RegisterInfo info)
 
-            : base("PushService", "SvcReqRegister", 0x00, 0x00, 0x00,
+            : base(0x03, "PushService", "SvcReqRegister",
+                  "SvcReqRegister", 0x00, 0x00, 0x00,
                 (out Jce.Struct w) => w = new Jce.Struct
                 {
                     [0] = (Jce.Number)info.uin,
