@@ -233,9 +233,9 @@ namespace Konata
         {
             if (e.args != null)
                 return;
-            
+
             // <TODO> GetFriendList
-            // <TODO> GetGroupList
+            msfCore.GetTroopListReqV2(msfCore.SigInfo.Uin);
             return;
         }
 
