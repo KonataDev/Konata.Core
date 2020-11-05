@@ -111,6 +111,7 @@ namespace Konata
                 case EventType.PromoteGroupAdmin: OnPromoteGroupAdmin(e); break;
                 case EventType.MuteGroupMember: OnMuteGroupMember(e); break;
                 case EventType.GiveGroupMemberSpecialTitle: OnGiveGroupMemberSpecialTitle(e); break;
+                case EventType.StatSvcOnline: OnStatSvcOnline(e); break;
             }
         }
 
@@ -225,6 +226,16 @@ namespace Konata
                 msfCore.OidbSvc_0x8fc_2(groupUin, memberUin, specialTitle,
                     e.args.Length == 4 ? ((uint?)e.args[3]) : null);
 
+            return;
+        }
+
+        private void OnStatSvcOnline(Event e)
+        {
+            if (e.args != null)
+                return;
+            
+            // <TODO> GetFriendList
+            // <TODO> GetGroupList
             return;
         }
 
