@@ -50,20 +50,20 @@ namespace Konata.Msf.Packets.Wup
                 [5] = (Jce.String)packageServantName,
                 [6] = (Jce.String)packageFuncName,
 
-                [7] = pktVersion == 0x03
+                [7] = pktVersion == 0x03 ?
 
-                ? (Jce.Map)new Jce.Map()
+                new Jce.Map()
                 {
-                    [(Jce.String)packageSubFuncName] = (Jce.Struct)packagePayload,
-                }
+                    [(Jce.String)packageSubFuncName] = packagePayload.Serialize(),
+                }.Serialize() :
 
-                : (Jce.Map)new Jce.Map()
+                new Jce.Map()
                 {
                     [(Jce.String)packageFuncName] = (Jce.Map)new Jce.Map
                     {
-                        [(Jce.String)packageSubFuncName] = (Jce.Struct)packagePayload
+                        [(Jce.String)packageSubFuncName] = packagePayload.Serialize()
                     }
-                },
+                }.Serialize(),
 
                 [8] = (Jce.Number)packageTimeout,
                 [9] = (Jce.Map)new Jce.Map(),
@@ -77,21 +77,21 @@ namespace Konata.Msf.Packets.Wup
         {
             var root = Jce.Deserialize(payload);
             {
-                packageVersion = (ushort)(Jce.Number)root["1"];
-                packagePacketType = (byte)(Jce.Number)root["2"];
-                packageMessageType = (ushort)(Jce.Number)root["3"];
-                packageRequestId = (ushort)(Jce.Number)root["4"];
-                packageServantName = (string)(Jce.String)root["5"];
-                packageFuncName = (string)(Jce.String)root["6"];
+                packageVersion = (ushort)root["1"].Number.Value;
+                packagePacketType = (byte)root["2"].Number.Value;
+                packageMessageType = (ushort)root["3"].Number.Value;
+                packageRequestId = (ushort)root["4"].Number.Value;
+                packageServantName = root["5"].String.Value;
+                packageFuncName = root["6"].String.Value;
 
                 switch (packageVersion)
                 {
                     case 0x02:
-                        packageSubFuncName = (string)(Jce.String)root["7.0.0.1.0.0"];
-                        packagePayload = (Jce.Struct)(Jce.SimpleList)root["7.0.0.1.0.1"];
+                        packageSubFuncName = root["7.0.0.1.0.0"].String.Value;
+                        packagePayload = root["7.0.0.1.0.1"].Struct;
                         break;
                     case 0x03:
-                        packagePayload = (Jce.Struct)root["7.0.0.1"];
+                        packagePayload = root["7.0.0.1"].Struct;
                         break;
 
                     // case 0x01:
