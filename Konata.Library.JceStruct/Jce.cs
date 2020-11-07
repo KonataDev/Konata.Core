@@ -6,6 +6,11 @@ namespace Konata.Library.JceStruct
 {
     public static partial class Jce
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jce"></param>
+        /// <returns></returns>
         public static byte[] Serialize(Struct jce)
         {
             Buffer buffer = new Buffer();
@@ -19,39 +24,39 @@ namespace Konata.Library.JceStruct
                 switch (obj.Type)
                 {
                     case Type.Byte:
-                        buffer.PutJceHead(tag, Type.Byte);
+                        buffer.TakeJceHead(tag, Type.Byte);
                         buffer.PutSbyte(((Number)obj).ValueByte);
                         break;
                     case Type.Short:
-                        buffer.PutJceHead(tag, Type.Short);
+                        buffer.TakeJceHead(tag, Type.Short);
                         buffer.PutShortBE(((Number)obj).ValueShort);
                         break;
                     case Type.Int:
-                        buffer.PutJceHead(tag, Type.Int);
+                        buffer.TakeJceHead(tag, Type.Int);
                         buffer.PutIntBE(((Number)obj).ValueInt);
                         break;
                     case Type.Long:
-                        buffer.PutJceHead(tag, Type.Long);
+                        buffer.TakeJceHead(tag, Type.Long);
                         buffer.PutLongBE(((Number)obj).Value);
                         break;
                     case Type.Float:
-                        buffer.PutJceHead(tag, Type.Float);
+                        buffer.TakeJceHead(tag, Type.Float);
                         buffer.PutFloatBE((Float)obj);
                         break;
                     case Type.Double:
-                        buffer.PutJceHead(tag, Type.Double);
+                        buffer.TakeJceHead(tag, Type.Double);
                         buffer.PutDoubleBE((Double)obj);
                         break;
                     case Type.String1:
-                        buffer.PutJceHead(tag, Type.String1);
+                        buffer.TakeJceHead(tag, Type.String1);
                         buffer.PutString((string)(String)obj, ByteBuffer.Prefix.Uint8);
                         break;
                     case Type.String4:
-                        buffer.PutJceHead(tag, Type.String4);
+                        buffer.TakeJceHead(tag, Type.String4);
                         buffer.PutString((string)(String)obj, ByteBuffer.Prefix.Uint32);
                         break;
                     case Type.Map:
-                        buffer.PutJceHead(tag, Type.Map);
+                        buffer.TakeJceHead(tag, Type.Map);
                         {
                             Map map = (Map)obj;
                             PutObject((Number)map.Count);
@@ -66,7 +71,7 @@ namespace Konata.Library.JceStruct
                         }
                         break;
                     case Type.List:
-                        buffer.PutJceHead(tag, Type.List);
+                        buffer.TakeJceHead(tag, Type.List);
                         {
                             List list = (List)obj;
                             PutObject((Number)list.Count);
@@ -80,16 +85,16 @@ namespace Konata.Library.JceStruct
                         }
                         break;
                     case Type.StructBegin:
-                        buffer.PutJceHead(tag, Type.StructBegin);
+                        buffer.TakeJceHead(tag, Type.StructBegin);
                         buffer.PutBytes(Serialize((Struct)obj));
                         buffer.PutByte((byte)Type.StructEnd);
                         break;
                     case Type.ZeroTag:
-                        buffer.PutJceHead(tag, Type.ZeroTag);
+                        buffer.TakeJceHead(tag, Type.ZeroTag);
                         break;
                     case Type.SimpleList:
-                        buffer.PutJceHead(tag, Type.SimpleList);
-                        buffer.PutJceHead(0, Type.Byte);
+                        buffer.TakeJceHead(tag, Type.SimpleList);
+                        buffer.PutByte(0);
                         PutObject((Number)((SimpleList)obj).Length);
                         buffer.PutBytes(((SimpleList)obj).Value);
                         break;
@@ -113,7 +118,7 @@ namespace Konata.Library.JceStruct
 
             int TakeJceInt()
             {
-                buffer.TakeJceHead(out Type type);
+                buffer.PutJceHead(out Type type);
                 switch (type)
                 {
                     case Type.Byte:
@@ -131,7 +136,7 @@ namespace Konata.Library.JceStruct
 
             IObject TakeJceObject(out byte tag)
             {
-                tag = buffer.TakeJceHead(out Type type);
+                tag = buffer.PutJceHead(out Type type);
                 switch (type)
                 {
                     case Type.Byte:

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-
-#pragma warning disable CS0659 
 
 namespace Konata.Library.JceStruct
 {
@@ -18,6 +15,24 @@ namespace Konata.Library.JceStruct
 
             public byte[] Value { get; set; }
 
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            public List List => throw new InvalidCastException();
+
+            public Map Map => DeserializeMap();
+
+            public Struct Struct => Deserialize();
+
+            SimpleList IObject.SimpleList => this;
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
+
             public IObject this[string path]
             {
                 get
@@ -32,7 +47,7 @@ namespace Konata.Library.JceStruct
                         Value.CopyTo(valueContent, 0);
                         try
                         {
-                            valueStruct = Deserialize(valueContent);
+                            valueStruct = Jce.Deserialize(valueContent);
                         }
                         catch
                         {
@@ -50,22 +65,22 @@ namespace Konata.Library.JceStruct
                 valueContent = null;
             }
 
+            public Struct Deserialize() => Jce.Deserialize(Value);
+
+            public Map DeserializeMap() => Deserialize().First().Value.Map;
+
             public override bool Equals(object obj) =>
                 obj is SimpleList other &&
                 Enumerable.SequenceEqual(Value, other.Value);
 
+            public override int GetHashCode() => base.GetHashCode();
+
             public static explicit operator byte[](SimpleList value) => value.Value;
 
             public static explicit operator SimpleList(byte[] value) => new SimpleList(value);
-
-            public static explicit operator Struct(SimpleList value) => Deserialize(value.Value);
-
-            public static explicit operator SimpleList(Struct value) => new SimpleList(Serialize(value));
 
             private Struct valueStruct;
             private byte[] valueContent;
         }
     }
 }
-
-#pragma warning restore CS0659 

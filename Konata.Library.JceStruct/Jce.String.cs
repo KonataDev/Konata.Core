@@ -1,7 +1,5 @@
 ﻿using System;
 
-#pragma warning disable CS0659 
-
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
@@ -14,6 +12,24 @@ namespace Konata.Library.JceStruct
 
             public string Value { get; set; }
 
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            String IObject.String => this;
+
+            public List List => throw new InvalidCastException();
+
+            public Map Map => throw new InvalidCastException();
+
+            public Struct Struct => throw new InvalidCastException();
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
+
             public String(string value) => Value = value;
 
             public override string ToString() => Value;
@@ -22,11 +38,11 @@ namespace Konata.Library.JceStruct
                 obj is String other &&
                 Value == other.Value;
 
+            public override int GetHashCode() => base.GetHashCode();
+
             public static explicit operator string(String value) => value.Value;
 
             public static explicit operator String(string value) => new String(value);
         }
     }
 }
-
-#pragma warning restore CS0659 

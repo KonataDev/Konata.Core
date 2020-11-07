@@ -13,7 +13,7 @@ namespace Konata.Library.JceStruct
             /// </summary>
             /// <param name="tag">Tag.</param>
             /// <param name="type">JCE type.</param>
-            public void PutJceHead(byte tag, Type type)
+            public void TakeJceHead(byte tag, Type type)
             {
                 if (tag < 0xF)
                 {
@@ -31,7 +31,7 @@ namespace Konata.Library.JceStruct
             /// </summary>
             /// <param name="type">JCE type.</param>
             /// <returns>Tag.</returns>
-            public byte TakeJceHead(out Type type)
+            public byte PutJceHead(out Type type)
             {
                 TakeByte(out byte tag);
                 type = (Type)(tag & 0xF);

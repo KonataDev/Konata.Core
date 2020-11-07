@@ -1,7 +1,5 @@
 ﻿using System;
 
-#pragma warning disable CS0659 
-
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
@@ -25,13 +23,13 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                        case Type.ZeroTag:
-                        case Type.Byte:
-                        case Type.Short:
-                        case Type.Int:
-                            return (int)Value;
-                        default:
-                            throw new InvalidCastException();
+                    case Type.ZeroTag:
+                    case Type.Byte:
+                    case Type.Short:
+                    case Type.Int:
+                        return (int)Value;
+                    default:
+                        throw new InvalidCastException();
                     }
                 }
                 set => Value = value;
@@ -43,12 +41,12 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                        case Type.ZeroTag:
-                        case Type.Byte:
-                        case Type.Short:
-                            return (short)Value;
-                        default:
-                            throw new InvalidCastException();
+                    case Type.ZeroTag:
+                    case Type.Byte:
+                    case Type.Short:
+                        return (short)Value;
+                    default:
+                        throw new InvalidCastException();
                     }
                 }
                 set => Value = value;
@@ -60,15 +58,33 @@ namespace Konata.Library.JceStruct
                 {
                     switch (Type)
                     {
-                        case Type.ZeroTag:
-                        case Type.Byte:
-                            return (sbyte)Value;
-                        default:
-                            throw new InvalidCastException();
+                    case Type.ZeroTag:
+                    case Type.Byte:
+                        return (sbyte)Value;
+                    default:
+                        throw new InvalidCastException();
                     }
                 }
                 set => Value = value;
             }
+
+            Number IObject.Number => this;
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            public List List => throw new InvalidCastException();
+
+            public Map Map => throw new InvalidCastException();
+
+            public Struct Struct => throw new InvalidCastException();
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
 
             public Number(long value) => Value = value;
 
@@ -77,6 +93,8 @@ namespace Konata.Library.JceStruct
             public override bool Equals(object obj) =>
                 obj is Number other &&
                 Value.Equals(other.Value);
+
+            public override int GetHashCode() => base.GetHashCode();
 
             public static implicit operator long(Number value) => value.Value;
 
@@ -90,5 +108,3 @@ namespace Konata.Library.JceStruct
         }
     }
 }
-
-#pragma warning restore CS0659 
