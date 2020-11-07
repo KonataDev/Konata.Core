@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-
-#pragma warning disable CS0659
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
@@ -13,6 +11,24 @@ namespace Konata.Library.JceStruct
             public Type Type => Type.StructBegin;
 
             public BaseType BaseType => BaseType.Struct;
+
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            public List List => throw new InvalidCastException();
+
+            public Map Map => throw new InvalidCastException();
+
+            Struct IObject.Struct => this;
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
 
             public IObject this[string path]
             {
@@ -57,15 +73,19 @@ namespace Konata.Library.JceStruct
 
             public Struct(IDictionary<byte, IObject> data) : base(data) { }
 
+            public SimpleList Serialize() => new Struct { { 0, this } }.SerializeInternal();
+
+            public SimpleList SerializeInternal() => new SimpleList(Jce.Serialize(this));
+
             public override bool Equals(object obj) =>
                 obj is Struct other &&
                 Enumerable.SequenceEqual(this, other);
 
-            public static explicit operator byte[](Struct data) => Serialize(data);
+            public override int GetHashCode() => base.GetHashCode();
+
+            public static explicit operator byte[](Struct data) => Jce.Serialize(data);
 
             public static explicit operator Struct(byte[] data) => Deserialize(data);
         }
     }
 }
-
-#pragma warning restore CS0659 

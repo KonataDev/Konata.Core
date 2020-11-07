@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-
-#pragma warning disable CS0659 
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
@@ -18,6 +16,24 @@ namespace Konata.Library.JceStruct
             public int Count => list.Count;
 
             public bool IsReadOnly => false;
+
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            List IObject.List => this;
+
+            public Map Map => throw new InvalidCastException();
+
+            public Struct Struct => throw new InvalidCastException();
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
 
             public IObject this[int index]
             {
@@ -152,6 +168,8 @@ namespace Konata.Library.JceStruct
                 obj is List other &&
                 Enumerable.SequenceEqual(list, other.list);
 
+            public override int GetHashCode() => base.GetHashCode();
+
             public static implicit operator List<IObject>(List value) => new List<IObject>(value);
 
             public static implicit operator List(List<IObject> value) => new List(value);
@@ -162,5 +180,3 @@ namespace Konata.Library.JceStruct
         }
     }
 }
-
-#pragma warning restore CS0659 

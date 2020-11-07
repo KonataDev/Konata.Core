@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-
-#pragma warning disable CS0659 
+using System.Linq;
 
 namespace Konata.Library.JceStruct
 {
@@ -22,6 +20,24 @@ namespace Konata.Library.JceStruct
             public int Count => keys.Count;
 
             public bool IsReadOnly => false;
+
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            public List List => throw new InvalidCastException();
+
+            Map IObject.Map => this;
+
+            public Struct Struct => throw new InvalidCastException();
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            public KeyValuePair KeyValuePair => throw new InvalidCastException();
 
             public IObject this[IObject key]
             {
@@ -82,26 +98,26 @@ namespace Konata.Library.JceStruct
                                 path = path.Substring(kvdot + 1);
                                 switch (kv)
                                 {
-                                    case 0:
-                                        if (keys[i] is IIndexable key)
-                                        {
-                                            return key[path];
-                                        }
-                                        else
-                                        {
-                                            throw new InvalidCastException();
-                                        }
-                                    case 1:
-                                        if (values[i] is IIndexable value)
-                                        {
-                                            return value[path];
-                                        }
-                                        else
-                                        {
-                                            throw new InvalidCastException();
-                                        }
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                case 0:
+                                    if (keys[i] is IIndexable key)
+                                    {
+                                        return key[path];
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidCastException();
+                                    }
+                                case 1:
+                                    if (values[i] is IIndexable value)
+                                    {
+                                        return value[path];
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidCastException();
+                                    }
+                                default:
+                                    throw new ArgumentOutOfRangeException();
                                 }
                             }
                             else
@@ -109,12 +125,12 @@ namespace Konata.Library.JceStruct
                                 int kv = int.Parse(path);
                                 switch (kv)
                                 {
-                                    case 0:
-                                        return keys[i];
-                                    case 1:
-                                        return values[i];
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                case 0:
+                                    return keys[i];
+                                case 1:
+                                    return values[i];
+                                default:
+                                    throw new ArgumentOutOfRangeException();
                                 }
                             }
                         }
@@ -238,10 +254,14 @@ namespace Konata.Library.JceStruct
 
             public IEnumerator<KeyValuePair<IObject, IObject>> GetEnumerator() => KeyValuePairs.GetEnumerator();
 
+            public SimpleList Serialize() => new Struct { { 0, this } }.SerializeInternal();
+
             public override bool Equals(object obj) =>
                 obj is Map other &&
                 Enumerable.SequenceEqual(keys, other.keys) &&
                 Enumerable.SequenceEqual(values, other.values);
+
+            public override int GetHashCode() => base.GetHashCode();
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -264,5 +284,3 @@ namespace Konata.Library.JceStruct
         }
     }
 }
-
-#pragma warning restore CS0659 

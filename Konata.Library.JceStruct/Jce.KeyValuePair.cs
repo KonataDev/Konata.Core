@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#pragma warning disable CS0659 
-
 namespace Konata.Library.JceStruct
 {
     public static partial class Jce
@@ -17,6 +15,24 @@ namespace Konata.Library.JceStruct
 
             public IObject Value { get; }
 
+            public Number Number => throw new InvalidCastException();
+
+            public Float Float => throw new InvalidCastException();
+
+            public Double Double => throw new InvalidCastException();
+
+            public String String => throw new InvalidCastException();
+
+            public List List => throw new InvalidCastException();
+
+            public Map Map => throw new InvalidCastException();
+
+            public Struct Struct => throw new InvalidCastException();
+
+            public SimpleList SimpleList => throw new InvalidCastException();
+
+            KeyValuePair IObject.KeyValuePair => this;
+
             public KeyValuePair(IObject key, IObject value)
             {
                 Key = key;
@@ -28,6 +44,8 @@ namespace Konata.Library.JceStruct
                 Key.Equals(other.Key) &&
                 Value.Equals(other.Value);
 
+            public override int GetHashCode() => base.GetHashCode();
+
             public static implicit operator KeyValuePair<IObject, IObject>(KeyValuePair value) =>
                 new KeyValuePair<IObject, IObject>(value.Key, value.Value);
 
@@ -36,5 +54,3 @@ namespace Konata.Library.JceStruct
         }
     }
 }
-
-#pragma warning restore CS0659 
