@@ -31,7 +31,8 @@ namespace Konata.Debug
                 case EventType.WtLoginVerifyImageCaptcha:
                     return OnImageCaptcha();
                 case EventType.GroupMessage:
-                    return OnGroupMessage();
+                    return OnGroupMessage((uint)args[0], (uint)args[1],
+                        (string)args[2]);
                 case EventType.PrivateMessage:
                     return OnPrivateMessage();
             }
@@ -146,9 +147,11 @@ namespace Konata.Debug
             return false;
         }
 
-        private static bool OnGroupMessage()
+        private static bool OnGroupMessage(uint groupUin, uint memberUin,
+            string msgContent)
         {
-            return false;
+            Console.WriteLine($"[{groupUin}]({memberUin}): {msgContent}");
+            return true;
         }
     }
 }

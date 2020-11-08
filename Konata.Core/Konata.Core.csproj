@@ -53,6 +53,7 @@
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x8fc_3.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoGetMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\ProtoMsgWithDraw.cs" />
+    <Compile Include="Msf\Packets\Protobuf\ProtoPbPushGroupMsg.cs" />
     <Compile Include="Msf\Packets\Protobuf\SyncCookie.cs" />
     <Compile Include="Msf\Packets\ServiceMessage.cs" />
     <Compile Include="Msf\Packets\Sso\SsoMessage.cs" />
