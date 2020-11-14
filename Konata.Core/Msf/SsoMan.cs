@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Konata.Msf.Network;
 using Konata.Msf.Packets;
 using Konata.Msf.Packets.Sso;
+using Konata.Events;
 
 namespace Konata.Msf
 {
@@ -13,7 +14,7 @@ namespace Konata.Msf
     using SsoSeqLock = Mutex;
     using SsoSeqDict = Dictionary<string, uint>;
 
-    public class SsoMan
+    public class SsoMan : EventComponent
     {
         private Core msfCore;
         private PacketMan pakMan;
@@ -24,17 +25,14 @@ namespace Konata.Msf
         private SsoRequence ssoSequence;
         private SsoSession ssoSession;
 
-        public SsoMan(Core core)
+        public SsoMan(EventPumper ep)
+            : base(ep)
         {
             ssoSequence = 25900;
             ssoSession = 0x54B87ADC;
 
             ssoSeqDict = new SsoSeqDict();
             ssoSeqLock = new SsoSeqLock();
-
-            msfCore = core;
-            pakMan = new PacketMan(this);
-
         }
 
         /// <summary>
@@ -172,6 +170,11 @@ namespace Konata.Msf
                 Console.WriteLine($"Unknown message received.");
                 Console.WriteLine($"{e.Message}\n{e.StackTrace}");
             }
+        }
+
+        protected override bool EventHandler(EventParacel eventParacel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

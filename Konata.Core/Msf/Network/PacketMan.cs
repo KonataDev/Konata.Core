@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using Konata.Events;
 using Konata.Library.IO;
 using Konata.Msf.Packets;
 using Konata.Utils;
 
 namespace Konata.Msf.Network
 {
-    internal class PacketMan
+    internal class PacketMan : EventComponent
     {
         private enum ReceiveStatus
         {
@@ -37,7 +38,6 @@ namespace Konata.Msf.Network
             new MsfServer { url = "203.205.255.221", port = 8080 },
         };
 
-        private SsoMan ssoMan;
         private Socket socket;
 
         private int packetLength;
@@ -46,9 +46,10 @@ namespace Konata.Msf.Network
         private byte[] recvBuffer;
         private ReceiveStatus recvStatus;
 
-        public PacketMan(SsoMan ssoMan)
+        public PacketMan(EventPumper ep)
+            : base(ep)
         {
-            this.ssoMan = ssoMan;
+
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace Konata.Msf.Network
                 Console.WriteLine($"  [FromService] pktFlag => {fromService.GetPacketFlag()}");
                 Console.WriteLine($"  [FromService] uin => {fromService.GetUin()}");
 
-                ssoMan.OnFromServiceMessage(fromService);
+                // ssoMan.OnFromServiceMessage(fromService);
             }
         }
 
@@ -161,6 +162,11 @@ namespace Konata.Msf.Network
                         SocketFlags.None, OnReceive, null);
                 }
             }
+        }
+
+        protected override bool EventHandler(EventParacel eventParacel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

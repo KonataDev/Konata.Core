@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Konata.Events;
 
 namespace Konata.Msf
 {
     using Routine = Dictionary<string, Service>;
 
-    public abstract partial class Service
+    public abstract partial class Service : EventComponent
     {
         private static readonly Routine map = new Routine();
 

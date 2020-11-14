@@ -5,11 +5,11 @@ using System.Security.Cryptography;
 using Konata.Msf.Crypto;
 using Konata.Msf.Packets.Oicq;
 using Konata.Msf.Packets.Protobuf;
-using Konata.Library.Protobuf;
+using Konata.Events;
 
 namespace Konata.Msf
 {
-    public class UserSigInfo
+    public class UserSigInfo : EventComponent
     {
         public uint Uin { get; private set; }
 
@@ -100,8 +100,11 @@ namespace Konata.Msf
 
         #endregion
 
-        public UserSigInfo(uint uin, string password)
+        public UserSigInfo(EventPumper eventPumper, uint uin, string password)
+            : base(eventPumper)
         {
+            eventHandlers += OnUpdateSigInfo;
+
             Uin = uin;
 
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
@@ -113,6 +116,43 @@ namespace Konata.Msf
             GSecret = MakeGSecret(DeviceInfo.System.Imei, DPassword, null);
 
             SyncCookie = MakeSyncCookie();
+        }
+
+        private EventParacel OnUpdateChallengeInfo(EventParacel eventParacel)
+        {
+
+        }
+
+        private EventParacel OnUpdateSigInfo(EventParacel eventParacel)
+        {
+            if (eventParacel is EventUpdateSigInfo info)
+            {
+                D2Key = info.D2Key ?? D2Key;
+                D2Token = info.D2Token ?? D2Token;
+
+                TgtKey = info.TgtKey ?? TgtKey;
+                TgtToken = info.TgtToken ?? TgtToken;
+
+                GtKey = info.GtKey ?? GtKey;
+                StKey = info.StKey ?? StKey;
+
+                WtSessionTicketSig = info.WtSessionTicketSig ?? WtSessionTicketSig;
+                WtSessionTicketKey = info.WtSessionTicketKey ?? WtSessionTicketKey;
+
+                return EventParacel.Accept;
+            }
+
+            return EventParacel.Reject;
+        }
+
+        private EventParacel OnUpdateSyncCookie(EventParacel eventParacel)
+        {
+            if (eventParacel is EventUpdateSigInfo info)
+            {
+
+                return EventParacel.Accept;
+            }
+            return EventParacel.Reject;
         }
 
         private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
@@ -174,6 +214,50 @@ namespace Konata.Msf
         private byte[] MakeSyncCookie()
         {
             return new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds()).Serialize().GetBytes();
+        }
+
+        public class EventUpdateSyncCookie : EventParacel
+        {
+            public byte[] SyncCookie { get; set; }
+        }
+
+        public class EventUpdateChallengeInfo : EventParacel
+        {
+            public string Session { get; set; }
+
+            public string SmsPhone { get; set; }
+
+            public string SmsToken { get; set; }
+        }
+
+        public class EventUpdateSigInfo : EventParacel
+        {
+            public byte[] TgtKey { get; set; }
+
+            public byte[] TgtToken { get; set; }
+
+            public byte[] D2Key { get; set; }
+
+            public byte[] D2Token { get; set; }
+
+            public byte[] GtKey { get; set; }
+
+            public byte[] StKey { get; set; }
+
+            public byte[] WtSessionTicketSig { get; set; }
+
+            public byte[] WtSessionTicketKey { get; set; }
+
+            public class Info
+            {
+                public uint Age { get; set; }
+
+                public uint Face { get; set; }
+
+                public string Name { get; set; }
+            }
+
+            public Info UinInfo { get; set; }
         }
     }
 }

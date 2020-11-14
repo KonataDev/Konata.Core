@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Msf.Packets.Oicq;
+using Konata.Events;
 
 namespace Konata.Msf
 {
@@ -15,19 +15,25 @@ namespace Konata.Msf
     //  ++--- WtLogin OnlinePush...etc 
     //   +----------------+
 
-    public class Core
+    public class Core : EventComponent
     {
-        public Bot Bot { get; private set; }
-
         public SsoMan SsoMan { get; private set; }
 
         public UserSigInfo SigInfo { get; private set; }
 
-        public Core(Bot bot, uint uin, string password)
+        public Core(EventPumper eventPumper)
+            : base(eventPumper)
         {
-            Bot = bot;
-            SsoMan = new SsoMan(this);
-            SigInfo = new UserSigInfo(uin, password);
+            eventHandlers += OnWtLogin;
+
+        }
+
+        private EventParacel OnWtLogin(EventParacel eventParacel)
+        {
+            if (eventParacel is EventLogin)
+                return PostEvent<Services.Wtlogin.Login>(null);
+
+            return EventParacel.Reject;
         }
 
         #region Core Methods
@@ -158,47 +164,102 @@ namespace Konata.Msf
             Service.Run(this, "friendlist.GetTroopListReqV2", selfUin);
 
         #endregion
+    }
 
-        #region Event Methods
+    public class EventLogin : EventNotify
+    {
+        // Do Nothing
+    }
 
-        /// <summary>
-        /// 發送用戶事件. 該事件會被派發到用戶層
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="args"></param>
-        public void PostUserEvent(EventType type, params object[] args)
+    public class EventCaptchaCtl : EventParacel
+    {
+        public enum CtlType
         {
-            Bot.PostUserEvent(type, args);
+            Sms,
+            Image,
+            Slider,
+            // Face
         }
 
-        /// <summary>
-        /// 發送用戶事件. 該事件會被派發到用戶層
-        /// </summary>
-        /// <param name="type"></param>
-        public void PostUserEvent(EventType type)
-        {
-            Bot.PostUserEvent(type, null);
-        }
+        public CtlType Type { get; set; }
 
         /// <summary>
-        /// 發送系統事件. 該事件會在系統内部響應
+        /// Captcha results
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="args"></param>
-        public void PostSystemEvent(EventType type, params object[] args)
-        {
-            Bot.PostSystemEvent(type, args);
-        }
+        public string Result { get; set; }
 
         /// <summary>
-        /// 發送系統事件. 該事件會在系統内部響應
+        /// For CtlType.Slider
         /// </summary>
-        /// <param name="type"></param>
-        public void PostSystemEvent(EventType type)
+        public string SliderUrl { get; set; }
+
+        /// <summary>
+        /// For CtlType.Sms
+        /// </summary>
+        public string SmsPhoneNumber { get; set; }
+
+        /// <summary>
+        /// For CtlType.Sms
+        /// </summary>
+        public string SmsPhoneCountryCode { get; set; }
+    }
+
+    public class EventGroupCtl : EventParacel
+    {
+        public enum CtlType
         {
-            Bot.PostSystemEvent(type, null);
+            KickMember,
+            MuteMember,
+            PromoteAdmin,
+            SetSpecialTitle,
+            SetGroupCard,
         }
 
-        #endregion
+        public CtlType Type { get; set; }
+
+        public uint GroupUin { get; set; }
+
+        public uint MemberUin { get; set; }
+
+        /// <summary>
+        /// For PromoteAdmin or KickMember <br/>
+        /// <b>KickMember</b>: Block the member <br/>
+        /// <b>PromoteAdmin</b>: Set or Unset
+        /// </summary>
+        public bool ToggleType { get; set; }
+
+        /// <summary>
+        /// For MuteMember or SetSpecialTitle <br/>
+        /// <b>MuteMember</b>: Mute time <br/>
+        /// <b>SetSpecialTitle</b>: Title expired time
+        /// </summary>
+        public uint? TimeSeconds { get; set; }
+
+        /// <summary>
+        /// For SetSpecialTitle
+        /// </summary>
+        public string SpecialTitle { get; set; }
+
+        /// <summary>
+        /// For SetGroupCard
+        /// </summary>
+        public string GroupCard { get; set; }
+    }
+
+    public class EventGroupCtlRsp : EventParacel
+    {
+        public bool Success { get; set; }
+
+        public int ResultCode { get; set; }
+    }
+
+    public class EventStatSvc : EventParacel
+    {
+
+    }
+
+    public class EventLoginFailed : EventParacel
+    {
+        public string Reason { get; set; }
     }
 }

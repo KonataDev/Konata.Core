@@ -1,10 +1,12 @@
 ﻿using System;
 using Konata.Utils;
+using Konata.Events;
 using Konata.Msf.Crypto;
 using Konata.Msf.Packets;
 using Konata.Msf.Packets.Tlv;
 using Konata.Msf.Packets.Oicq;
 using Konata.Msf.Packets.Sso;
+using static Konata.Msf.UserSigInfo;
 
 namespace Konata.Msf.Services.Wtlogin
 {
@@ -13,6 +15,8 @@ namespace Konata.Msf.Services.Wtlogin
         private Login()
         {
             Register("wtlogin.login", this);
+
+            eventHandlers += OnHandleEvent;
         }
 
         public static Service Instance { get; } = new Login();
@@ -71,6 +75,20 @@ namespace Konata.Msf.Services.Wtlogin
             return false;
         }
 
+        public class EventWtLogin : EventParacel
+        {
+
+        }
+
+        private EventParacel OnHandleEvent(EventParacel eventParacel)
+        {
+            switch (eventParacel)
+            {
+                default:
+                    return EventParacel.Reject;
+            }
+        }
+
         #region Event Requests
 
         /// <summary>
@@ -89,6 +107,12 @@ namespace Konata.Msf.Services.Wtlogin
 
             return core.SsoMan.PostMessage(
                 RequestFlag.WtLoginExchange, ssoMessage);
+        }
+
+        private EventParacel Request_Tgtgt()
+        {
+            Console.WriteLine("Submit OicqRequestTGTGT.");
+
         }
 
         /// <summary>
@@ -172,9 +196,16 @@ namespace Konata.Msf.Services.Wtlogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                core.SigInfo.WtLoginSession = sigSession;
-                core.PostUserEvent(EventType.WtLoginVerifySliderCaptcha, sigCaptchaURL,
-                    DeviceInfo.Browser.UserAgent);
+                CallEvent<UserSigInfo>(new EventUpdateChallengeInfo
+                {
+                    Session = sigSession
+                });
+
+                PostEvent<ToUser>(new EventCaptchaCtl
+                {
+                    SliderUrl = sigCaptchaURL,
+                    Type = EventCaptchaCtl.CtlType.Slider
+                });
             }
             return false;
         }
@@ -210,10 +241,19 @@ namespace Konata.Msf.Services.Wtlogin
                     var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    core.SigInfo.WtLoginSmsPhone = $"+{smsCountryCode} {smsPhone}";
-                    core.SigInfo.WtLoginSmsToken = smsToken;
-                    core.SigInfo.WtLoginSession = sigSession;
-                    core.PostSystemEvent(EventType.WtLoginSendSms);
+                    CallEvent<UserSigInfo>(new EventUpdateChallengeInfo
+                    {
+                        Session = sigSession,
+                        SmsPhone = smsPhone,
+                        SmsToken = smsToken
+                    });
+
+                    PostEvent<ToUser>(new EventCaptchaCtl
+                    {
+                        SmsPhoneNumber = smsPhone,
+                        SmsPhoneCountryCode = smsCountryCode,
+                        Type = EventCaptchaCtl.CtlType.Sms
+                    });
 
                     return true;
                 }
@@ -244,10 +284,7 @@ namespace Konata.Msf.Services.Wtlogin
 
         private bool Handle_VerifyImageCaptcha(Core core, OicqRequest request)
         {
-            Console.WriteLine("Do image verification.");
-
-            // core.PostUserEvent(EventType.WtLoginVerifyImageCaptcha);
-
+            // <TODO> Image captcha
             return false;
         }
 
@@ -325,18 +362,29 @@ namespace Konata.Msf.Services.Wtlogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
-                    core.SigInfo.TgtKey = tgtKey;
-                    core.SigInfo.TgtToken = tgtToken;
-                    core.SigInfo.D2Key = d2Key;
-                    core.SigInfo.D2Token = d2Token;
-                    core.SigInfo.WtSessionTicketSig = wtSessionTicketSig;
-                    core.SigInfo.WtSessionTicketKey = wtSessionTicketKey;
-                    core.SigInfo.GtKey = gtKey;
-                    core.SigInfo.StKey = stKey;
-                    core.SigInfo.UinName = userNickname;
-
                     core.SsoMan.DestroyServiceSequence(name);
-                    core.PostSystemEvent(EventType.WtLoginOK);
+
+                    BroadcastEvent(new UserSigInfo.EventUpdateSigInfo
+                    {
+                        TgtKey = tgtKey,
+                        TgtToken = tgtToken,
+
+                        D2Key = d2Key,
+                        D2Token = d2Token,
+
+                        GtKey = gtKey,
+                        StKey = stKey,
+
+                        WtSessionTicketSig = wtSessionTicketSig,
+                        WtSessionTicketKey = wtSessionTicketKey,
+
+                        UinInfo = new UserSigInfo.EventUpdateSigInfo.Info
+                        {
+                            Age = userAge,
+                            Face = userFace,
+                            Name = userNickname
+                        }
+                    });
 
                     Console.WriteLine($"gtKey => {Hex.Bytes2HexStr(gtKey)}");
                     Console.WriteLine($"stKey => {Hex.Bytes2HexStr(stKey)}");
@@ -354,21 +402,30 @@ namespace Konata.Msf.Services.Wtlogin
 
         private bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
         {
-            Console.WriteLine("[Error] Incorrect account or password.");
-            core.PostSystemEvent(EventType.LoginFailed);
+            BroadcastEvent(new EventOffline
+            {
+                Reason = "Incorrect account or password."
+            });
+
             return false;
         }
 
         private bool Handle_InvalidSmsCode(Core core, OicqRequest request)
         {
-            Console.WriteLine("[Error] Incorrect sms code.");
-            core.PostSystemEvent(EventType.LoginFailed);
+            BroadcastEvent(new EventOffline
+            {
+                Reason = "Incorrect sms code."
+            });
+
             return false;
         }
 
         private bool Handle_InvalidEnvironment(Core core, OicqRequest request)
         {
-            Console.WriteLine("[Error] Invalid login environment.");
+            BroadcastEvent(new EventOffline
+            {
+                Reason = "Invalid login environment."
+            });
 
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -388,7 +445,10 @@ namespace Konata.Msf.Services.Wtlogin
 
         private bool Handle_LoginDenied(Core core, OicqRequest request)
         {
-            Console.WriteLine("[Error] Login denied.");
+            BroadcastEvent(new EventOffline
+            {
+                Reason = "Login denied."
+            });
 
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -408,8 +468,11 @@ namespace Konata.Msf.Services.Wtlogin
 
         private bool Handle_UnknownOicqRequest(Core core, OicqRequest request)
         {
-            Console.WriteLine("[Error] Unknown OicqRequest received.");
-            core.PostSystemEvent(EventType.LoginFailed);
+            BroadcastEvent(new EventOffline
+            {
+                Reason = "Unknown OicqRequest received."
+            });
+
             return false;
         }
 

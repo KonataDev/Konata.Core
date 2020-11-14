@@ -39,6 +39,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\EventComponent.cs" />
+    <Compile Include="Events\EventParacel.cs" />
+    <Compile Include="Events\EventPumper.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x899.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x55c_1.cs" />
     <Compile Include="Msf\Packets\Oidb\OidbCmd0x570_8.cs" />
