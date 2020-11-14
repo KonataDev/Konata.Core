@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Konata.Msf.Crypto;
+using Konata.Crypto;
 
-namespace Konata.Msf
+namespace Konata
 {
     public static class DeviceInfo
     {

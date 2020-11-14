@@ -1,7 +1,6 @@
 ﻿using System;
-using Konata.Msf;
-using Konata.Msf.Network;
 using Konata.Events;
+using Konata.Network;
 
 namespace Konata
 {
@@ -42,17 +41,22 @@ namespace Konata
         /// 執行登錄
         /// </summary>
         public void Login()
-            => PostEvent<Core>(new EventLogin());
+            => PostEvent<Services.Wtlogin.Login>
+            (new EventWtLoginExchange
+            {
+                Type = EventWtLoginExchange.EventType.Tgtgt
+            });
 
         /// <summary>
         /// 提交滑塊驗證碼
         /// </summary>
         /// <param name="ticket"></param>
         public void SubmitSliderTicket(string ticket)
-            => PostEvent<Core>(new EventCaptchaCtl
+            => PostEvent<Services.Wtlogin.Login>
+            (new EventWtLoginExchange
             {
-                Result = ticket,
-                Type = EventCaptchaCtl.CtlType.Slider,
+                CaptchaResult = ticket,
+                Type = EventWtLoginExchange.EventType.CheckSliderCaptcha,
             });
 
         /// <summary>
@@ -60,10 +64,11 @@ namespace Konata
         /// </summary>
         /// <param name="smsCode"></param>
         public void SubmitSmsCode(string smsCode)
-            => PostEvent<Core>(new EventCaptchaCtl
+            => PostEvent<Services.Wtlogin.Login>
+            (new EventWtLoginExchange
             {
-                Result = smsCode,
-                Type = EventCaptchaCtl.CtlType.Sms
+                CaptchaResult = smsCode,
+                Type = EventWtLoginExchange.EventType.CheckSmsCaptcha
             });
 
         /// <summary>
