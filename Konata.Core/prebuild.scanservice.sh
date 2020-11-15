@@ -16,9 +16,9 @@ cat > $TARGET << _EOF_
 
 using System;
 
-namespace Konata.Msf
+namespace Konata
 {
-    public abstract partial class Service
+    public partial class Service
     {
         static bool TouchServices()
         {
@@ -28,14 +28,14 @@ _EOF_
 # Write classes to.
 while IFS= read -d $'\0' -r file ; do
     CLASS=("$file")
-	CLASS=${CLASS//*Msf\// }
+	CLASS=${CLASS//*Services\// }
 	CLASS=${CLASS//\.cs/}
 	CLASS=${CLASS//\//.}
 	CLASS=${CLASS// /}
 	cat >> $TARGET << _EOF_
-	        instance = $CLASS.Instance;
+	        instance = Services.$CLASS.Instance;
 _EOF_
-done < <(find ${SOURCE}Msf/Services/ -type f -name "*.cs" -print0)
+done < <(find ${SOURCE}/Services/ -type f -name "*.cs" -print0)
 
 cat >> $TARGET << _EOF_
             return true;

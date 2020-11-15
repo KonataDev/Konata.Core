@@ -46,8 +46,8 @@ namespace Konata.Network
         private byte[] recvBuffer;
         private ReceiveStatus recvStatus;
 
-        public PacketMan(EventPumper ep)
-            : base(ep)
+        public PacketMan(EventPumper eventPumper)
+            : base(eventPumper)
         {
 
         }
@@ -162,11 +162,6 @@ namespace Konata.Network
                         SocketFlags.None, OnReceive, null);
                 }
             }
-        }
-
-        protected override bool EventHandler(EventParacel eventParacel)
-        {
-            throw new NotImplementedException();
         }
     }
 }

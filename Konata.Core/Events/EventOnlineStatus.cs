@@ -2,15 +2,19 @@
 
 namespace Konata.Events
 {
-    class EventGlobalStatus : EventParacel
+    class EventOnlineStatus : EventParacel
     {
         public enum EventType
         {
             Online,
             Offline,
-            Disconnect
         }
 
         public EventType Type { get; set; }
+
+        /// <summary>
+        /// For EventType.Offline
+        /// </summary>
+        public string Reason { get; set; }
     }
 }

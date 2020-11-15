@@ -4,19 +4,20 @@ using Konata.Network;
 
 namespace Konata
 {
-    public delegate bool UserEventProc(EventType e, params object[] a);
+    // public delegate bool UserEventProc(EventType e, params object[] a);
 
     public class Bot : EventPumper
     {
-        private UserEventProc eventProc;
+        // private UserEventProc eventProc;
 
         public Bot(uint uin, string password)
         {
             RegisterComponent(new Core(this));
             RegisterComponent(new SsoMan(this));
             RegisterComponent(new PacketMan(this));
+            RegisterComponent(new Service(this));
             RegisterComponent(new UserSigInfo(this, uin, password));
-            RegisterComponent(new ToUser(this, eventProc));
+            RegisterComponent(new ToUser(this));
         }
 
         /// <summary>
@@ -24,16 +25,16 @@ namespace Konata
         /// </summary>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public bool RegisterDelegate(UserEventProc callback)
-        {
-            if (eventProc != null)
-            {
-                return false;
-            }
+        //public bool RegisterDelegate(UserEventProc callback)
+        //{
+        //    if (eventProc != null)
+        //    {
+        //        return false;
+        //    }
 
-            eventProc = callback;
-            return true;
-        }
+        //    eventProc = callback;
+        //    return true;
+        //}
 
         #region Protocol Interoperation Methods
 
@@ -72,19 +73,37 @@ namespace Konata
             });
 
         /// <summary>
-        /// 移除群成員
+        /// 移除單個群成員
         /// </summary>
         /// <param name="groupUin"></param>
         /// <param name="memberUin"></param>
         /// <param name="preventRequest"></param>
         public EventGroupCtlRsp KickGroupMember(uint groupUin,
             uint memberUin, bool preventRequest)
-            => (EventGroupCtlRsp)CallEvent<Core>(new EventGroupCtl
+            => (EventGroupCtlRsp)CallEvent<Services.OidbSvc.Oidb0x8a0_1>
+            (new EventGroupCtl
             {
                 GroupUin = groupUin,
                 MemberUin = memberUin,
                 ToggleType = preventRequest,
-                Type = EventGroupCtl.CtlType.KickMember
+                Type = EventGroupCtl.EventType.KickMember
+            });
+
+        /// <summary>
+        /// 批量移除群成員
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="preventRequest"></param>
+        public EventGroupCtlRsp KickGroupMembers(uint groupUin,
+            uint[] membersUin, bool preventRequest)
+            => (EventGroupCtlRsp)CallEvent<Services.OidbSvc.Oidb0x8a0_0>
+            (new EventGroupCtl
+            {
+                GroupUin = groupUin,
+                MembersUin = membersUin,
+                ToggleType = preventRequest,
+                Type = EventGroupCtl.EventType.KickMember
             });
 
         /// <summary>
@@ -95,12 +114,13 @@ namespace Konata
         /// <param name="toggleType"></param>
         public EventGroupCtlRsp PromoteGroupAdmin(uint groupUin,
             uint memberUin, bool toggleType)
-            => (EventGroupCtlRsp)CallEvent<Core>(new EventGroupCtl
+            => (EventGroupCtlRsp)CallEvent<Services.OidbSvc.Oidb0x55c_1>
+            (new EventGroupCtl
             {
                 GroupUin = groupUin,
                 MemberUin = memberUin,
                 ToggleType = toggleType,
-                Type = EventGroupCtl.CtlType.PromoteAdmin
+                Type = EventGroupCtl.EventType.PromoteAdmin
             });
 
         /// <summary>
@@ -111,12 +131,13 @@ namespace Konata
         /// <param name="timeSeconds"></param>
         public EventGroupCtlRsp MuteGroupMember(uint groupUin,
             uint memberUin, uint timeSeconds)
-            => (EventGroupCtlRsp)CallEvent<Core>(new EventGroupCtl
+            => (EventGroupCtlRsp)CallEvent<Services.OidbSvc.Oidb0x570_8>
+            (new EventGroupCtl
             {
                 GroupUin = groupUin,
                 MemberUin = memberUin,
                 TimeSeconds = timeSeconds,
-                Type = EventGroupCtl.CtlType.MuteMember
+                Type = EventGroupCtl.EventType.MuteMember
             });
 
         /// <summary>
@@ -128,13 +149,14 @@ namespace Konata
         /// <param name="expiredTime"></param>
         public EventGroupCtlRsp SetGroupMemberSpecialTitle(uint groupUin, uint memberUin,
             string specialTitle, uint? expiredTime)
-            => (EventGroupCtlRsp)CallEvent<Core>(new EventGroupCtl
+            => (EventGroupCtlRsp)CallEvent<Services.OidbSvc.Oidb0x8fc_2>
+            (new EventGroupCtl
             {
                 GroupUin = groupUin,
                 MemberUin = memberUin,
                 SpecialTitle = specialTitle,
                 TimeSeconds = expiredTime,
-                Type = EventGroupCtl.CtlType.SetSpecialTitle
+                Type = EventGroupCtl.EventType.SetSpecialTitle
             });
 
         #endregion
@@ -142,18 +164,18 @@ namespace Konata
 
     public class ToUser : EventComponent
     {
-        private readonly UserEventProc eventProc;
+        //private readonly UserEventProc eventProc;
 
-        public ToUser(EventPumper eventPumper, UserEventProc proc)
+        public ToUser(EventPumper eventPumper)
             : base(eventPumper)
         {
-            eventProc = proc;
+            // eventProc = proc;
             eventHandlers += OnUserEvent;
         }
 
         private EventParacel OnUserEvent(EventParacel eventParacel)
         {
-            eventProc(EventType.Idle, eventParacel);
+            // eventProc(EventType.Idle, eventParacel);
             return EventParacel.Accept;
         }
 

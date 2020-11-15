@@ -29,6 +29,8 @@ namespace Konata
 
         public string WtLoginSmsPhone { get; set; }
 
+        public string WtLoginSmsCountry { get; set; }
+
         public string WtLoginSession { get; set; }
 
         public OicqStatus WtLoginStatus { get; set; }
@@ -133,6 +135,11 @@ namespace Konata
 
                 WtSessionTicketSig = info.WtSessionTicketSig ?? WtSessionTicketSig;
                 WtSessionTicketKey = info.WtSessionTicketKey ?? WtSessionTicketKey;
+
+                WtLoginSession = info.WtLoginSession ?? WtLoginSession;
+                WtLoginSmsToken = info.WtLoginSmsToken ?? WtLoginSmsToken;
+                WtLoginSmsPhone = info.WtLoginSmsPhone ?? WtLoginSmsPhone;
+                WtLoginSmsCountry = info.WtLoginSmsCountry ?? WtLoginSmsCountry;
 
                 return EventParacel.Accept;
             }

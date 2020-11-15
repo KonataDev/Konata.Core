@@ -97,12 +97,12 @@ namespace Konata.Services.StatSvc
             {
                 Console.WriteLine($"Account {core.SigInfo.UinName }[{core.SigInfo.Uin}] now online. ");
                 Console.WriteLine($" Login IP Address {response.ipAddress}");
-                core.PostSystemEvent(EventType.StatSvcOnline);
+                // core.PostSystemEvent(EventType.StatSvcOnline);
 
                 return true;
             }
 
-            core.PostSystemEvent(EventType.StatSvcOffline);
+            // core.PostSystemEvent(EventType.StatSvcOffline);
             return false;
         }
     }

@@ -6,11 +6,12 @@ namespace Konata
 {
     using Routine = Dictionary<string, Service>;
 
-    public abstract partial class Service : EventComponent
+    public partial class Service : EventComponent
     {
         private static readonly Routine map = new Routine();
 
-        static Service()
+        public Service(EventPumper eventPumper)
+            : base(eventPumper)
         {
             TouchServices();
         }
@@ -77,7 +78,8 @@ namespace Konata
         /// <param name="method"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public abstract bool OnRun(Core core, string method, params object[] args);
+        public bool OnRun(Core core, string method, params object[] args)
+            => false;
 
         /// <summary>
         /// 需覆寫. 當服務被拉起時並響應特定指令
@@ -85,14 +87,15 @@ namespace Konata
         /// <param name="core"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public abstract bool OnHandle(Core core, params object[] args);
+        public bool OnHandle(Core core, params object[] args)
+            => false;
 
         /// <summary>
         /// 在繼承基類的類構造方法内調用. 注冊服務路由
         /// </summary>
         /// <param name="name">服務名稱</param>
         /// <param name="service">自身實例</param>
-        public static void Register(string name, Service service)
+        public void Register(string name, Service service)
         {
             service.name = name;
             map.Add(name.ToLower(), service);

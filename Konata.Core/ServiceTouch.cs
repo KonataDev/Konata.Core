@@ -3,9 +3,9 @@
                                                 
 using System;                                   
                                                 
-namespace Konata                            
+namespace Konata                                
 {                                               
-    public abstract partial class Service       
+    public partial class Service                
     {                                           
         static bool TouchServices()             
         {                                       

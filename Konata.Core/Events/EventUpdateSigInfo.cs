@@ -30,5 +30,13 @@ namespace Konata.Events
         }
 
         public Info UinInfo { get; set; }
+
+        public string WtLoginSession { get; set; }
+
+        public string WtLoginSmsToken { get; set; }
+
+        public string WtLoginSmsPhone { get; set; }
+
+        public string WtLoginSmsCountry { get; set; }
     }
 }

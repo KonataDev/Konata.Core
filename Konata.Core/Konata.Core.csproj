@@ -40,12 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\Component.cs" />
-    <Compile Include="Events\EventUpdateChallengeInfo.cs" />
+    <Compile Include="Events\EventOnlineStatus.cs" />
     <Compile Include="Events\EventUpdateSigInfo.cs" />
     <Compile Include="Events\EventUpdateSyncCookie.cs" />
+    <Compile Include="Events\EventWtLoginExchange.cs" />
     <Compile Include="Events\Paracel.cs" />
     <Compile Include="Events\Pumper.cs" />
-    <Compile Include="Events\EventCaptchaCtl.cs" />
     <Compile Include="Events\EventGroupCtl.cs" />
     <Compile Include="Packets\Oidb\OidbCmd0x899.cs" />
     <Compile Include="Packets\Oidb\OidbCmd0x55c_1.cs" />

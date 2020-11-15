@@ -31,6 +31,10 @@ namespace Konata.Events
 
         protected void BroadcastEvent(EventParacel eventParacel)
             => eventPumper.BroadcastEvent(eventParacel);
+
+        public T GetComponent<T>()
+            where T : EventComponent
+            => eventPumper.GetComponent<T>();
     }
 
     public class EventHandlers : Dictionary<Type, EventHandler>

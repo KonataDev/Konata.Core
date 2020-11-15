@@ -35,8 +35,8 @@ namespace Konata.Services.OnlinePush
 
         private bool Handle_PbPushGroupMsg(Core core, ProtoPbPushGroupMsg msg)
         {
-            core.PostUserEvent(EventType.GroupMessage,
-                msg.GroupUin, msg.MemberUin, msg.MsgContent);
+            //core.PostUserEvent(EventType.GroupMessage,
+            //    msg.GroupUin, msg.MemberUin, msg.MsgContent);
             return true;
         }
     }

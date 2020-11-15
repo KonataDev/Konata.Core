@@ -1,7 +1,7 @@
 @echo off
 
 set SOURCE=%2
-set TARGET=%SOURCE%Msf\ServiceTouch.cs
+set TARGET=%SOURCE%\ServiceTouch.cs
 echo [PreBuild.ScanService] %TARGET%
 
 :: Remove old file.
@@ -15,16 +15,16 @@ echo // DO NOT EDIT DIRECTLY.                        >> %TARGET%
 echo.                                                >> %TARGET%
 echo using System;                                   >> %TARGET%
 echo.                                                >> %TARGET%
-echo namespace Konata.Msf                            >> %TARGET%
+echo namespace Konata                                >> %TARGET%
 echo {                                               >> %TARGET%
-echo     public abstract partial class Service       >> %TARGET%
+echo     public partial class Service                >> %TARGET%
 echo     {                                           >> %TARGET%
 echo         static bool TouchServices()             >> %TARGET%
 echo         {                                       >> %TARGET%
 echo             Service instance;                   >> %TARGET%
 
 :: Write classes to.
-for /r %SOURCE%Msf\Services\ %%f in (*.cs) do (
+for /r %SOURCE%\Services\ %%f in (*.cs) do (
 	call :write %%f
 )
 
@@ -38,7 +38,7 @@ goto :eof
 
 :write
 set CLASS=%1
-set CLASS=%CLASS:*Msf\=%
+set CLASS=%CLASS:*Services\=%
 set CLASS=%CLASS:.cs=%
 set CLASS=%CLASS:\=.%
-echo             instance = %CLASS%.Instance;        >> %TARGET%
+echo             instance = Services.%CLASS%.Instance;        >> %TARGET%

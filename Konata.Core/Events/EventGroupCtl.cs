@@ -4,7 +4,7 @@ namespace Konata.Events
 {
     public class EventGroupCtl : EventParacel
     {
-        public enum CtlType
+        public enum EventType
         {
             KickMember,
             MuteMember,
@@ -13,11 +13,16 @@ namespace Konata.Events
             SetGroupCard,
         }
 
-        public CtlType Type { get; set; }
+        public EventType Type { get; set; }
 
         public uint GroupUin { get; set; }
 
         public uint MemberUin { get; set; }
+
+        /// <summary>
+        /// For KickMember
+        /// </summary>
+        public uint[] MembersUin { get; set; }
 
         /// <summary>
         /// For PromoteAdmin or KickMember <br/>
