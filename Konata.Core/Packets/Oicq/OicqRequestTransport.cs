@@ -11,7 +11,7 @@ namespace Konata.Packets.Oicq
         private const ushort OicqCommand = 0x0812;
         private const ushort OicqSubCommand = 0x0001;
 
-        public OicqRequestTransport(uint uin, UserSigInfo sigInfo, byte[] data, bool isMsf, uint appId,
+        public OicqRequestTransport(uint uin, SigInfoMan sigInfo, byte[] data, bool isMsf, uint appId,
             byte[] sigSession, byte[] sigSessionKey)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,

@@ -20,7 +20,7 @@ namespace Konata.Packets.Sso
         private ByteBuffer ssoPayload;
         private RequestPktType ssoPktType;
 
-        public SsoMessage(uint ssoseq, string ssoCmd, uint ssoSess,
+        public SsoMessage(string ssoCmd, uint ssoseq, uint ssoSess,
             RequestPktType type, SsoPayloadWriter writer)
             : base()
         {
@@ -76,7 +76,7 @@ namespace Konata.Packets.Sso
                         throw new Exception("Invalid sso message.");
                 }
 
-                r.TakeBytes(out var bytes, 
+                r.TakeBytes(out var bytes,
                     ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 {
                     ssoPayload = new ByteBuffer(bytes);

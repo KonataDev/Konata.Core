@@ -1,51 +1,51 @@
 ﻿using System;
+using Konata.Events;
 using Konata.Packets;
 using Konata.Packets.Sso;
 using Konata.Packets.SvcRequest;
 
 namespace Konata.Services.FriendList
 {
-    public class ModifyGroupCardReq : Service
+    public class ModifyGroupCardReq : ServiceRoutine
     {
-        private ModifyGroupCardReq()
+        public ModifyGroupCardReq(EventPumper eventPumper)
+            : base("friendlist.ModifyGroupCardReq", eventPumper)
         {
-            Register("friendlist.ModifyGroupCardReq", this);
+
         }
 
-        public static Service Instance { get; } = new ModifyGroupCardReq();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                return false;
-
-            if (args.Length != 3)
-                return false;
-
-            if (args[0] is uint groupUin
-                && args[1] is uint memberUin
-                && args[2] is string memberCard)
-                return Request_ModifyGroupCardReq(core, groupUin, memberUin, memberCard);
-
-            return false;
+            if (eventParacel is EventGroupCtl groupCtl
+                && groupCtl.Type == EventGroupCtl.EventType.SetGroupCard)
+                return OnSendRequest(groupCtl.GroupUin, groupCtl.MemberUin, groupCtl.GroupCard);
+            else if (eventParacel is EventSsoMessage ssoMsgEvent)
+                return OnRecvResponse(ssoMsgEvent.PayloadMsg);
+            return EventParacel.Reject;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            return false;
-        }
-
-        public bool Request_ModifyGroupCardReq(Core core, uint groupUin,
+        private EventParacel OnSendRequest(uint groupUin,
             uint memberUin, string memberCard)
         {
-            var ssoSeq = core.SsoMan.GetNewSequence();
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            RequestFlag = RequestFlag.D2Authentication,
+                            PayloadMsg = new SsoMessageTypeB(ServiceName, sso.Sequence, sso.Session,
+                                new SvcReqModifyGroupCard(groupUin, memberUin, memberCard))
+                        };
+                    return EventParacel.Reject;
+                }
+            });
+        }
 
-            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
-                new SvcReqModifyGroupCard(groupUin, memberUin, memberCard));
-
-            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
-                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+        private EventParacel OnRecvResponse(SsoMessage ssoMessage)
+        {
+            return EventParacel.Accept;
         }
     }
 }

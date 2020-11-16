@@ -15,8 +15,8 @@ namespace Konata
             RegisterComponent(new Core(this));
             RegisterComponent(new SsoMan(this));
             RegisterComponent(new PacketMan(this));
-            RegisterComponent(new Service(this));
-            RegisterComponent(new UserSigInfo(this, uin, password));
+            RegisterComponent(new ServiceMan(this));
+            RegisterComponent(new SigInfoMan(this, uin, password));
             RegisterComponent(new ToUser(this));
         }
 

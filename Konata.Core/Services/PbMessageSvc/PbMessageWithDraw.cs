@@ -1,30 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.PbMessageSvc
 {
-    public class PbMessageWithDraw : Service
+    public class PbMessageWithDraw : ServiceRoutine
     {
-        private PbMessageWithDraw()
+        public PbMessageWithDraw(EventPumper eventPumper)
+            : base("PbMessageSvc.PbMessageWithDraw", eventPumper)
         {
-            Register("PbMessageSvc.PbMessageWithDraw", this);
+
         }
 
-        public static Service Instance { get; } = new PbMessageWithDraw();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                throw new Exception("???");
-
-            return false;
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            return false;
+            return EventParacel.Reject;
         }
     }
 }

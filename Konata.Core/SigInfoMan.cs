@@ -9,7 +9,7 @@ using Konata.Events;
 
 namespace Konata
 {
-    public class UserSigInfo : EventComponent
+    public class SigInfoMan : EventComponent
     {
         public uint Uin { get; private set; }
 
@@ -102,7 +102,7 @@ namespace Konata
 
         #endregion
 
-        public UserSigInfo(EventPumper eventPumper, uint uin, string password)
+        public SigInfoMan(EventPumper eventPumper, uint uin, string password)
             : base(eventPumper)
         {
             eventHandlers += OnUpdateSigInfo;

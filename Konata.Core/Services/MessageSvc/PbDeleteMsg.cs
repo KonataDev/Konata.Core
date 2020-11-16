@@ -1,30 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.MessageSvc
 {
-    public class PbDeleteMsg : Service
+    public class PbDeleteMsg : ServiceRoutine
     {
-        private PbDeleteMsg()
+        public PbDeleteMsg(EventPumper eventPumper)
+            : base("MessageSvc.PbDeleteMsg", eventPumper)
         {
-            Register("MessageSvc.PbDeleteMsg", this);
+
         }
 
-        public static Service Instance { get; } = new PbDeleteMsg();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                throw new Exception("???");
-
-            return false;
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            return false;
+            return EventParacel.Reject;
         }
     }
 }

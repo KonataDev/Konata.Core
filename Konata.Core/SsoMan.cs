@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using Konata.Events;
 using Konata.Network;
 using Konata.Packets;
 using Konata.Packets.Sso;
-using Konata.Events;
 
 namespace Konata
 {
@@ -25,9 +25,11 @@ namespace Konata
         private SsoRequence ssoSequence;
         private SsoSession ssoSession;
 
-        public SsoMan(EventPumper ep)
-            : base(ep)
+        public SsoMan(EventPumper eventPumper)
+            : base(eventPumper)
         {
+            eventHandlers += OnEvent;
+
             ssoSequence = 25900;
             ssoSession = 0x54B87ADC;
 
@@ -35,18 +37,18 @@ namespace Konata
             ssoSeqLock = new SsoSeqLock();
         }
 
-        /// <summary>
-        /// 初始化SSO管理者並連接伺服器等待數據發送。
-        /// </summary>
-        /// <returns></returns>
-        public bool Connect()
+        private EventParacel OnEvent(EventParacel eventParacel)
         {
-            return pakMan.OpenSocket();
+            if (eventParacel is EventSsoMessage ssoInfo)
+                return OnPrepareNewSso(ssoInfo);
+
+            return EventParacel.Reject;
         }
 
-        public bool DisConnect()
+        private EventParacel OnPrepareNewSso(EventSsoMessage ssoInfo)
         {
-            return pakMan.CloseSocket();
+
+            return EventParacel.Reject;
         }
 
         /// <summary>

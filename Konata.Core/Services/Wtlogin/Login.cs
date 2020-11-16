@@ -9,16 +9,14 @@ using Konata.Packets.Oicq;
 
 namespace Konata.Services.Wtlogin
 {
-    public class Login : Service
+    public class Login : ServiceRoutine
     {
-        private Login()
+        public Login(EventPumper eventPumper)
+            : base("wtlogin.login", eventPumper)
         {
-            Register("wtlogin.login", this);
-
-            eventHandlers += OnHandleEvent;
+            eventHandlers += OnEvent;
         }
 
-        public static Service Instance { get; } = new Login();
 
         public override bool OnRun(Core core, string method, params object[] args)
         {
@@ -72,20 +70,6 @@ namespace Konata.Services.Wtlogin
             }
 
             return false;
-        }
-
-        public class EventWtLogin : EventParacel
-        {
-
-        }
-
-        private EventParacel OnHandleEvent(EventParacel eventParacel)
-        {
-            switch (eventParacel)
-            {
-                default:
-                    return EventParacel.Reject;
-            }
         }
 
         #region Event Requests
@@ -195,7 +179,7 @@ namespace Konata.Services.Wtlogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                CallEvent<UserSigInfo>(new EventUpdateSigInfo
+                CallEvent<SigInfoMan>(new EventUpdateSigInfo
                 {
                     WtLoginSession = sigSession
                 });
@@ -241,7 +225,7 @@ namespace Konata.Services.Wtlogin
 
                     Console.WriteLine($"[Hint] {sigMessage}");
 
-                    CallEvent<UserSigInfo>(new EventUpdateSigInfo
+                    CallEvent<SigInfoMan>(new EventUpdateSigInfo
                     {
                         WtLoginSession = sigSession,
                         WtLoginSmsPhone = smsPhone,
@@ -266,12 +250,12 @@ namespace Konata.Services.Wtlogin
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
 
-                    CallEvent<UserSigInfo>(new EventUpdateSigInfo
+                    CallEvent<SigInfoMan>(new EventUpdateSigInfo
                     {
                         WtLoginSession = sigSession,
                     });
 
-                    var sigInfo = GetComponent<UserSigInfo>();
+                    var sigInfo = GetComponent<SigInfoMan>();
                     {
                         PostEvent<ToUser>(new EventWtLoginExchange
                         {
@@ -504,6 +488,11 @@ namespace Konata.Services.Wtlogin
             });
 
             return false;
+        }
+
+        protected override EventParacel OnEvent(EventParacel eventParacel)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

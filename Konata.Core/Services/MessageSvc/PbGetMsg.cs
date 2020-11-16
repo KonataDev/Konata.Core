@@ -1,50 +1,48 @@
 ﻿using System;
+using Konata.Events;
 using Konata.Packets;
 using Konata.Packets.Sso;
 using Konata.Packets.Protobuf;
 
 namespace Konata.Services.MessageSvc
 {
-    public class PbGetMsg : Service
+    public class PbGetMsg : ServiceRoutine
     {
-        private PbGetMsg()
+        public PbGetMsg(EventPumper eventPumper)
+            : base("MessageSvc.PbGetMsg", eventPumper)
         {
-            Register("MessageSvc.PbGetMsg", this);
+
         }
 
-        public static Service Instance { get; } = new PbGetMsg();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                throw new Exception("???");
+            //if (eventParacel is EventAccountCtl accountCtl
+            //    && accountCtl.Type == EventAccountCtl.EventType.GetTroopList)
+            //    return OnSendRequest(accountCtl.SelfUin);
+            //else if (eventParacel is EventSsoMessage ssoMsgEvent)
+            //    return OnRecvResponse(ssoMsgEvent.PayloadMsg);
 
-            return Request_PbGetMsg(core);
+            return EventParacel.Reject;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
+        private EventParacel OnSendRequest()
         {
-            if (args == null || args.Length == 0)
-                return false;
+            //var ssoSeq = core.SsoMan.GetNewSequence();
+            //var ssoSession = core.SsoMan.GetSsoSession();
 
-            return false;
+            //var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
+            //    new ProtoGetMsg(core.SigInfo.SyncCookie).Serialize());
+
+            //return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
+            //    ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+            return EventParacel.Reject;
         }
 
-        private bool Request_PbGetMsg(Core core)
+        private EventParacel OnRecvResponse()
         {
-            var ssoSeq = core.SsoMan.GetNewSequence();
-            var ssoSession = core.SsoMan.GetSsoSession();
-
-            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
-                new ProtoGetMsg(core.SigInfo.SyncCookie).Serialize());
-
-            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
-                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+            return EventParacel.Reject;
         }
 
-        private bool Handle_PbGetMsg(Core core)
-        {
-            return true;
-        }
+
     }
 }

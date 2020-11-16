@@ -1,27 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.GrayUinPro
 {
-    public class Check : Service
+    public class Check : ServiceRoutine
     {
-        private Check()
-        {
-            Register("GrayUinPro.Check", this);
-        }
-
-        public static Service Instance { get; } = new Check();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        public Check(EventPumper eventPumper)
+            : base("GrayUinPro.Check", eventPumper)
         {
 
-            return false;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-
-            return false;
+            return EventParacel.Reject;
         }
-
     }
 }

@@ -40,7 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\Component.cs" />
+    <Compile Include="Events\EventAccountCtl.cs" />
     <Compile Include="Events\EventOnlineStatus.cs" />
+    <Compile Include="Events\EventSsoMessage.cs" />
     <Compile Include="Events\EventUpdateSigInfo.cs" />
     <Compile Include="Events\EventUpdateSyncCookie.cs" />
     <Compile Include="Events\EventWtLoginExchange.cs" />
@@ -70,6 +72,8 @@
     <Compile Include="Packets\SvcRequest\SvcReqGetTroopListReqV2Simplify.cs" />
     <Compile Include="Packets\SvcRequest\SvcReqModifyGroupCard.cs" />
     <Compile Include="Packets\SvcResponse\SvcRspRegister.cs" />
+    <Compile Include="ServiceMan.cs" />
+    <Compile Include="ServiceInitial.cs" />
     <Compile Include="Services\FriendList\GetTroopListReqV2.cs" />
     <Compile Include="Services\FriendList\ModifyGroupCardReq.cs" />
     <Compile Include="Services\OidbSvc\Oidb0x55c_1.cs" />
@@ -192,7 +196,6 @@
     <Compile Include="Network\PacketMan.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Services\Wtlogin\Trans_emp.cs" />
-    <Compile Include="ServiceTouch.cs" />
     <Compile Include="SsoMan.cs" />
     <Compile Include="Crypto\EncryptType.cs" />
     <Compile Include="Types.cs" />
@@ -205,7 +208,7 @@
     <Compile Include="Crypto\Md5Cryptor.cs" />
     <Compile Include="Crypto\TeaCryptor.cs" />
     <Compile Include="DeviceInfo.cs" />
-    <Compile Include="UserSigInfo.cs" />
+    <Compile Include="SigInfoMan.cs" />
     <Compile Include="Utils\Guid.cs" />
     <Compile Include="Utils\Hex.cs" />
     <Compile Include="Packets\Tlv\TlvPacker.cs" />

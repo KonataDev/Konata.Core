@@ -1,48 +1,52 @@
 ﻿using System;
+using Konata.Events;
 using Konata.Packets;
 using Konata.Packets.Sso;
 using Konata.Packets.SvcRequest;
 
 namespace Konata.Services.FriendList
 {
-    public class GetTroopListReqV2 : Service
+    public class GetTroopListReqV2 : ServiceRoutine
     {
-        private GetTroopListReqV2()
+        public GetTroopListReqV2(EventPumper eventPumper)
+            : base("friendlist.GetTroopListReqV2", eventPumper)
         {
-            Register("friendlist.GetTroopListReqV2", this);
+
         }
 
-        public static Service Instance { get; } = new GetTroopListReqV2();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                return false;
+            if (eventParacel is EventAccountCtl accountCtl
+                && accountCtl.Type == EventAccountCtl.EventType.GetTroopList)
+                return OnSendRequest(accountCtl.SelfUin);
+            else if (eventParacel is EventSsoMessage ssoMsgEvent)
+                return OnRecvResponse(ssoMsgEvent.PayloadMsg);
 
-            if (args.Length != 1)
-                return false;
-
-            if (args[0] is uint selfUin)
-                return Request_GetTroopListReqV2(core, selfUin);
-
-            return false;
+            return EventParacel.Reject;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
+        private EventParacel OnSendRequest(uint selfUin)
         {
-            return false;
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            RequestFlag = RequestFlag.D2Authentication,
+                            PayloadMsg = new SsoMessageTypeB(ServiceName, sso.Sequence, sso.Session,
+                                new SvcReqGetTroopListReqV2Simplify(selfUin))
+                        };
+
+                    return EventParacel.Reject;
+                }
+            });
         }
 
-        public bool Request_GetTroopListReqV2(Core core, uint selfUin)
+        private EventParacel OnRecvResponse(SsoMessage ssoMessage)
         {
-            var ssoSeq = core.SsoMan.GetNewSequence();
-            var ssoSession = core.SsoMan.GetSsoSession();
-
-            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
-                new SvcReqGetTroopListReqV2Simplify(selfUin));
-
-            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
-                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+            return EventParacel.Accept;
         }
     }
 }

@@ -1,27 +1,19 @@
 using System;
+using Konata.Events;
 
 namespace Konata.Services.JsApiSvr.WebView
 {
-    public class WhiteList : Service
+    public class WhiteList : ServiceRoutine
     {
-        private WhiteList()
-        {
-            Register("JsApiSvr.webview.whitelist", this);
-        }
-
-        public static Service Instance { get; } = new WhiteList();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        public WhiteList(EventPumper eventPumper)
+            : base("JsApiSvr.webview.whitelist", eventPumper)
         {
 
-            return false;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-
-            return false;
+            return EventParacel.Reject;
         }
-
     }
 }

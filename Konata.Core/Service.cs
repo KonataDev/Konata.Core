@@ -4,16 +4,23 @@ using Konata.Events;
 
 namespace Konata
 {
-    using Routine = Dictionary<string, Service>;
+    using ServiceRoutine = Dictionary<string, Service>;
 
     public partial class Service : EventComponent
     {
-        private static readonly Routine map = new Routine();
+        private readonly ServiceRoutine serviceRoutine;
+        private readonly List<Events.EventHandler> serviceHandler;
 
         public Service(EventPumper eventPumper)
             : base(eventPumper)
         {
             TouchServices();
+        }
+
+
+        private EventParacel OnEvent(EventParacel eventParacel)
+        {
+
         }
 
         /// <summary>
@@ -28,7 +35,7 @@ namespace Konata
         {
             try
             {
-                return map[name.ToLower()].OnRun(core, method, args);
+                return serviceRoutine[name.ToLower()].OnRun(core, method, args);
             }
             catch
             {
@@ -59,7 +66,7 @@ namespace Konata
         {
             try
             {
-                return map[name.ToLower()].OnHandle(core, args);
+                return serviceRoutine[name.ToLower()].OnHandle(core, args);
             }
             catch (Exception e)
             {
@@ -98,7 +105,7 @@ namespace Konata
         public void Register(string name, Service service)
         {
             service.name = name;
-            map.Add(name.ToLower(), service);
+            serviceRoutine.Add(name.ToLower(), service);
         }
     }
 }

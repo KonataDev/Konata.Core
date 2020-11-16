@@ -5,10 +5,10 @@ namespace Konata.Packets.Sso
 {
     public class SsoMessageTypeB : SsoMessage
     {
-        public SsoMessageTypeB(uint sequence, string command, uint session,
+        public SsoMessageTypeB(string command, uint sequence, uint session,
                   ByteBuffer payload)
 
-            : base(sequence, command, session, RequestPktType.TypeB, (ByteBuffer w) =>
+            : base(command, sequence, session, RequestPktType.TypeB, (ByteBuffer w) =>
             {
                 var head = new ByteBuffer();
                 {

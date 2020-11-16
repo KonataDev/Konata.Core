@@ -1,43 +1,19 @@
 ﻿using System;
-using Konata.Library.Protobuf;
-using Konata.Packets.Protobuf;
+using Konata.Events;
 
 namespace Konata.Services.OnlinePush
 {
-    public class PbPushGroupMsg : Service
+    public class PbPushGroupMsg : ServiceRoutine
     {
-        private PbPushGroupMsg()
+        public PbPushGroupMsg(EventPumper eventPumper)
+            : base("OnlinePush.PbPushGroupMsg", eventPumper)
         {
-            Register("OnlinePush.PbPushGroupMsg", this);
+
         }
 
-        public static Service Instance { get; } = new PbPushGroupMsg();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            return false;
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            if (args == null)
-                return false;
-            if (args.Length != 1)
-                return false;
-            if (args[0] is byte[] payload)
-                return Handle_PbPushGroupMsg(core, new ProtoPbPushGroupMsg(payload));
-
-            return false;
-        }
-
-        private bool Handle_PbPushGroupMsg(Core core, ProtoPbPushGroupMsg msg)
-        {
-            //core.PostUserEvent(EventType.GroupMessage,
-            //    msg.GroupUin, msg.MemberUin, msg.MsgContent);
-            return true;
+            return EventParacel.Reject;
         }
     }
 }

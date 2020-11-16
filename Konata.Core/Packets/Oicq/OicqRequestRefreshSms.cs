@@ -10,7 +10,7 @@ namespace Konata.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0008;
 
-        public OicqRequestRefreshSms(uint uin, UserSigInfo sigInfo,
+        public OicqRequestRefreshSms(uint uin, SigInfoMan sigInfo,
             string sigSession, string smsToken)
 
             : base(OicqCommand, OicqSubCommand, uin,

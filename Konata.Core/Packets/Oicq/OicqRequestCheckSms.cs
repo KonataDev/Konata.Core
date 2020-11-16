@@ -10,7 +10,7 @@ namespace Konata.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0007;
 
-        public OicqRequestCheckSms(uint uin, UserSigInfo sigInfo, string sigSession,
+        public OicqRequestCheckSms(uint uin, SigInfoMan sigInfo, string sigSession,
             byte[] gSecret, string smsToken, string smsCode)
 
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH7,

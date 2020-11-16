@@ -1,37 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.PbMessageSvc
 {
-    public class PbMsgReadReport : Service
+    public class PbMsgReadReport : ServiceRoutine
     {
-        private PbMsgReadReport()
+        public PbMsgReadReport(EventPumper eventPumper)
+            : base("PbMessageSvc.PbMsgReadedReport", eventPumper)
         {
-            Register("PbMessageSvc.PbMsgReadedReport", this);
+
         }
 
-        public static Service Instance { get; } = new PbMsgReadReport();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                throw new Exception("???");
-
-            return false;
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            return false;
-        }
-
-        private bool Request_PbMsgReadedReport(Core core,
-            uint fromUin, uint sentTime, byte[] syncCookie)
-        {
-
-            return false;
+            return EventParacel.Reject;
         }
     }
 }

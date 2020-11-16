@@ -13,7 +13,7 @@ namespace Konata.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0009;
 
-        public OicqRequestTgtgt(uint uin, uint ssoseq, UserSigInfo sigInfo)
+        public OicqRequestTgtgt(uint uin, uint ssoseq, SigInfoMan sigInfo)
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH135,
                 new XTGTGT(uin, ssoseq, sigInfo.PasswordMd5, sigInfo.TgtgKey,
                     sigInfo.Tlv106Key), sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)

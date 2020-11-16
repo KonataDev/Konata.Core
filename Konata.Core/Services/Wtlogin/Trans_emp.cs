@@ -1,42 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.Wtlogin
 {
-    public class Trans_emp : Service
+    public class Trans_emp : ServiceRoutine
     {
-        private Trans_emp()
+        public Trans_emp(EventPumper eventPumper)
+            : base("wtlogin.trans_emp", eventPumper)
         {
-            Register("wtlogin.trans_emp", this);
+
         }
 
-        public static Service Instance { get; } = new Trans_emp();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            switch (method)
-            {
-                case "Request_Transport":
-                    return Request_Transport(core);
-                default: return false;
-            }
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            return false;
-        }
-
-        /// <summary>
-        /// 請求發送報告 沒什麽用 暫時咕
-        /// </summary>
-        /// <param name="core"></param>
-        /// <returns></returns>
-        private bool Request_Transport(Core core)
-        {
-            return false;
+            return EventParacel.Reject;
         }
     }
 }

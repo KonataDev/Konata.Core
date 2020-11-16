@@ -5,10 +5,10 @@ namespace Konata.Packets.Sso
 {
     public class SsoMessageTypeA : SsoMessage
     {
-        public SsoMessageTypeA(uint sequence, string command,
+        public SsoMessageTypeA(string command, uint sequence,
             uint session, byte[] tgtoken, ByteBuffer payload)
 
-            : base(sequence, command, session, RequestPktType.TypeA, (ByteBuffer w) =>
+            : base(command, sequence, session, RequestPktType.TypeA, (ByteBuffer w) =>
             {
                 byte[] unknownBytes0 = { };
                 byte[] unknownBytes1 = { };

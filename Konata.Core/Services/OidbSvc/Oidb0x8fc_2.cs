@@ -1,55 +1,53 @@
 ﻿using System;
+using Konata.Events;
 using Konata.Packets;
 using Konata.Packets.Sso;
 using Konata.Packets.Oidb;
 
 namespace Konata.Services.OidbSvc
 {
-    public class Oidb0x8fc_2 : Service
+    public class Oidb0x8fc_2 : ServiceRoutine
     {
-        private Oidb0x8fc_2()
+        public Oidb0x8fc_2(EventPumper eventPumper)
+            : base("OidbSvc.0x8fc_2", eventPumper)
         {
-            Register("OidbSvc.0x8fc_2", this);
+
         }
 
-        public static Service Instance { get; } = new Oidb0x8fc_2();
-
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                return false;
+            if (eventParacel is EventGroupCtl groupCtl
+                && groupCtl.Type == EventGroupCtl.EventType.SetSpecialTitle)
+                return OnSendRequest(groupCtl.GroupUin, groupCtl.MemberUin,
+                    groupCtl.SpecialTitle, groupCtl.TimeSeconds);
+            else if (eventParacel is EventSsoMessage ssoEvent)
+                return OnRecvResponse(ssoEvent.PayloadMsg);
 
-            if (args.Length != 3
-                || args.Length != 4)
-                return false;
-
-            if (args[0] is uint groupUin
-                && args[1] is uint memberUin
-                && args[2] is string specialTitle)
-                return Request_0x8fc_2(core, groupUin, memberUin,
-                    specialTitle, args.Length == 4 ? ((uint?)args[3]) : null);
-
-            return false;
+            return EventParacel.Reject;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            return false;
-        }
-
-        private bool Request_0x8fc_2(Core core, uint groupUin, uint memberUin,
+        private EventParacel OnSendRequest(uint groupUin, uint memberUin,
             string specialTitle, uint? expiredTime)
         {
-            var ssoSeq = core.SsoMan.GetNewSequence();
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            RequestFlag = RequestFlag.D2Authentication,
+                            PayloadMsg = new SsoMessageTypeB(ServiceName, sso.Sequence, sso.Session,
+                                new OidbCmd0x8fc_2(groupUin, memberUin, specialTitle, expiredTime))
+                        };
+                    return EventParacel.Reject;
+                }
+            });
+        }
 
-            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
-                new OidbCmd0x8fc_2(groupUin, memberUin,
-                specialTitle, expiredTime));
-
-            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
-                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+        private EventParacel OnRecvResponse(SsoMessage ssoMessage)
+        {
+            return EventParacel.Accept;
         }
     }
 }

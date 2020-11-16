@@ -1,30 +1,19 @@
 ﻿using System;
+using Konata.Events;
 
 namespace Konata.Services.MessageSvc
 {
-    public class PushRead : Service
+    public class PushRead : ServiceRoutine
     {
-        private PushRead()
+        public PushRead(EventPumper eventPumper)
+            : base("MessageSvc.PushReaded", eventPumper)
         {
-            Register("MessageSvc.PushReaded", this);
+
         }
 
-        public static Service Instance { get; } = new PushRead();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                throw new Exception("???");
-
-            return false;
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            return false;
+            return EventParacel.Reject;
         }
     }
 }

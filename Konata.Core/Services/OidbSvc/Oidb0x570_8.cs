@@ -2,51 +2,52 @@
 using Konata.Packets;
 using Konata.Packets.Sso;
 using Konata.Packets.Oidb;
+using Konata.Events;
 
 namespace Konata.Services.OidbSvc
 {
-    public class Oidb0x570_8 : Service
+    public class Oidb0x570_8 : ServiceRoutine
     {
-        private Oidb0x570_8()
+        public Oidb0x570_8(EventPumper eventPumper)
+            : base("OidbSvc.0x570_8", eventPumper)
         {
-            Register("OidbSvc.0x570_8", this);
+
         }
 
-        public static Service Instance { get; } = new Oidb0x570_8();
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (method != "")
-                return false;
+            if (eventParacel is EventGroupCtl groupCtl
+                && groupCtl.Type == EventGroupCtl.EventType.MuteMember)
+                return OnSendRequest(groupCtl.GroupUin, groupCtl.MemberUin,
+                    groupCtl.TimeSeconds ?? uint.MaxValue);
+            else if (eventParacel is EventSsoMessage ssoEvent)
+                return OnRecvResponse(ssoEvent.PayloadMsg);
 
-            if (args.Length != 3)
-                return false;
-
-            if (args[0] is uint groupUin
-                && args[1] is uint memberUin
-                && args[2] is uint timeSeconds)
-                return Request_0x570_8(core, groupUin, memberUin, timeSeconds);
-
-            return false;
+            return EventParacel.Reject;
         }
 
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            return false;
-        }
-
-        private bool Request_0x570_8(Core core, uint groupUin,
+        private EventParacel OnSendRequest(uint groupUin,
             uint memberUin, uint timeSeconds)
         {
-            var ssoSeq = core.SsoMan.GetNewSequence();
-            var ssoSession = core.SsoMan.GetSsoSession();
-
-            var ssoMessage = new SsoMessageTypeB(ssoSeq, name, ssoSession,
-                new OidbCmd0x570_8(groupUin, memberUin, timeSeconds));
-
-            return core.SsoMan.PostMessage(RequestFlag.D2Authentication,
-                ssoMessage, core.SigInfo.D2Token, core.SigInfo.D2Key);
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            RequestFlag = RequestFlag.D2Authentication,
+                            PayloadMsg = new SsoMessageTypeB(ServiceName, sso.Sequence, sso.Session,
+                                new OidbCmd0x570_8(groupUin, memberUin, timeSeconds))
+                        };
+                    return EventParacel.Reject;
+                }
+            });
         }
 
+        private EventParacel OnRecvResponse(SsoMessage ssoMessage)
+        {
+            return EventParacel.Accept;
+        }
     }
 }
