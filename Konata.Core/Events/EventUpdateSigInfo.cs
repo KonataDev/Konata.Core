@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Packets.Oicq;
 
 namespace Konata.Events
 {
@@ -38,5 +39,7 @@ namespace Konata.Events
         public string WtLoginSmsPhone { get; set; }
 
         public string WtLoginSmsCountry { get; set; }
+
+        public OicqStatus WtLoginOicqStatus { get; set; }
     }
 }

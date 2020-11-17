@@ -27,24 +27,6 @@ namespace Konata
         {
 
         }
-
-        #region Core Methods
-
-        /// <summary>
-        /// 連接到伺服器
-        /// </summary>
-        /// <returns></returns>
-        public bool Connect() =>
-            SsoMan.Connect();
-
-        /// <summary>
-        /// 斷開連接
-        /// </summary>
-        /// <returns></returns>
-        public bool DisConnect() =>
-            SsoMan.DisConnect();
-
-        #endregion
     }
 
     public class EventGroupCtlRsp : EventParacel

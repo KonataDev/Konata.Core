@@ -145,7 +145,6 @@
     <Compile Include="Packets\Tlv\T550.cs" />
     <Compile Include="Packets\Tlv\TlvUnpacker.cs" />
     <Compile Include="Packets\Wup\UniPacket.cs" />
-    <Compile Include="Service.cs" />
     <Compile Include="Packets\Protobuf\DeviceReport.cs" />
     <Compile Include="Packets\Tlv\T1.cs" />
     <Compile Include="Packets\Tlv\T100.cs" />

@@ -13,9 +13,9 @@ namespace Konata.Packets.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0009;
 
-        public OicqRequestTgtgt(uint uin, uint ssoseq, SigInfoMan sigInfo)
-            : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH135,
-                new XTGTGT(uin, ssoseq, sigInfo.PasswordMd5, sigInfo.TgtgKey,
+        public OicqRequestTgtgt(SigInfoMan sigInfo, uint ssoseq)
+            : base(OicqCommand, OicqSubCommand, sigInfo.Uin, OicqEncryptMethod.ECDH135,
+                new XTGTGT(sigInfo.Uin, ssoseq, sigInfo.PasswordMd5, sigInfo.TgtgKey,
                     sigInfo.Tlv106Key), sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)
         {
 
@@ -27,7 +27,7 @@ namespace Konata.Packets.Oicq
                 : base()
             {
                 // 設備訊息上報
-                var report = new DeviceReport (
+                var report = new DeviceReport(
                     DeviceInfo.Build.Bootloader,
                     DeviceInfo.System.OsVersion,
                     DeviceInfo.Build.CodeName,

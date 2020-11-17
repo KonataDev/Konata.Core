@@ -47,7 +47,6 @@ namespace Konata
 
         private EventParacel OnPrepareNewSso(EventSsoMessage ssoInfo)
         {
-
             return EventParacel.Reject;
         }
 
@@ -165,7 +164,12 @@ namespace Konata
                 Console.WriteLine($"  [SsoMessage] ssoSession => {ssoMessage.GetSession()}");
                 Console.WriteLine($"  [SsoMessage] ssoCommand => {ssoMessage.GetCommand()}");
 
-                Service.Handle(msfCore, ssoMessage.GetCommand(), ssoMessage.GetPayload());
+                PostEvent<ServiceMan>(new EventSsoMessage
+                {
+                    RequestFlag = pktFlag,
+                    PayloadMsg = ssoMessage,
+                    Command = ssoMessage.GetCommand(),
+                });
             }
             catch (Exception e)
             {

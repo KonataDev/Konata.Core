@@ -10,6 +10,7 @@ namespace Konata.Events
 
         public RequestFlag RequestFlag { get; set; }
 
+        public string Command { get; set; }
     }
 
     public class EventDraftSsoMessage : EventParacel
@@ -17,6 +18,11 @@ namespace Konata.Events
         public uint Sequence { get; set; }
 
         public uint Session { get; set; }
-
     }
+
+    public class EventDropServiceSsoSeq : EventParacel
+    {
+        public string ServiceName { get; set; }
+    }
+
 }

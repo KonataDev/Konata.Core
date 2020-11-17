@@ -17,155 +17,164 @@ namespace Konata.Services.Wtlogin
             eventHandlers += OnEvent;
         }
 
-
-        public override bool OnRun(Core core, string method, params object[] args)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            switch (method)
+            if (eventParacel is EventWtLoginExchange wtloginXchg)
             {
-                case "Request_TGTGT":
-                    return Request_TGTGT(core);
-                case "Request_SliderCaptcha":
-                    return Request_SliderCaptcha(core, (string)args[0]);
-                case "Request_SmsCaptcha":
-                    return Request_SmsCaptcha(core, (string)args[0]);
-                case "Request_RefreshSms":
-                    return Request_RefreshSms(core);
-                default: return false;
+                var sigInfo = GetComponent<SigInfoMan>();
+                {
+                    switch (wtloginXchg.Type)
+                    {
+                        case EventWtLoginExchange.EventType.Tgtgt:
+                            return OnSendRequestTgtgt(sigInfo);
+                        case EventWtLoginExchange.EventType.RefreshSms:
+                            return OnSendRequestRefreshSms(sigInfo);
+                        case EventWtLoginExchange.EventType.CheckSliderCaptcha:
+                            return OnSendRequestCheckSlider(sigInfo, wtloginXchg.CaptchaResult);
+                        case EventWtLoginExchange.EventType.CheckSmsCaptcha:
+                            return OnSendRequestCheckSms(sigInfo, wtloginXchg.CaptchaResult);
+
+                        default:
+                            return EventParacel.Reject;
+                    }
+                }
             }
-        }
-
-        public override bool OnHandle(Core core, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                return false;
-
-            var oicqRequest = new OicqRequest((byte[])args[0],
-                core.SigInfo.ShareKey);
-
-            Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
-            Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
-            Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest.oicqStatus}");
-
-            core.SigInfo.WtLoginStatus = oicqRequest.oicqStatus;
-            switch (oicqRequest.oicqStatus)
+            else if (eventParacel is EventSsoMessage ssoEvent)
             {
-                case OicqStatus.OK:
-                    return Handle_WtloginSuccess(core, oicqRequest);
+                var sigInfo = GetComponent<SigInfoMan>();
+                var oicqRequest = new OicqRequest(ssoEvent.PayloadMsg.GetPayload(), sigInfo.ShareKey);
 
-                case OicqStatus.DoVerifySliderCaptcha:
-                    return Handle_VerifySliderCaptcha(core, oicqRequest);
-                case OicqStatus.DoVerifyDeviceLockViaSms:
-                    return Handle_VerifySmsCaptcha(core, oicqRequest);
+                Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
+                Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
+                Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest.oicqStatus}");
 
-                case OicqStatus.PreventByIncorrectUserOrPwd:
-                    return Handle_InvalidUserOrPassword(core, oicqRequest);
-                case OicqStatus.PreventByIncorrectSmsCode:
-                    return Handle_InvalidSmsCode(core, oicqRequest);
-                case OicqStatus.PreventByInvalidEnvironment:
-                    return Handle_InvalidEnvironment(core, oicqRequest);
-                case OicqStatus.PreventByLoginDenied:
-                    return Handle_LoginDenied(core, oicqRequest);
+                PostEvent<SigInfoMan>(new EventUpdateSigInfo
+                {
+                    WtLoginOicqStatus = oicqRequest.oicqStatus
+                });
 
-                default: Handle_UnknownOicqRequest(core, oicqRequest); break;
+                switch (oicqRequest.oicqStatus)
+                {
+                    case OicqStatus.OK:
+                        return OnRecvResponseWtloginSuccess(sigInfo, oicqRequest);
+
+                    case OicqStatus.DoVerifySliderCaptcha:
+                        return OnRecvResponseVerifySliderCaptcha(sigInfo, oicqRequest);
+                    case OicqStatus.DoVerifyDeviceLockViaSms:
+                        return OnRecvResponseVerifySmsCaptcha(sigInfo, oicqRequest);
+
+                    case OicqStatus.PreventByIncorrectUserOrPwd:
+                        return OnRecvResponseInvalidUsrPwd(sigInfo, oicqRequest);
+                    case OicqStatus.PreventByIncorrectSmsCode:
+                        return OnRecvResponseInvalidSmsCode(sigInfo, oicqRequest);
+                    case OicqStatus.PreventByInvalidEnvironment:
+                        return OnRecvResponseInvalidLoginEnv(sigInfo, oicqRequest);
+                    case OicqStatus.PreventByLoginDenied:
+                        return OnRecvResponseLoginDenied(sigInfo, oicqRequest);
+
+                    default:
+                        return OnRecvResponseUnknown(sigInfo, oicqRequest);
+                }
             }
 
-            return false;
+            return EventParacel.Reject;
         }
 
         #region Event Requests
 
-        /// <summary>
-        /// 請求 OicqRequestTgtgt
-        /// </summary>
-        /// <param name="core"></param>
-        private bool Request_TGTGT(Core core)
+        private EventParacel OnSendRequestTgtgt(SigInfoMan sigInfo)
         {
             Console.WriteLine("Submit OicqRequestTGTGT.");
 
-            var ssoSeq = core.SsoMan.GetServiceSequence(name);
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            Command = ServiceName,
+                            RequestFlag = RequestFlag.WtLoginExchange,
+                            PayloadMsg = new SsoMessageTypeA(ServiceName, sso.Sequence, sso.Session, null,
+                                new OicqRequestTgtgt(sigInfo, sso.Sequence))
+                        };
 
-            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
-                new OicqRequestTgtgt(core.SigInfo.Uin, ssoSeq, core.SigInfo));
-
-            return core.SsoMan.PostMessage(
-                RequestFlag.WtLoginExchange, ssoMessage);
+                    return EventParacel.Reject;
+                }
+            });
         }
 
-        //private EventParacel Request_Tgtgt()
-        //{
-        //    Console.WriteLine("Submit OicqRequestTGTGT.");
-
-        //}
-
-        /// <summary>
-        /// 請求 OicqRequestCheckImage
-        /// </summary>
-        /// <param name="core"></param>
-        /// <param name="ticket"></param>
-        /// <returns></returns>
-        private bool Request_SliderCaptcha(Core core, string ticket)
+        private EventParacel OnSendRequestCheckSlider(SigInfoMan sigInfo, string ticket)
         {
             Console.WriteLine("Submit OicqRequestCheckImage.");
 
-            var ssoSeq = core.SsoMan.GetServiceSequence(name);
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            Command = ServiceName,
+                            RequestFlag = RequestFlag.WtLoginExchange,
+                            PayloadMsg = new SsoMessageTypeA(ServiceName, sso.Sequence, sso.Session, null,
+                                new OicqRequestCheckImage(sigInfo, ticket))
+                        };
 
-            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
-                new OicqRequestCheckImage(core.SigInfo.Uin, core.SigInfo,
-                    core.SigInfo.WtLoginSession, ticket));
-
-            return core.SsoMan.PostMessage(
-                RequestFlag.WtLoginExchange, ssoMessage);
+                    return EventParacel.Reject;
+                }
+            });
         }
 
-        /// <summary>
-        /// 請求 OicqRequestCheckSms
-        /// </summary>
-        /// <param name="core"></param>
-        /// <param name="smsCode"></param>
-        /// <returns></returns>
-        private bool Request_SmsCaptcha(Core core, string smsCode)
+        private EventParacel OnSendRequestCheckSms(SigInfoMan sigInfo, string smsCode)
         {
             Console.WriteLine("Submit OicqRequestCheckSms.");
 
-            var ssoSeq = core.SsoMan.GetServiceSequence(name);
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            Command = ServiceName,
+                            RequestFlag = RequestFlag.WtLoginExchange,
+                            PayloadMsg = new SsoMessageTypeA(ServiceName, sso.Sequence, sso.Session, null,
+                                new OicqRequestCheckSms(sigInfo, smsCode))
+                        };
 
-            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
-                new OicqRequestCheckSms(core.SigInfo.Uin, core.SigInfo,
-                    core.SigInfo.WtLoginSession, core.SigInfo.GSecret,
-                    core.SigInfo.WtLoginSmsToken, smsCode));
-
-            return core.SsoMan.PostMessage(
-                RequestFlag.WtLoginExchange, ssoMessage);
+                    return EventParacel.Reject;
+                }
+            });
         }
 
-        /// <summary>
-        /// 刷新SMS驗證碼. CD 60s
-        /// </summary>
-        /// <param name="core"></param>
-        /// <returns></returns>
-        private bool Request_RefreshSms(Core core)
+        private EventParacel OnSendRequestRefreshSms(SigInfoMan sigInfo)
         {
             Console.WriteLine("Request send SMS.");
 
-            var ssoSeq = core.SsoMan.GetServiceSequence(name);
-            var ssoSession = core.SsoMan.GetSsoSession();
+            return CallEvent<SsoMan>(new EventDraftSsoMessage
+            {
+                EventDelegate = (EventParacel eventParacel) =>
+                {
+                    if (eventParacel is EventDraftSsoMessage sso)
+                        return new EventSsoMessage
+                        {
+                            Command = ServiceName,
+                            RequestFlag = RequestFlag.WtLoginExchange,
+                            PayloadMsg = new SsoMessageTypeA(ServiceName, sso.Sequence, sso.Session, null,
+                                new OicqRequestRefreshSms(sigInfo))
+                        };
 
-            var ssoMessage = new SsoMessageTypeA(ssoSeq, name, ssoSession, null,
-                new OicqRequestRefreshSms(core.SigInfo.Uin, core.SigInfo,
-                    core.SigInfo.WtLoginSession, core.SigInfo.WtLoginSmsToken));
-
-            return core.SsoMan.PostMessage(
-                RequestFlag.WtLoginExchange, ssoMessage);
+                    return EventParacel.Reject;
+                }
+            });
         }
 
         #endregion
 
         #region Event Handlers
 
-        private bool Handle_VerifySliderCaptcha(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseVerifySliderCaptcha(SigInfoMan sigInfo, OicqRequest request)
         {
             Console.WriteLine("Do slider verification.");
 
@@ -189,11 +198,14 @@ namespace Konata.Services.Wtlogin
                     SliderUrl = sigCaptchaURL,
                     Type = EventWtLoginExchange.EventType.CheckSliderCaptcha
                 });
+
+                return EventParacel.Accept;
             }
-            return false;
+
+            return EventParacel.Reject;
         }
 
-        private bool Handle_VerifySmsCaptcha(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseVerifySmsCaptcha(SigInfoMan sigInfo, OicqRequest request)
         {
             Console.WriteLine("Do sms verification.");
 
@@ -238,7 +250,7 @@ namespace Konata.Services.Wtlogin
                         Type = EventWtLoginExchange.EventType.RefreshSms
                     });
 
-                    return true;
+                    return EventParacel.Accept;
                 }
             }
             else if (unpacker.Count == 2)
@@ -255,17 +267,14 @@ namespace Konata.Services.Wtlogin
                         WtLoginSession = sigSession,
                     });
 
-                    var sigInfo = GetComponent<SigInfoMan>();
+                    PostEvent<ToUser>(new EventWtLoginExchange
                     {
-                        PostEvent<ToUser>(new EventWtLoginExchange
-                        {
-                            SmsPhoneNumber = sigInfo.WtLoginSmsPhone,
-                            SmsPhoneCountryCode = sigInfo.WtLoginSmsCountry,
-                            Type = EventWtLoginExchange.EventType.CheckSmsCaptcha
-                        });
-                    }
+                        SmsPhoneNumber = sigInfo.WtLoginSmsPhone,
+                        SmsPhoneCountryCode = sigInfo.WtLoginSmsCountry,
+                        Type = EventWtLoginExchange.EventType.CheckSmsCaptcha
+                    });
 
-                    return true;
+                    return EventParacel.Accept;
                 }
             }
             else
@@ -277,10 +286,10 @@ namespace Konata.Services.Wtlogin
                 });
             }
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_VerifyImageCaptcha(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseVerifyImageCaptcha(SigInfoMan sigInfo, OicqRequest request)
         {
             // <TODO> Image captcha
 
@@ -290,10 +299,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "Image captcha not implemented."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_VerifyDeviceLock(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseVerifyDeviceLock(SigInfoMan sigInfo, OicqRequest request)
         {
             // <TODO> Device lock
 
@@ -303,10 +312,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "DeviceLock not implemented."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_WtloginSuccess(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseWtloginSuccess(SigInfoMan sigInfo, OicqRequest request)
         {
             Console.WriteLine("Wtlogin success.");
 
@@ -321,7 +330,7 @@ namespace Konata.Services.Wtlogin
                 if (tlv119 != null && tlv161 != null)
                 {
                     var decrtpted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, core.SigInfo.TgtgKey);
+                        TeaCryptor.Instance, sigInfo.TgtgKey);
 
                     var tlv119Unpacker = new TlvUnpacker(decrtpted, true);
 
@@ -373,7 +382,10 @@ namespace Konata.Services.Wtlogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
-                    core.SsoMan.DestroyServiceSequence(name);
+                    PostEvent<SsoMan>(new EventDropServiceSsoSeq
+                    {
+                        ServiceName = ServiceName
+                    });
 
                     BroadcastEvent(new EventUpdateSigInfo
                     {
@@ -404,14 +416,14 @@ namespace Konata.Services.Wtlogin
                     Console.WriteLine($"d2Key => {Hex.Bytes2HexStr(d2Key)}");
                     Console.WriteLine($"d2Token => {Hex.Bytes2HexStr(d2Token)}");
 
-                    return true;
+                    return EventParacel.Accept;
                 }
             }
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_InvalidUserOrPassword(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseInvalidUsrPwd(SigInfoMan sigInfo, OicqRequest request)
         {
             BroadcastEvent(new EventOnlineStatus
             {
@@ -419,10 +431,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "Incorrect account or password."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_InvalidSmsCode(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseInvalidSmsCode(SigInfoMan sigInfo, OicqRequest request)
         {
             BroadcastEvent(new EventOnlineStatus
             {
@@ -430,10 +442,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "Incorrect sms code."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_InvalidEnvironment(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseInvalidLoginEnv(SigInfoMan sigInfo, OicqRequest request)
         {
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -453,10 +465,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "Invalid login environment."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_LoginDenied(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseLoginDenied(SigInfoMan sigInfo, OicqRequest request)
         {
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -476,10 +488,10 @@ namespace Konata.Services.Wtlogin
                 Reason = "Login denied."
             });
 
-            return false;
+            return EventParacel.Reject;
         }
 
-        private bool Handle_UnknownOicqRequest(Core core, OicqRequest request)
+        private EventParacel OnRecvResponseUnknown(SigInfoMan sigInfo, OicqRequest request)
         {
             BroadcastEvent(new EventOnlineStatus
             {
@@ -487,12 +499,7 @@ namespace Konata.Services.Wtlogin
                 Reason = "Unknown OicqRequest received."
             });
 
-            return false;
-        }
-
-        protected override EventParacel OnEvent(EventParacel eventParacel)
-        {
-            throw new NotImplementedException();
+            return EventParacel.Reject;
         }
 
         #endregion
