@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Konata.Events
 {
     using EventMutex = Mutex;
-    using EventQueue = Queue<EventParacel>;
+    using EventQueue = ConcurrentQueue<EventParacel>;
     using EventWorkers = ThreadPool;
     using EventComponents = Dictionary<Type, EventComponent>;
 
@@ -31,22 +32,19 @@ namespace Konata.Events
 
             while (!isExit)
             {
-                switch (GetEvent())
+                var next = GetEvent();
                 {
-                    case EventPumperCtl inter:
+                    if (next is EventPumperCtl inter)
                         switch (inter.Type)
                         {
                             case EventPumperCtl.CtlType.Idle:
                                 Thread.Sleep(1);
-                                break;
+                                continue;
                             case EventPumperCtl.CtlType.Exit:
-                                isExit = true;
-                                break;
+                                return;
                         }
-                        break;
-                    case EventParacel next:
-                        EventWorkers.QueueUserWorkItem((o) => { ProcessEvent(next); });
-                        break;
+
+                    EventWorkers.QueueUserWorkItem((_) => { ProcessEvent(next); });
                 }
             }
         }
@@ -71,52 +69,55 @@ namespace Konata.Events
 
         private EventParacel GetEvent()
         {
-            eventLock.WaitOne();
+            //eventLock.WaitOne();
             {
-                if (eventQueue.Count <= 0)
-                {
-                    eventLock.ReleaseMutex();
-                    return EventParacel.Idle;
-                }
-                var qEvent = eventQueue.Dequeue();
+                EventParacel qEvent = EventParacel.Idle;
 
-                eventLock.ReleaseMutex();
+                if (eventQueue.Count > 0)
+                {
+                    if (eventQueue.TryDequeue(out var e))
+                    {
+                        qEvent = e;
+                    }
+                }
+
+                //eventLock.ReleaseMutex();
                 return qEvent;
             }
         }
 
-        internal EventParacel PostEvent(EventParacel eventParacel)
+        public EventParacel PostEvent(EventParacel eventParacel)
         {
-            eventLock.WaitOne();
+            //eventLock.WaitOne();
             {
                 eventQueue.Enqueue(eventParacel);
             }
-            eventLock.ReleaseMutex();
+            //eventLock.ReleaseMutex();
 
             return EventParacel.Accept;
         }
 
-        internal EventParacel PostEvent<T>(EventParacel eventParacel)
+        public EventParacel PostEvent<T>(EventParacel eventParacel)
             where T : EventComponent
         {
             eventParacel.EventTo = GetComponent<T>();
             return PostEvent(eventParacel);
         }
 
-        internal EventParacel CallEvent(EventParacel eventParacel,
+        public EventParacel CallEvent(EventParacel eventParacel,
             uint timeout = 3000)
         {
             return ProcessEvent(eventParacel);
         }
 
-        internal EventParacel CallEvent<T>(EventParacel eventParacel)
+        public EventParacel CallEvent<T>(EventParacel eventParacel)
             where T : EventComponent
         {
             eventParacel.EventTo = GetComponent<T>();
             return CallEvent(eventParacel);
         }
 
-        internal void BroadcastEvent(EventParacel eventParacel)
+        public void BroadcastEvent(EventParacel eventParacel)
         {
             ProcessEvent(eventParacel, true);
         }
