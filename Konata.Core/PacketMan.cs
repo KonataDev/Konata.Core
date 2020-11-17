@@ -6,7 +6,7 @@ using Konata.Events;
 using Konata.Packets;
 using Konata.Library.IO;
 
-namespace Konata.Network
+namespace Konata
 {
     internal class PacketMan : EventComponent
     {
@@ -50,6 +50,11 @@ namespace Konata.Network
             : base(eventPumper)
         {
 
+        }
+
+        protected override EventParacel OnEvent(EventParacel eventParacel)
+        {
+            return EventParacel.Reject;
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using Konata.Events;
-using Konata.Network;
 
 namespace Konata
 {
@@ -12,7 +11,6 @@ namespace Konata
 
         public Bot(uint uin, string password)
         {
-            RegisterComponent(new Core(this));
             RegisterComponent(new SsoMan(this));
             RegisterComponent(new PacketMan(this));
             RegisterComponent(new ServiceMan(this));
@@ -169,11 +167,10 @@ namespace Konata
         public ToUser(EventPumper eventPumper)
             : base(eventPumper)
         {
-            // eventProc = proc;
-            eventHandlers += OnUserEvent;
+
         }
 
-        private EventParacel OnUserEvent(EventParacel eventParacel)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
             // eventProc(EventType.Idle, eventParacel);
             return EventParacel.Accept;

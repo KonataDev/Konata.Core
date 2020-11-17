@@ -42,6 +42,7 @@
     <Compile Include="Events\Component.cs" />
     <Compile Include="Events\EventAccountCtl.cs" />
     <Compile Include="Events\EventOnlineStatus.cs" />
+    <Compile Include="Events\EventServiceMessage.cs" />
     <Compile Include="Events\EventSsoMessage.cs" />
     <Compile Include="Events\EventUpdateSigInfo.cs" />
     <Compile Include="Events\EventUpdateSyncCookie.cs" />
@@ -85,7 +86,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="AppInfo.cs" />
-    <Compile Include="Core.cs" />
     <Compile Include="Services\MessageSvc\PbDeleteMsg.cs" />
     <Compile Include="Services\MessageSvc\PbGetMsg.cs" />
     <Compile Include="Services\MessageSvc\PbSendMsg.cs" />
@@ -192,7 +192,7 @@
     <Compile Include="Services\JsApiSvr\WebView\WhiteList.cs" />
     <Compile Include="Services\StatSvc\Register.cs" />
     <Compile Include="Services\Wtlogin\Login.cs" />
-    <Compile Include="Network\PacketMan.cs" />
+    <Compile Include="PacketMan.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Services\Wtlogin\Trans_emp.cs" />
     <Compile Include="SsoMan.cs" />

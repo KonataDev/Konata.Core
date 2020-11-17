@@ -11,7 +11,6 @@ namespace Konata
         public ServiceMan(EventPumper eventPumper)
             : base(eventPumper)
         {
-            eventHandlers += OnEvent;
             svcRoutines = new Dictionary<string, ServiceRoutine>();
 
             Initialize(eventPumper);
@@ -20,7 +19,7 @@ namespace Konata
         private void RegisterRoutines(ServiceRoutine routine)
             => svcRoutines.Add(routine.ServiceName, routine);
 
-        private EventParacel OnEvent(EventParacel eventParacel)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
             return EventParacel.Reject;
         }
@@ -35,7 +34,5 @@ namespace Konata
         {
             ServiceName = serviceName;
         }
-
-        protected abstract EventParacel OnEvent(EventParacel eventParacel);
     }
 }

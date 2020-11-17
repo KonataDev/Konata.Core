@@ -105,8 +105,6 @@ namespace Konata
         public SigInfoMan(EventPumper eventPumper, uint uin, string password)
             : base(eventPumper)
         {
-            eventHandlers += OnUpdateSigInfo;
-
             Uin = uin;
 
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
@@ -120,41 +118,41 @@ namespace Konata
             SyncCookie = MakeSyncCookie();
         }
 
-        private EventParacel OnUpdateSigInfo(EventParacel eventParacel)
+        protected override EventParacel OnEvent(EventParacel eventParacel)
         {
-            if (eventParacel is EventUpdateSigInfo info)
-            {
-                D2Key = info.D2Key ?? D2Key;
-                D2Token = info.D2Token ?? D2Token;
-
-                TgtKey = info.TgtKey ?? TgtKey;
-                TgtToken = info.TgtToken ?? TgtToken;
-
-                GtKey = info.GtKey ?? GtKey;
-                StKey = info.StKey ?? StKey;
-
-                WtSessionTicketSig = info.WtSessionTicketSig ?? WtSessionTicketSig;
-                WtSessionTicketKey = info.WtSessionTicketKey ?? WtSessionTicketKey;
-
-                WtLoginSession = info.WtLoginSession ?? WtLoginSession;
-                WtLoginSmsToken = info.WtLoginSmsToken ?? WtLoginSmsToken;
-                WtLoginSmsPhone = info.WtLoginSmsPhone ?? WtLoginSmsPhone;
-                WtLoginSmsCountry = info.WtLoginSmsCountry ?? WtLoginSmsCountry;
-
-                return EventParacel.Accept;
-            }
+            if (eventParacel is EventUpdateSigInfo sigInfoEvent)
+                return OnUpdateSigInfo(sigInfoEvent);
+            else if (eventParacel is EventUpdateSyncCookie syncCookieEvent)
+                return OnUpdateSyncCookie(syncCookieEvent);
 
             return EventParacel.Reject;
         }
 
-        private EventParacel OnUpdateSyncCookie(EventParacel eventParacel)
+        private EventParacel OnUpdateSigInfo(EventUpdateSigInfo info)
         {
-            if (eventParacel is EventUpdateSigInfo info)
-            {
+            D2Key = info.D2Key ?? D2Key;
+            D2Token = info.D2Token ?? D2Token;
 
-                return EventParacel.Accept;
-            }
-            return EventParacel.Reject;
+            TgtKey = info.TgtKey ?? TgtKey;
+            TgtToken = info.TgtToken ?? TgtToken;
+
+            GtKey = info.GtKey ?? GtKey;
+            StKey = info.StKey ?? StKey;
+
+            WtSessionTicketSig = info.WtSessionTicketSig ?? WtSessionTicketSig;
+            WtSessionTicketKey = info.WtSessionTicketKey ?? WtSessionTicketKey;
+
+            WtLoginSession = info.WtLoginSession ?? WtLoginSession;
+            WtLoginSmsToken = info.WtLoginSmsToken ?? WtLoginSmsToken;
+            WtLoginSmsPhone = info.WtLoginSmsPhone ?? WtLoginSmsPhone;
+            WtLoginSmsCountry = info.WtLoginSmsCountry ?? WtLoginSmsCountry;
+
+            return EventParacel.Accept;
+        }
+
+        private EventParacel OnUpdateSyncCookie(EventUpdateSyncCookie cookie)
+        {
+            return EventParacel.Accept;
         }
 
         private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)

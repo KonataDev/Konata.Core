@@ -13,6 +13,9 @@ namespace Konata.Events
         public EventComponent(EventPumper pumper)
         {
             eventPumper = pumper;
+
+            eventHandlers = new EventHandlers();
+            eventHandlers += OnEvent;
         }
 
         protected EventParacel PostEvent(EventParacel eventParacel)
@@ -35,6 +38,8 @@ namespace Konata.Events
         public T GetComponent<T>()
             where T : EventComponent
             => eventPumper.GetComponent<T>();
+
+        protected abstract EventParacel OnEvent(EventParacel eventParacel);
     }
 
     public class EventHandlers : Dictionary<Type, EventHandler>
