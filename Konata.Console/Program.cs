@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Msf;
+using Konata;
 using Konata.Debug.DevToolsProtocol;
 using System.Collections.Generic;
 
@@ -12,33 +12,33 @@ namespace Konata.Debug
         public static void Main()
         {
             bot = new Bot(3322047216, "0hrwcupn5");
-            bot.RegisterDelegate(EventProc);
+            // bot.RegisterDelegate(EventProc);
             bot.Run();
 
             Console.Write("Exit.");
         }
 
-        private static bool EventProc(EventType type, params object[] args)
-        {
-            switch (type)
-            {
-                case EventType.BotStart:
-                    return OnBootstrap();
-                case EventType.WtLoginVerifySliderCaptcha:
-                    return OnSliderCaptchaRemote((string)args[0]);
-                case EventType.WtLoginVerifySmsCaptcha:
-                    return OnSmsCaptcha((string)args[0]);
-                case EventType.WtLoginVerifyImageCaptcha:
-                    return OnImageCaptcha();
-                case EventType.GroupMessage:
-                    return OnGroupMessage((uint)args[0], (uint)args[1],
-                        (string)args[2]);
-                case EventType.PrivateMessage:
-                    return OnPrivateMessage();
-            }
+        //private static bool EventProc(EventType type, params object[] args)
+        //{
+        //    switch (type)
+        //    {
+        //        case EventType.BotStart:
+        //            return OnBootstrap();
+        //        case EventType.WtLoginVerifySliderCaptcha:
+        //            return OnSliderCaptchaRemote((string)args[0]);
+        //        case EventType.WtLoginVerifySmsCaptcha:
+        //            return OnSmsCaptcha((string)args[0]);
+        //        case EventType.WtLoginVerifyImageCaptcha:
+        //            return OnImageCaptcha();
+        //        case EventType.GroupMessage:
+        //            return OnGroupMessage((uint)args[0], (uint)args[1],
+        //                (string)args[2]);
+        //        case EventType.PrivateMessage:
+        //            return OnPrivateMessage();
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /// <summary>
         /// 框架啓動事件
