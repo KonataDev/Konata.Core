@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Konata.Msf.Packets.Oidb;
+using Konata.Packets.Oidb;
 
 namespace Konata.Test.Tests
 {

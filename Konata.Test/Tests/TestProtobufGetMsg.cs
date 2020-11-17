@@ -1,6 +1,6 @@
 ﻿using System;
+using Konata.Packets.Protobuf;
 using Konata.Library.Protobuf;
-using Konata.Msf.Packets.Protobuf;
 
 namespace Konata.Test.Tests
 {
