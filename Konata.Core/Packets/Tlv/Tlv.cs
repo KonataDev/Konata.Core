@@ -3,7 +3,7 @@ using Konata.Crypto;
 
 namespace Konata.Packets.Tlv
 {
-    public class Tlv : Packet
+    public class Tlv : PacketBase
     {
         public readonly ushort _tlvCommand;
         public readonly ushort _tlvBodyLength;
@@ -45,7 +45,7 @@ namespace Konata.Packets.Tlv
         }
     }
 
-    public class TlvBody : Packet
+    public class TlvBody : PacketBase
     {
         public static TlvBody FromBuffer(ushort tlvCommand, byte[] data)
         {

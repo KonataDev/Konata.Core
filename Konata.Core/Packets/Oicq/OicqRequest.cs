@@ -29,7 +29,7 @@ namespace Konata.Packets.Oicq
         ECDH135 = 0x87,
     }
 
-    public class OicqRequest : Packet
+    public class OicqRequest : PacketBase
     {
         public readonly uint uin;
         public readonly ushort oicqCommand;
@@ -109,7 +109,7 @@ namespace Konata.Packets.Oicq
         }
     }
 
-    public class OicqRequestBody : Packet
+    public class OicqRequestBody : PacketBase
     {
         public readonly ushort _oicqSubCommand;
         public readonly OicqStatus _oicqStatus;

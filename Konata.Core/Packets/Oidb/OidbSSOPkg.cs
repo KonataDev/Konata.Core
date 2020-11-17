@@ -8,7 +8,7 @@ namespace Konata.Packets.Oidb
     public delegate void OidbPayloadReader(ProtoTreeRoot reader);
     public delegate void OidbByteBufferWriter(ByteBuffer writer);
 
-    public class OidbSSOPkg : Packet
+    public class OidbSSOPkg : PacketBase
     {
         public readonly ProtoTreeRoot root;
         public readonly uint svcCmd;

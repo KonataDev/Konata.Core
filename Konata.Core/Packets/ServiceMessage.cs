@@ -93,7 +93,7 @@ namespace Konata.Packets
 
         public ByteBuffer BuildToService()
         {
-            var toService = new Packet();
+            var toService = new PacketBase();
             {
                 toService.PutUintBE((uint)svcPktType);
                 toService.PutByte((byte)svcFlag);
@@ -119,7 +119,7 @@ namespace Konata.Packets
 
         private bool TeardownFromService()
         {
-            var fromService = new Packet(svcPayload);
+            var fromService = new PacketBase(svcPayload);
             {
                 fromService.TakeUintBE(out var pktType);
                 {

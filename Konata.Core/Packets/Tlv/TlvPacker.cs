@@ -6,12 +6,12 @@ namespace Konata.Packets.Tlv
     public class TlvPacker
     {
         private ushort _count;
-        private readonly Packet _packet;
+        private readonly PacketBase _packet;
 
         public TlvPacker()
         {
             _count = 0;
-            _packet = new Packet();
+            _packet = new PacketBase();
         }
 
         public void PutTlv(byte[] tlvData)
@@ -37,9 +37,9 @@ namespace Konata.Packets.Tlv
         }
 
 
-        public Packet GetPacket(bool prefixTlvCount)
+        public PacketBase GetPacket(bool prefixTlvCount)
         {
-            var packet = new Packet();
+            var packet = new PacketBase();
             packet.PutUshortBE(_count);
             packet.PutPacket(_packet);
             return packet;

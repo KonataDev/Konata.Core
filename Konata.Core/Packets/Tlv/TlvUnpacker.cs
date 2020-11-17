@@ -13,7 +13,7 @@ namespace Konata.Packets.Tlv
 
         public TlvUnpacker(byte[] data, bool prefixTlvCount = false)
         {
-            Packet packet = new Packet(data);
+            PacketBase packet = new PacketBase(data);
             int count = 0;
             int countMax = 0;
             if (prefixTlvCount)
