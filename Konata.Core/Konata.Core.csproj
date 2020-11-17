@@ -193,7 +193,7 @@
     <Compile Include="Services\StatSvc\Register.cs" />
     <Compile Include="Services\Wtlogin\Login.cs" />
     <Compile Include="PacketMan.cs" />
-    <Compile Include="Packet.cs" />
+    <Compile Include="Packets\PacketBase.cs" />
     <Compile Include="Services\Wtlogin\Trans_emp.cs" />
     <Compile Include="SsoMan.cs" />
     <Compile Include="Crypto\EncryptType.cs" />
