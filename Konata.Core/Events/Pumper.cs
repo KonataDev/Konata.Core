@@ -106,7 +106,7 @@ namespace Konata.Events
         internal EventParacel CallEvent(EventParacel eventParacel,
             uint timeout = 3000)
         {
-            return null;
+            return ProcessEvent(eventParacel);
         }
 
         internal EventParacel CallEvent<T>(EventParacel eventParacel)
@@ -120,7 +120,10 @@ namespace Konata.Events
         {
             foreach (var component in eventComponents)
             {
-
+                foreach (var handler in component.Value.eventHandlers)
+                {
+                    handler.Value(eventParacel);
+                }
             }
         }
 
