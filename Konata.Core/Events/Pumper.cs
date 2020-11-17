@@ -45,15 +45,15 @@ namespace Konata.Events
                         }
                         break;
                     case EventParacel next:
-                        EventWorkers.QueueUserWorkItem((object o) => { ProcessEvent(next); }, null);
+                        EventWorkers.QueueUserWorkItem((o) => { ProcessEvent(next); });
                         break;
                 }
             }
         }
 
-        private EventParacel ProcessEvent(EventParacel eventParacel)
+        private EventParacel ProcessEvent(EventParacel eventParacel, bool broadcast = false)
         {
-            if (eventParacel.EventTo != null)
+            if (!broadcast && eventParacel.EventTo != null)
                 return eventParacel.EventTo.OnEvent(eventParacel);
 
             foreach (var component in eventComponents)
@@ -61,7 +61,7 @@ namespace Konata.Events
                 foreach (var handler in component.Value.eventHandlers)
                 {
                     var result = handler.Value(eventParacel);
-                    if (result != null || result != EventParacel.Reject)
+                    if (!broadcast && (result != null || result != EventParacel.Reject))
                         return result;
                 }
             }
@@ -118,13 +118,7 @@ namespace Konata.Events
 
         internal void BroadcastEvent(EventParacel eventParacel)
         {
-            foreach (var component in eventComponents)
-            {
-                foreach (var handler in component.Value.eventHandlers)
-                {
-                    handler.Value(eventParacel);
-                }
-            }
+            ProcessEvent(eventParacel, true);
         }
 
         public void Exit()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Konata.Events;
 using Konata.Debug.DevToolsProtocol;
 
@@ -22,7 +21,7 @@ namespace Konata.Debug
         {
             switch (eventParacel)
             {
-                case EventBotStart start:
+                case EventBotStart _:
                     return OnBootstrap();
                     //case EventType.WtLoginVerifySliderCaptcha:
                     //    return OnSliderCaptchaRemote((string)args[0]);
