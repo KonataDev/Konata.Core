@@ -1,7 +1,7 @@
 #!bin/bash
 
 SOURCE=$2
-TARGET=${SOURCE}Msf/ServiceTouch.cs
+TARGET=${SOURCE}/ServiceInitial.cs
 echo [PreBuild.ScanService] $TARGET
 
 # Remove old file.
@@ -15,14 +15,14 @@ cat > $TARGET << _EOF_
 // DO NOT EDIT DIRECTLY.
 
 using System;
+using Konata.Events;
 
 namespace Konata
 {
-    public partial class Service
+    public partial class ServiceMan : EventComponent
     {
-        static bool TouchServices()
+        private bool Initialize(EventPumper eventPumper)
         {
-		    Service instance;
 _EOF_
 
 # Write classes to.
@@ -33,7 +33,7 @@ while IFS= read -d $'\0' -r file ; do
 	CLASS=${CLASS//\//.}
 	CLASS=${CLASS// /}
 	cat >> $TARGET << _EOF_
-	        instance = Services.$CLASS.Instance;
+	        RegisterRoutines(new Services.$CLASS(eventPumper));
 _EOF_
 done < <(find ${SOURCE}/Services/ -type f -name "*.cs" -print0)
 
