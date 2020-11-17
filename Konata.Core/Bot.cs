@@ -1,38 +1,25 @@
 ﻿using System;
 using Konata.Events;
+using EventHandler = Konata.Events.EventHandler;
 
 namespace Konata
 {
-    // public delegate bool UserEventProc(EventType e, params object[] a);
-
     public class Bot : EventPumper
     {
-        // private UserEventProc eventProc;
-
-        public Bot(uint uin, string password)
+        public Bot(uint uin, string password, EventHandler handler)
         {
             RegisterComponent(new SsoMan(this));
             RegisterComponent(new PacketMan(this));
             RegisterComponent(new ServiceMan(this));
             RegisterComponent(new SigInfoMan(this, uin, password));
-            RegisterComponent(new ToUser(this));
+            RegisterComponent(new ToUser(this, handler));
         }
 
-        /// <summary>
-        /// 注冊事件委托回調方法
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        //public bool RegisterDelegate(UserEventProc callback)
-        //{
-        //    if (eventProc != null)
-        //    {
-        //        return false;
-        //    }
-
-        //    eventProc = callback;
-        //    return true;
-        //}
+        public override void Run()
+        {
+            PostEvent<ToUser>(new EventBotStart { });
+            base.Run();
+        }
 
         #region Protocol Interoperation Methods
 
@@ -162,23 +149,17 @@ namespace Konata
 
     public class ToUser : EventComponent
     {
-        //private readonly UserEventProc eventProc;
+        private readonly EventHandler userEventProc;
 
-        public ToUser(EventPumper eventPumper)
+        public ToUser(EventPumper eventPumper, EventHandler handler)
             : base(eventPumper)
         {
-
+            userEventProc = handler;
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
-            // eventProc(EventType.Idle, eventParacel);
-            return EventParacel.Accept;
-        }
-
-        public class EventUserDoCaptcha : EventParacel
-        {
-
+            return userEventProc(eventParacel);
         }
     }
 }

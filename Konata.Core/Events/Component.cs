@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Konata.Events
 {
-    public delegate object EventHandler(EventParacel eventParacel);
+    public delegate EventParacel EventHandler(EventParacel eventParacel);
 
     public abstract class EventComponent
     {
         protected readonly EventPumper eventPumper;
-        protected EventHandlers eventHandlers;
+        internal EventHandlers eventHandlers;
 
         public EventComponent(EventPumper pumper)
         {
@@ -39,7 +39,7 @@ namespace Konata.Events
             where T : EventComponent
             => eventPumper.GetComponent<T>();
 
-        protected abstract EventParacel OnEvent(EventParacel eventParacel);
+        public abstract EventParacel OnEvent(EventParacel eventParacel);
     }
 
     public class EventHandlers : Dictionary<Type, EventHandler>

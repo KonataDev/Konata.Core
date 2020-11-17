@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Events\Component.cs" />
     <Compile Include="Events\EventAccountCtl.cs" />
+    <Compile Include="Events\EventBot.cs" />
     <Compile Include="Events\EventOnlineStatus.cs" />
     <Compile Include="Events\EventServiceMessage.cs" />
     <Compile Include="Events\EventSsoMessage.cs" />

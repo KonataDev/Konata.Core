@@ -21,9 +21,10 @@ namespace Konata.Events
             isExit = true;
             eventLock = new EventMutex();
             eventQueue = new EventQueue();
+            eventComponents = new EventComponents();
         }
 
-        public void Run()
+        public virtual void Run()
         {
             if (!isExit) return;
             isExit = false;
@@ -44,15 +45,28 @@ namespace Konata.Events
                         }
                         break;
                     case EventParacel next:
-                        EventWorkers.QueueUserWorkItem(ProcessEvent, next);
+                        EventWorkers.QueueUserWorkItem((object o) => { ProcessEvent(next); }, null);
                         break;
                 }
             }
         }
 
-        private void ProcessEvent(object o)
+        private EventParacel ProcessEvent(EventParacel eventParacel)
         {
+            if (eventParacel.EventTo != null)
+                return eventParacel.EventTo.OnEvent(eventParacel);
 
+            foreach (var component in eventComponents)
+            {
+                foreach (var handler in component.Value.eventHandlers)
+                {
+                    var result = handler.Value(eventParacel);
+                    if (result != null || result != EventParacel.Reject)
+                        return result;
+                }
+            }
+
+            return EventParacel.Reject;
         }
 
         private EventParacel GetEvent()
@@ -122,11 +136,24 @@ namespace Konata.Events
             return (T)eventComponents[typeof(T)];
         }
 
+        public T TryGetComponent<T>()
+            where T : EventComponent
+        {
+            try
+            {
+                return GetComponent<T>();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public void RegisterComponent(EventComponent ec)
             => eventComponents.Add(ec.GetType(), ec);
     }
 
-    internal class EventPumperCtl : EventParacel
+    public class EventPumperCtl : EventParacel
     {
         public enum CtlType
         {

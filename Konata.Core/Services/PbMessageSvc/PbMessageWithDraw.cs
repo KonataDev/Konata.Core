@@ -11,7 +11,7 @@ namespace Konata.Services.PbMessageSvc
 
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             return EventParacel.Reject;
         }

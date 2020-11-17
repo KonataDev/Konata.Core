@@ -118,7 +118,7 @@ namespace Konata
             SyncCookie = MakeSyncCookie();
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             if (eventParacel is EventUpdateSigInfo sigInfoEvent)
                 return OnUpdateSigInfo(sigInfoEvent);

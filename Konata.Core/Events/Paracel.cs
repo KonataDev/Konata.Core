@@ -11,10 +11,10 @@ namespace Konata.Events
 
         internal static EventPumperCtl Exit { private set; get; }
             = new EventPumperCtl { Type = EventPumperCtl.CtlType.Exit };
-        internal static EventPumperCtl Accept { private set; get; }
+        public static EventPumperCtl Accept { private set; get; }
             = new EventPumperCtl { Type = EventPumperCtl.CtlType.Accept };
 
-        internal static EventPumperCtl Reject { private set; get; }
+        public static EventPumperCtl Reject { private set; get; }
             = new EventPumperCtl { Type = EventPumperCtl.CtlType.Reject };
 
         internal EventComponent EventTo { set; get; }

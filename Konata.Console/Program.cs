@@ -1,7 +1,8 @@
 ﻿using System;
-using Konata;
-using Konata.Debug.DevToolsProtocol;
 using System.Collections.Generic;
+
+using Konata.Events;
+using Konata.Debug.DevToolsProtocol;
 
 namespace Konata.Debug
 {
@@ -11,43 +12,42 @@ namespace Konata.Debug
 
         public static void Main()
         {
-            bot = new Bot(3322047216, "0hrwcupn5");
-            // bot.RegisterDelegate(EventProc);
+            bot = new Bot(3322047216, "0hrwcupn5", EventProc);
             bot.Run();
 
             Console.Write("Exit.");
         }
 
-        //private static bool EventProc(EventType type, params object[] args)
-        //{
-        //    switch (type)
-        //    {
-        //        case EventType.BotStart:
-        //            return OnBootstrap();
-        //        case EventType.WtLoginVerifySliderCaptcha:
-        //            return OnSliderCaptchaRemote((string)args[0]);
-        //        case EventType.WtLoginVerifySmsCaptcha:
-        //            return OnSmsCaptcha((string)args[0]);
-        //        case EventType.WtLoginVerifyImageCaptcha:
-        //            return OnImageCaptcha();
-        //        case EventType.GroupMessage:
-        //            return OnGroupMessage((uint)args[0], (uint)args[1],
-        //                (string)args[2]);
-        //        case EventType.PrivateMessage:
-        //            return OnPrivateMessage();
-        //    }
+        private static EventParacel EventProc(EventParacel eventParacel)
+        {
+            switch (eventParacel)
+            {
+                case EventBotStart start:
+                    return OnBootstrap();
+                    //case EventType.WtLoginVerifySliderCaptcha:
+                    //    return OnSliderCaptchaRemote((string)args[0]);
+                    //case EventType.WtLoginVerifySmsCaptcha:
+                    //    return OnSmsCaptcha((string)args[0]);
+                    //case EventType.WtLoginVerifyImageCaptcha:
+                    //    return OnImageCaptcha();
+                    //case EventType.GroupMessage:
+                    //    return OnGroupMessage((uint)args[0], (uint)args[1],
+                    //        (string)args[2]);
+                    //case EventType.PrivateMessage:
+                    //    return OnPrivateMessage();
+            }
 
-        //    return false;
-        //}
+            return EventParacel.Reject;
+        }
 
         /// <summary>
         /// 框架啓動事件
         /// </summary>
         /// <returns></returns>
-        private static bool OnBootstrap()
+        private static EventParacel OnBootstrap()
         {
             bot.Login();
-            return true;
+            return EventParacel.Accept;
         }
 
         /// <summary>

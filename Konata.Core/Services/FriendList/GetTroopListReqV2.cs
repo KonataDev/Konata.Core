@@ -14,7 +14,7 @@ namespace Konata.Services.FriendList
 
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             if (eventParacel is EventAccountCtl accountCtl
                 && accountCtl.Type == EventAccountCtl.EventType.GetTroopList)

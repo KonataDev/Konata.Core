@@ -28,7 +28,7 @@ namespace Konata
             ssoSeqLock = new SsoSeqLock();
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             if (eventParacel is EventSsoMessage ssoInfo)
                 return OnPrepareNewSso(ssoInfo);
@@ -51,6 +51,8 @@ namespace Konata
         {
             try
             {
+                var sigInfo = GetComponent<SigInfoMan>();
+
                 var pktType = fromService.GetPacketType();
                 var pktFlag = fromService.GetPacketFlag();
                 var selectKey = new byte[0];
@@ -62,10 +64,10 @@ namespace Konata
                         selectKey = null;
                         break;
                     case RequestFlag.D2Authentication:
-                        selectKey = msfCore.SigInfo.D2Key;
+                        selectKey = sigInfo.D2Key;
                         break;
                     case RequestFlag.WtLoginExchange:
-                        selectKey = msfCore.SigInfo.ZeroKey;
+                        selectKey = sigInfo.ZeroKey;
                         break;
                 }
 
@@ -162,12 +164,14 @@ namespace Konata
         public bool PostMessage(RequestFlag reqFlag, SsoMessage reqMsg,
             byte[] d2Token = null, byte[] d2Key = null)
         {
-            var toService = new ServiceMessage(reqFlag,
-                 reqMsg.GetPacketType(), reqMsg.GetSequence(), d2Token, d2Key)
-                .SetUin(msfCore.SigInfo.Uin)
-                .SetPayload(reqMsg.GetPayload());
+            //var toService = new ServiceMessage(reqFlag,
+            //     reqMsg.GetPacketType(), reqMsg.GetSequence(), d2Token, d2Key)
+            //    .SetUin(msfCore.SigInfo.Uin)
+            //    .SetPayload(reqMsg.GetPayload());
 
-            return pakMan.Emit(toService);
+            //return pakMan.Emit(toService);
+
+            return false;
         }
 
         public uint GetSsoSession()

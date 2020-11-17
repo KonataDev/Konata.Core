@@ -17,9 +17,12 @@ namespace Konata
         }
 
         private void RegisterRoutines(ServiceRoutine routine)
-            => svcRoutines.Add(routine.ServiceName, routine);
+        {
+            svcRoutines.Add(routine.ServiceName, routine);
+            eventPumper.RegisterComponent(routine);
+        }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             return EventParacel.Reject;
         }

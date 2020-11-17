@@ -14,10 +14,10 @@ namespace Konata.Services.Wtlogin
         public Login(EventPumper eventPumper)
             : base("wtlogin.login", eventPumper)
         {
-            eventHandlers += OnEvent;
+
         }
 
-        protected override EventParacel OnEvent(EventParacel eventParacel)
+        public override EventParacel OnEvent(EventParacel eventParacel)
         {
             if (eventParacel is EventWtLoginExchange wtloginXchg)
             {
