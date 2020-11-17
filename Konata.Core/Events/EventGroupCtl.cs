@@ -48,4 +48,11 @@ namespace Konata.Events
         /// </summary>
         public string GroupCard { get; set; }
     }
+
+    public class EventGroupCtlRsp : EventParacel
+    {
+        public bool Success { get; set; }
+
+        public int ResultCode { get; set; }
+    }
 }

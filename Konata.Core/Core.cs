@@ -28,11 +28,4 @@ namespace Konata
 
         }
     }
-
-    public class EventGroupCtlRsp : EventParacel
-    {
-        public bool Success { get; set; }
-
-        public int ResultCode { get; set; }
-    }
 }

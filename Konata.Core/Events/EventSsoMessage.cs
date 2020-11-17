@@ -24,5 +24,4 @@ namespace Konata.Events
     {
         public string ServiceName { get; set; }
     }
-
 }
