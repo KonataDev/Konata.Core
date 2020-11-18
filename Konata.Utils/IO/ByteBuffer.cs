@@ -1049,6 +1049,3 @@ namespace Konata.Utils.IO
         #endregion
     }
 }
-
-#pragma warning restore CS0661
-#pragma warning restore CS0659

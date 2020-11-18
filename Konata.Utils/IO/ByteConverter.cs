@@ -4,16 +4,42 @@ namespace Konata.Utils.IO
 {
     public enum Endian
     {
+        /// <summary>
+        /// 大端
+        /// </summary>
         Big,
-        Little
+        /// <summary>
+        /// 小端
+        /// </summary>
+        Little,
+        /// <summary>
+        /// 随运行时主机
+        /// </summary>
+        FollowMachine,
     }
 
+    /// <summary>
+    /// 值类型转byte工具
+    /// </summary>
     public static class ByteConverter
     {
         public static Endian DefaultEndian { get; set; } = BitConverter.IsLittleEndian ? Endian.Little : Endian.Big;
 
-        public static byte[] BoolToBytes(bool value, uint length, Endian endian)
+
+        /// <summary>
+        /// 布尔转bytes
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="length">长度</param>
+        /// <param name="endian">高低位</param>
+        /// <returns></returns>
+        public static byte[] BoolToBytes(bool value, uint length, Endian endian=Endian.FollowMachine)
         {
+            if ((int)endian == (int)Endian.FollowMachine)
+            {
+                endian = DefaultEndian;
+            }
+
             byte[] result = new byte[length];
             if (value)
             {
@@ -22,26 +48,9 @@ namespace Konata.Utils.IO
             return result;
         }
 
-        public static byte[] BoolToBytes(bool value, uint length)
-        {
-            return BoolToBytes(value, length, DefaultEndian);
-        }
-
-        [Obsolete]
-        public static byte[] Int8ToBytes(sbyte value, Endian endian)
-        {
-            return new byte[] { (byte)value };
-        }
-
         public static byte[] Int8ToBytes(sbyte value)
         {
             return new byte[] { (byte)value };
-        }
-
-        [Obsolete]
-        public static byte[] UInt8ToBytes(byte value, Endian endian)
-        {
-            return new byte[] { value };
         }
 
         public static byte[] UInt8ToBytes(byte value)
@@ -58,7 +67,6 @@ namespace Konata.Utils.IO
             }
             return result;
         }
-
         public static byte[] Int16ToBytes(short value)
         {
             return Int16ToBytes(value, DefaultEndian);
@@ -168,6 +176,7 @@ namespace Konata.Utils.IO
         {
             return DoubleToBytes(value, DefaultEndian);
         }
+
 
         public static bool BytesToBool(byte[] buffer, uint startIndex, uint length, Endian endian)
         {
