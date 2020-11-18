@@ -32,6 +32,10 @@ namespace Konata.Events
             {
                 threads[i] = new Thread(DaemonThread);
                 threads[i].Start();
+            }
+
+            for (int i = 0; i < threads.Length; ++i)
+            {
                 threads[i].Join();
             }
         }
