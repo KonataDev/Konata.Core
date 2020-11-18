@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 
 namespace Konata.Events
 {
     using EventWorkers = ThreadPool;
     using EventQueue = ConcurrentQueue<EventParacel>;
-    using EventComponents = Dictionary<Type, EventComponent>;
+    using EventComponents = ConcurrentDictionary<Type, EventComponent>;
 
     public class EventPumper
     {
@@ -132,10 +131,8 @@ namespace Konata.Events
         public T GetComponent<T>()
             where T : EventComponent
         {
-            if (!eventComponents.ContainsKey(typeof(T)))
-                throw new Exception("No such component.");
-
-            return (T)eventComponents[typeof(T)];
+            eventComponents.TryGetValue(typeof(T), out var component);
+            return (T)component;
         }
 
         public T TryGetComponent<T>()
@@ -152,7 +149,7 @@ namespace Konata.Events
         }
 
         public void RegisterComponent(EventComponent ec)
-            => eventComponents.Add(ec.GetType(), ec);
+            => eventComponents.TryAdd(ec.GetType(), ec);
     }
 
     public class EventPumperCtl : EventParacel

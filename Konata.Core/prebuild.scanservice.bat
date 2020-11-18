@@ -41,4 +41,4 @@ set CLASS=%1
 set CLASS=%CLASS:*Services\=%
 set CLASS=%CLASS:.cs=%
 set CLASS=%CLASS:\=.%
-echo             RegisterRoutines(new Services.%CLASS%(eventPumper));     >> %TARGET%
+echo             RegisterRoutine(new Services.%CLASS%(eventPumper));      >> %TARGET%

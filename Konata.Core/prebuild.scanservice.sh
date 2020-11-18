@@ -33,7 +33,7 @@ while IFS= read -d $'\0' -r file ; do
 	CLASS=${CLASS//\//.}
 	CLASS=${CLASS// /}
 	cat >> $TARGET << _EOF_
-	        RegisterRoutines(new Services.$CLASS(eventPumper));
+	        RegisterRoutine(new Services.$CLASS(eventPumper));
 _EOF_
 done < <(find ${SOURCE}/Services/ -type f -name "*.cs" -print0)
 

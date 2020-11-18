@@ -16,7 +16,7 @@ namespace Konata
             Initialize(eventPumper);
         }
 
-        private void RegisterRoutines(ServiceRoutine routine)
+        private void RegisterRoutine(ServiceRoutine routine)
         {
             svcRoutines.Add(routine.ServiceName, routine);
             eventPumper.RegisterComponent(routine);

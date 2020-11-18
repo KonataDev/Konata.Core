@@ -10,29 +10,29 @@ namespace Konata
     {                                                     
         private bool Initialize(EventPumper eventPumper)  
         {                                                 
-            RegisterRoutines(new Services.FriendList.GetTroopListReqV2(eventPumper));     
-            RegisterRoutines(new Services.FriendList.ModifyGroupCardReq(eventPumper));     
-            RegisterRoutines(new Services.GrayUinPro.Check(eventPumper));     
-            RegisterRoutines(new Services.Heartbeat.Alive(eventPumper));     
-            RegisterRoutines(new Services.JsApiSvr.WebView.WhiteList(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PbDeleteMsg(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PbGetMsg(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PbSendMsg(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PushForceOffline(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PushNotify(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.PushRead(eventPumper));     
-            RegisterRoutines(new Services.MessageSvc.RequestPushStatus(eventPumper));     
-            RegisterRoutines(new Services.OidbSvc.Oidb0x55c_1(eventPumper));     
-            RegisterRoutines(new Services.OidbSvc.Oidb0x570_8(eventPumper));     
-            RegisterRoutines(new Services.OidbSvc.Oidb0x8a0_0(eventPumper));     
-            RegisterRoutines(new Services.OidbSvc.Oidb0x8a0_1(eventPumper));     
-            RegisterRoutines(new Services.OidbSvc.Oidb0x8fc_2(eventPumper));     
-            RegisterRoutines(new Services.OnlinePush.PbPushGroupMsg(eventPumper));     
-            RegisterRoutines(new Services.PbMessageSvc.PbMessageWithDraw(eventPumper));     
-            RegisterRoutines(new Services.PbMessageSvc.PbMsgReadReport(eventPumper));     
-            RegisterRoutines(new Services.StatSvc.Register(eventPumper));     
-            RegisterRoutines(new Services.Wtlogin.Login(eventPumper));     
-            RegisterRoutines(new Services.Wtlogin.Trans_emp(eventPumper));     
+            RegisterRoutine(new Services.FriendList.GetTroopListReqV2(eventPumper));     
+            RegisterRoutine(new Services.FriendList.ModifyGroupCardReq(eventPumper));     
+            RegisterRoutine(new Services.GrayUinPro.Check(eventPumper));     
+            RegisterRoutine(new Services.Heartbeat.Alive(eventPumper));     
+            RegisterRoutine(new Services.JsApiSvr.WebView.WhiteList(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PbDeleteMsg(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PbGetMsg(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PbSendMsg(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PushForceOffline(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PushNotify(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.PushRead(eventPumper));     
+            RegisterRoutine(new Services.MessageSvc.RequestPushStatus(eventPumper));     
+            RegisterRoutine(new Services.OidbSvc.Oidb0x55c_1(eventPumper));     
+            RegisterRoutine(new Services.OidbSvc.Oidb0x570_8(eventPumper));     
+            RegisterRoutine(new Services.OidbSvc.Oidb0x8a0_0(eventPumper));     
+            RegisterRoutine(new Services.OidbSvc.Oidb0x8a0_1(eventPumper));     
+            RegisterRoutine(new Services.OidbSvc.Oidb0x8fc_2(eventPumper));     
+            RegisterRoutine(new Services.OnlinePush.PbPushGroupMsg(eventPumper));     
+            RegisterRoutine(new Services.PbMessageSvc.PbMessageWithDraw(eventPumper));     
+            RegisterRoutine(new Services.PbMessageSvc.PbMsgReadReport(eventPumper));     
+            RegisterRoutine(new Services.StatSvc.Register(eventPumper));     
+            RegisterRoutine(new Services.Wtlogin.Login(eventPumper));     
+            RegisterRoutine(new Services.Wtlogin.Trans_emp(eventPumper));     
             return true;                                  
         }                                                 
     }                                                     
