@@ -66,6 +66,8 @@ namespace Konata.Test
 
             if (Debugger.IsAttached)
                 Console.Read();
+
+            Environment.Exit(0);
         }
 
         static IEnumerable<Type> GetAllTests()
