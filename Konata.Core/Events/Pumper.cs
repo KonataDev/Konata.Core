@@ -56,9 +56,14 @@ namespace Konata.Events
                                 return;
                         }
 
-                    EventWorkers.QueueUserWorkItem((_) => { ProcessEvent(next); });
+                    EventWorkers.QueueUserWorkItem(ProcessEvent, next);
                 }
             }
+        }
+
+        private void ProcessEvent(object o)
+        {
+            ProcessEvent((EventParacel)o);
         }
 
         private EventParacel ProcessEvent(EventParacel eventParacel, bool broadcast = false)

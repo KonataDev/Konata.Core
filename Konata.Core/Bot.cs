@@ -78,7 +78,7 @@ namespace Konata
         /// 批量移除群成員
         /// </summary>
         /// <param name="groupUin"></param>
-        /// <param name="memberUin"></param>
+        /// <param name="membersUin"></param>
         /// <param name="preventRequest"></param>
         public EventGroupCtlRsp KickGroupMembers(uint groupUin,
             uint[] membersUin, bool preventRequest)
