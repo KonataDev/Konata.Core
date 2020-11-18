@@ -5,32 +5,40 @@ using System.Collections.Concurrent;
 
 namespace Konata.Events
 {
-    using EventMutex = Mutex;
-    using EventQueue = ConcurrentQueue<EventParacel>;
     using EventWorkers = ThreadPool;
+    using EventQueue = ConcurrentQueue<EventParacel>;
     using EventComponents = Dictionary<Type, EventComponent>;
 
     public class EventPumper
     {
-        private bool isExit;
+        private int isExit;
         private EventQueue eventQueue;
-        private EventMutex eventLock;
         private EventComponents eventComponents;
 
         public EventPumper()
         {
-            isExit = true;
-            eventLock = new EventMutex();
+            isExit = 1;
             eventQueue = new EventQueue();
             eventComponents = new EventComponents();
         }
 
         public virtual void Run()
         {
-            if (!isExit) return;
-            isExit = false;
+            if (isExit == 0) return;
+            isExit = 0;
 
-            while (!isExit)
+            Thread[] threads = new Thread[Environment.ProcessorCount];
+            for (int i = 0; i < threads.Length; ++i)
+            {
+                threads[i] = new Thread(DaemonThread);
+                threads[i].Start();
+                threads[i].Join();
+            }
+        }
+
+        private void DaemonThread()
+        {
+            while (isExit == 0)
             {
                 var next = GetEvent();
                 {
@@ -41,6 +49,7 @@ namespace Konata.Events
                                 Thread.Sleep(1);
                                 continue;
                             case EventPumperCtl.CtlType.Exit:
+                                Interlocked.Exchange(ref isExit, 1);
                                 return;
                         }
 
@@ -69,31 +78,22 @@ namespace Konata.Events
 
         private EventParacel GetEvent()
         {
-            //eventLock.WaitOne();
+            EventParacel qEvent = EventParacel.Idle;
+
+            if (eventQueue.Count > 0)
             {
-                EventParacel qEvent = EventParacel.Idle;
-
-                if (eventQueue.Count > 0)
+                if (eventQueue.TryDequeue(out var e))
                 {
-                    if (eventQueue.TryDequeue(out var e))
-                    {
-                        qEvent = e;
-                    }
+                    qEvent = e;
                 }
-
-                //eventLock.ReleaseMutex();
-                return qEvent;
             }
+
+            return qEvent;
         }
 
         public EventParacel PostEvent(EventParacel eventParacel)
         {
-            //eventLock.WaitOne();
-            {
-                eventQueue.Enqueue(eventParacel);
-            }
-            //eventLock.ReleaseMutex();
-
+            eventQueue.Enqueue(eventParacel);
             return EventParacel.Accept;
         }
 

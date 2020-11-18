@@ -51,7 +51,7 @@ namespace Konata.Test.Tests
 
             public void StartFlood()
             {
-                for (int i = 0; i < 1000_0000; ++i)
+                for (int i = 0; i < int.MaxValue; ++i)
                 {
                     PostEvent<Component>(test);
                 }
