@@ -12,4 +12,4 @@ bin/
 .editorconfig
 
 # auto generated code
-/Konata.Core/Msf/ServiceTouch.cs
+/Konata.Core/ServiceInitial.cs
