@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Konata.Test
 {
@@ -63,9 +64,8 @@ namespace Konata.Test
             Console.WriteLine($"Test statistics for the project: ");
             Console.WriteLine($"Tests = { testCount}, Pass = { testPassCount}, Failed = { testFailedCount} ({(float)testPassCount / testCount * 100F}% pass)");
 
-#if DEBUG
-            Console.Read();
-#endif
+            if (Debugger.IsAttached)
+                Console.Read();
         }
 
         static IEnumerable<Type> GetAllTests()
