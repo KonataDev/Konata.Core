@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Konata.Model.DataType;
+using Konata.Model.Types;
 using Konata.Utils.Crypto;
 
 namespace Konata.Model

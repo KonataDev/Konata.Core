@@ -4,7 +4,7 @@ using Konata.Utils.Crypto;
 using Konata.Model.Package.Protobuf;
 using Konata.Model.Package.Tlv;
 using Konata.Model.Package.Tlv.TlvModel;
-using Konata.Model.DataType;
+using Konata.Model.Types;
 
 namespace Konata.Model.Package.Oicq
 {
@@ -15,7 +15,7 @@ namespace Konata.Model.Package.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0009;
 
-        public OicqRequestTgtgt(SigInfoMan sigInfo, uint ssoseq)
+        public OicqRequestTgtgt(SigInfo sigInfo, uint ssoseq)
             : base(OicqCommand, OicqSubCommand, sigInfo.Uin, OicqEncryptMethod.ECDH135,
                 new XTGTGT(sigInfo.Uin, ssoseq, sigInfo.PasswordMd5, sigInfo.TgtgKey,
                     sigInfo.Tlv106Key), sigInfo.ShareKey, sigInfo.RandKey, sigInfo.DefaultPublicKey)

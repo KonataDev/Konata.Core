@@ -1,4 +1,4 @@
-﻿using Konata.Model.DataType;
+﻿using Konata.Model.Types;
 using System;
 using Guid = Konata.Utils.Guid;
 

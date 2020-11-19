@@ -11,7 +11,7 @@ namespace Konata.Model.Package.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0008;
 
-        public OicqRequestRefreshSms(SigInfoMan sigInfo)
+        public OicqRequestRefreshSms(SigInfo sigInfo)
 
             : base(OicqCommand, OicqSubCommand, sigInfo.Uin, OicqEncryptMethod.ECDH7,
                   new XRefreshSms(sigInfo.WtLoginSession, sigInfo.WtLoginSmsToken),

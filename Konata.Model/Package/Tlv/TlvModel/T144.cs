@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Model.DataType;
+using Konata.Model.Types;
 using Konata.Model.Package.Protobuf;
 
 namespace Konata.Model.Package.Tlv.TlvModel

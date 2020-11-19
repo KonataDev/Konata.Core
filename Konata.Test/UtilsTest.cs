@@ -1,12 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Konata.Utils;
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
 namespace Konata.Test
 {
+    public enum testenum
+    {
+        test1=1,
+        test2=2
+    }
+    public class TestModel
+    {
+        public string test { get; set; }
+        private string ptest { get; set; }
+        public int itest { get; set; }
+
+        public float ftest { get; set; }
+        public testenum enumtest { get; set; } = testenum.test2;
+    }
+
     [TestFixture(Description ="工具类组件测试")]
     public class UtilsTest: BaseTest
     {
@@ -51,6 +69,22 @@ namespace Konata.Test
 
             Print_Bytes(root.Serialize().GetBytes());
             Assert.Pass();
+        }
+
+        [Test]
+        [Category("配置文件装载")]
+        public void Load_Config()
+        {
+            var config = ConfigurationReader.LoadConfig(basepath:Directory.GetCurrentDirectory(),reloadOnChange:true);
+            Console.WriteLine(ConfigurationReader.CurrentPath);
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            TestModel tm = new TestModel();
+            //TestModel tm2 = new TestModel();
+            config.Bind("testbind", tm);
+            //config.Bind(tm2, bindOption=> { bindOption.BindNonPublicProperties = true;});
+
+            Assert.AreEqual("test", config["test"]);
+            Assert.AreEqual(testenum.test1, tm.enumtest);
         }
     }
 }

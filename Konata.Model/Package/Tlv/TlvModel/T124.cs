@@ -1,4 +1,4 @@
-﻿using Konata.Model.DataType;
+﻿using Konata.Model.Types;
 using System;
 
 namespace Konata.Model.Package.Tlv.TlvModel

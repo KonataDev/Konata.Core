@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Model.DataType
+namespace Konata.Model.Types
 {
     public enum  NetworkType
     {
