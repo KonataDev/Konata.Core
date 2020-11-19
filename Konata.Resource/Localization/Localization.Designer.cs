@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Konata.Model.Localization {
+namespace Konata.Resource.Localization {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Konata.Model.Localization {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Konata.Model.Localization.Localization", typeof(Localization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Konata.Resource.Localization.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace Konata.Model.Localization {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Insufficient buffer space 的本地化字符串。
+        /// </summary>
+        public static string BufferException {
+            get {
+                return ResourceManager.GetString("BufferException", resourceCulture);
             }
         }
         

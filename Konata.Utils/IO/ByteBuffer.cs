@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Konata.Resource.Localization;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-#pragma warning disable CS0661
-#pragma warning disable CS0659
 
 namespace Konata.Utils.IO
 {
@@ -33,7 +31,7 @@ namespace Konata.Utils.IO
         }
 
         private static readonly IOException eobException =
-            new IOException("Insufficient buffer space.");
+            new IOException(Localization.BufferException);
 
         private static int minBufferBase = 8;
         private static uint minBufferSize = 1U << minBufferBase;
@@ -1044,6 +1042,11 @@ namespace Konata.Utils.IO
                 && (buffer == null
                 || other.buffer == null
                 || Enumerable.SequenceEqual(buffer, other.buffer));
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         #endregion

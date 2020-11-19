@@ -5,30 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Localization.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Localization.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Localization\Localization.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Localization.resx</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
+    <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Localization.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Localization.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Localization.zh-CN.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
+    <Folder Include="Package\Tlv\TlvModel\" />
+    <Folder Include="Package\Wup\" />
+    <Folder Include="DataType\" />
   </ItemGroup>
 
 </Project>

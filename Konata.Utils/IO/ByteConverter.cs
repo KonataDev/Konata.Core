@@ -26,12 +26,13 @@ namespace Konata.Utils.IO
         public static Endian DefaultEndian { get; set; } = BitConverter.IsLittleEndian ? Endian.Little : Endian.Big;
 
 
+        #region Value2Bytes
         /// <summary>
         /// 布尔转bytes
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="length">长度</param>
-        /// <param name="endian">高低位</param>
+        /// <param name="endian">高低位,默认跟随主机配置</param>
         /// <returns></returns>
         public static byte[] BoolToBytes(bool value, uint length, Endian endian=Endian.FollowMachine)
         {
@@ -177,7 +178,9 @@ namespace Konata.Utils.IO
             return DoubleToBytes(value, DefaultEndian);
         }
 
+        #endregion
 
+        #region Bytes2Value
         public static bool BytesToBool(byte[] buffer, uint startIndex, uint length, Endian endian)
         {
             return buffer[endian == Endian.Little ? startIndex : startIndex + length - 1] > 0;
@@ -346,12 +349,14 @@ namespace Konata.Utils.IO
             return BytesToDouble(buffer, startIndex, DefaultEndian);
         }
 
+        #endregion
+        
         private static bool ShouldReverse(Endian endian)
         {
             return BitConverter.IsLittleEndian ^ (endian == Endian.Little);
         }
 
-        private static byte[] PickBytes(byte[] buffer, uint startIndex, int length)
+        private static byte[] PickBytes(in byte[] buffer, uint startIndex, int length)
         {
             byte[] temp = new byte[length];
             Buffer.BlockCopy(buffer, (int)startIndex, temp, 0, length);
@@ -360,7 +365,7 @@ namespace Konata.Utils.IO
         }
 
 #pragma warning disable CS0675
-        public static long VarintToNumber(byte[] varint)
+        public static long VarintToNumber(in byte[] varint)
         {
             var number = 0L;
 
@@ -400,7 +405,7 @@ namespace Konata.Utils.IO
             return buffer;
         }
 
-        public static string Hex(byte[] data, bool space = false)
+        public static string Hex(in byte[] data, bool space = false)
         {
             return BitConverter.ToString(data).Replace("-", space ? " " : "");
         }

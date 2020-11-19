@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Model\Konata.Model.csproj" />
+    <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
   </ItemGroup>
 
 </Project>

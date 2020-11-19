@@ -2,12 +2,12 @@
 
 namespace Konata.Utils.TeaEncrypt
 {
-    public class Tea
+    public static class Tea
     {
         /// <summary>
         /// Encrypt data.
         /// </summary>
-        public byte[] Encrypt(byte[] data, byte[] key)
+        public static byte[] Encrypt(byte[] data, byte[] key)
         {
             if (data == null || key == null || key.Length < 16)
             {
@@ -46,7 +46,7 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// Decrypt data.
         /// </summary>
-        public byte[] Decrypt(byte[] data, byte[] key)
+        public static byte[] Decrypt(byte[] data, byte[] key)
         {
             if (data == null || key == null || key.Length < 16)
             {
@@ -83,12 +83,12 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// Encrypt data with default key.
         /// </summary>
-        public byte[] Encrypt(byte[] data) => Encrypt(data, new byte[16]);
+        public static byte[] Encrypt(byte[] data) => Encrypt(data, new byte[16]);
 
         /// <summary>
         /// Decrypt data with default key.
         /// </summary>
-        public byte[] Decrypt(byte[] data) => Decrypt(data, new byte[16]);
+        public static byte[] Decrypt(byte[] data) => Decrypt(data, new byte[16]);
 
         private const long Delta = 2654435769L;
         private const long SumMax = (Delta << 4) & uint.MaxValue;
@@ -98,7 +98,7 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// Write uint into array (Big-endian).
         /// </summary>
-        private void WriteUInt32(byte[] data, int index, uint value)
+        private static void WriteUInt32(byte[] data, int index, uint value)
         {
             data[index] = (byte)((value >> 24) & 0xFF);
             data[index + 1] = (byte)((value >> 16) & 0xFF);
@@ -109,7 +109,7 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// Read uint from array (Big-endian).
         /// </summary>
-        private uint ReadUInt32(byte[] data, int index) =>
+        private static uint ReadUInt32(byte[] data, int index) =>
             ((uint)data[index] << 24) |
             ((uint)data[index + 1] << 16) |
             ((uint)data[index + 2] << 8) |
@@ -118,12 +118,12 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// Get random byte.
         /// </summary>
-        private byte RandomByte(int max = byte.MaxValue) => (byte)(random.Next() & max);
+        private static byte RandomByte(int max = byte.MaxValue) => (byte)(random.Next() & max);
 
         /// <summary>
         /// Xor 8 bytes between 2 arrays.
         /// </summary>
-        private byte[] Xor8(byte[] a, byte[] b, int ai = 0, int bi = 0)
+        private static byte[] Xor8(byte[] a, byte[] b, int ai = 0, int bi = 0)
         {
             if (bi < 0)
             {
@@ -140,7 +140,7 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// TEA encrypt.
         /// </summary>
-        private byte[] EnCipher(byte[] data, byte[] key)
+        private static byte[] EnCipher(byte[] data, byte[] key)
         {
             byte[] array = new byte[8];
             //if (input.Length < 8 || key.Length < 16)
@@ -171,7 +171,7 @@ namespace Konata.Utils.TeaEncrypt
         /// <summary>
         /// TEA decrypt.
         /// </summary>
-        private byte[] DeCipher(byte[] data, byte[] key, long index = 0)
+        private static byte[] DeCipher(byte[] data, byte[] key, long index = 0)
         {
             byte[] array = new byte[8];
             //if (input.Length < 8 || key.Length < 16)
