@@ -9,7 +9,7 @@ namespace Konata.Test.Simple
     /// 测试用例标准模板参考
     /// </summary>
     [TestFixture(Description ="测试模板")]
-    public class SimpleTest
+    public class SimpleTest:BaseTest
     {
         [SetUp]
         public void Setup()

@@ -31,9 +31,10 @@ namespace Konata.Utils
             }
             try
             {
-                return new ConfigurationBuilder()
+                var config = new ConfigurationBuilder()
                     .SetBasePath(basepath)
-                    .AddJsonFile(filename, true, reloadOnChange).Build();
+                    .AddJsonFile(filename, true, reloadOnChange);
+                return config.Build();
             }catch(Exception e)
             {
                 return null;
