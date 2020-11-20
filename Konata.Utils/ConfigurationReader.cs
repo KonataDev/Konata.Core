@@ -35,7 +35,7 @@ namespace Konata.Utils
                     .SetBasePath(basepath)
                     .AddJsonFile(filename, true, reloadOnChange);
                 return config.Build();
-            }catch(Exception e)
+            }catch(Exception)
             {
                 return null;
             }

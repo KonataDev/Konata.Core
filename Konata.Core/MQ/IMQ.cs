@@ -21,6 +21,15 @@ namespace Konata.Core.MQ
         /// </summary>
         /// <param name="data"></param>
         void Add(T data);
+
+        /// <summary>
+        /// 压入数据
+        /// 阻塞式
+        /// 可取消
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="token"></param>
+        void Add(T data, CancellationToken token);
         /// <summary>
         /// 尝试压入数据
         /// 非阻塞
@@ -32,8 +41,7 @@ namespace Konata.Core.MQ
         /// <summary>
         /// 启动异步取出回调
         /// </summary>
-        /// <param name="timeout"></param>
-        void StartTakeProcess(int timeout);
+        void StartTakeProcess();
         /// <summary>
         /// 关闭异步取出回调
         /// </summary>

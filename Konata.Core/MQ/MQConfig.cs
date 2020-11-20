@@ -18,5 +18,9 @@ namespace Konata.Core.MQ
         /// </summary>
         public int MaxMQLenth { get; set; } = -1;
 
+        /// <summary>
+        /// 每次消息队列读取时新消息的超时时间
+        /// </summary>
+        public int ReadTimeout { get; set; } = -1;
     }
 }

@@ -9,6 +9,7 @@ namespace Konata.Core.Builder
     {
         private static Type stype = typeof(IMQ<T>);
         private IDictionary<string, object> properties = new Dictionary<string, object>();
+
         public IDictionary<string, object> Properties
         {
             get => properties;
@@ -25,8 +26,6 @@ namespace Konata.Core.Builder
         {
             get => type;
         }
-
-
 
         public IMQ<T> Build()
         {

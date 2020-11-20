@@ -3,9 +3,7 @@ using Konata.Core.NetWork;
 using Konata.Core.Extensions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.Concurrent;
+using Konata.Core.MQ;
 using System.Threading.Tasks;
 
 namespace Konata.Test
@@ -52,6 +50,41 @@ namespace Konata.Test
                     Console.WriteLine("接收到了一个报文");
                 })
                 .Build();
+        }
+
+
+        [Test(Description ="MQTest")]
+        [Category("消息队列测试")]
+        public void MQ_Test()
+        {
+            IMQ<string> MQ = new MQBuilder<string>()
+                .MQConfig(config =>
+                {
+                    config.MaxProcessMTask = 4;
+                })
+                .AddMQReceiver((data) =>
+                {
+                    Console.WriteLine($"received data {data}");
+                })
+                .Build();
+            MQ.StartTakeProcess();
+
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Console.WriteLine("A:Ready add data...");
+                    MQ.Add($"A:this is {i} time added");
+                }
+            });
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    Console.WriteLine("B:Ready add data...");
+                    MQ.Add($"B:this is {i} time added");
+                }
+            });
         }
 
         [TearDown]

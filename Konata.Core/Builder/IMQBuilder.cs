@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Konata.Core.MQ;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,6 @@ namespace Konata.Core.Builder
 
         IDictionary<string, object> Sources { get; }
         IMQBuilder<T> SetCustomMQ(Type mq);
-        IMQBuilder<T> Build();
+        IMQ<T> Build();
     }
 }

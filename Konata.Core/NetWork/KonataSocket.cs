@@ -324,8 +324,17 @@ namespace Konata.Core.NetWork
             if (socket.Connected)
             {
                 socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
             }
+            socket.Close();
+            timeoutConnObj.Dispose();
+            socket = null;
+            timeoutConnObj = null;
+        }
+
+        ~KonataSocket()
+        {
+            socket?.Dispose();
+            timeoutConnObj.Dispose();
         }
 
 

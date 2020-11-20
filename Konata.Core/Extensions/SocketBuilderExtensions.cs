@@ -10,7 +10,6 @@ namespace Konata.Core.Extensions
 
         private static string ServerDataReceiverkey = "ServerDataReceiver";
         private static string ServerClosekey = "ServerCloseWatcher";
-        private static string CheckContinuekey = "CheckContinueReceive";
         private static string RecvLenCalcer = "recvlencal";
 
         private static string SocketConfigkey = "SocketConfig";

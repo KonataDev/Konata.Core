@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Konata.Core.Builder;
+using Konata.Core.MQ;
+using Konata.Core.Extensions;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,38 +12,69 @@ namespace Konata.Console
     {
         static void Main(string[] args)
         {
-            CancellationTokenSource source = new CancellationTokenSource();
-            BlockingCollection<string> b = new BlockingCollection<string>();
+            IMQ<string> MQ = new MQBuilder<string>()
+                    .SetCustomMQ(typeof(KonataMemMQ<string>))
+                    .MQConfig(config =>
+                    {
+                        config.MaxProcessMTask = 4;
+                    })
+                    .AddMQReceiver(async (data) =>
+                    {
+                        System.Console.WriteLine($"Service 1 received data {data}");
+                        System.Console.WriteLine("Service 1 Do Work");
+                        await Task.Delay(50);
+                    })
+                    .AddMQReceiver(async (data) =>
+                    {
+                        System.Console.WriteLine($"Service 2 received data {data}");
+                        System.Console.WriteLine("Service 2 Do Work");
+                        await Task.Delay(70);
+                    })
+                    .Build();
+            MQ.StartTakeProcess();
 
             Task.Run(async () =>
             {
-                while (!b.IsCompleted&&!source.Token.IsCancellationRequested)
-                {
-                    string x = b.Take();
-                    System.Console.WriteLine(x);
-                    await Task.Delay(700);
-                }
-                System.Console.WriteLine("MQ Finished");
-            });
-
-            Task.Run(async () => {
                 for (int i = 0; i < 5; i++)
                 {
-                    b.Add($"the {i} produce");
-                    System.Console.WriteLine($"create {i} data");
-                    await Task.Delay(800);
+                    MQ.Add($"A:this is {i} time added");
+                    await Task.Delay(100);
                 }
-                await Task.Delay(2000);
-                for (int i = 5; i < 10; i++)
-                {
-                    b.Add($"the {i} produce");
-                    System.Console.WriteLine($"create {i} data");
-                    await Task.Delay(500);
-                }
-                b.CompleteAdding();
-                
             });
-
+            Task.Run(async() =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    MQ.Add($"B:this is {i} time added");
+                    await Task.Delay(200);
+                }
+            });
+            Task.Run(async () =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    MQ.Add($"C:this is {i} time added");
+                    await Task.Delay(300);
+                }
+            });
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                System.Console.WriteLine("StopMQ!");
+                MQ.StopTakeProcess();
+                await Task.Delay(2000);
+                System.Console.WriteLine("ReStartMQ");
+                MQ.StartTakeProcess();
+            });
+            
+            Task.Run(async () =>
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    MQ.Add($"D:this is {i} time added");
+                    await Task.Delay(400);
+                }
+            });
             System.Console.ReadLine();
         }
     }

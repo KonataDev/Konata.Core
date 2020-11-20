@@ -9,9 +9,6 @@ namespace Konata.Core.Extensions
     public static class MQBuilderExtensions
     {
         private static string MQReceiverkey = "MQReceiver";
-        private static string ServerClosekey = "ServerCloseWatcher";
-        private static string CheckContinuekey = "CheckContinueReceive";
-        private static string RecvLenCalcer = "recvlencal";
 
         private static string MQConfigkey = "MQConfig";
 
@@ -57,13 +54,13 @@ namespace Konata.Core.Extensions
             return builder;
         }
 
-        public static List<Action<T>> GetServerDataReceiver<T>(this IMQBuilder<T> builder)
+        public static List<Action<T>> GetMQReceiver<T>(this IMQBuilder<T> builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            if (builder.Properties.TryGetValue(MQReceiver, out object handlers))
+            if (builder.Properties.TryGetValue(MQReceiverkey, out object handlers))
             {
                 return handlers as List<Action<T>>;
             }
