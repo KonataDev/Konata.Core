@@ -5,6 +5,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Konata.Test
 {
@@ -51,7 +53,6 @@ namespace Konata.Test
                 })
                 .Build();
         }
-
 
         [TearDown]
         public void Dispose()

@@ -1,13 +1,13 @@
-﻿using Konata.Core.NetWork;
+﻿using Konata.Core.MQ;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Konata.Core.Builder
 {
-    public class SocketBuilder : ISocketBuilder
+    public class MQBuilder<T> : IMQBuilder<T>
     {
-        private static Type stype = typeof(ISocket);
+        private static Type stype = typeof(IMQ<T>);
         private IDictionary<string, object> properties = new Dictionary<string, object>();
         public IDictionary<string, object> Properties
         {
@@ -20,35 +20,35 @@ namespace Konata.Core.Builder
             get => sources;
         }
 
-        private Type type = typeof(KonataSocket);
-        public Type SocketType 
-        { 
-            get => type; 
+        private Type type = typeof(KonataMemMQ<T>);
+        public Type MQType
+        {
+            get => type;
         }
 
 
 
-        public ISocket Build()
+        public IMQ<T> Build()
         {
-            return (ISocket)Activator.CreateInstance(SocketType,new object[] {this});
+            return (IMQ<T>)Activator.CreateInstance(MQType, new object[] { this });
         }
 
         /// <summary>
-        /// 使用自定义Socket用例
-        /// 需要实现ISocket
+        /// 使用自定义MQ用例
+        /// 需要实现IMQ<T>
         /// </summary>
-        /// <param name="socket"></param>
+        /// <param name="mq"></param>
         /// <returns></returns>
-        public ISocketBuilder SetCustomSocket(Type socket)
+        public IMQBuilder<T> SetCustomMQ(Type mq)
         {
-            if (stype.IsAssignableFrom(socket))
+            if (stype.IsAssignableFrom(mq))
             {
-                this.type = socket;
+                this.type = mq;
                 return this;
             }
             else
             {
-                throw new ArgumentException(nameof(socket));
+                throw new ArgumentException(nameof(mq));
             }
         }
     }

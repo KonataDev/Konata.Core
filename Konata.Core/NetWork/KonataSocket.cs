@@ -12,6 +12,7 @@ namespace Konata.Core.NetWork
 {
     /// <summary>
     /// Konata内部Socket实例,默认使用该Socket对象创建socket
+    /// 该Socket对象暂不支持重新连接 失败即抛弃
     /// </summary>
     public sealed class KonataSocket : ISocket, IDisposable
     {
@@ -105,7 +106,7 @@ namespace Konata.Core.NetWork
         private void OnConnect(object sender, SocketAsyncEventArgs e)
         {
             // 连接完成信号
-            timeoutConnObj.Set(); //释放阻塞.  
+            timeoutConnObj.Set();
             if (e.SocketError == SocketError.Success && this.Connected)
             {
                 InitArgs(e);

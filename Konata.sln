@@ -9,14 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Test", "Konata.Test\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Model", "Konata.Model\Konata.Model.csproj", "{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Resource", "Konata.Resource\Konata.Resource.csproj", "{B32F6F75-BC82-477E-BC1F-AA039B8687BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Resource", "Konata.Resource\Konata.Resource.csproj", "{B32F6F75-BC82-477E-BC1F-AA039B8687BC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFDA5A63-B0A7-4C9C-AEBD-4F462208100A}"
 	ProjectSection(SolutionItems) = preProject
 		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{D58DB768-3B01-407A-B9E5-9162F7E12825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{D58DB768-3B01-407A-B9E5-9162F7E12825}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Console", "Konata.Console\Konata.Console.csproj", "{97B95A02-704D-47E8-A434-EE6F7E53BE38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97B95A02-704D-47E8-A434-EE6F7E53BE38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97B95A02-704D-47E8-A434-EE6F7E53BE38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97B95A02-704D-47E8-A434-EE6F7E53BE38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97B95A02-704D-47E8-A434-EE6F7E53BE38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

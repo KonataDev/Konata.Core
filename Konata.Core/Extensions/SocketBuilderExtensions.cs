@@ -125,7 +125,8 @@ namespace Konata.Core.Extensions
             }
             if (builder.Sources.TryGetValue(SocketConfigkey, out object instance))
             {
-                    (instance as Action<SocketConfig>).Invoke(config);
+                (instance as Action<SocketConfig>).Invoke(config);
+                return config;
             }
             return null;
         }
