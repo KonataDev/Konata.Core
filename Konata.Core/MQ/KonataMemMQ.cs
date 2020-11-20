@@ -52,7 +52,8 @@ namespace Konata.Core.MQ
             List<Action<T>> processitemmethods = builder.GetMQReceiver();
             this.readtimeout = config.ReadTimeout;
             this.TaskQueueID = Guid.Generate().ToString();
-            this._processqueue = TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask>0)?config.MaxProcessMTask:8);
+            this._processqueue=builder.GetExternalTaskQueue()??
+                TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
             if (config.MaxMQLenth > 0)
             {
                 this._queue = new BlockingCollection<T>(config.MaxMQLenth);

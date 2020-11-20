@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Konata.Utils;
 
 namespace Konata.Console
 {
@@ -14,6 +15,7 @@ namespace Konata.Console
         {
             IMQ<string> MQ = new MQBuilder<string>()
                     .SetCustomMQ(typeof(KonataMemMQ<string>))
+                    .SetExternalTaskQueue(TaskQueue.DefaultConcurrentQueue)
                     .MQConfig(config =>
                     {
                         config.MaxProcessMTask = 4;

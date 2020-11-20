@@ -1,5 +1,6 @@
 ﻿using Konata.Core.Builder;
 using Konata.Core.MQ;
+using Konata.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,8 @@ namespace Konata.Core.Extensions
     public static class MQBuilderExtensions
     {
         private static string MQReceiverkey = "MQReceiver";
+        private static string MQexternalTaskQueuekey = "MQexternalTaskQueue";
+
 
         private static string MQConfigkey = "MQConfig";
 
@@ -39,6 +42,23 @@ namespace Konata.Core.Extensions
         }
 
         /// <summary>
+        /// 使用外部TaskQueue进行读取线程管理
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public static IMQBuilder<T> SetExternalTaskQueue<T>(this IMQBuilder<T> builder,TaskQueue instance)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+            builder.Sources[MQexternalTaskQueuekey] = instance;
+            return builder;
+        }
+
+        /// <summary>
         /// 设置MQ配置信息
         /// </summary>
         /// <param name="builder"></param>
@@ -63,6 +83,18 @@ namespace Konata.Core.Extensions
             if (builder.Properties.TryGetValue(MQReceiverkey, out object handlers))
             {
                 return handlers as List<Action<T>>;
+            }
+            return null;
+        }
+        public static TaskQueue GetExternalTaskQueue<T>(this IMQBuilder<T> builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+            if (builder.Properties.TryGetValue(MQexternalTaskQueuekey, out object instance))
+            {
+                return instance as TaskQueue;
             }
             return null;
         }
