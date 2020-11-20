@@ -11,11 +11,16 @@ namespace Konata.Core.Extensions
         private static string ServerDataReceiverkey = "ServerDataReceiver";
         private static string ServerClosekey = "ServerCloseWatcher";
         private static string CheckContinuekey = "CheckContinueReceive";
-        private static string recvdatalenkey = "recvdatalen";
+        private static string RecvLenCalcer = "recvlencal";
 
         private static string SocketConfigkey = "SocketConfig";
 
-
+        /// <summary>
+        /// 设置Socket接收消息处理者
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         public static ISocketBuilder SetServerDataReceiver(this ISocketBuilder builder,Action<Byte[]> handler)
         {
             if (builder == null)
@@ -26,6 +31,12 @@ namespace Konata.Core.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// 设置socket关闭处理者
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
         public static ISocketBuilder SetServerCloseWatcher(this ISocketBuilder builder, Action handler)
         {
             if (builder == null)
@@ -35,35 +46,40 @@ namespace Konata.Core.Extensions
             builder.Properties[ServerClosekey] = handler;
             return builder;
         }
-
-        public static ISocketBuilder SetContinueReceiveChecker(this ISocketBuilder builder,Func<List<Byte>, bool> handler)
+        /// <summary>
+        /// 设置包长度计算处理者
+        /// 在无法计算时或者数据异常时返回-1
+        /// [处于接收锁操作中,请勿执行过长时间方法]
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public static ISocketBuilder SetRecvLenCalcer(this ISocketBuilder builder, Func<List<Byte>, int> handler)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            builder.Properties[CheckContinuekey] = handler;
-            return builder;
-        }
-        public static ISocketBuilder SetrecvdatalenCounter(this ISocketBuilder builder, Func<List<Byte>, int> handler)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            builder.Properties[recvdatalenkey] = handler;
+            builder.Properties[RecvLenCalcer] = handler;
             return builder;
         }
 
+        /// <summary>
+        /// 设置初始socket通信包
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
         public static ISocketBuilder SocketConfig(this ISocketBuilder builder,Action<SocketConfig> instance)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            builder.Properties[SocketConfigkey] = instance;
+            builder.Sources[SocketConfigkey] = instance;
             return builder;
         }
+
         public static Action<Byte[]> GetServerDataReceiver(this ISocketBuilder builder)
         {
             if(builder == null)
@@ -88,31 +104,18 @@ namespace Konata.Core.Extensions
             }
             return null;
         }
-        public static Func<List<Byte>, bool> GetContinueReceiveChecker(this ISocketBuilder builder)
+        public static Func<List<Byte>, int> GetRecvLenCaler(this ISocketBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            if (builder.Properties.TryGetValue(CheckContinuekey, out object handler))
-            {
-                return handler as Func<List<Byte>, bool>;
-            }
-            return null;
-        }
-        public static Func<List<Byte>, int> GetrecvdatalenCounter(this ISocketBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            if (builder.Properties.TryGetValue(CheckContinuekey, out object handler))
+            if (builder.Properties.TryGetValue(RecvLenCalcer, out object handler))
             {
                 return handler as Func<List<Byte>, int>;
             }
             return null;
         }
-
         public static SocketConfig GetSocketConfig(this ISocketBuilder builder)
         {
             SocketConfig config = new SocketConfig();

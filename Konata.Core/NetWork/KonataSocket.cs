@@ -6,6 +6,7 @@ using Konata.Core.Extensions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Konata.Core.NetWork
 {
@@ -39,8 +40,10 @@ namespace Konata.Core.NetWork
         private SocketEventHandler receiveHandler = new SocketEventHandler();
         private int tagcount = 0;
 
-        private Func<List<Byte>,bool> checkcontinuereceive = null;
-        private Func<List<Byte>, int> recvdatalencounter = null;
+        private int recvpackagelen = -1;
+        private object recvpacklock = new object();
+
+        private Func<List<Byte>, int> recvlencalcer = null;
         private Action<Byte[]> receiveAction = null;
         private Action serverCloseAction = null;
         private Action<Exception> exceptionHandler = null;
@@ -53,15 +56,9 @@ namespace Konata.Core.NetWork
 
             this.receiveAction = builder.GetServerDataReceiver();
             this.serverCloseAction = builder.GetServerCloseListener();
-            this.checkcontinuereceive = builder.GetContinueReceiveChecker();
-            this.recvdatalencounter = builder.GetrecvdatalenCounter();
+            this.recvlencalcer = builder.GetRecvLenCaler();
 
-            if (this.checkcontinuereceive == null)
-            {
-                throw new ArgumentException("必须提供报文分析委托用于确定本轮收包是否完成了本次报文");
-            }
-
-            if (this.recvdatalencounter == null)
+            if (this.recvlencalcer == null)
             {
                 throw new ArgumentException("必须提供报文长度计算委托用于截取需要的报文");
             }
@@ -76,7 +73,7 @@ namespace Konata.Core.NetWork
 
             this.hostEndPoint = new IPEndPoint(address, config.Port);
             this.ptype = config.ProtocolType;
-            this.socket = new Socket(this.hostEndPoint.AddressFamily, config.SocketType, config.ProtocolType);
+            this.socket = new Socket(this.hostEndPoint.AddressFamily, config.SocketType, this.ptype);
             this.m_buffer = new List<byte>();
             int maxbsize = config.TotalBufferSize >= config.BufferSize ? config.TotalBufferSize : config.BufferSize;
             int eachbsize= config.TotalBufferSize < config.BufferSize ? config.TotalBufferSize : config.BufferSize;
@@ -93,7 +90,7 @@ namespace Konata.Core.NetWork
             connectArgs.Completed+=new EventHandler<SocketAsyncEventArgs>(OnConnect);
             socket.ConnectAsync(connectArgs);
 
-            if (timeoutConnObj.WaitOne(this.minpackagelen, false))
+            if (timeoutConnObj.WaitOne(this.conntimeoutms, false))
             {
                 return connectArgs.SocketError;
             }
@@ -201,9 +198,23 @@ namespace Konata.Core.NetWork
 
                     do
                     {
-                        if (checkcontinuereceive.Invoke(this.m_buffer))
+                        byte[] recv = null;
+                        lock (recvpacklock)
                         {
-                            break;
+                            if (this.recvpackagelen <= 0)
+                            {
+                                this.recvpackagelen = recvlencalcer.Invoke(this.m_buffer);
+                            }
+                            if (this.recvpackagelen > m_buffer.Count)
+                            {
+                                break;
+                            }
+                            recv = m_buffer.GetRange(0, this.recvpackagelen).ToArray();
+                            lock (m_buffer)
+                            {
+                                m_buffer.RemoveRange(0, this.recvpackagelen);
+                            }
+                            this.recvpackagelen = -1;
                         }
 
                         //byte[] lenBytes = m_buffer.GetRange(1, 3).ToArray();
@@ -212,14 +223,6 @@ namespace Konata.Core.NetWork
                         //{
                         //    break;
                         //}
-                        int packagelen = recvdatalencounter.Invoke(this.m_buffer);
-
-                        byte[] recv = m_buffer.GetRange(0, packagelen).ToArray();
-                        lock (m_buffer)
-                        {
-                            m_buffer.RemoveRange(0, packagelen);
-                        }
-
                         Task.Run(()=> { receiveAction(recv); });
 
                     } while (m_buffer.Count > this.minpackagelen);

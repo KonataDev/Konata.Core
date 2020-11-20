@@ -37,21 +37,13 @@ namespace Konata.Test
                 {
                     Console.WriteLine("socket已关闭");
                 })
-                .SetContinueReceiveChecker((bufferlist)=> {
-                    if (bufferlist.Count < 4)
+                .SetRecvLenCalcer((bufferlist) => {
+                    if (bufferlist.Count < 3)
                     {
-                        return true;
+                        return -1;
                     }
-                    byte[] lenBytes = bufferlist.GetRange(1, 3).ToArray();
-                    int packageLen = BitConverter.ToInt16(lenBytes, 0);
-                    if (packageLen > bufferlist.Count - 5)
-                    {
-                        return true;
-                    }
-                    return false;
-                })
-                .SetrecvdatalenCounter((bufferlist) => {
-                    byte[] lenBytes = bufferlist.GetRange(1, 3).ToArray();
+                    byte[] lenBytes = bufferlist.GetRange(0, 3).ToArray();
+
                     return BitConverter.ToInt16(lenBytes, 0);
                 })
                 .SetServerDataReceiver((bytes) => {
