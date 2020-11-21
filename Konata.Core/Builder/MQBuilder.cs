@@ -1,6 +1,7 @@
-﻿using Konata.Core.MQ;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Konata.Core.MQ;
 
 namespace Konata.Core.Builder
 {
@@ -15,12 +16,14 @@ namespace Konata.Core.Builder
         }
 
         private IDictionary<string, object> sources = new Dictionary<string, object>();
+
         public IDictionary<string, object> Sources
         {
             get => sources;
         }
 
         private Type type = typeof(KonataMemMQ<T>);
+
         public Type MQType
         {
             get => type;

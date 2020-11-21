@@ -1,8 +1,9 @@
-﻿using Konata.Core.Builder;
+﻿using System;
+using System.Collections.Generic;
+
 using Konata.Core.MQ;
 using Konata.Core.Utils;
-using System;
-using System.Collections.Generic;
+using Konata.Core.Builder;
 
 namespace Konata.Core.Extensions
 {
@@ -26,7 +27,7 @@ namespace Konata.Core.Extensions
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            if(builder.Properties.TryGetValue(MQReceiverkey, out object receiverlist))
+            if (builder.Properties.TryGetValue(MQReceiverkey, out object receiverlist))
             {
                 (receiverlist as List<Action<T>>).Add(handler);
             }
@@ -36,7 +37,7 @@ namespace Konata.Core.Extensions
                 actions.Add(handler);
                 builder.Properties[MQReceiverkey] = actions;
             }
-            
+
             return builder;
         }
 
@@ -47,7 +48,7 @@ namespace Konata.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public static IMQBuilder<T> SetExternalTaskQueue<T>(this IMQBuilder<T> builder,TaskQueue instance)
+        public static IMQBuilder<T> SetExternalTaskQueue<T>(this IMQBuilder<T> builder, TaskQueue instance)
         {
             if (builder == null)
             {
@@ -85,6 +86,7 @@ namespace Konata.Core.Extensions
             }
             return null;
         }
+
         public static TaskQueue GetExternalTaskQueue<T>(this IMQBuilder<T> builder)
         {
             if (builder == null)
