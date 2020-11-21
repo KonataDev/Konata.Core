@@ -45,7 +45,7 @@ namespace Konata.Core.NetWork
         private object recvpacklock = new object();
 
         private Func<List<Byte>, int> recvlencalcer = null;
-        private Action<Byte[]> receiveAction = null;
+        private RefBytes receiveAction = null;
         private Action serverCloseAction = null;
         private Action<Exception> exceptionHandler = null;
 
@@ -206,7 +206,7 @@ namespace Konata.Core.NetWork
                             {
                                 this.recvpackagelen = recvlencalcer.Invoke(this.m_buffer);
                             }
-                            if (this.recvpackagelen > m_buffer.Count)
+                            if (this.recvpackagelen > m_buffer.Count || this.recvpackagelen <= 0)
                             {
                                 break;
                             }
@@ -224,7 +224,7 @@ namespace Konata.Core.NetWork
                         //{
                         //    break;
                         //}
-                        Task.Run(()=> { receiveAction(recv); });
+                        Task.Run(()=> { receiveAction(ref recv); });
 
                     } while (m_buffer.Count > this.minpackagelen);
                     //继续接收  

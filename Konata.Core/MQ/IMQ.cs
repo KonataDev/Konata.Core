@@ -16,6 +16,11 @@ namespace Konata.Core.MQ
         Type MsgType { get; }
 
         /// <summary>
+        /// 标记该消息队列是否已经关闭
+        /// </summary>
+        bool Closed { get; }
+
+        /// <summary>
         /// 压入数据
         /// 阻塞式
         /// </summary>

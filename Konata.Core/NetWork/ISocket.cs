@@ -34,4 +34,6 @@ namespace Konata.Core.NetWork
         void DisConnect();
 
     }
+
+    public delegate void RefBytes(ref byte[] bytes);
 }

@@ -48,7 +48,7 @@ namespace Konata.Test
 
                     return BitConverter.ToInt16(lenBytes, 0);
                 })
-                .SetServerDataReceiver((bytes) =>
+                .SetServerDataReceiver((ref byte[] bytes) =>
                 {
                     Console.WriteLine("接收到了一个报文");
                 })

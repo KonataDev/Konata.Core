@@ -1,28 +1,29 @@
 ﻿using Konata.Core.Builder;
 using Konata.Core.Extensions;
-using Konata.Utils;
+using Konata.Core.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using Guid = Konata.Utils.Guid;
 
 namespace Konata.Core.MQ
 {
     /// <summary>
     /// Konata内部内存消息队列实现
     /// 一对多
+    /// 未实现FIFO
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class KonataMemMQ<T> : IMQ<T>, IDisposable
     {
-        private Type msgtype=typeof(T);
+        private Type msgtype = typeof(T);
         private int readtimeout = -1;
         public Type MsgType
         {
             get => msgtype;
         }
+
         public String TaskQueueID
         {
             get;
@@ -37,10 +38,11 @@ namespace Konata.Core.MQ
             get => this._queue.Count;
         }
 
-        public bool MQIsCompleted
+        public bool Closed
         {
             get => this._queue.IsCompleted;
         }
+
         private BlockingCollection<T> _queue = null;
         private CancellationTokenSource _source = null;
         private event Action<T> _processItemEvent = null;
@@ -51,7 +53,7 @@ namespace Konata.Core.MQ
             MQConfig config=builder.GetMQConfig();
             List<Action<T>> processitemmethods = builder.GetMQReceiver();
             this.readtimeout = config.ReadTimeout;
-            this.TaskQueueID = Guid.Generate().ToString();
+            this.TaskQueueID = IdGenerater.GeneraterID();
             this._processqueue=builder.GetExternalTaskQueue()??
                 TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
             if (config.MaxMQLenth > 0)

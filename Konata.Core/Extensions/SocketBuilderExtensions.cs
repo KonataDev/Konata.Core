@@ -20,7 +20,7 @@ namespace Konata.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public static ISocketBuilder SetServerDataReceiver(this ISocketBuilder builder,Action<Byte[]> handler)
+        public static ISocketBuilder SetServerDataReceiver(this ISocketBuilder builder,RefBytes handler)
         {
             if (builder == null)
             {
@@ -79,7 +79,7 @@ namespace Konata.Core.Extensions
             return builder;
         }
 
-        public static Action<Byte[]> GetServerDataReceiver(this ISocketBuilder builder)
+        public static RefBytes GetServerDataReceiver(this ISocketBuilder builder)
         {
             if(builder == null)
             {
@@ -87,7 +87,7 @@ namespace Konata.Core.Extensions
             }
             if(builder.Properties.TryGetValue(ServerDataReceiverkey,out object handler))
             {
-                return handler as Action<Byte[]>;
+                return handler as RefBytes;
             }
             return null;
         }

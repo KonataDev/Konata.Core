@@ -1,6 +1,6 @@
 ﻿using Konata.Core.Builder;
 using Konata.Core.MQ;
-using Konata.Utils;
+using Konata.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,4 +1,4 @@
-﻿using Konata.Model.Package.Oicq;
+﻿using Konata.Model.Packet.Oicq;
 using Konata.Packets.Protobuf;
 using Konata.Utils.Crypto;
 using System;

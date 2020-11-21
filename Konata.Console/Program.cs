@@ -1,11 +1,13 @@
 ﻿using Konata.Core.Builder;
 using Konata.Core.MQ;
 using Konata.Core.Extensions;
+using Konata.Core.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Konata.Utils;
+
+using System.Collections.Generic;
 
 namespace Konata.Console
 {
@@ -13,6 +15,8 @@ namespace Konata.Console
     {
         static void Main(string[] args)
         {
+
+
             IMQ<string> MQ = new MQBuilder<string>()
                     .SetCustomMQ(typeof(KonataMemMQ<string>))
                     .SetExternalTaskQueue(TaskQueue.DefaultConcurrentQueue)
@@ -71,7 +75,7 @@ namespace Konata.Console
             
             Task.Run(async () =>
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 50; i++)
                 {
                     MQ.Add($"D:this is {i} time added");
                     await Task.Delay(400);

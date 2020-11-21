@@ -9,9 +9,4 @@
     <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Package\Tlv\TlvModel\" />
-    <Folder Include="Package\Wup\" />
-  </ItemGroup>
-
 </Project>
