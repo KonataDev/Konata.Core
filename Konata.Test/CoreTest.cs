@@ -1,10 +1,11 @@
-﻿using Konata.Core.Builder;
+using System;
+using System.Threading.Tasks;
+using NUnit.Framework;
+
+using Konata.Core.MQ;
+using Konata.Core.Builder;
 using Konata.Core.NetWork;
 using Konata.Core.Extensions;
-using NUnit.Framework;
-using System;
-using Konata.Core.MQ;
-using System.Threading.Tasks;
 
 namespace Konata.Test
 {
@@ -33,11 +34,12 @@ namespace Konata.Test
                     config.BufferSize = 1024;
                     config.TotalBufferSize = 4096;
                 })
-                .SetServerCloseWatcher(()=>
+                .SetServerCloseWatcher(() =>
                 {
                     Console.WriteLine("socket已关闭");
                 })
-                .SetRecvLenCalcer((bufferlist) => {
+                .SetRecvLenCalcer((bufferlist) =>
+                {
                     if (bufferlist.Count < 3)
                     {
                         return -1;
@@ -46,14 +48,15 @@ namespace Konata.Test
 
                     return BitConverter.ToInt16(lenBytes, 0);
                 })
-                .SetServerDataReceiver((bytes) => {
+                .SetServerDataReceiver((bytes) =>
+                {
                     Console.WriteLine("接收到了一个报文");
                 })
                 .Build();
         }
 
 
-        [Test(Description ="MQTest")]
+        [Test(Description = "MQTest")]
         [Category("消息队列测试")]
         public void MQ_Test()
         {

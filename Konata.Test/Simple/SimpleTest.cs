@@ -1,15 +1,16 @@
-using Konata.Resource.Localization;
-using NUnit.Framework;
 using System;
 using System.Threading;
+using NUnit.Framework;
+
+using Konata.Resource.Localization;
 
 namespace Konata.Test.Simple
 {
     /// <summary>
     /// 测试用例标准模板参考
     /// </summary>
-    [TestFixture(Description ="测试模板")]
-    public class SimpleTest:BaseTest
+    [TestFixture(Description = "测试模板")]
+    public class SimpleTest : BaseTest
     {
         [SetUp]
         public void Setup()
@@ -17,7 +18,7 @@ namespace Konata.Test.Simple
             Console.WriteLine($"开始进行功能测试");
         }
 
-        [Test(Description ="test1")]
+        [Test(Description = "test1")]
         [Category("多语言测试")]
         public void Test1()
         {
