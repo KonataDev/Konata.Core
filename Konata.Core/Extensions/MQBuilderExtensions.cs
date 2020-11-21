@@ -3,7 +3,6 @@ using Konata.Core.MQ;
 using Konata.Core.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Extensions
 {

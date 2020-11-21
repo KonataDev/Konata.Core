@@ -24,6 +24,7 @@ namespace Konata.Core.Utils
 
         private LimitedConcurrencyLevelTaskScheduler _scheduler;
 
+
         /// <summary>
         /// 默认串行队列
         /// </summary>
@@ -44,7 +45,7 @@ namespace Konata.Core.Utils
         /// 创建并发队列
         /// </summary>
         /// <param name="concurrentCount">并发数，1=串行</param>
-        public TaskQueue(int concurrentCount = 1)
+        private TaskQueue(int concurrentCount = 1)
         {
             if (concurrentCount < 0)
             {

@@ -1,7 +1,6 @@
 ﻿using Konata.Core.NetWork;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Builder
 {

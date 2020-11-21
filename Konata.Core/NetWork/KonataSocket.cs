@@ -1,12 +1,12 @@
 ﻿using Konata.Core.Builder;
+using Konata.Core.Extensions;
+using Konata.Core.Utils;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using Konata.Core.Extensions;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
 
 namespace Konata.Core.NetWork
 {
@@ -45,7 +45,7 @@ namespace Konata.Core.NetWork
         private object recvpacklock = new object();
 
         private Func<List<Byte>, int> recvlencalcer = null;
-        private RefBytes receiveAction = null;
+        private Action<Byte[]> receiveAction = null;
         private Action serverCloseAction = null;
         private Action<Exception> exceptionHandler = null;
 
@@ -76,8 +76,12 @@ namespace Konata.Core.NetWork
             this.ptype = config.ProtocolType;
             this.socket = new Socket(this.hostEndPoint.AddressFamily, config.SocketType, this.ptype);
             this.m_buffer = new List<byte>();
-            int maxbsize = config.TotalBufferSize >= config.BufferSize ? config.TotalBufferSize : config.BufferSize;
-            int eachbsize= config.TotalBufferSize < config.BufferSize ? config.TotalBufferSize : config.BufferSize;
+            int maxbsize = config.TotalBufferSize;
+            int eachbsize = config.BufferSize;
+            if (maxbsize < eachbsize)
+            {
+                ObjectHelper.Swap<int>(ref maxbsize, ref eachbsize);
+            }
             this.socketBuffer = new SocketBuffer(maxbsize, eachbsize);
         }
 
@@ -224,7 +228,7 @@ namespace Konata.Core.NetWork
                         //{
                         //    break;
                         //}
-                        Task.Run(()=> { receiveAction(ref recv); });
+                        Task.Run(()=> { receiveAction(recv); });
 
                     } while (m_buffer.Count > this.minpackagelen);
                     //继续接收  

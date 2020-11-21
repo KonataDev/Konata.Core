@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Konata.Core.Utils
+﻿namespace Konata.Core.Utils
 {
     public static class ObjectHelper
     {

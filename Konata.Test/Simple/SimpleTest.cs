@@ -32,6 +32,12 @@ namespace Konata.Test.Simple
             Assert.AreEqual(Localization.TestString, "测试字符串");
         }
 
+        [Test(Description ="test2")]
+        [Category("反射获取方法参数")]
+        public void Test2()
+        {
+
+        }
 
         [TearDown]
         public void Dispose()

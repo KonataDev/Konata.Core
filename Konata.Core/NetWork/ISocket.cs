@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
 
 namespace Konata.Core.NetWork
 {
@@ -34,6 +31,4 @@ namespace Konata.Core.NetWork
         void DisConnect();
 
     }
-
-    public delegate void RefBytes(ref byte[] bytes);
 }
