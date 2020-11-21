@@ -39,7 +39,7 @@ namespace Konata.Test
 
         [Test]
         [Category("byte缓存字节测试")]
-        public void ByteBuffer_Funcation()
+        public void ByteBuffer_Function()
         {
             var buffer = new ByteBuffer();
 
@@ -58,7 +58,7 @@ namespace Konata.Test
 
         [Test]
         [Category("proto树结构展示")]
-        public void Proto_Tree_Funcation()
+        public void Proto_Tree_Function()
         {
             var root = new ProtoTreeRoot();
             {
