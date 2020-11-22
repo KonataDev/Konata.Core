@@ -1,7 +1,8 @@
-﻿using Konata.Core.Builder;
-using Konata.Core.NetWork;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Konata.Core.Builder;
+using Konata.Core.NetWork;
 
 namespace Konata.Core.Extensions
 {
@@ -20,7 +21,7 @@ namespace Konata.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public static ISocketBuilder SetServerDataReceiver(this ISocketBuilder builder,Action<Byte[]> handler)
+        public static ISocketBuilder SetServerDataReceiver(this ISocketBuilder builder, Action<Byte[]> handler)
         {
             if (builder == null)
             {
@@ -45,6 +46,7 @@ namespace Konata.Core.Extensions
             builder.Properties[ServerClosekey] = handler;
             return builder;
         }
+
         /// <summary>
         /// 设置包长度计算处理者
         /// 在无法计算时或者数据异常时返回-1
@@ -69,7 +71,7 @@ namespace Konata.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public static ISocketBuilder SocketConfig(this ISocketBuilder builder,Action<SocketConfig> instance)
+        public static ISocketBuilder SocketConfig(this ISocketBuilder builder, Action<SocketConfig> instance)
         {
             if (builder == null)
             {
@@ -81,16 +83,17 @@ namespace Konata.Core.Extensions
 
         public static Action<Byte[]> GetServerDataReceiver(this ISocketBuilder builder)
         {
-            if(builder == null)
+            if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
-            if(builder.Properties.TryGetValue(ServerDataReceiverkey,out object handler))
+            if (builder.Properties.TryGetValue(ServerDataReceiverkey, out object handler))
             {
                 return handler as Action<Byte[]>;
             }
             return null;
         }
+
         public static Action GetServerCloseListener(this ISocketBuilder builder)
         {
             if (builder == null)
@@ -103,6 +106,7 @@ namespace Konata.Core.Extensions
             }
             return null;
         }
+
         public static Func<List<Byte>, int> GetRecvLenCaler(this ISocketBuilder builder)
         {
             if (builder == null)
@@ -115,6 +119,7 @@ namespace Konata.Core.Extensions
             }
             return null;
         }
+
         public static SocketConfig GetSocketConfig(this ISocketBuilder builder)
         {
             SocketConfig config = new SocketConfig();

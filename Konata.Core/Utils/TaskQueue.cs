@@ -60,7 +60,7 @@ namespace Konata.Core.Utils
         /// <param name="tag">队列名</param>
         /// <param name="concurrentCount">并发数</param>
         /// <returns></returns>
-        public static TaskQueue CreateGlobalQueue(string tag,int concurrentCount)
+        public static TaskQueue CreateGlobalQueue(string tag, int concurrentCount)
         {
             if (string.IsNullOrEmpty(tag)) throw new ArgumentNullException(nameof(tag));
 
@@ -174,6 +174,7 @@ namespace Konata.Core.Utils
             if (maxDegreeOfParallelism < 1) throw new ArgumentOutOfRangeException("maxDegreeOfParallelism");
             _maxDegreeOfParallelism = maxDegreeOfParallelism;
         }
+
         // Gets an enumerable of the tasks currently scheduled on this scheduler. 
         protected sealed override IEnumerable<Task> GetScheduledTasks()
         {

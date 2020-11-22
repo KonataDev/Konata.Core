@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace Konata.Core.MQ
@@ -35,18 +33,20 @@ namespace Konata.Core.MQ
         /// <param name="data"></param>
         /// <param name="token"></param>
         void Add(T data, CancellationToken token);
+
         /// <summary>
         /// 尝试压入数据
         /// 非阻塞
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        bool TryAdd(T data,int timeout);
+        bool TryAdd(T data, int timeout);
 
         /// <summary>
         /// 启动异步取出回调
         /// </summary>
         void StartTakeProcess();
+
         /// <summary>
         /// 关闭异步取出回调
         /// </summary>

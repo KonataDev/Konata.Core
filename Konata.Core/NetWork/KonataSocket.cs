@@ -1,12 +1,13 @@
-﻿using Konata.Core.Builder;
-using Konata.Core.Extensions;
-using Konata.Core.Utils;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Konata.Core.Utils;
+using Konata.Core.Builder;
+using Konata.Core.Extensions;
 
 namespace Konata.Core.NetWork
 {
@@ -16,10 +17,11 @@ namespace Konata.Core.NetWork
     /// </summary>
     public sealed class KonataSocket : ISocket, IDisposable
     {
-        private int minpackagelen=1;
+        private int minpackagelen = 1;
         private Socket socket = null;
         private int conntimeoutms = 30000;
         private ProtocolType ptype = ProtocolType.Unspecified;
+
         public bool Connected
         {
             get => socket != null && socket.Connected;
@@ -49,8 +51,6 @@ namespace Konata.Core.NetWork
         private Action serverCloseAction = null;
         private Action<Exception> exceptionHandler = null;
 
-
-
         public KonataSocket(ISocketBuilder builder)
         {
             SocketConfig config = builder.GetSocketConfig();
@@ -64,7 +64,7 @@ namespace Konata.Core.NetWork
                 throw new ArgumentException("必须提供报文长度计算委托用于截取需要的报文");
             }
 
-            if (config == null||!IPAddress.TryParse(config.Ip,out IPAddress address))
+            if (config == null || !IPAddress.TryParse(config.Ip, out IPAddress address))
             {
                 throw new ArgumentException("Socket初始化必须携带config");
             }
@@ -76,12 +76,14 @@ namespace Konata.Core.NetWork
             this.ptype = config.ProtocolType;
             this.socket = new Socket(this.hostEndPoint.AddressFamily, config.SocketType, this.ptype);
             this.m_buffer = new List<byte>();
+
             int maxbsize = config.TotalBufferSize;
             int eachbsize = config.BufferSize;
             if (maxbsize < eachbsize)
             {
                 ObjectHelper.Swap<int>(ref maxbsize, ref eachbsize);
             }
+
             this.socketBuffer = new SocketBuffer(maxbsize, eachbsize);
         }
 
@@ -92,7 +94,7 @@ namespace Konata.Core.NetWork
                 UserToken = this.socket,
                 RemoteEndPoint = hostEndPoint
             };
-            connectArgs.Completed+=new EventHandler<SocketAsyncEventArgs>(OnConnect);
+            connectArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnConnect);
             socket.ConnectAsync(connectArgs);
 
             if (timeoutConnObj.WaitOne(this.conntimeoutms, false))
@@ -118,6 +120,7 @@ namespace Konata.Core.NetWork
         }
 
         #region Init R/S Handler
+
         /// <summary>  
         /// 初始化收发参数  
         /// </summary>  
@@ -140,7 +143,6 @@ namespace Konata.Core.NetWork
             //发送参数  
             InitSendArgs();
         }
-
 
         /// <summary>  
         /// 初始化发送参数MySocketEventArgs  
@@ -165,8 +167,9 @@ namespace Konata.Core.NetWork
             }
             return sendArg;
         }
+
         #endregion
-       
+
         private void IO_Completed(object sender, SocketAsyncEventArgs e)
         {
             SocketEventHandler seh = (SocketEventHandler)e;
@@ -195,7 +198,7 @@ namespace Konata.Core.NetWork
                     //读取数据
                     byte[] data = new byte[e.BytesTransferred];
                     Array.Copy(e.Buffer, e.Offset, data, 0, e.BytesTransferred);
-                    
+
                     lock (m_buffer)
                     {
                         m_buffer.AddRange(data);
@@ -228,7 +231,7 @@ namespace Konata.Core.NetWork
                         //{
                         //    break;
                         //}
-                        Task.Run(()=> { receiveAction(recv); });
+                        Task.Run(() => { receiveAction(recv); });
 
                     } while (m_buffer.Count > this.minpackagelen);
                     //继续接收  
@@ -318,7 +321,7 @@ namespace Konata.Core.NetWork
                     default:
                         return;
                 }
-                
+
             }
         }
 
@@ -340,7 +343,5 @@ namespace Konata.Core.NetWork
             socket?.Dispose();
             timeoutConnObj.Dispose();
         }
-
-
     }
 }

@@ -1,11 +1,11 @@
-﻿using Konata.Core.Builder;
-using Konata.Core.Extensions;
-using Konata.Core.Utils;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+
+using Konata.Core.Utils;
+using Konata.Core.Builder;
+using Konata.Core.Extensions;
 
 namespace Konata.Core.MQ
 {
@@ -19,6 +19,7 @@ namespace Konata.Core.MQ
     {
         private Type msgtype = typeof(T);
         private int readtimeout = -1;
+       
         public Type MsgType
         {
             get => msgtype;
@@ -29,10 +30,12 @@ namespace Konata.Core.MQ
             get;
             private set;
         }
+
         public bool Running
         {
             get; private set;
         }
+
         public int MQCount
         {
             get => this._queue.Count;
@@ -50,11 +53,11 @@ namespace Konata.Core.MQ
 
         public KonataMemMQ(IMQBuilder<T> builder)
         {
-            MQConfig config=builder.GetMQConfig();
+            MQConfig config = builder.GetMQConfig();
             List<Action<T>> processitemmethods = builder.GetMQReceiver();
             this.readtimeout = config.ReadTimeout;
             this.TaskQueueID = IdGenerater.GeneraterID();
-            this._processqueue=builder.GetExternalTaskQueue()??
+            this._processqueue = builder.GetExternalTaskQueue() ??
                 TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
             if (config.MaxMQLenth > 0)
             {
@@ -65,8 +68,8 @@ namespace Konata.Core.MQ
                 this._queue = new BlockingCollection<T>();
             }
             this._source = new CancellationTokenSource();
-            
-            foreach(var e in processitemmethods)
+
+            foreach (var e in processitemmethods)
             {
                 this._processItemEvent += e;
             }
@@ -80,8 +83,9 @@ namespace Konata.Core.MQ
         {
             try
             {
-                this._queue.Add(data,token);
-            }catch(OperationCanceledException)
+                this._queue.Add(data, token);
+            }
+            catch (OperationCanceledException)
             {
                 return;
             }
@@ -114,14 +118,14 @@ namespace Konata.Core.MQ
         {
             if (this._queue != null && !this._queue.IsCompleted && !this._source.Token.IsCancellationRequested)
             {
-                while(!this._queue.IsCompleted && !this._source.Token.IsCancellationRequested)
+                while (!this._queue.IsCompleted && !this._source.Token.IsCancellationRequested)
                 {
                     try
                     {
                         T data = default(T);
                         if (this.readtimeout > 0)
                         {
-                            if(!this._queue.TryTake(out data, this.readtimeout))
+                            if (!this._queue.TryTake(out data, this.readtimeout))
                             {
                                 continue;
                             }
@@ -141,7 +145,8 @@ namespace Konata.Core.MQ
                         {
                             this._processItemEvent?.Invoke(data);
                         });
-                    }catch(OperationCanceledException)
+                    }
+                    catch (OperationCanceledException)
                     {
                         continue;
                     }
@@ -150,13 +155,14 @@ namespace Konata.Core.MQ
             }
             this.Running = false;
         }
+
         public void Dispose()
         {
             this._source?.Cancel();
             this._queue?.CompleteAdding();
             this._queue?.Dispose();
             this._queue?.Dispose();
-            this._processItemEvent = null; 
+            this._processItemEvent = null;
         }
 
         ~KonataMemMQ()

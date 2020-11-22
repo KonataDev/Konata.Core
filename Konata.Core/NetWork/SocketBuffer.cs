@@ -15,6 +15,7 @@ namespace Konata.Core.NetWork
         Stack<int> _freeIndexPool;
         int _currentIndex;
         int _bufferSize;
+
         /// <summary>
         /// 
         /// </summary>
@@ -28,6 +29,7 @@ namespace Konata.Core.NetWork
             _bufferSize = bufferSize;
             _freeIndexPool = new Stack<int>();
         }
+
         // 分配缓冲池大小
         public void InitBuffer()
         {
