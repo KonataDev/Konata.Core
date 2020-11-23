@@ -56,7 +56,7 @@ namespace Konata.Core.MQ
             MQConfig config = builder.GetMQConfig();
             List<Action<T>> processitemmethods = builder.GetMQReceiver();
             this.readtimeout = config.ReadTimeout;
-            this.TaskQueueID = IdGenerater.GeneraterID();
+            this.TaskQueueID = IdGenerater.GenerateGUID();
             this._processqueue = builder.GetExternalTaskQueue() ??
                 TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
             if (config.MaxMQLenth > 0)
@@ -161,7 +161,6 @@ namespace Konata.Core.MQ
             this._source?.Cancel();
             this._queue?.CompleteAdding();
             this._queue?.Dispose();
-            this._queue?.Dispose();
             this._processItemEvent = null;
         }
 
@@ -169,7 +168,6 @@ namespace Konata.Core.MQ
         {
             this._source?.Cancel();
             this._queue?.CompleteAdding();
-            this._queue?.Dispose();
             this._queue?.Dispose();
             this._processItemEvent = null;
         }
