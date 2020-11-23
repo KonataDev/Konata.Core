@@ -5,6 +5,6 @@
     /// </summary>
     public interface IStart
     {
-        void Start();
+        void Start(Entity entity);
     }
 }

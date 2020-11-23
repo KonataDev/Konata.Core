@@ -7,18 +7,14 @@ namespace Konata.Core.Base
     {
         public long Id { get; set; }
 
-        public Type Type { get; private set; }
-
         protected BaseObject()
         {
             this.Id = IdGenerater.GenerateID();
-            this.Type = this.GetType();
         }
 
         protected BaseObject(long id)
         {
             this.Id = id;
-            this.Type = this.GetType();
         }
 
         public bool IsDisposed

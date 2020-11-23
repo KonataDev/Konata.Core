@@ -48,8 +48,7 @@ namespace Konata.Core.Base
 
         public bool RemoveComponent(Type type)
         {
-            Component component;
-            if(!this.componentDict.TryGetValue(type,out component))
+            if(!this.componentDict.TryGetValue(type,out Component component))
             {
                 return false;
             }
@@ -62,8 +61,7 @@ namespace Konata.Core.Base
         public T GetComponent<T>()
             where T : Component
         {
-            Component component;
-            if(!this.componentDict.TryGetValue(typeof(T),out component))
+            if(!this.componentDict.TryGetValue(typeof(T),out Component component))
             {
                 return default(T);
             }

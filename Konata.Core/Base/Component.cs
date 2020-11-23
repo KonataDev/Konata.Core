@@ -20,6 +20,11 @@ namespace Konata.Core.Base
         protected Component(long id)
             : base() { }
 
+        /// <summary>
+        /// 获取当前组件绑定的实体上其他的组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetComponent<T>()
             where T : Component
         {
@@ -34,7 +39,7 @@ namespace Konata.Core.Base
             }
             base.Dispose();
 
-            this.Entity?.RemoveComponent(this.Type);
+            this.Entity?.RemoveComponent(this.GetType());
             this.Entity = null;
         }
     }

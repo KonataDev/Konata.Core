@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Konata.Core.Base
 {
+    /// <summary>
+    /// 组件类型特性标签
+    /// </summary>
     public class ComponentAttribute:BaseAttribute
     {
         public ComponentMode Mode { get; private set; }
