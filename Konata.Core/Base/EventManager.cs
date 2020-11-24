@@ -239,8 +239,11 @@ namespace Konata.Core.Base
                 {
                     if (ever.Enable)
                     {
+                        if (ever.RunType == EventRunType.BeforeListener)
+                            ever.Event?.Handle(arg);
                         ever.listener.Invoke(arg);
-
+                        if (ever.RunType == EventRunType.AfterListener)
+                            ever.Event?.Handle(arg);
                     }
                 }
             }
@@ -251,43 +254,54 @@ namespace Konata.Core.Base
             {
                 if (this.coreeventlist.TryGetValue(eventtype, out Eventer ever))
                 {
-                    ever.listener.Invoke(arg);
+                    if (ever.Enable)
+                    {
+                        if (ever.RunType == EventRunType.BeforeListener)
+                            ever.Event?.Handle(arg);
+                        ever.listener.Invoke(arg);
+                        if (ever.RunType == EventRunType.AfterListener)
+                            ever.Event?.Handle(arg);
+                    }
                 }
             }
         }
 
-        public Task RunEventAsync(string eventname, KonataEventArgs arg,bool sync=false)
+        public async Task RunEventAsync(string eventname, KonataEventArgs arg)
         {
             Eventer ever = null;
             lock (this.commoneventlock)
             {
                 if (!this.commoneventlist.TryGetValue(eventname, out ever))
                 {
-                    return null;
+                    return;
                 }
             }
-            if (sync)
-            {
-                return this.concurrent.RunSync(() => { ever.listener.Invoke(arg); });
-            }
-            return this.concurrent.RunAsync(()=> { ever.listener.Invoke(arg);});
+
+            if (ever.RunType == EventRunType.BeforeListener)
+                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
+            await this.concurrent.RunAsync(() => { ever.listener.Invoke(arg); });
+            if (ever.RunType == EventRunType.AfterListener)
+                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
+
         }
 
-        public Task RunEvent(CoreEventType eventtype, KonataEventArgs arg, bool sync = false)
+        public async Task RunEventAsync(CoreEventType eventtype, KonataEventArgs arg)
         {
             Eventer ever = null;
             lock (this.coreeventlock)
             {
                 if (!this.coreeventlist.TryGetValue(eventtype, out ever))
                 {
-                    return null;
+                    return;
                 }
             }
-            if (sync)
-            {
-                return this.concurrent.RunSync(() => { ever.listener.Invoke(arg); });
-            }
-            return this.concurrent.RunAsync(() => { ever.listener.Invoke(arg); });
+
+            if (ever.RunType == EventRunType.BeforeListener)
+                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
+            await this.concurrent.RunAsync(() => { ever.listener.Invoke(arg); });
+            if (ever.RunType == EventRunType.AfterListener)
+                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
+
         }
 
     }
