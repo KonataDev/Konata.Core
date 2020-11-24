@@ -1,20 +1,14 @@
-﻿using Konata.Core.Base.ComponentType;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Konata.Core.Base
+﻿namespace Konata.Core.Base
 {
     /// <summary>
-    /// 组件类型特性标签
+    /// 组件类型特性
     /// </summary>
     public class ComponentAttribute:BaseAttribute
     {
-        public ComponentMode Mode { get; private set; }
 
-        public ComponentAttribute(ComponentMode mode)
+        public ComponentAttribute(string name = "UnDefined", string des = "")
+            :base(name,des)
         {
-            this.Mode = mode;
         }
     }
 }

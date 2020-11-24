@@ -65,6 +65,7 @@ namespace Konata.Test
                 {
                     config.MaxProcessMTask = 4;
                 })
+                .SetCustomMQ(typeof(KonataMemMQ<string>))
                 .AddMQReceiver((data) =>
                 {
                     Console.WriteLine($"received data {data}");

@@ -3,7 +3,7 @@
 namespace Konata.Core.Base
 {
     [AttributeUsage(AttributeTargets.Class,AllowMultiple =false,Inherited =false)]
-    public class BaseAttribute:Attribute
+    public class BaseAttribute: System.Attribute
     {
         public Type AttributeType { get; private set; }
 
