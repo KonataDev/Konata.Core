@@ -1,11 +1,12 @@
-﻿using Konata.Core.Utils;
+﻿using Konata.Core.Base;
+using Konata.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Konata.Core.Base
+namespace Konata.Core
 {
     /// <summary>
     /// 全局对象加载/卸载管理器
@@ -83,7 +84,7 @@ namespace Konata.Core.Base
             {
                 this.loadedeventtypes[name] = tempAttribute[typeof(EventAttribute)];
                 //将事件注册并初始化到事件管理器
-                EventManager.Instance.RegisterNewEvent(name,tempAttribute[typeof(EventAttribute)]);
+                EventManager.Instance.LoadNewEvent(name,tempAttribute[typeof(EventAttribute)]);
             }
 
             /*

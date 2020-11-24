@@ -1,13 +1,12 @@
-﻿using Konata.Core.Base.Event;
+﻿using Konata.Core.Base;
+using Konata.Core.Base.Event;
 using Konata.Core.Utils;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Konata.Core.Base
+namespace Konata.Core
 {
     public class Eventer
     {
@@ -21,7 +20,12 @@ namespace Konata.Core.Base
 
         public EventRunType RunType { get; set; } = EventRunType.OnlySymbol;
 
-        public WeakEvent<KonataEventArgs> listener = new WeakEvent<KonataEventArgs>();
+        public WeakEvent<KonataEventArgs> Listener = new WeakEvent<KonataEventArgs>();
+
+        public override string ToString()
+        {
+            return $"名称:{Name};启用中:{Enable};被订阅数:{Listener.Count};简介:{Description}";
+        }
     }
 
     public class EventManager
@@ -60,11 +64,11 @@ namespace Konata.Core.Base
         /// </summary>
         /// <param name="assemblyname">程序集名称</param>
         /// <param name="types">事件类型</param>
-        public void RegisterNewEvent(string assemblyname, IList<Type> types)
+        public void LoadNewEvent(string assemblyname, IList<Type> types)
         {
             if (String.IsNullOrEmpty(assemblyname) || types == null)
             {
-
+                return;
             }
             lock (this.commoneventlock)
             {
@@ -82,7 +86,8 @@ namespace Konata.Core.Base
                     {
                         throw new ArgumentException($"Find same name event:even set assemblyheader ({totalname})");
                     }
-                    if (!type.IsAssignableFrom(typeof(IEvent)))
+                    IEvent obj = null;
+                    if (!typeof(IEvent).IsAssignableFrom(type))
                     {
                         if (eattr.EventRunType != EventRunType.OnlySymbol)
                         {
@@ -90,8 +95,11 @@ namespace Konata.Core.Base
                         }
 
                     }
+                    else
+                    {
+                        obj = (IEvent)Activator.CreateInstance(type);
+                    }
 
-                    IEvent obj = (IEvent)Activator.CreateInstance(type);
 
                     this.commoneventlist[totalname] = new Eventer { Event = obj, RunType = eattr.EventRunType,Name=eattr.Name,Description=eattr.Description };
                 }
@@ -102,7 +110,7 @@ namespace Konata.Core.Base
         /// 注册核心事件-只能注册一次
         /// </summary>
         /// <param name="types"></param>
-        public void RegisterCoreEvent(IList<Type> types)
+        public void LoadCoreEvent(IList<Type> types)
         {
             if (this.CoreEventLoaded)
             {
@@ -203,7 +211,7 @@ namespace Konata.Core.Base
                 {
                     return false;
                 }
-                ever.listener += action;
+                ever.Listener += action;
             }
             return true;
         }
@@ -215,7 +223,7 @@ namespace Konata.Core.Base
                 {
                     return false;
                 }
-                ever.listener += action;
+                ever.Listener += action;
             }
             return true;
         }
@@ -225,7 +233,7 @@ namespace Konata.Core.Base
             {
                 foreach(Eventer ever in this.commoneventlist.Values)
                 {
-                    ever.listener -= action;
+                    ever.Listener -= action;
                 }
             }
         }
@@ -241,7 +249,7 @@ namespace Konata.Core.Base
                     {
                         if (ever.RunType == EventRunType.BeforeListener)
                             ever.Event?.Handle(arg);
-                        ever.listener.Invoke(arg);
+                        ever.Listener.Invoke(arg);
                         if (ever.RunType == EventRunType.AfterListener)
                             ever.Event?.Handle(arg);
                     }
@@ -258,7 +266,7 @@ namespace Konata.Core.Base
                     {
                         if (ever.RunType == EventRunType.BeforeListener)
                             ever.Event?.Handle(arg);
-                        ever.listener.Invoke(arg);
+                        ever.Listener.Invoke(arg);
                         if (ever.RunType == EventRunType.AfterListener)
                             ever.Event?.Handle(arg);
                     }
@@ -279,7 +287,7 @@ namespace Konata.Core.Base
 
             if (ever.RunType == EventRunType.BeforeListener)
                 await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-            await this.concurrent.RunAsync(() => { ever.listener.Invoke(arg); });
+            await this.concurrent.RunAsync(() => { ever.Listener.Invoke(arg); });
             if (ever.RunType == EventRunType.AfterListener)
                 await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
 
@@ -298,11 +306,19 @@ namespace Konata.Core.Base
 
             if (ever.RunType == EventRunType.BeforeListener)
                 await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-            await this.concurrent.RunAsync(() => { ever.listener.Invoke(arg); });
+            await this.concurrent.RunAsync(() => { ever.Listener.Invoke(arg); });
             if (ever.RunType == EventRunType.AfterListener)
                 await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
 
         }
 
+
+        public List<string> GetEventList()
+        {
+            var data = from v in this.commoneventlist
+                       select $"{v.Key}---{v.Value}";
+            return data.ToList();
+
+        }
     }
 }

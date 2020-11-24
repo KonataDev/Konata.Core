@@ -6,8 +6,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-
 using System.Collections.Generic;
+using Konata.Core;
 
 namespace Konata.Console
 {
@@ -15,6 +15,14 @@ namespace Konata.Console
     {
         static void Main(string[] args)
         {
+
+            InjectManager.Instance.AddNewAssembly(typeof(Program).Assembly.GetName().Name, typeof(Program).Assembly);
+
+            List<string> events = EventManager.Instance.GetEventList();
+            foreach(string e in events)
+            {
+                System.Console.WriteLine(e);
+            }
             //IMQ<string> MQ = new MQBuilder<string>()
             //        .SetCustomMQ(typeof(KonataMemMQ<string>))
             //        .SetExternalTaskQueue(TaskQueue.DefaultConcurrentQueue)

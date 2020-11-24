@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace Konata.Core.Base.Event
 {
+    /// <summary>
+    /// 弱引用事件
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class WeakEvent<T>
         where T:KonataEventArgs
     {
