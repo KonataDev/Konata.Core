@@ -16,9 +16,12 @@ namespace Konata.Core.Base
         /// </summary>
         public CoreEventType EventType { get; set; }
 
-        public CoreEventAttribute(CoreEventType type,string name = "UnDefined", string des = "")
+        public EventRunType EventRunType { get; set; }
+
+        public CoreEventAttribute(CoreEventType type, EventRunType runtype = EventRunType.OnlySymbol,string name = "UnDefined", string des = "")
             :base(name,des)
         {
+            this.EventRunType = runtype;
             this.EventType = type;
         }
     }

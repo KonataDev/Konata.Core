@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Konata.Core.Base.Event;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,8 @@ namespace Konata.Core.Base
         /// </summary>
         public string EventType { get; set; }
 
+
+        public EventRunType EventRunType { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -24,9 +27,10 @@ namespace Konata.Core.Base
         /// <para>该名称仅用来标记该事件称呼,不会被用作框架事件注册</para>
         /// </param>
         /// <param name="des"></param>
-        public EventAttribute(string type, string name = "UnDefined", string des = "")
+        public EventAttribute(string type,EventRunType runtype=EventRunType.OnlySymbol ,string name = "UnDefined", string des = "")
                 : base(name, des)
         {
+            this.EventRunType = runtype;
             this.EventType = type;
         }
     }

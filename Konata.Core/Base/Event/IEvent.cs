@@ -6,6 +6,6 @@ namespace Konata.Core.Base.Event
 {
     public interface IEvent
     {
-        void Handle(EventArgs arg);
+        void Handle(KonataEventArgs arg);
     }
 }

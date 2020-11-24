@@ -7,7 +7,7 @@ namespace Konata.Core.Base.Event
     /// <summary>
     /// 标准通用事件格式
     /// </summary>
-    public class EventArgs
+    public class KonataEventArgs:EventArgs
     {
         /// <summary>
         /// 发起者实体

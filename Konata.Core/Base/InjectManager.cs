@@ -82,11 +82,13 @@ namespace Konata.Core.Base
             if (tempAttribute.ContainsKey(typeof(EventAttribute)))
             {
                 this.loadedeventtypes[name] = tempAttribute[typeof(EventAttribute)];
+                //将事件注册并初始化到事件管理器
+                EventManager.Instance.RegisterNewEvent(name,tempAttribute[typeof(EventAttribute)]);
             }
 
             /*
              *程序集类型注册完毕,准备二次实例化等操作
-             *事件:应实现IEvent接口
+             *事件:应实现IEvent接口,如果仅为标识可设置OnlySymbol,此时管理器不会加载其IEvent接口
              *组件:应实现ILoad,IStart接口并继承自Component
              *实体:继承自Entity,如果有实体被初始化时需要执行的方法 可以选择实现ILoad接口
              *服务:应实现ILoad IDisposable接口
