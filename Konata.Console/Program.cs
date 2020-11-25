@@ -8,21 +8,52 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core;
+using System.Diagnostics;
+using Konata.Core.Base.Event;
 
 namespace Konata.Console
 {
+    public class test
+    {
+        public void Handle(EventArgs arg)
+        {
+            System.Console.WriteLine($"I Received OnDataFixed Event!!!{arg}");
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
+            InjectManager.Instance.LoadNewAssembly(typeof(Program).Assembly.GetName().Name, typeof(Program).Assembly);
 
-            InjectManager.Instance.AddNewAssembly(typeof(Program).Assembly.GetName().Name, typeof(Program).Assembly);
+            test t = new test();
 
+            Action<EventArgs> a = t.Handle;
+            // event EventHandler ee+=(e)=>{t.Handle(e);};
+            t = null;
+            
+
+            EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed", (arg)=> { t.Handle(arg); }, false);
             List<string> events = EventManager.Instance.GetEventList();
-            foreach(string e in events)
+            foreach (string e in events)
             {
                 System.Console.WriteLine(e);
             }
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            long stime = sw.ElapsedMilliseconds;
+            EventManager.Instance.RunEvent("DataComing", null,true);
+            for(int i = 0; i < 1000; i++)
+            {
+                EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
+            }
+            
+            long etime = sw.ElapsedMilliseconds;
+            sw.Stop();
+            System.Console.WriteLine($"Time uesd {etime - stime}ms");
+            //t = null;
+            //GC.Collect();
+            //EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
             //IMQ<string> MQ = new MQBuilder<string>()
             //        .SetCustomMQ(typeof(KonataMemMQ<string>))
             //        .SetExternalTaskQueue(TaskQueue.DefaultConcurrentQueue)

@@ -22,9 +22,9 @@ namespace Konata.Core.Base
             {
                 return;
             }
-            base.Dispose();
+            this.RemoveComponents();
 
-            
+            base.Dispose();
         }
 
         public T AddComponent<T>()
@@ -40,22 +40,38 @@ namespace Konata.Core.Base
             return null;
         }
 
-        public bool RemoveComponent<T>()
+        public void RemoveComponent<T>()
             where T: Component
         {
-            return true;
+            Type type = typeof(T);
+            Component component;
+            if (!this.componentDict.TryGetValue(type, out component))
+                return;
+            this.componentDict.Remove(type);
+            component.Entity = null;
+            component.Dispose();
         }
 
-        public bool RemoveComponent(Type type)
+        public void RemoveComponent(Type type)
         {
-            if(!this.componentDict.TryGetValue(type,out Component component))
+            if (!this.componentDict.TryGetValue(type,out Component component))
             {
-                return false;
+                return;
             }
             this.componentDict.Remove(type);
-            
+            component.Entity = null;
             component.Dispose();
-            return true;
+            return;
+        }
+
+        private void RemoveComponents()
+        {
+            foreach (Component com in this.componentDict.Values)
+            {
+                com.Entity = null;
+                com.Dispose();
+            }
+            this.componentDict.Clear();
         }
 
         public T GetComponent<T>()
@@ -66,6 +82,16 @@ namespace Konata.Core.Base
                 return default(T);
             }
             return (T)component;
+        }
+
+        public Component GetComponent(Type type)
+        {
+            Component component;
+            if (!this.componentDict.TryGetValue(type, out component))
+            {
+                return null;
+            }
+            return component;
         }
 
         public Component[] GetComponents()

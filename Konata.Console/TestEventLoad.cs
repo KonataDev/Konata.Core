@@ -12,7 +12,7 @@ namespace Konata.Console
     {
         public void Handle(KonataEventArgs arg)
         {
-            System.Console.WriteLine("active!");
+            System.Console.WriteLine("数据到来事件active!");
         }
     }
 

@@ -18,5 +18,14 @@ namespace Konata.Core.Base
 
             return component;
         }
+
+        public static T Create<T>()
+            where T : Component
+        {
+            T component = ObjectPool.Instance.Fetch<T>();
+            component.Entity = null;
+
+            return component;
+        }
     }
 }

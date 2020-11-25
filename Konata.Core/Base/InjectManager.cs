@@ -25,10 +25,17 @@ namespace Konata.Core
 
         }
 
-        public static void Release()
+        private static void Release()
         {
             instance = null;
         }
+
+        public bool IsLoadingOrUnloading
+        {
+            get => true;
+        }
+
+        public bool IsCoreLoaded { get; private set; } = false;
 
         //所有加载的程序集
         private readonly Dictionary<string, Assembly> loadedassemblies = new Dictionary<string, Assembly>();
@@ -41,7 +48,7 @@ namespace Konata.Core
         //对应程序集下的所有实体类型
         private readonly UnOrderMultiMap<string, Type> loadedentitytypes = new UnOrderMultiMap<string, Type>();
 
-        public void AddNewAssembly(string name,Assembly assembly)
+        public void LoadNewAssembly(string name,Assembly assembly)
         {
             if (this.loadedassemblies.ContainsKey(name))
             {
@@ -66,6 +73,16 @@ namespace Konata.Core
                 }
             }
 
+
+            //记录该程序集的所有事件类型
+            //不包括核心事件
+            if (tempAttribute.ContainsKey(typeof(EventAttribute)))
+            {
+                this.loadedeventtypes[name] = tempAttribute[typeof(EventAttribute)];
+                //将事件注册并初始化到事件管理器
+                EventManager.Instance.LoadNewEvent(name, tempAttribute[typeof(EventAttribute)]);
+            }
+
             //记录该程序集的所有组件类型
             if (tempAttribute.ContainsKey(typeof(ComponentAttribute)))
             {
@@ -76,16 +93,10 @@ namespace Konata.Core
             if (tempAttribute.ContainsKey(typeof(ServiceAttribute)))
             {
                 this.loadedservicetypes[name] = tempAttribute[typeof(ServiceAttribute)];
+                ServiceManager.Instance.LoadServices(tempAttribute[typeof(ServiceAttribute)]);
             }
 
-            //记录该程序集的所有事件类型
-            //不包括核心事件
-            if (tempAttribute.ContainsKey(typeof(EventAttribute)))
-            {
-                this.loadedeventtypes[name] = tempAttribute[typeof(EventAttribute)];
-                //将事件注册并初始化到事件管理器
-                EventManager.Instance.LoadNewEvent(name,tempAttribute[typeof(EventAttribute)]);
-            }
+
 
             /*
              *程序集类型注册完毕,准备二次实例化等操作
@@ -109,16 +120,95 @@ namespace Konata.Core
         }
 
         /// <summary>
+        /// 装载核心程序集
+        /// 仅可执行一次
+        /// </summary>
+        /// <param name="assembly"></param>
+        public void LoadCoreAssembly(Assembly assembly)
+        {
+            if (this.IsCoreLoaded)
+            {
+                return;
+            }
+
+            UnOrderMultiMap<Type, Type> tempAttribute = new UnOrderMultiMap<Type, Type>();
+
+            foreach (Type type in assembly.GetTypes())
+            {
+                Attribute attribute = type.GetCustomAttributes(typeof(BaseAttribute)).FirstOrDefault();
+                if (attribute != null)
+                {
+                    tempAttribute.Add((attribute as BaseAttribute).AttributeType, type);
+                }
+            }
+
+            if (tempAttribute.ContainsKey(typeof(EventAttribute)))
+            {
+                EventManager.Instance.LoadNewEvent("Core",tempAttribute[typeof(EventAttribute)]);
+            }
+
+            if (tempAttribute.ContainsKey(typeof(CoreEventAttribute)))
+            {
+                EventManager.Instance.LoadCoreEvent(tempAttribute[typeof(CoreEventAttribute)]);
+            }
+
+            if (tempAttribute.ContainsKey(typeof(ServiceAttribute)))
+            {
+                ServiceManager.Instance.LoadServices(tempAttribute[typeof(ServiceAttribute)]);
+            }
+
+            this.IsCoreLoaded = true;
+        }
+
+        /// <summary>
         /// 卸载指定程序集
         /// </summary>
         /// <param name="name"></param>
         public void UnloadAssembly(string name)
         {
+            //卸载程序集
             if (!this.loadedassemblies.ContainsKey(name))
             {
                 throw new TypeUnloadedException($"Target assembly {name} doesn't exist");
             }
+            this.loadedassemblies.Remove(name);
+
+            //卸载所有组件对象
+            if (this.loadedcomponenttypes.ContainsKey(name))
+            {
+                foreach (Type type in this.loadedcomponenttypes[name])
+                {
+                    Root.Instance.RemoveEntities(type, false);
+                }
+            }
+            this.loadedcomponenttypes.Remove(name);
+            //卸载所有实体对象
+            if (this.loadedentitytypes.ContainsKey(name))
+            {
+                foreach (Type type in this.loadedentitytypes[name])
+                {
+                    Root.Instance.RemoveEntities(type, false);
+                }
+            }
+            this.loadedentitytypes.Remove(name);
+            //卸载所有服务
+            if (this.loadedservicetypes.ContainsKey(name))
+            {
+                foreach (Type type in this.loadedservicetypes[name])
+                {
+                    ServiceManager.Instance.RemoveService(type);
+                }
+            }
+            this.loadedservicetypes.Remove(name);
+            //卸载所有事件
+            if (this.loadedeventtypes.ContainsKey(name))
+            {
+                EventManager.Instance.UnloadAssembly(name);
+            }
+            this.loadedeventtypes.Remove(name);
         }
+
+
 
         public Assembly GetAss(string name)
         {
@@ -129,6 +219,7 @@ namespace Konata.Core
         {
             return this.loadedassemblies.Values.ToArray();
         }
+
 
 
         ~InjectManager()

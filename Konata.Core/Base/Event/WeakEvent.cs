@@ -47,7 +47,7 @@ namespace Konata.Core.Base.Event
 
         public int Count
         {
-            get => this.list.Count;
+            get => this.list.Where(u=>!u.IsDead).Count();
         }
         public void Add(Action<T> action)
         {

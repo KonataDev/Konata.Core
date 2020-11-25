@@ -10,7 +10,7 @@ namespace Konata.Core
 {
     public class Eventer
     {
-        public int CallCount { get; set; } = 0;
+        public long CallCount { get; set; } = 0;
         public bool Enable { get; set; } = true;
         public IEvent Event { get; set; } = null;
 
@@ -28,6 +28,9 @@ namespace Konata.Core
         }
     }
 
+    /// <summary>
+    /// 事件管理器
+    /// </summary>
     public class EventManager
     {
         private static EventManager instance;
@@ -41,7 +44,7 @@ namespace Konata.Core
             this.concurrent = TaskQueue.CreateGlobalQueue("EventRunnerConcurrent",50);
         }
 
-        public void Release()
+        private void Release()
         {
             instance = null;
         }
@@ -131,15 +134,18 @@ namespace Konata.Core
                     {
                         throw new ArgumentException($"Find same type core event:even set assemblyheader ({eventtype})");
                     }
-                    if (!type.IsAssignableFrom(typeof(IEvent)))
+                    IEvent obj = null;
+                    if (!typeof(IEvent).IsAssignableFrom(type))
                     {
                         if (eattr.EventRunType != EventRunType.OnlySymbol)
                         {
                             throw new TypeLoadException($"Event {type.Name} not set IEvent Interface but not set as onlysymbol");
                         }
                     }
-
-                    IEvent obj = (IEvent)Activator.CreateInstance(type);
+                    else
+                    {
+                        obj = (IEvent)Activator.CreateInstance(type);
+                    }
 
                     this.coreeventlist[eventtype] = new Eventer { Event = obj, RunType = eattr.EventRunType, Name = eattr.Name, Description = eattr.Description };
                 }
@@ -194,20 +200,41 @@ namespace Konata.Core
             lock (this.commoneventlock)
             {
                 string[] names = this.commoneventlist.Keys.Where(key => key.StartsWith(assemblyname)).ToArray();
-                foreach (string truename in names)
+                foreach (string name in names)
                 {
-                    this.commoneventlist.Remove(truename);
+                    this.commoneventlist[name].Enable = false;
+                    this.commoneventlist.Remove(name);
                 }
                 return true;
             }
         }
 
-
-        public bool RegisterListener(string eventname,Action<EventArgs> action)
+        /// <summary>
+        /// 注册指定事件监听者
+        /// </summary>
+        /// <param name="eventname"></param>
+        /// <param name="action"></param>
+        /// <param name="fuzzy">
+        /// <para>是否使用模糊匹配</para>
+        /// <para>该模式无需携带程序集名称前缀</para>
+        /// <para>如果存在重名事件将不会执行</para>
+        /// </param>
+        /// <returns></returns>
+        public bool RegisterListener(string eventname,Action<EventArgs> action,bool fuzzy=false)
         {
             lock (this.commoneventlock)
             {
-                if(!this.commoneventlist.TryGetValue(eventname,out Eventer ever)||!ever.Enable)
+                if (fuzzy)
+                {
+                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
+                    if (names.Count() != 1)
+                    {
+                        return false;
+                    }
+                    eventname = names.First();
+                }
+
+                if (!this.commoneventlist.TryGetValue(eventname,out Eventer ever)||!ever.Enable)
                 {
                     return false;
                 }
@@ -219,6 +246,7 @@ namespace Konata.Core
         {
             lock (this.coreeventlock)
             {
+
                 if (!this.coreeventlist.TryGetValue(eventtype, out Eventer ever) ||ever==null||!ever.Enable)
                 {
                     return false;
@@ -238,11 +266,32 @@ namespace Konata.Core
             }
         }
 
-
-        public void RunEvent(string eventname,KonataEventArgs arg)
+        /// <summary>
+        /// 同步执行事件
+        /// </summary>
+        /// <param name="eventname">事件名</param>
+        /// <param name="arg">消息包</param>
+        /// <param name="fuzzy">
+        /// <para>是否使用模糊匹配</para>
+        /// <para>该模式无需携带程序集名称前缀</para>
+        /// <para>如果存在重名事件将不会执行</para>
+        /// </param>
+        public void RunEvent(string eventname,KonataEventArgs arg,bool fuzzy=false)
         {
             lock (this.commoneventlock)
             {
+                if (fuzzy)
+                {
+                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
+                    if (names.Count() != 1)
+                    {
+                        return;
+                    }
+                    eventname = names.First();
+                }
+                
+
+
                 if(this.commoneventlist.TryGetValue(eventname,out Eventer ever))
                 {
                     if (ever.Enable)
@@ -274,11 +323,32 @@ namespace Konata.Core
             }
         }
 
-        public async Task RunEventAsync(string eventname, KonataEventArgs arg)
+        /// <summary>
+        /// 异步执行事件
+        /// </summary>
+        /// <param name="eventname"></param>
+        /// <param name="arg"></param>
+        /// <param name="fuzzy">
+        /// <para>是否使用模糊匹配</para>
+        /// <para>该模式无需携带程序集名称前缀</para>
+        /// <para>如果存在重名事件将不会执行</para>
+        /// </param>
+        /// <returns></returns>
+        public async Task RunEventAsync(string eventname, KonataEventArgs arg,bool fuzzy=false)
         {
             Eventer ever = null;
             lock (this.commoneventlock)
             {
+                if (fuzzy)
+                {
+                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
+                    if (names.Count() != 1)
+                    {
+                        return;
+                    }
+                    eventname = names.First();
+                }
+
                 if (!this.commoneventlist.TryGetValue(eventname, out ever))
                 {
                     return;
@@ -298,6 +368,7 @@ namespace Konata.Core
             Eventer ever = null;
             lock (this.coreeventlock)
             {
+
                 if (!this.coreeventlist.TryGetValue(eventtype, out ever))
                 {
                     return;

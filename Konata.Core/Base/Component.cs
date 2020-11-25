@@ -33,10 +33,9 @@ namespace Konata.Core.Base
 
         public override void Dispose()
         {
-            if (this.Id == 0)
-            {
+            if (this.IsDisposed)
                 return;
-            }
+
             base.Dispose();
 
             this.Entity?.RemoveComponent(this.GetType());
