@@ -15,6 +15,11 @@ namespace Konata.Core
             get => instance ?? (instance = new Root());
         }
         
+        private Root()
+        {
+
+        }
+
         private Dictionary<long, Component> components = new Dictionary<long, Component>();
 
         private UnOrderMultiMap<Type, Entity> entities = new UnOrderMultiMap<Type, Entity>();
