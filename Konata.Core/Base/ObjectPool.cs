@@ -104,7 +104,7 @@ namespace Konata.Core.Base
         /// 从缓存池释放指定的所有类型
         /// </summary>
         /// <param name="types"></param>
-        public void DisposeTypes(Type[] types)
+        public void DisposeTypes(IList<Type> types)
         {
             foreach(Type t in types)
             {

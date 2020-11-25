@@ -101,7 +101,7 @@ namespace Konata.Core
             /*
              *程序集类型注册完毕,准备二次实例化等操作
              *事件:应实现IEvent接口,如果仅为标识可设置OnlySymbol,此时管理器不会加载其IEvent接口
-             *组件:应实现ILoad,IStart接口并继承自Component
+             *组件:应实现ILoad接口并继承自Component
              *实体:继承自Entity,如果有实体被初始化时需要执行的方法 可以选择实现ILoad接口
              *服务:应实现ILoad IDisposable接口
              *针对组件/实体 建议重写Dispose方法用于对象卸载时正确释放
@@ -180,6 +180,7 @@ namespace Konata.Core
                 {
                     Root.Instance.RemoveEntities(type, false);
                 }
+                ObjectPool.Instance.DisposeTypes(this.loadedcomponenttypes[name]);
             }
             this.loadedcomponenttypes.Remove(name);
             //卸载所有实体对象
@@ -189,6 +190,7 @@ namespace Konata.Core
                 {
                     Root.Instance.RemoveEntities(type, false);
                 }
+                ObjectPool.Instance.DisposeTypes(this.loadedcomponenttypes[name]);
             }
             this.loadedentitytypes.Remove(name);
             //卸载所有服务
@@ -206,6 +208,8 @@ namespace Konata.Core
                 EventManager.Instance.UnloadAssembly(name);
             }
             this.loadedeventtypes.Remove(name);
+
+            
         }
 
 

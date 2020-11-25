@@ -36,7 +36,9 @@ namespace Konata.Core.Base
             if (this.IsDisposed)
                 return;
 
+            long currentid = this.Id;
             base.Dispose();
+            Root.Instance.RemoveComponent(currentid);
 
             this.Entity?.RemoveComponent(this.GetType());
             this.Entity = null;

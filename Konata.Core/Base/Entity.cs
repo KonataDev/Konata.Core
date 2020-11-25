@@ -22,7 +22,9 @@ namespace Konata.Core.Base
             {
                 return;
             }
+            this.Parent = null;
             this.RemoveComponents();
+            Root.Instance.RemoveEntity(this);
 
             base.Dispose();
         }
@@ -30,15 +32,37 @@ namespace Konata.Core.Base
         public T AddComponent<T>()
             where T : Component, new()
         {
-            
-            return null;
+            if(this.componentDict.TryGetValue(typeof(T),out Component com))
+            {
+                return (T)com;
+            }
+
+            T ccom=ComponentFactory.Create<T>(this);
+            this.componentDict.Add(typeof(T), com);
+            return ccom;
         }
 
-        public T AddComponent<T,P>(P p)
-            where T : Component, new()
+        public Component AddComponent(Type type)
         {
-            return null;
+            if (this.componentDict.TryGetValue(type, out Component com))
+            {
+                return com;
+            }
+
+            com = ComponentFactory.Create(type,this);
+            if (com == null)
+            {
+                return null;
+            }
+            this.componentDict.Add(type, com);
+            return com;
         }
+
+        //public T AddComponent<T,P>(P p)
+        //    where T : Component, new()
+        //{
+        //    return null;
+        //}
 
         public void RemoveComponent<T>()
             where T: Component
