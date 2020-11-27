@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>(C) 2020 Konata Project</Copyright>
+    <Authors />
+    <Product />
+    <Company />
+    <Description></Description>
+    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +32,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Localization\Localization.zh-CN.resx">
+    <EmbeddedResource Update="Localization\Localization.zh-Hans.resx">
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
