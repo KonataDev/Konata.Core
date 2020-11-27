@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 
-namespace Konata.Runtime.NetWork
+namespace Konata.Runtime.Network
 {
     public class SocketConfig
     {

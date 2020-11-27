@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace Konata.Runtime.NetWork
+namespace Konata.Runtime.Network
 {
     /// <summary>
     /// 单元socket对象

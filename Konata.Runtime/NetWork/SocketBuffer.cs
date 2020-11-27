@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 
 
-namespace Konata.Runtime.NetWork
+namespace Konata.Runtime.Network
 {
     /// <summary>
     /// socket缓存管理

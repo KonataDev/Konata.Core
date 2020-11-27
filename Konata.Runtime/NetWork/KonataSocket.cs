@@ -9,7 +9,7 @@ using Konata.Runtime.Utils;
 using Konata.Runtime.Builder;
 using Konata.Runtime.Extensions;
 
-namespace Konata.Runtime.NetWork
+namespace Konata.Runtime.Network
 {
     /// <summary>
     /// Konata内部Socket实例,默认使用该Socket对象创建socket

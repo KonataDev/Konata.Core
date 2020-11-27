@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 using Konata.Runtime.MQ;
 using Konata.Runtime.Builder;
-using Konata.Runtime.NetWork;
+using Konata.Runtime.Network;
 using Konata.Runtime.Extensions;
 
 namespace Konata.Test

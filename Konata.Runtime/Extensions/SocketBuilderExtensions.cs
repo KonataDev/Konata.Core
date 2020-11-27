@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Konata.Runtime.Builder;
-using Konata.Runtime.NetWork;
+using Konata.Runtime.Network;
 
 namespace Konata.Runtime.Extensions
 {

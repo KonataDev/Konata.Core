@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Konata.Runtime.NetWork;
+using Konata.Runtime.Network;
 
 namespace Konata.Runtime.Builder
 {
