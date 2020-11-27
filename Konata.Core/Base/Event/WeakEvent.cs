@@ -2,110 +2,182 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Konata.Core.Base.Event
 {
-    /// <summary>
-    /// 弱引用事件
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class WeakEvent<T>
-        where T:KonataEventArgs
+    public class WeakEvent<TSender, TArgs>
     {
-        private object listlock = new object();
-        private T[] tempargs = new T[1];
-        private class Unit
+        private readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+
+        private readonly List<WeakReference<object>> relatedInstances = new List<WeakReference<object>>();
+
+        private readonly ConditionalWeakTable<object, WeakEventHandler> handlers = new ConditionalWeakTable<object, WeakEventHandler>();
+
+        public void Add(MulticastDelegate original,Action<TSender,TArgs> casted)
         {
-            private WeakReference reference;
-            private MethodInfo method;
-            private bool isStatic;
+            var target = original.Target;
+            var method = original.Method;
 
-            public bool IsDead
+            if (target == null)
             {
-                get => !this.isStatic && !this.reference.IsAlive;
+                throw new ArgumentNullException("Event must a object");
             }
 
-            public Unit(Action<T> action)
+            locker.EnterWriteLock();
+            try
             {
-                this.isStatic = action.Target == null;
-                this.reference = new WeakReference(action.Target);
-                this.method = action.Method;
-            }
-
-            public bool Equals(Action<T> action)
-            {
-                return this.reference.Target == action.Target && this.method == action.Method;
-            }
-
-            public void Invoke(object[] args)
-            {
-                this.method.Invoke(this.reference.Target, args);
-            }
-        }
-
-        private List<Unit> list = new List<Unit>();
-
-        public int Count
-        {
-            get => this.list.Where(u=>!u.IsDead).Count();
-        }
-        public void Add(Action<T> action)
-        {
-            lock (listlock)
-            {
-                this.list.Add(new Unit(action));
-            }
-        }
-        public void Remove(Action<T> action)
-        {
-            lock (listlock)
-            {
-                for (int i = this.list.Count - 1; i >= 0; i--)
+                var reference = relatedInstances.Find(x => x.TryGetTarget(out var instance) && ReferenceEquals(target, instance));
+                if (reference == null)
                 {
-                    if (this.list[i].Equals(action))
+                    reference = new WeakReference<object>(target);
+                    relatedInstances.Add(reference);
+                    var weakEventHandler = new WeakEventHandler();
+                    weakEventHandler.Add(original, casted);
+                    handlers.Add(target, weakEventHandler);
+                }else if(handlers.TryGetValue(target,out var weakEventHandler))
+                {
+                    weakEventHandler.Add(original, casted);
+                }
+                else
+                {
+                    throw new InvalidOperationException("can not be happened");
+                }
+            }
+            finally
+            {
+                locker.ExitWriteLock();
+            }
+        }
+
+        public void Remove(MulticastDelegate original)
+        {
+            var target = original.Target;
+            if (target == null)
+            {
+                return;
+            }
+
+            locker.EnterWriteLock();
+            try
+            {
+                var reference = relatedInstances.Find(x => x.TryGetTarget(out var instance) && ReferenceEquals(target, instance));
+                if (reference == null)
+                {
+
+                }
+                else if (handlers.TryGetValue(target, out var weakEventHandler))
+                {
+                    weakEventHandler.Remove(original);
+                }
+                else
+                {
+                    throw new InvalidOperationException("can not be happened");
+                }
+            }
+            finally
+            {
+                locker.ExitWriteLock();
+            }
+        }
+        
+        public bool Invoke(TSender sender,TArgs arg)
+        {
+            List<Action<TSender, TArgs>> invokeHandlers = null;
+            locker.EnterReadLock();
+            try
+            {
+                var list = relatedInstances.ConvertAll(x =>
+                      x.TryGetTarget(out var instance) && handlers.TryGetValue(instance, out var value)
+                      ? value : null);
+                var AnyAlive = list.Exists(x => x != null);
+                if (AnyAlive)
+                {
+                    invokeHandlers = list.OfType<WeakEventHandler>().SelectMany(x => x.GetInvokeHandlers()).ToList();
+                }
+                else
+                {
+                    invokeHandlers = null;
+                    relatedInstances.Clear();
+                }
+            }
+            finally
+            {
+                locker.ExitReadLock();
+            }
+            if (invokeHandlers != null)
+            {
+                foreach(var handler in invokeHandlers)
+                {
+                    var strongHandler = handler;
+                    strongHandler(sender, arg);
+                }
+            }
+
+            return invokeHandlers != null;
+
+        }
+        private sealed class WeakEventHandler
+        {
+            internal object Target { get; private set; }
+            private Dictionary<MethodInfo, List<Action<TSender, TArgs>>> methodHandlers { get; } = new Dictionary<MethodInfo, List<Action<TSender, TArgs>>>();
+            internal void Add(MulticastDelegate handler, Action<TSender, TArgs> castedHandler)
+            {
+                if (handler == null)
+                {
+                    throw new ArgumentNullException(nameof(handler));
+                }
+                if (Target != null && Target != handler.Target)
+                {
+                    throw new ArgumentException("Should not happened");
+                }
+                Target = handler.Target;
+
+                if(methodHandlers.TryGetValue(handler.Method,out var handlers))
+                {
+                    handlers.Add(castedHandler);
+                }
+                else
+                {
+                    handlers = new List<Action<TSender, TArgs>>
                     {
-                        this.list.RemoveAt(i);
+                        castedHandler,
+                    };
+                    methodHandlers[handler.Method] = handlers;
+                }
+            }
+
+            internal void Remove(MulticastDelegate handler)
+            {
+                if (handler == null)
+                {
+                    throw new ArgumentNullException(nameof(handler));
+                }
+                if (Target != null && Target != handler.Target)
+                {
+                    throw new ArgumentException("Should not happened");
+                }
+
+                if(methodHandlers.TryGetValue(handler.Method,out var handlers))
+                {
+                    handlers.RemoveAt(handlers.Count - 1);
+                    if (handlers.Count == 0)
+                    {
+                        methodHandlers.Remove(handler.Method);
                     }
                 }
             }
-        }
-        public void Invoke(T args = null)
-        {
-            this.tempargs[0] = args;
-
-            lock (listlock)
+            internal IReadOnlyList<Action<TSender,TArgs>> GetInvokeHandlers()
             {
-                for (int i = this.list.Count - 1; i >= 0; i--)
-                {
-                    if (this.list[i].IsDead)
-                    {
-                        this.list.RemoveAt(i);
-                    }
-                    else
-                    {
-                        this.list[i].Invoke(this.tempargs);
-                    }
-                }
+                return methodHandlers.SelectMany(x => x.Value).ToList();
             }
-        }
-
-        public void Clear()
-        {
-            lock (listlock)
-            {
-                this.list.Clear();
-            }
-        }
-
-        public static WeakEvent<T> operator + (WeakEvent<T> weakevent,Action<T> action)
-        {
-            weakevent.Add(action);
-            return weakevent;
-        }
-        public static WeakEvent<T> operator - (WeakEvent<T> weakevent, Action<T> action)
-        {
-            weakevent.Remove(action);
-            return weakevent;
         }
     }
+
+    public class WeakEvent<TArgs> : WeakEvent<object, TArgs>
+    {
+
+    }
+
 }

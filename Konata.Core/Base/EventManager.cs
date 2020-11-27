@@ -1,31 +1,27 @@
-﻿using Konata.Core.Base;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+
+using Konata.Core.Base;
 using Konata.Core.Base.Event;
 using Konata.Core.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Konata.Core
 {
-    public class Eventer
+    /// <summary>
+    /// 用于描述事件类信息的信息表
+    /// </summary>
+    public class EventInfo
     {
-        public long CallCount { get; set; } = 0;
         public bool Enable { get; set; } = true;
-        public IEvent Event { get; set; } = null;
-
         public string Name { get; set; } = "";
-
-        public string Description { get; set; } = "";
-
         public EventRunType RunType { get; set; } = EventRunType.OnlySymbol;
-
-        public WeakEvent<KonataEventArgs> Listener = new WeakEvent<KonataEventArgs>();
-
-        public override string ToString()
-        {
-            return $"名称:{Name};启用中:{Enable};被订阅数:{Listener.Count};简介:{Description}";
-        }
+        public string Description { get; set; } = "";
+        public Type Type { get; set; } = null;
     }
 
     /// <summary>
@@ -41,72 +37,18 @@ namespace Konata.Core
         }
         private  EventManager()
         {
-            this.concurrent = TaskQueue.CreateGlobalQueue("EventRunnerConcurrent",50);
-        }
-
-        private void Release()
-        {
-            instance = null;
         }
 
 
-        private TaskQueue concurrent = null;
-        //面向插件等非核心事件的字典列表
-        private readonly Dictionary<string, Eventer> commoneventlist = new Dictionary<string, Eventer>();
-        private object commoneventlock = new object();
-        //针对核心事件的字典列表,使用固定枚举类型加速执行事件
-        private readonly Dictionary<CoreEventType, Eventer> coreeventlist = new Dictionary<CoreEventType, Eventer>(new EnumComparer<CoreEventType>());
-        private object coreeventlock = new object();
+        private readonly Dictionary<CoreEventType, EventInfo> coreeventlist = new Dictionary<CoreEventType, EventInfo>(new EnumComparer<CoreEventType>());
+
+        private readonly Dictionary<long, EventComponent> bindcomponentlist = new Dictionary<long, EventComponent>();
+
+        private ReaderWriterLockSlim coreeventlock = new ReaderWriterLockSlim(); 
+
         public bool CoreEventLoaded
         {
             get => (this.coreeventlist.Count > 0);
-        }
-
-        /// <summary>
-        /// 注册普通事件
-        /// </summary>
-        /// <param name="assemblyname">程序集名称</param>
-        /// <param name="types">事件类型</param>
-        public void LoadNewEvent(string assemblyname, IList<Type> types)
-        {
-            if (String.IsNullOrEmpty(assemblyname) || types == null)
-            {
-                return;
-            }
-            lock (this.commoneventlock)
-            {
-                foreach (Type type in types)
-                {
-                    object attribute = type.GetCustomAttributes(typeof(EventAttribute), false).FirstOrDefault();
-                    if (attribute == null)
-                    {
-                        throw new NullReferenceException("Event type find no attribute(should not be happened)");
-                    }
-                    EventAttribute eattr = (attribute as EventAttribute);
-                    string eventname = eattr.EventType;
-                    string totalname = assemblyname + "." + eventname;
-                    if (this.commoneventlist.ContainsKey(totalname))
-                    {
-                        throw new ArgumentException($"Find same name event:even set assemblyheader ({totalname})");
-                    }
-                    IEvent obj = null;
-                    if (!typeof(IEvent).IsAssignableFrom(type))
-                    {
-                        if (eattr.EventRunType != EventRunType.OnlySymbol)
-                        {
-                            throw new TypeLoadException($"Event {type.Name} not set IEvent Interface but not set as onlysymbol");
-                        }
-
-                    }
-                    else
-                    {
-                        obj = (IEvent)Activator.CreateInstance(type);
-                    }
-
-
-                    this.commoneventlist[totalname] = new Eventer { Event = obj, RunType = eattr.EventRunType,Name=eattr.Name,Description=eattr.Description };
-                }
-            }
         }
 
         /// <summary>
@@ -119,277 +61,117 @@ namespace Konata.Core
             {
                 throw new TypeLoadException("Core Events have been loaded!");
             }
-            lock (this.coreeventlock)
+            coreeventlock.EnterWriteLock();
+            try
             {
                 foreach (Type type in types)
                 {
-                    object attribute = type.GetCustomAttributes(typeof(EventAttribute), false).FirstOrDefault();
+                    object attribute = type.GetCustomAttributes(typeof(CoreEventAttribute), false).FirstOrDefault();
                     if (attribute == null)
                     {
                         throw new NullReferenceException("Event type find no attribute(should not be happened)");
                     }
                     CoreEventAttribute eattr = (attribute as CoreEventAttribute);
                     CoreEventType eventtype = eattr.EventType;
+
                     if (this.coreeventlist.ContainsKey(eventtype))
                     {
                         throw new ArgumentException($"Find same type core event:even set assemblyheader ({eventtype})");
                     }
-                    IEvent obj = null;
-                    if (!typeof(IEvent).IsAssignableFrom(type))
-                    {
-                        if (eattr.EventRunType != EventRunType.OnlySymbol)
-                        {
-                            throw new TypeLoadException($"Event {type.Name} not set IEvent Interface but not set as onlysymbol");
-                        }
-                    }
-                    else
-                    {
-                        obj = (IEvent)Activator.CreateInstance(type);
-                    }
-
-                    this.coreeventlist[eventtype] = new Eventer { Event = obj, RunType = eattr.EventRunType, Name = eattr.Name, Description = eattr.Description };
+                    EventInfo info = new EventInfo { RunType = eattr.EventRunType, Name = eattr.Name, Description = eattr.Description };
                 }
             }
-        }
-
-        /// <summary>
-        /// 移除单个普通事件
-        /// </summary>
-        /// <param name="assemblyname">绝对名称(程序集名)</param>
-        /// <param name="name">绝对名称(事件名)</param>
-        private void UnloadCommonEvent(string assemblyname,string name)
-        {
-            string totalname = assemblyname + "." + name;
-            lock (this.commoneventlock)
+            finally
             {
-                if (this.commoneventlist.ContainsKey(totalname))
-                {
-                    this.commoneventlist.Remove(totalname);
-                }
+                coreeventlock.ExitWriteLock();
             }
         }
 
         /// <summary>
-        /// 移除单个/多个普通事件
+        /// 向事件管理器注册新的实体对象
+        /// <para>这将为其创建新的事件组件并挂载到目标对象</para>
         /// </summary>
-        /// <param name="name">事件名称(部分匹配)</param>
-        /// <param name="removeall">是否移除所有符合匹配名的事件</param>
-        private bool UnloadCommonEvent(string name,bool removeall=false)
-        {
-            lock (this.commoneventlock)
-            {
-                string[] names = this.commoneventlist.Keys.Where(key => key.EndsWith(name)).ToArray();
-                if (names.Length > 1 && !removeall)
-                {
-                    return false;
-                }
-                foreach (string truename in names)
-                {
-                    this.commoneventlist.Remove(truename);
-                }
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 移除指定程序集的所有事件
-        /// </summary>
-        /// <param name="name"></param>
-        public bool UnloadAssembly(string assemblyname)
-        {
-            lock (this.commoneventlock)
-            {
-                string[] names = this.commoneventlist.Keys.Where(key => key.StartsWith(assemblyname)).ToArray();
-                foreach (string name in names)
-                {
-                    this.commoneventlist[name].Enable = false;
-                    this.commoneventlist.Remove(name);
-                }
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 注册指定事件监听者
-        /// </summary>
-        /// <param name="eventname"></param>
-        /// <param name="action"></param>
-        /// <param name="fuzzy">
-        /// <para>是否使用模糊匹配</para>
-        /// <para>该模式无需携带程序集名称前缀</para>
-        /// <para>如果存在重名事件将不会执行</para>
-        /// </param>
+        /// <param name="entity"></param>
         /// <returns></returns>
-        public bool RegisterListener(string eventname,Action<EventArgs> action,bool fuzzy=false)
+        public void RegisterNewEntity(Entity entity)
         {
-            lock (this.commoneventlock)
+            coreeventlock.EnterWriteLock();
+            try
             {
-                if (fuzzy)
+                if (bindcomponentlist.ContainsKey(entity.Id))
                 {
-                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
-                    if (names.Count() != 1)
-                    {
-                        return false;
-                    }
-                    eventname = names.First();
+                    throw new ArgumentException($"Entity already Registered");
                 }
-
-                if (!this.commoneventlist.TryGetValue(eventname,out Eventer ever)||!ever.Enable)
+                EventComponent component = entity.GetComponent<EventComponent>();
+                if (component == null)
                 {
-                    return false;
+                    throw new ArgumentException();
                 }
-                ever.Listener += action;
+                bindcomponentlist.Add(entity.Id, component);
             }
-            return true;
-        }
-        public bool RegisterListener(CoreEventType eventtype, Action<EventArgs> action)
-        {
-            lock (this.coreeventlock)
+            finally
             {
-
-                if (!this.coreeventlist.TryGetValue(eventtype, out Eventer ever) ||ever==null||!ever.Enable)
-                {
-                    return false;
-                }
-                ever.Listener += action;
+                coreeventlock.ExitWriteLock();
             }
-            return true;
+
+            
+
         }
-        public void RemoveListener(Action<EventArgs> action)
+
+        public void UnRegisterEntity(Entity entity)
         {
-            lock (this.commoneventlock)
+            coreeventlock.EnterWriteLock();
+            try
             {
-                foreach(Eventer ever in this.commoneventlist.Values)
+                if(bindcomponentlist.TryGetValue(entity.Id,out EventComponent component))
                 {
-                    ever.Listener -= action;
+                    bindcomponentlist.Remove(entity.Id);
                 }
+            }
+            finally
+            {
+                coreeventlock.ExitWriteLock();
             }
         }
 
         /// <summary>
-        /// 同步执行事件
+        /// 直接向目标实体添加事件输出源
         /// </summary>
-        /// <param name="eventname">事件名</param>
-        /// <param name="arg">消息包</param>
-        /// <param name="fuzzy">
-        /// <para>是否使用模糊匹配</para>
-        /// <para>该模式无需携带程序集名称前缀</para>
-        /// <para>如果存在重名事件将不会执行</para>
-        /// </param>
-        public void RunEvent(string eventname,KonataEventArgs arg,bool fuzzy=false)
+        /// <param name="entity"></param>
+        /// <param name="output"></param>
+        public void LinkPipeLineToEntity(Entity entity,ISourceBlock<KonataEventArgs> output)
         {
-            lock (this.commoneventlock)
+            coreeventlock.EnterReadLock();
+            try
             {
-                if (fuzzy)
+                if (bindcomponentlist.ContainsKey(entity.Id))
                 {
-                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
-                    if (names.Count() != 1)
-                    {
-                        return;
-                    }
-                    eventname = names.First();
-                }
-                
-
-
-                if(this.commoneventlist.TryGetValue(eventname,out Eventer ever))
-                {
-                    if (ever.Enable)
-                    {
-                        if (ever.RunType == EventRunType.BeforeListener)
-                            ever.Event?.Handle(arg);
-                        ever.Listener.Invoke(arg);
-                        if (ever.RunType == EventRunType.AfterListener)
-                            ever.Event?.Handle(arg);
-                    }
+                    var component = bindcomponentlist[entity.Id];
+                    component.AddNewSource(output);
                 }
             }
-        }
-        public void RunEvent(CoreEventType eventtype,KonataEventArgs arg)
-        {
-            lock (this.coreeventlock)
+            finally
             {
-                if (this.coreeventlist.TryGetValue(eventtype, out Eventer ever))
-                {
-                    if (ever.Enable)
-                    {
-                        if (ever.RunType == EventRunType.BeforeListener)
-                            ever.Event?.Handle(arg);
-                        ever.Listener.Invoke(arg);
-                        if (ever.RunType == EventRunType.AfterListener)
-                            ever.Event?.Handle(arg);
-                    }
-                }
+                coreeventlock.ExitReadLock();
             }
         }
 
-        /// <summary>
-        /// 异步执行事件
-        /// </summary>
-        /// <param name="eventname"></param>
-        /// <param name="arg"></param>
-        /// <param name="fuzzy">
-        /// <para>是否使用模糊匹配</para>
-        /// <para>该模式无需携带程序集名称前缀</para>
-        /// <para>如果存在重名事件将不会执行</para>
-        /// </param>
-        /// <returns></returns>
-        public async Task RunEventAsync(string eventname, KonataEventArgs arg,bool fuzzy=false)
+        public IReadOnlyDictionary<CoreEventType,EventInfo> GetCoreEventInfo()
         {
-            Eventer ever = null;
-            lock (this.commoneventlock)
+            if (!CoreEventLoaded)
             {
-                if (fuzzy)
-                {
-                    var names = this.commoneventlist.Keys.Where(key => key.EndsWith(eventname));
-                    if (names.Count() != 1)
-                    {
-                        return;
-                    }
-                    eventname = names.First();
-                }
-
-                if (!this.commoneventlist.TryGetValue(eventname, out ever))
-                {
-                    return;
-                }
+                return null;
             }
-
-            if (ever.RunType == EventRunType.BeforeListener)
-                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-            await this.concurrent.RunAsync(() => { ever.Listener.Invoke(arg); });
-            if (ever.RunType == EventRunType.AfterListener)
-                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-
-        }
-
-        public async Task RunEventAsync(CoreEventType eventtype, KonataEventArgs arg)
-        {
-            Eventer ever = null;
-            lock (this.coreeventlock)
+            coreeventlock.EnterReadLock();
+            try
             {
-
-                if (!this.coreeventlist.TryGetValue(eventtype, out ever))
-                {
-                    return;
-                }
+                return coreeventlist;
             }
-
-            if (ever.RunType == EventRunType.BeforeListener)
-                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-            await this.concurrent.RunAsync(() => { ever.Listener.Invoke(arg); });
-            if (ever.RunType == EventRunType.AfterListener)
-                await this.concurrent.RunAsync(() => { ever.Event.Handle(arg); });
-
+            finally
+            {
+                coreeventlock.ExitReadLock();
+            }
         }
 
-
-        public List<string> GetEventList()
-        {
-            var data = from v in this.commoneventlist
-                       select $"{v.Key}---{v.Value}";
-            return data.ToList();
-
-        }
     }
 }

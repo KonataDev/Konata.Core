@@ -1,8 +1,10 @@
-﻿using Konata.Core.Utils;
-using System;
+﻿using System;
+using System.Text;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+
+using Konata.Core.Utils;
 
 namespace Konata.Core.Base
 {
@@ -20,6 +22,7 @@ namespace Konata.Core.Base
 
         private readonly Dictionary<Type, Queue<BaseObject>> pool = new Dictionary<Type, Queue<BaseObject>>();
 
+        private ReaderWriterLockSlim poolLock = new ReaderWriterLockSlim();
         private ObjectPool() { }
 
         /// <summary>
@@ -49,20 +52,29 @@ namespace Konata.Core.Base
         /// <returns></returns>
         public BaseObject Fetch(Type type)
         {
-            if(!this.pool.TryGetValue(type,out Queue<BaseObject> queue))
+            poolLock.EnterWriteLock();
+            try
             {
-                queue = new Queue<BaseObject>();
-                this.pool.Add(type,queue);
+                if (!this.pool.TryGetValue(type, out Queue<BaseObject> queue))
+                {
+                    queue = new Queue<BaseObject>();
+                    this.pool.Add(type, queue);
+                }
+
+                if (queue.Count > 0)
+                {
+                    BaseObject obj = queue.Dequeue();
+                    obj.Id = IdGenerater.GenerateID();
+                    return obj;
+                }
+
+                return (BaseObject)Activator.CreateInstance(type);
+            }
+            finally
+            {
+                poolLock.ExitWriteLock();
             }
 
-            if (queue.Count > 0)
-            {
-                BaseObject obj = queue.Dequeue();
-                obj.Id = IdGenerater.GenerateID();
-                return obj;
-            }
-
-            return (BaseObject)Activator.CreateInstance(type);
         }
 
         /// <summary>
@@ -71,6 +83,15 @@ namespace Konata.Core.Base
         /// <param name="baseObject">被卸载的组件/实体</param>
         public void Recycle(BaseObject baseObject)
         {
+            poolLock.EnterWriteLock();
+            try
+            {
+
+            }
+            finally
+            {
+                poolLock.ExitWriteLock();
+            }
             Type type = baseObject.GetType();
             if(!this.pool.TryGetValue(type, out Queue<BaseObject> queue))
             {
@@ -86,18 +107,28 @@ namespace Konata.Core.Base
         /// <param name="type"></param>
         public void DisposeType(Type type)
         {
-            if(!this.pool.TryGetValue(type,out Queue<BaseObject> queue))
+            poolLock.EnterWriteLock();
+            try
             {
-                if (queue == null || queue.Count == 0)
+                if (!this.pool.TryGetValue(type, out Queue<BaseObject> queue))
                 {
-                    return;
-                }
-                while (queue.Count > 0)
-                {
-                    BaseObject obj = queue.Dequeue();
-                    obj.Dispose();
+                    if (queue == null || queue.Count == 0)
+                    {
+                        return;
+                    }
+                    while (queue.Count > 0)
+                    {
+                        BaseObject obj = queue.Dequeue();
+                        obj.Dispose();
+                    }
                 }
             }
+            finally
+            {
+                poolLock.ExitWriteLock();
+            }
+
+
         }
 
         /// <summary>
@@ -116,22 +147,32 @@ namespace Konata.Core.Base
         //释放所有组件
         private void DisposeAll()
         {
-            foreach (Queue<BaseObject> q in this.pool.Values)
+            poolLock.EnterWriteLock();
+            try
             {
-                if (q == null || q.Count == 0)
+                foreach (Queue<BaseObject> q in this.pool.Values)
                 {
-                    continue;
-                }
-                while (q.Count > 0)
-                {
-                    BaseObject obj = q.Dequeue();
-                    obj.Dispose();
+                    if (q == null || q.Count == 0)
+                    {
+                        continue;
+                    }
+                    while (q.Count > 0)
+                    {
+                        BaseObject obj = q.Dequeue();
+                        obj.Dispose();
+                    }
                 }
             }
+            finally
+            {
+                poolLock.ExitWriteLock();
+            }
+
         }
 
         ~ObjectPool()
         {
+            poolLock.Dispose();
             DisposeAll();
         }
     }

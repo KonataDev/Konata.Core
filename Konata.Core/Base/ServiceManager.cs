@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Konata.Core.Base
 {
@@ -20,13 +21,14 @@ namespace Konata.Core.Base
 
         private readonly Dictionary<Type, IDisposable> services = new Dictionary<Type, IDisposable>();
 
-        private object serlock = new object();
+        private ReaderWriterLockSlim servicesLock = new ReaderWriterLockSlim();
 
         public bool AddNewService<T>()
         {
-            lock (serlock)
+            Type type = typeof(T);
+            servicesLock.EnterWriteLock();
+            try
             {
-                Type type = typeof(T);
                 if (this.services.ContainsKey(type))
                 {
                     return false;
@@ -44,11 +46,16 @@ namespace Konata.Core.Base
                 }
                 return true;
             }
+            finally
+            {
+                servicesLock.ExitWriteLock();
+            }
         }
 
         public bool AddNewService(Type type)
         {
-            lock (serlock)
+            servicesLock.EnterWriteLock();
+            try
             {
                 if (this.services.ContainsKey(type))
                 {
@@ -67,11 +74,16 @@ namespace Konata.Core.Base
                 }
                 return true;
             }
+            finally
+            {
+                servicesLock.ExitWriteLock();
+            }
         }
 
         public void RemoveService(Type type)
         {
-            lock (serlock)
+            servicesLock.EnterWriteLock();
+            try
             {
                 if (this.services.TryGetValue(type,out IDisposable service))
                 {
@@ -79,12 +91,17 @@ namespace Konata.Core.Base
                     this.services.Remove(type);
                 }
             }
+            finally
+            {
+                servicesLock.ExitWriteLock();
+            }
         }
 
         public void RemoveService<T>()
         {
             Type type = typeof(T);
-            lock (serlock)
+            servicesLock.EnterWriteLock();
+            try
             {
                 if (this.services.TryGetValue(type, out IDisposable service))
                 {
@@ -92,17 +109,30 @@ namespace Konata.Core.Base
                     this.services.Remove(type);
                 }
             }
+            finally
+            {
+                servicesLock.ExitWriteLock();
+            }
         }
 
         public T GetService<T>()
             where T:IDisposable
         {
-            Type type = typeof(T);
-            if(!this.services.TryGetValue(type,out IDisposable service))
+            servicesLock.EnterReadLock();
+            try
             {
-                return default(T);
+                Type type = typeof(T);
+                if (!this.services.TryGetValue(type, out IDisposable service))
+                {
+                    return default(T);
+                }
+                return (T)service;
             }
-            return (T)service;
+            finally
+            {
+                servicesLock.ExitReadLock();
+            }
+
         }
 
         public void LoadServices(IList<Type> types)

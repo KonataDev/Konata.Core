@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Konata.Core.Base
 {
-    public abstract class Component:BaseObject
+    public abstract class Component : BaseObject
     {
-        public Entity Entity { get; set; }
+        public Entity Parent { get; set; }
 
         public T GetEntity<T>()
             where T : Entity
         {
-            return (T)this.Entity;
+            return (T)this.Parent;
         }
 
         protected Component()
@@ -28,7 +28,7 @@ namespace Konata.Core.Base
         public T GetComponent<T>()
             where T : Component
         {
-            return this.Entity?.GetComponent<T>();
+            return this.Parent?.GetComponent<T>();
         }
 
         public override void Dispose()
@@ -39,9 +39,6 @@ namespace Konata.Core.Base
             long currentid = this.Id;
             base.Dispose();
             Root.Instance.RemoveComponent(currentid);
-
-            this.Entity?.RemoveComponent(this.GetType());
-            this.Entity = null;
         }
     }
 }

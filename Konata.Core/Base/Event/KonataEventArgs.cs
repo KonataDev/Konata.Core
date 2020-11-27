@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Konata.Core.Base.Event
 {
@@ -9,10 +9,10 @@ namespace Konata.Core.Base.Event
     /// </summary>
     public class KonataEventArgs:EventArgs
     {
-        /// <summary>
-        /// 发起者实体
-        /// </summary>
-        public Entity Entity { get; set; }
+
+        public object Sender { get; set; }
+
+        public Entity Receiver { get; set; }
 
         /// <summary>
         /// 负载

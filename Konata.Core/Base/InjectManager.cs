@@ -80,7 +80,7 @@ namespace Konata.Core
             {
                 this.loadedeventtypes[name] = tempAttribute[typeof(EventAttribute)];
                 //将事件注册并初始化到事件管理器
-                EventManager.Instance.LoadNewEvent(name, tempAttribute[typeof(EventAttribute)]);
+                //EventManager.Instance.LoadNewEvent(name, tempAttribute[typeof(EventAttribute)]);
             }
 
             //记录该程序集的所有组件类型
@@ -144,7 +144,7 @@ namespace Konata.Core
 
             if (tempAttribute.ContainsKey(typeof(EventAttribute)))
             {
-                EventManager.Instance.LoadNewEvent("Core",tempAttribute[typeof(EventAttribute)]);
+                //EventManager.Instance.LoadNewEvent("Core",tempAttribute[typeof(EventAttribute)]);
             }
 
             if (tempAttribute.ContainsKey(typeof(CoreEventAttribute)))
@@ -205,7 +205,7 @@ namespace Konata.Core
             //卸载所有事件
             if (this.loadedeventtypes.ContainsKey(name))
             {
-                EventManager.Instance.UnloadAssembly(name);
+                //EventManager.Instance.UnloadAssembly(name);
             }
             this.loadedeventtypes.Remove(name);
 

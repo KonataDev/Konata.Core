@@ -127,8 +127,8 @@ namespace Konata.Core
                     var targets = this.components.Where(v => (v.Value).GetType() == t);
                     foreach(KeyValuePair<long,Component> u in targets)
                     {
-                        if (u.Value.Entity != null && !u.Value.IsDisposed)
-                            u.Value.Entity.RemoveComponent(t);
+                        if (u.Value.Parent != null && !u.Value.IsDisposed)
+                            u.Value.Parent.RemoveComponent(t);
                         this.components.Remove(u.Key);
                     }
                 }

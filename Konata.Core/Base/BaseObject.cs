@@ -7,6 +7,8 @@ namespace Konata.Core.Base
     {
         public long Id { get; set; }
 
+        public bool Recycle { get; set; } = true;
+
         protected BaseObject()
         {
             this.Id = IdGenerater.GenerateID();
@@ -27,7 +29,8 @@ namespace Konata.Core.Base
             if (!this.IsDisposed)
             {
                 this.Id = 0;
-                ObjectPool.Instance.Recycle(this);
+                if (Recycle)
+                    ObjectPool.Instance.Recycle(this);
             }
         }
 

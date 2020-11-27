@@ -10,14 +10,41 @@ using System.Collections.Generic;
 using Konata.Core;
 using System.Diagnostics;
 using Konata.Core.Base.Event;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 
 namespace Konata.Console
 {
-    public class test
+    public class TestEvent
     {
         public void Handle(EventArgs arg)
         {
             System.Console.WriteLine($"I Received OnDataFixed Event!!!{arg}");
+        }
+    }
+
+    public class BenchmarkTest
+    {
+        TestEvent t = null;
+        public BenchmarkTest()
+        {
+            t = new TestEvent();
+            EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed", (arg) => { t.Handle(arg); }, false);
+            List<string> events = EventManager.Instance.GetEventList();
+            foreach (string e in events)
+            {
+                System.Console.WriteLine(e);
+            }
+
+        }
+
+        [Benchmark]
+        public void SendConoleCallBack()
+        {
+            for (int i = 0; i < 50000; i++)
+            {
+                EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
+            }
         }
     }
     class Program
@@ -26,28 +53,8 @@ namespace Konata.Console
         {
             InjectManager.Instance.LoadNewAssembly(typeof(Program).Assembly.GetName().Name, typeof(Program).Assembly);
 
-            test t = new test();
+            var summary = BenchmarkRunner.Run<BenchmarkTest>();
 
-            
-
-            EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed", (arg)=> { t.Handle(arg); }, false);
-            List<string> events = EventManager.Instance.GetEventList();
-            foreach (string e in events)
-            {
-                System.Console.WriteLine(e);
-            }
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            long stime = sw.ElapsedMilliseconds;
-            EventManager.Instance.RunEvent("DataComing", null,true);
-
-            for (int i = 0; i < 5000; i++)
-            {
-                EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
-            }
-            long etime = sw.ElapsedMilliseconds;
-            sw.Stop();
-            System.Console.WriteLine($"Time uesd {etime - stime}ms");
             //t = null;
             //GC.Collect();
             //EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);

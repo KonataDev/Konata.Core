@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace Konata.Utils
 {

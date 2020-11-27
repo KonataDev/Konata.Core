@@ -72,7 +72,7 @@ namespace Konata.Core.Base
             if (!this.componentDict.TryGetValue(type, out component))
                 return;
             this.componentDict.Remove(type);
-            component.Entity = null;
+            component.Parent = null;
             component.Dispose();
         }
 
@@ -83,7 +83,7 @@ namespace Konata.Core.Base
                 return;
             }
             this.componentDict.Remove(type);
-            component.Entity = null;
+            component.Parent = null;
             component.Dispose();
             return;
         }
@@ -92,7 +92,7 @@ namespace Konata.Core.Base
         {
             foreach (Component com in this.componentDict.Values)
             {
-                com.Entity = null;
+                com.Parent = null;
                 com.Dispose();
             }
             this.componentDict.Clear();
