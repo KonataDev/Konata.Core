@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>(C) 2020 Konata Project</Copyright>
+    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
