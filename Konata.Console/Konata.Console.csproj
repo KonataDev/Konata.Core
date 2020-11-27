@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Core\Konata.Core.csproj" />
+    <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
   </ItemGroup>
 
 </Project>
