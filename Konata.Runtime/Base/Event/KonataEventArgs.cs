@@ -10,7 +10,7 @@ namespace Konata.Runtime.Base.Event
         /// <summary>
         /// 事件拥有者[实体]
         /// </summary>
-        public Entity Receiver { get; set; }
+        public Entity Owner { get; set; }
 
         /// <summary>
         /// 事件包对应的事件名

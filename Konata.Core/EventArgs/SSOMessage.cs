@@ -30,7 +30,7 @@ namespace Konata.Core.EventArgs
         {
             msg = new SSOMessage();
             msg.SSOPktType = type;
-            msg.Receiver = arg.Receiver;
+            msg.Owner = arg.Owner;
             var buffer = new ByteBuffer(data);
             buffer.TakeUintBE(out var length);
             {

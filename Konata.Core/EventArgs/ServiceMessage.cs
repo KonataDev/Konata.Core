@@ -1,11 +1,12 @@
-﻿using Konata.Model.Packet;
-using Konata.Model.Packet.Sso;
-using Konata.Runtime.Base.Event;
-using Konata.Runtime.Network;
-using Konata.Utils.IO;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
+using System.Collections.Generic;
+
+using Konata.Utils.IO;
+using Konata.Model.Packet;
+using Konata.Model.Packet.Sso;
+using Konata.Runtime.Network;
+using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.EventArgs
 {
@@ -16,14 +17,16 @@ namespace Konata.Core.EventArgs
         WtLoginExchange = 0x02,
     }
 
-    public class ServiceMessage:KonataEventArgs
+    public class ServiceMessage : KonataEventArgs
     {
         private string _headuin;
         private byte[] _payload;
+
         public string HeadUin
         {
             get => this._headuin;
         }
+
         public byte[] Payload
         {
             get => this._payload;
@@ -35,7 +38,7 @@ namespace Konata.Core.EventArgs
 
         private ServiceMessage() { }
 
-        public static bool ToServiceMessage(SocketPackage package,out ServiceMessage msg)
+        public static bool ToServiceMessage(SocketPackage package, out ServiceMessage msg)
         {
             msg = new ServiceMessage();
             var data = new PacketBase(package.Data);
@@ -67,11 +70,9 @@ namespace Konata.Core.EventArgs
 
             data.TakeAllBytes(out msg._payload);
 
-            msg.Receiver = package.Receiver;
+            msg.Owner = package.Owner;
 
             return true;
         }
     }
-
-
 }

@@ -8,11 +8,10 @@ using System.Text;
 
 namespace Konata.Core
 {
-    [Service("Socket管理服务",des:"Socket统一管理服务")]
-    public class SocketService : ILoad,IDisposable
+    [Service("Socket管理服务", des: "Socket统一管理服务")]
+    public class SocketService : ILoad, IDisposable
     {
         private Dictionary<Entity, ISocket> _socketList = null;
-
 
         public void Load()
         {
@@ -33,16 +32,16 @@ namespace Konata.Core
             return BitConverter.ToInt16(lenBytes, 0);
         }
 
-        public ISocket CreateNewSocketInstance(Entity entity,SocketConfig config)
+        public ISocket CreateNewSocketInstance(Entity entity, SocketConfig config)
         {
-            if (_socketList.TryGetValue(entity,out var socket))
+            if (_socketList.TryGetValue(entity, out var socket))
             {
                 return socket;
             }
 
             PacketAnalysisService service = ServiceManager.Instance.GetService<PacketAnalysisService>();
 
-            socket= new SocketBuilder()
+            socket = new SocketBuilder()
                 .SocketConfig(conf =>
                 {
                     conf = config;
@@ -57,7 +56,7 @@ namespace Konata.Core
                 })
                 .SetServerDataReceiver((bytes) =>
                 {
-                    service.SendSocketData(new SocketPackage { Data=bytes,Receiver=entity});
+                    service.SendSocketData(new SocketPackage { Data = bytes, Owner = entity });
                 })
                 .Build();
 
@@ -67,7 +66,7 @@ namespace Konata.Core
 
         public void UnloadSocketInstance(Entity entity)
         {
-            if(_socketList.TryGetValue(entity,out var socket))
+            if (_socketList.TryGetValue(entity, out var socket))
             {
                 if (socket.Connected)
                 {

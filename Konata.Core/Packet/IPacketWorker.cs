@@ -1,7 +1,8 @@
-﻿using Konata.Runtime.Base.Event;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
+using System.Collections.Generic;
+
+using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Packet
 {
@@ -16,7 +17,7 @@ namespace Konata.Core.Packet
         /// <param name="original"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        bool Serialize(KonataEventArgs original,out byte[] message);
+        bool Serialize(KonataEventArgs original, out byte[] message);
 
         /// <summary>
         /// 将预翻译消息反序列化为内定消息报文
@@ -24,6 +25,6 @@ namespace Konata.Core.Packet
         /// <param name="original"></param>
         /// <param name="evnentpackage"></param>
         /// <returns></returns>
-        bool DeSerialize(KonataEventArgs original,out KonataEventArgs evnentpackage);
+        bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage);
     }
 }
