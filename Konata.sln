@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Utils", "Konata.Util
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Test", "Konata.Test\Konata.Test.csproj", "{9A51B735-D9F4-4043-A802-03F9FE0548F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Model", "Konata.Model\Konata.Model.csproj", "{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Resource", "Konata.Resource\Konata.Resource.csproj", "{B32F6F75-BC82-477E-BC1F-AA039B8687BC}"
 EndProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{D58DB768-3B01-407A-B9E5-9162F7E12825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Runtime", "Konata.Runtime\Konata.Runtime.csproj", "{D58DB768-3B01-407A-B9E5-9162F7E12825}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Console", "Konata.Console\Konata.Console.csproj", "{97B95A02-704D-47E8-A434-EE6F7E53BE38}"
 EndProject

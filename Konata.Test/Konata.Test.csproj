@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Copyright>(C) 2020 Konata Project</Copyright>
+
+    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Core\Konata.Core.csproj" />
+    <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
     <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
 

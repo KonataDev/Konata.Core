@@ -2,10 +2,10 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-using Konata.Core.MQ;
-using Konata.Core.Builder;
-using Konata.Core.NetWork;
-using Konata.Core.Extensions;
+using Konata.Runtime.MQ;
+using Konata.Runtime.Builder;
+using Konata.Runtime.Network;
+using Konata.Runtime.Extensions;
 
 namespace Konata.Test
 {

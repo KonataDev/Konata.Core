@@ -1,17 +1,17 @@
-﻿using Konata.Core.Builder;
-using Konata.Core.MQ;
-using Konata.Core.Extensions;
-using Konata.Core.Utils;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Konata.Core;
-using System.Diagnostics;
-using Konata.Core.Base.Event;
-using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Attributes;
+
+using Konata.Runtime;
+using Konata.Runtime.MQ;
+using Konata.Runtime.Utils;
+using Konata.Runtime.Builder;
+using Konata.Runtime.Base.Event;
+using Konata.Runtime.Extensions;
 
 namespace Konata.Console
 {
@@ -25,17 +25,20 @@ namespace Konata.Console
 
     public class BenchmarkTest
     {
-        TestEvent t = null;
+        private TestEvent testEvent = null;
+
         public BenchmarkTest()
         {
-            t = new TestEvent();
-            EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed", (arg) => { t.Handle(arg); }, false);
-            List<string> events = EventManager.Instance.GetEventList();
-            foreach (string e in events)
+            testEvent = new TestEvent();
             {
-                System.Console.WriteLine(e);
-            }
+                EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed",
+                    (arguments) => { testEvent.Handle(arguments); }, false);
 
+                foreach (string e in EventManager.Instance.GetEventList())
+                {
+                    System.Console.WriteLine(e);
+                }
+            }
         }
 
         [Benchmark]
@@ -47,6 +50,7 @@ namespace Konata.Console
             }
         }
     }
+
     class Program
     {
         static void Main(string[] args)

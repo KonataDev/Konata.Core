@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Copyright>(C) 2020 Konata Project</Copyright>
+    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Core\Konata.Core.csproj" />
+    <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
   </ItemGroup>
 
 </Project>
