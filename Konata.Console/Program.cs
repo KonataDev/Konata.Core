@@ -31,13 +31,13 @@ namespace Konata.Console
         {
             testEvent = new TestEvent();
             {
-                EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed",
-                    (arguments) => { testEvent.Handle(arguments); }, false);
+                //EventManager.Instance.RegisterListener("Konata.Console.OnDataFixed",
+                //    (arguments) => { testEvent.Handle(arguments); }, false);
 
-                foreach (string e in EventManager.Instance.GetEventList())
-                {
-                    System.Console.WriteLine(e);
-                }
+                //foreach (string e in EventManager.Instance.GetEventList())
+                //{
+                //    System.Console.WriteLine(e);
+                //}
             }
         }
 
@@ -46,7 +46,7 @@ namespace Konata.Console
         {
             for (int i = 0; i < 50000; i++)
             {
-                EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
+                //EventManager.Instance.RunEvent("Konata.Console.OnDataFixed", null);
             }
         }
     }

@@ -150,16 +150,18 @@ namespace Konata.Runtime
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="output"></param>
-        public void LinkPipeLineToEntity(Entity entity, ISourceBlock<KonataEventArgs> output)
+        /// 
+
+        public ITargetBlock<KonataEventArgs> LinkPipeLineToEntity(Entity entity)
         {
             coreEventLock.EnterReadLock();
             try
             {
-                if (bindComponentList.ContainsKey(entity.Id))
+                if (bindComponentList.TryGetValue(entity.Id,out var component))
                 {
-                    var component = bindComponentList[entity.Id];
-                    component.AddNewSource(output);
+                    return component.GetPipe();
                 }
+                return null;
             }
             finally
             {

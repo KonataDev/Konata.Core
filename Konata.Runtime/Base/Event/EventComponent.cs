@@ -81,12 +81,9 @@ namespace Konata.Runtime.Base
             }
         }
 
-        /// <summary>
-        /// 向当前子容器处理队列添加新的数据源
-        /// <para>该添加法等同于向该子容器直接发送消息</para>
-        /// </summary>
-        /// <param name="output"></param>
-        public void AddNewSource(ISourceBlock<KonataEventArgs> output)
+
+
+        public ITargetBlock<KonataEventArgs> GetPipe()
         {
             if (endblock == null)
             {
@@ -95,7 +92,8 @@ namespace Konata.Runtime.Base
                 endblock = new ActionBlock<KonataEventArgs>((arg) => { ContainerFilter(arg); },
                     new ExecutionDataflowBlockOptions { CancellationToken = blockcancel.Token, MaxDegreeOfParallelism = 2 });
             }
-            output.LinkTo(endblock);
+
+            return endblock;
         }
 
         /// <summary>

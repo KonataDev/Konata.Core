@@ -7,13 +7,14 @@ namespace Konata.Runtime.Base.Event
     /// </summary>
     public class KonataEventArgs : EventArgs
     {
-        public object Sender { get; set; }
-
+        /// <summary>
+        /// 事件拥有者[实体]
+        /// </summary>
         public Entity Receiver { get; set; }
 
         /// <summary>
-        /// 负载
+        /// 事件包对应的事件名
         /// </summary>
-        public object Data { get; set; }
+        public string EventName { get; set; }
     }
 }
