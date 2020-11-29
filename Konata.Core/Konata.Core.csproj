@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
-    <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
-    <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
+    <Compile Remove="Utils\**" />
+    <EmbeddedResource Remove="Utils\**" />
+    <None Remove="Utils\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Utils\" />
+    <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
+    <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
+    <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,11 @@
-﻿using Konata.Runtime.Base;
-using Konata.Runtime.Builder;
-using Konata.Runtime.Extensions;
-using Konata.Runtime.Network;
 using System;
-using System.Collections.Generic;
 using System.Text;
+
+using Konata.Runtime.Base;
+using Konata.Runtime.Builder;
+using Konata.Runtime.Network;
+using Konata.Runtime.Extensions;
+using System.Collections.Generic;
 
 namespace Konata.Core
 {
@@ -86,7 +87,6 @@ namespace Konata.Core
                 _socketList.Clear();
                 _socketList = null;
             }
-
         }
     }
 }
