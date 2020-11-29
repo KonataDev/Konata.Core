@@ -31,7 +31,6 @@ namespace Konata.Core
         private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
         private ConcurrentDictionary<long, ISocket> _entitySocketList = null;
 
-
         public void Load()
         {
             //装载解析集
@@ -41,7 +40,6 @@ namespace Konata.Core
                 _entitySocketList = new ConcurrentDictionary<long, ISocket>();
                 _packetworkerInfo = new List<PacketAttribute>();
                 _entityEventActionBlock = new ConcurrentDictionary<long, ActionBlock<KonataEventArgs>>();
-
 
                 foreach (Type type in typeof(PacketAnalysisService).Assembly.GetTypes())
                 {
@@ -82,17 +80,16 @@ namespace Konata.Core
                 }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2, MaxMessagesPerTask = 20 });
 
                 //filter [ssomsg->EventArgs]->entity[ActionBlock]
-                _ssoMsgActionBlock = new ActionBlock<SSOMessage>(smsg =>
+                _ssoMsgActionBlock = new ActionBlock<SSOMessage>(ssoMessage =>
                 {
-                    KonataEventArgs arg = null;
                     //get ssocommand-PacketWorker
-                    if (_packetworkerList.TryGetValue(smsg.SSOCommand, out IPacketWorker worker))
+                    if (_packetworkerList.TryGetValue(ssoMessage.SSOCommand, out IPacketWorker worker))
                     {
                         //worker DeSerialize
-                        if (worker.DeSerialize(smsg, out arg))
+                        if (worker.DeSerialize(ssoMessage, out var arg))
                         {
                             //post data to target entity
-                            if (_entityEventActionBlock.TryGetValue(smsg.Receiver.Id, out var action))
+                            if (_entityEventActionBlock.TryGetValue(ssoMessage.Receiver.Id, out var action))
                             {
                                 action.SendAsync(arg);
                             }
@@ -101,78 +98,78 @@ namespace Konata.Core
                 }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2, MaxMessagesPerTask = 20 });
 
                 //Finish Basic ,Link Them
-                _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock, new DataflowLinkOptions { PropagateCompletion = true }, smsg => smsg != null);
-                _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock, new DataflowLinkOptions { PropagateCompletion = true }, smsg => smsg != null);
+                _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock,
+                    new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
 
-                //
+                _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock,
+                    new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
+
                 //初始化数据管道[Event->Socket]
-                _eventActionBlock = new ActionBlock<KonataEventArgs>(eventmsg =>
-                  {
-                      byte[] data = null;
-                      //get ssocommand-PacketWorker
-                      if (_packetworkerList.TryGetValue(eventmsg.EventName, out IPacketWorker worker))
-                      {
-                          //worker DeSerialize
-                          if (worker.Serialize(eventmsg, out data))
-                          {
-                              if (data != null)
-                              {
-                                  if (_entitySocketList.TryGetValue(eventmsg.Receiver.Id, out ISocket socket) && socket.Connected)
-                                  {
-                                      socket.Send(data);
-                                  }
-                              }
-                          }
-                      }
-                  });
+                _eventActionBlock = new ActionBlock<KonataEventArgs>(eventMessage =>
+                {
+                    byte[] data = null;
+
+                    //get ssocommand-PacketWorker
+                    if (_packetworkerList.TryGetValue(eventMessage.EventName, out IPacketWorker worker))
+                    {
+                        //worker DeSerialize
+                        if (worker.Serialize(eventMessage, out data))
+                        {
+                            if (data != null)
+                            {
+                                if (_entitySocketList.TryGetValue(eventMessage.Receiver.Id, out ISocket socket) && socket.Connected)
+                                {
+                                    socket.Send(data);
+                                }
+                            }
+                        }
+                    }
+                });
             }
-
-
-
         }
 
         /// <summary>
         /// 发送socket消息包
         /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="timeoutms"></param>
-        public async void SendSocketData(SocketPackage msg, int timeoutms = 0)
+        /// <param name="package"></param>
+        /// <param name="timeoutMs"></param>
+        public async void SendSocketData(SocketPackage package, int timeoutMs = 0)
         {
-            if (_socketMsgTransformBlock != null && msg != null)
+            if (_socketMsgTransformBlock != null && package != null)
             {
-                if (timeoutms > 0)
+                if (timeoutMs > 0)
                 {
-                    CancellationTokenSource source = new CancellationTokenSource(timeoutms);
-                    await _socketMsgTransformBlock.SendAsync(msg, source.Token);
+                    var source = new CancellationTokenSource(timeoutMs);
+                    await _socketMsgTransformBlock.SendAsync(package, source.Token);
                 }
                 else
                 {
-                    await _socketMsgTransformBlock.SendAsync(msg);
+                    await _socketMsgTransformBlock.SendAsync(package);
                 }
             }
-
         }
 
         /// <summary>
-        ///f 将事件消息发送到
+        /// 将事件消息发送到
         /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="timeoutms"></param>
-        public async void SendDataToServer(KonataEventArgs msg, int timeoutms = 0)
+        /// <param name="eventArgs"></param>
+        /// <param name="timeoutMs"></param>
+        public async void SendDataToServer(KonataEventArgs eventArgs, int timeoutMs = 0)
         {
-            if (_socketMsgTransformBlock != null && msg != null)
+            if (_socketMsgTransformBlock != null && eventArgs != null)
             {
-                if (timeoutms > 0)
+                if (timeoutMs > 0)
                 {
-                    CancellationTokenSource source = new CancellationTokenSource(timeoutms);
-                    await _eventActionBlock.SendAsync(msg, source.Token);
+                    CancellationTokenSource source = new CancellationTokenSource(timeoutMs);
+                    await _eventActionBlock.SendAsync(eventArgs, source.Token);
                 }
                 else
                 {
-                    await _eventActionBlock.SendAsync(msg);
+                    await _eventActionBlock.SendAsync(eventArgs);
                 }
             }
         }
+
         /// <summary>
         /// 注册新的实体接收管道
         /// </summary>
@@ -218,7 +215,6 @@ namespace Konata.Core
             }
             _entityEventActionBlock.Clear();
             _entityEventActionBlock = null;
-
         }
     }
 }
