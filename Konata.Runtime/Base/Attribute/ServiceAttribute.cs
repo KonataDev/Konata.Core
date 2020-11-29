@@ -7,8 +7,8 @@ namespace Konata.Runtime.Base
     /// </summary>
     public class ServiceAttribute : BaseAttribute
     {
-        public ServiceAttribute(string name = "Undefined", string des = "")
-            : base(name, des)
+        public ServiceAttribute(string name = "Undefined", string description = "")
+            : base(name, description)
         {
 
         }
