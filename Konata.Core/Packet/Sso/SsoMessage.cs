@@ -3,7 +3,6 @@ using Konata.Utils.IO;
 
 namespace Konata.Model.Packet.Sso
 {
-
     public enum RequestPktType : uint
     {
         TypeA = 0x0A,

@@ -15,112 +15,98 @@ using Konata.Runtime.Network;
 namespace Konata.Core
 {
     [Service("消息解析服务", "全局消息解析服务，用于消息序列化/反序列化")]
-    class PacketAnalysisService : ILoad, IDisposable
+    class PacketService : ILoad, IDisposable
     {
-        private Dictionary<string, IPacketWorker> _packetworkerList = null;
-        private List<PacketAttribute> _packetworkerInfo = null;
-
-        private TransformBlock<SocketPackage, ServiceMessage> _socketMsgTransformBlock;
+        private List<SSOServiceAttribute> _ssoServiceInfo = null;
+        private Dictionary<string, ISSOService> _ssoServiceList = null;
 
         private TransformBlock<ServiceMessage, SSOMessage> _serviceMsgTransformBlock;
+        private TransformBlock<SocketPackage, ServiceMessage> _socketMsgTransformBlock;
 
         private ActionBlock<SSOMessage> _ssoMsgActionBlock;
-
         private ActionBlock<KonataEventArgs> _eventActionBlock;
 
-        private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
         private ConcurrentDictionary<long, ISocket> _entitySocketList = null;
+        private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
 
+        /// <summary>
+        /// Service Onload
+        /// </summary>
         public void Load()
         {
-            //装载解析集
-            if (_packetworkerList == null)
+            if (_ssoServiceList == null)
             {
-                _packetworkerList = new Dictionary<string, IPacketWorker>();
+                _ssoServiceInfo = new List<SSOServiceAttribute>();
+                _ssoServiceList = new Dictionary<string, ISSOService>();
                 _entitySocketList = new ConcurrentDictionary<long, ISocket>();
-                _packetworkerInfo = new List<PacketAttribute>();
                 _entityEventActionBlock = new ConcurrentDictionary<long, ActionBlock<KonataEventArgs>>();
 
-                foreach (Type type in typeof(PacketAnalysisService).Assembly.GetTypes())
+                // Load all of the workers with specific attribute
+                foreach (Type type in typeof(PacketService).Assembly.GetTypes())
                 {
-                    PacketAttribute _attr = (PacketAttribute)type.GetCustomAttributes(typeof(PacketAttribute)).FirstOrDefault();
-                    if (_attr == null)
-                        continue;
-                    if (typeof(IPacketWorker).IsAssignableFrom(type))
+                    var attribute = (SSOServiceAttribute)type.GetCustomAttributes(typeof(SSOServiceAttribute)).FirstOrDefault();
+                    if (attribute != null && typeof(ISSOService).IsAssignableFrom(type))
                     {
-                        IPacketWorker obj = (IPacketWorker)Activator.CreateInstance(type);
-                        _packetworkerList.Add(_attr.PacketName, obj);
-                        _packetworkerInfo.Add(_attr);
+                        var service = (ISSOService)Activator.CreateInstance(type);
+                        _ssoServiceList.Add(attribute.ServiceName, service);
+                        _ssoServiceInfo.Add(attribute);
                     }
                 }
 
-                //装载完毕 初始化数据管道[Socket->Event]
-                //socket->servicemsg
-                _socketMsgTransformBlock = new TransformBlock<SocketPackage, ServiceMessage>(smsg =>
-                {
-                    //尝试将socket报文格式化为基本消息包
-                    ServiceMessage msg = null;
-                    if (ServiceMessage.ToServiceMessage(smsg, out msg))
-                    {
-                        return msg;
-                    }
-                    return null;
-                    //最大并发线程2 每个线程最大处理队列20
-                }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2, MaxMessagesPerTask = 20 });
+                // [Incoming] Working pipeline
+                //   Socket -> ServiceMessage
+                _socketMsgTransformBlock = new TransformBlock<SocketPackage, ServiceMessage>
+                    (socketData => ServiceMessage.Parse(socketData, out var serviceMsg) ? serviceMsg : null);
 
-                //servicemsg->ssomsg
-                _serviceMsgTransformBlock = new TransformBlock<ServiceMessage, SSOMessage>(smsg =>
-                {
-                    SSOMessage msg = null;
-                    if (SSOMessage.ToSSOMessage(smsg, smsg.Payload, smsg.MsgPktType, out msg))
-                    {
-                        return msg;
-                    }
-                    return null;
-                }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2, MaxMessagesPerTask = 20 });
+                // [Incoming] Working pipeline
+                //   ServiceMessage -> SSOMessage
+                _serviceMsgTransformBlock = new TransformBlock<ServiceMessage, SSOMessage>
+                    (serviceMsg => SSOMessage.Parse(serviceMsg, out var ssoMessage) ? ssoMessage : null);
 
-                //filter [ssomsg->EventArgs]->entity[ActionBlock]
-                _ssoMsgActionBlock = new ActionBlock<SSOMessage>(ssoMessage =>
+                // [Incoming] Action pipeline
+                //   SSOMessage -> SSO Service
+                _ssoMsgActionBlock = new ActionBlock<SSOMessage>
+                (ssoMessage =>
                 {
-                    //get ssocommand-PacketWorker
-                    if (_packetworkerList.TryGetValue(ssoMessage.SSOCommand, out IPacketWorker worker))
+                    // Get packet worker by sso command
+                    if (_ssoServiceList.TryGetValue(ssoMessage.Command, out ISSOService service))
                     {
-                        //worker DeSerialize
-                        if (worker.DeSerialize(ssoMessage, out var arg))
+                        // DeSerialize the packet
+                        if (service.DeSerialize(ssoMessage, out var arg))
                         {
-                            //post data to target entity
+                            // Post data to target service entity
                             if (_entityEventActionBlock.TryGetValue(ssoMessage.Receiver.Id, out var action))
                             {
                                 action.SendAsync(arg);
                             }
                         }
                     }
-                }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2, MaxMessagesPerTask = 20 });
+                });
 
-                //Finish Basic ,Link Them
+                // [Incoming] Connect the working pipelines up
+                //   ServiceMessage -> SSOMessage -> Service Entity
                 _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock,
                     new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
 
                 _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock,
                     new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
 
-                //初始化数据管道[Event->Socket]
-                _eventActionBlock = new ActionBlock<KonataEventArgs>(eventMessage =>
+                // [OutGoing] Action pipeline
+                //   SSO Service -> Socket
+                _eventActionBlock = new ActionBlock<KonataEventArgs>
+                (eventMessage =>
                 {
-                    byte[] data = null;
-
-                    //get ssocommand-PacketWorker
-                    if (_packetworkerList.TryGetValue(eventMessage.EventName, out IPacketWorker worker))
+                    // Get service by sso command
+                    if (_ssoServiceList.TryGetValue(eventMessage.EventName, out ISSOService worker))
                     {
-                        //worker DeSerialize
-                        if (worker.Serialize(eventMessage, out data))
+                        // Serialize the packet
+                        if (worker.Serialize(eventMessage, out var data))
                         {
-                            if (data != null)
+                            if (data != null
+                                && _entitySocketList.TryGetValue(eventMessage.Receiver.Id, out ISocket socket)
+                                && socket.Connected)
                             {
-                                if (_entitySocketList.TryGetValue(eventMessage.Receiver.Id, out ISocket socket) && socket.Connected)
-                                {
-                                    socket.Send(data);
-                                }
+                                socket.Send(data);
                             }
                         }
                     }
@@ -160,7 +146,7 @@ namespace Konata.Core
             {
                 if (timeoutMs > 0)
                 {
-                    CancellationTokenSource source = new CancellationTokenSource(timeoutMs);
+                    var source = new CancellationTokenSource(timeoutMs);
                     await _eventActionBlock.SendAsync(eventArgs, source.Token);
                 }
                 else
@@ -206,8 +192,8 @@ namespace Konata.Core
             //socket-servicemsg-ssomsg linked with PropagateCompletion
             //Source Link Complete signal will send to it target
             _socketMsgTransformBlock.Complete();
-            _packetworkerList.Clear();
-            _packetworkerList = null;
+            _ssoServiceList.Clear();
+            _ssoServiceList = null;
 
             foreach (var data in _entityEventActionBlock.Values)
             {
