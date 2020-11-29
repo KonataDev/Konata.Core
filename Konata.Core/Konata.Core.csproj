@@ -13,9 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="SSOServices\FriendList\ModifyGroupCardReq.cs~RF591f1234.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
     <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
     <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SSOServices\OnlinePush\" />
   </ItemGroup>
 
 </Project>
