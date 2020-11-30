@@ -12,7 +12,7 @@ using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Network;
 
-namespace Konata.Core
+namespace Konata.Core.Services
 {
     [Service("消息解析服务", "全局消息解析服务，用于消息序列化/反序列化")]
     class PacketService : ILoad, IDisposable

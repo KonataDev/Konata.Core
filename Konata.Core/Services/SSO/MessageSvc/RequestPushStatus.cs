@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OidbSvc
+namespace Konata.Core.Services.MessageSvc
 {
-    [SSOService("OidbSvc.0x8a0_0", "Kick members in the group")]
-    class Oidb0x8a0_0 : ISSOService
+    [SSOService("MessageSvc.RequestPushStatus", "Request push status")]
+    public class RequestPushStatus : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

@@ -4,7 +4,7 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OidbSvc
+namespace Konata.Core.Services.OidbSvc
 {
     [SSOService("OidbSvc.0x8a0_1", "Kick member in the group")]
     class Oidb0x8a0_1 : ISSOService

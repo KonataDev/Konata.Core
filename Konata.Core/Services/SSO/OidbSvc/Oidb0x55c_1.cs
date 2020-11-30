@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OidbSvc
+namespace Konata.Core.Services.OidbSvc
 {
-    [SSOService("OidbSvc.0x570_8", "Mute member in the group")]
-    public class Oidb0x570_8 : ISSOService
+    [SSOService("OidbSvc.0x55c_1", "Promote admin for member")]
+    public class Oidb0x55c_1 : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Text;
 
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.MessageSvc
+namespace Konata.Core.Services.WtLogin
 {
-    [SSOService("MessageSvc.PbSendMsg", "Send message")]
-    public class PbSendMsg : ISSOService
+    [SSOService("wtlogin.login", "WtLogin exchange")]
+    public class Login : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

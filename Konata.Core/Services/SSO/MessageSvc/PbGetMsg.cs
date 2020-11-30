@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.MessageSvc
+namespace Konata.Core.Services.MessageSvc
 {
-    [SSOService("MessageSvc.PushNotify", "Push notify on received a private message")]
-    public class PushNotify : ISSOService
+    [SSOService("MessageSvc.PbGetMsg", "Get message")]
+    public class PbGetMsg : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Text;
 
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OidbSvc
+namespace Konata.Core.Services.Heartbeat
 {
-    [SSOService("OidbSvc.0x55c_1", "Promote admin for member")]
-    public class Oidb0x55c_1 : ISSOService
+    [SSOService("Heartbeat.Alive", "Heartbeat for client")]
+    public class Alive : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

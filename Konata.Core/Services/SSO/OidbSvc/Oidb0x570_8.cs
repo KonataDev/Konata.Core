@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OnlinePush
+namespace Konata.Core.Services.OidbSvc
 {
-    [SSOService("OnlinePush.PbPushGroupMsg", "Push group message from server")]
-    public class PbPushGroupMsg : ISSOService
+    [SSOService("OidbSvc.0x570_8", "Mute member in the group")]
+    public class Oidb0x570_8 : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

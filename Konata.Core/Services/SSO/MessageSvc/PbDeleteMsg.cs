@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.FriendList
+namespace Konata.Core.Services.MessageSvc
 {
-    [SSOService("friendlist.GetTroopListReqV2", "Pull group list")]
-    public class GetTroopListReqV2 : ISSOService
+    [SSOService("MessageSvc.PbDeleteMsg", "Delete message")]
+    public class PbDeleteMsg : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

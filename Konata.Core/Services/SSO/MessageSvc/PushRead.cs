@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.PbMessageSvc
+namespace Konata.Core.Services.MessageSvc
 {
-    [SSOService("PbMessageSvc.PbMsgReadedReport", "Push have been read message")]
-    public class PbMsgReadReport : ISSOService
+    [SSOService("MessageSvc.PushReaded", "Push have been read this message")]
+    public class PushRead : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

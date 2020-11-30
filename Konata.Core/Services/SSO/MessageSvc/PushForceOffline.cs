@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.PbMessageSvc
+namespace Konata.Core.Services.MessageSvc
 {
-    [SSOService("PbMessageSvc.PbMessageWithDraw", "Withdraw message")]
-    public class PbMessageWithDraw : ISSOService
+    [SSOService("MessageSvc.PushForceOffline", "Force offline")]
+    public class PushForceOffline : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.MessageSvc
+namespace Konata.Core.Services.Friendlist
 {
-    [SSOService("MessageSvc.PushReaded", "Push have been read this message")]
-    public class PushRead : ISSOService
+    [SSOService("friendlist.ModifyGroupCardReq", "Modify group card")]
+    public class ModifyGroupCardReq
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

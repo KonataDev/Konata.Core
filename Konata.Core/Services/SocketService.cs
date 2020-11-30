@@ -7,7 +7,7 @@ using Konata.Runtime.Builder;
 using Konata.Runtime.Network;
 using Konata.Runtime.Extensions;
 
-namespace Konata.Core
+namespace Konata.Core.Services
 {
     [Service("Socket管理服务", "Socket统一管理服务")]
     public class SocketService : ILoad, IDisposable

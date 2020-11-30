@@ -4,10 +4,10 @@ using System.Text;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.OidbSvc
+namespace Konata.Core.Services.StatSvc
 {
-    [SSOService("OidbSvc.0x8fc_2", "Set special title for member")]
-    public class Oidb0x8fc_2 : ISSOService
+    [SSOService("StatSvc.Register", "Register client")]
+    public class Register : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

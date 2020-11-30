@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Text;
 
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.SSOServices.Heartbeat
+namespace Konata.Core.Services.PbMessageSvc
 {
-    [SSOService("Heartbeat.Alive", "Heartbeat for client")]
-    public class Alive : ISSOService
+    [SSOService("PbMessageSvc.PbMsgReadedReport", "Push have been read message")]
+    public class PbMsgReadReport : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {
