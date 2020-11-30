@@ -1,6 +1,6 @@
-﻿using Konata.Core.Base;
-using Konata.Core.Base.Event;
-using Konata.Core.NetWork;
+﻿using Konata.Runtime.Base;
+using Konata.Runtime.Base.Event;
+using Konata.Runtime.Network;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,7 +43,7 @@ namespace Konata.Console
         }
     }
 
-    [Service(name: "协议解析服务", des: "核心协议解析服务")]
+    [Service(name: "协议解析服务", description: "核心协议解析服务")]
     public class PacketService : ILoad,IDisposable
     {
         public void Load()

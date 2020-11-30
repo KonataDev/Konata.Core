@@ -75,7 +75,7 @@ namespace Konata.Core
                         if (service.DeSerialize(ssoMessage, out var arg))
                         {
                             // Post data to target service entity
-                            if (_entityEventActionBlock.TryGetValue(ssoMessage.Receiver.Id, out var action))
+                            if (_entityEventActionBlock.TryGetValue(ssoMessage.Owner.Id, out var action))
                             {
                                 action.SendAsync(arg);
                             }
@@ -103,7 +103,7 @@ namespace Konata.Core
                         if (worker.Serialize(eventMessage, out var data))
                         {
                             if (data != null
-                                && _entitySocketList.TryGetValue(eventMessage.Receiver.Id, out ISocket socket)
+                                && _entitySocketList.TryGetValue(eventMessage.Owner.Id, out ISocket socket)
                                 && socket.Connected)
                             {
                                 socket.Send(data);
