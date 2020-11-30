@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T1Body : TlvBody
     {

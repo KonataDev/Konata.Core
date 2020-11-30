@@ -1,8 +1,8 @@
-﻿using Konata.Model.Types;
+﻿using Konata.Core.Types;
 using System;
 using Guid = Konata.Utils.Guid;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T106Body : TlvBody
     {

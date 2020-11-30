@@ -1,5 +1,5 @@
 ﻿
-namespace Konata.Model
+namespace Konata.Core
 {
     public static class AppInfo
     {

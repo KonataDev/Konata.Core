@@ -1,4 +1,4 @@
-﻿using Konata.Model.Packet.Oicq;
+﻿using Konata.Core.Packet.Oicq;
 using Konata.Packets.Protobuf;
 using Konata.Utils.Crypto;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Konata.Model
+namespace Konata.Core
 {
     /// <summary>
     /// 登录信息

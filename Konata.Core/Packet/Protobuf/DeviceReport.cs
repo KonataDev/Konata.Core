@@ -1,6 +1,6 @@
 ﻿using Konata.Utils.Protobuf;
 
-namespace Konata.Model.Packet.Protobuf
+namespace Konata.Core.Packet.Protobuf
 {
     public class DeviceReport : ProtoTreeRoot
     {

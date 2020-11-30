@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Model.Packet.Oidb.OidbModel
+namespace Konata.Core.Packet.Oidb.OidbModel
 {
     /// <summary>
     /// 移除單個群成員

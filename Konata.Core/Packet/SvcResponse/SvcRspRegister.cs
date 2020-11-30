@@ -1,7 +1,7 @@
 ﻿using System;
-using Konata.Model.Packet.Wup;
+using Konata.Core.Packet.Wup;
 using Konata.Utils.JceStruct.Model;
-namespace Konata.Model.Packet.SvcResponse
+namespace Konata.Core.Packet.SvcResponse
 {
     public class SvcRspRegister : UniPacket
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 
 using Konata.Utils.IO;
-using Konata.Model.Packet;
-using Konata.Model.Packet.Sso;
+using Konata.Core.Packet;
+using Konata.Core.Packet.Sso;
 using Konata.Runtime.Network;
 using Konata.Runtime.Base.Event;
 

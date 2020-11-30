@@ -1,12 +1,12 @@
 ﻿using System.IO;
 using System.Text;
 using Konata.Utils.Crypto;
-using Konata.Model.Packet.Protobuf;
-using Konata.Model.Packet.Tlv;
-using Konata.Model.Packet.Tlv.TlvModel;
-using Konata.Model.Types;
+using Konata.Core.Packet.Protobuf;
+using Konata.Core.Packet.Tlv;
+using Konata.Core.Packet.Tlv.TlvModel;
+using Konata.Core.Types;
 
-namespace Konata.Model.Packet.Oicq
+namespace Konata.Core.Packet.Oicq
 {
     using Tlv = Tlv.Tlv;
 

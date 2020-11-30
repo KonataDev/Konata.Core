@@ -1,8 +1,8 @@
 ﻿using Konata.Utils.IO;
 using Konata.Utils.Crypto;
-using Konata.Model.Packet.Tlv.TlvModel;
+using Konata.Core.Packet.Tlv.TlvModel;
 
-namespace Konata.Model.Packet.Tlv
+namespace Konata.Core.Packet.Tlv
 {
     public class Tlv : PacketBase
     {

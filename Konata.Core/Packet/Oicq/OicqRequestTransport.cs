@@ -4,7 +4,7 @@ using System.IO.Compression;
 using Konata.Utils.IO;
 using Konata.Utils.Crypto;
 
-namespace Konata.Model.Packet.Oicq
+namespace Konata.Core.Packet.Oicq
 {
     public class OicqRequestTransport : OicqRequest
     {

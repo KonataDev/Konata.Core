@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Konata.Utils.Crypto;
 
-namespace Konata.Model.Packet.Tlv
+namespace Konata.Core.Packet.Tlv
 {
     using TlvMap = Dictionary<ushort, Tlv>;
 

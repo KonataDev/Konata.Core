@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     // 與T197相同?
 
