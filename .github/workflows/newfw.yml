@@ -1,0 +1,19 @@
+name: TestBuild
+
+on:
+  push:
+    branches: [ framework, tsf ]
+  pull_request:
+    branches: [ framework, tsf ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore the nuget packages
+        run: nuget restore
+
+      - name: Build program
+        run: msbuild Konata.Test
