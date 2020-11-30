@@ -1,7 +1,7 @@
-﻿using Konata.Model.Types;
+﻿using Konata.Core.Types;
 using System;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T124Body : TlvBody
     {

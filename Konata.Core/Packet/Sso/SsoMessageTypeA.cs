@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Utils.IO;
 
-namespace Konata.Model.Packet.Sso
+namespace Konata.Core.Packet.Sso
 {
     public class SsoMessageTypeA : SsoMessage
     {

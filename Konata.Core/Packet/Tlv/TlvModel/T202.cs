@@ -1,6 +1,6 @@
 ﻿using Konata.Utils.Crypto;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T202Body : TlvBody
     {

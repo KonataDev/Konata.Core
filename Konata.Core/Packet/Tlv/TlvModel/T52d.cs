@@ -1,7 +1,7 @@
 ﻿using System;
-using Konata.Model.Packet.Protobuf;
+using Konata.Core.Packet.Protobuf;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T52dBody : TlvBody
     {

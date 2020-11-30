@@ -4,7 +4,7 @@ using Konata.Utils.IO;
 using Konata.Utils.JceStruct;
 using Konata.Utils.JceStruct.Model;
 
-namespace Konata.Model.Packet.Wup
+namespace Konata.Core.Packet.Wup
 {
     public class UniPacket : ByteBuffer
     {

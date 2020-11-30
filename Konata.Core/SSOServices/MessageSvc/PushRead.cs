@@ -1,12 +1,13 @@
-﻿using Konata.Runtime.Base.Event;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
 
-namespace Konata.Core.Packet
+using Konata.Core.Packet;
+using Konata.Runtime.Base.Event;
+
+namespace Konata.Core.SSOServices.MessageSvc
 {
-    [Packet("wtlogin","登陆相关")]
-    public class SimplePacket : IPacketWorker
+    [SSOService("MessageSvc.PushReaded", "Push have been read this message")]
+    public class PushRead : ISSOService
     {
         public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
         {

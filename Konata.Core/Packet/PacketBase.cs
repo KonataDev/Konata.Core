@@ -4,7 +4,7 @@ using Konata.Utils.Crypto;
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
 
-namespace Konata.Model.Packet
+namespace Konata.Core.Packet
 {
     /// <summary>
     /// 消息报文基类

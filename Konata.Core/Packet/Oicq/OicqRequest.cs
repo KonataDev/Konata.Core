@@ -2,7 +2,7 @@
 using Konata.Utils.Crypto;
 using Konata.Utils.IO;
 
-namespace Konata.Model.Packet.Oicq
+namespace Konata.Core.Packet.Oicq
 {
     public enum OicqStatus
     {

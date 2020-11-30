@@ -1,11 +1,10 @@
-﻿using Konata.Runtime.Base.Event;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+
+using Konata.Runtime.Base.Event;
 
 namespace Konata.Runtime.Network
 {
-    public class SocketPackage:KonataEventArgs
+    public class SocketPackage : KonataEventArgs
     {
         public byte[] Data { get; set; }
     }

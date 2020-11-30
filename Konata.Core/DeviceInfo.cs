@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Konata.Model.Types;
+using Konata.Core.Types;
 using Konata.Utils.Crypto;
 
-namespace Konata.Model
+namespace Konata.Core
 {
     public static class DeviceInfo
     {

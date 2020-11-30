@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Utils.Crypto;
 
-namespace Konata.Model.Packet.Tlv
+namespace Konata.Core.Packet.Tlv
 {
     public class TlvPacker
     {

@@ -1,79 +1,95 @@
-﻿using Konata.Model.Packet.Sso;
-using Konata.Runtime.Base.Event;
-using Konata.Utils.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+using Konata.Utils.IO;
+using Konata.Core.Packet.Sso;
+using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.EventArgs
 {
+    public enum RequestPktType : uint
+    {
+        TypeA = 0x0A,
+        TypeB = 0x0B
+    }
+
     public class SSOMessage : KonataEventArgs
     {
-        private string _ssoCommand;
-        private uint _ssoSequence;
+        private uint _session;
+        private uint _sequence;
+        private string _command;
+        private ByteBuffer _payload;
+        private RequestPktType _packetType;
 
-        public RequestPktType SSOPktType { get; set; }
-        public uint SSOSession { get; set; }
-        public string SSOCommand
-        {
-            get => _ssoCommand;
-        }
-        public uint SSOSequence
-        {
-            get => _ssoSequence;
-        }
-        public ByteBuffer Payload { get; set; }
+        public uint Session { get => _session; }
+
+        public string Command { get => _command; }
+
+        public uint Sequence { get => _sequence; }
+
+        public ByteBuffer Payload { get => _payload; }
+
+        public RequestPktType PacketType { get => _packetType; }
 
         private SSOMessage() { }
 
-        public static bool ToSSOMessage(KonataEventArgs arg,byte[] data,RequestPktType type,out SSOMessage msg)
+        public static bool Parse(ServiceMessage serviceMsg, out SSOMessage ssoMsg)
         {
-            msg = new SSOMessage();
-            msg.SSOPktType = type;
-            msg.Owner = arg.Owner;
-            var buffer = new ByteBuffer(data);
-            buffer.TakeUintBE(out var length);
+            ssoMsg = new SSOMessage();
+            ssoMsg.Owner = serviceMsg.Owner;
+            ssoMsg._packetType = serviceMsg.MessagePktType;
+
+            var r = new ByteBuffer(serviceMsg.Payload);
             {
-                if (length > buffer.Length)
-                    return false;
-            }
+                r.TakeUintBE(out var length);
+                {
+                    if (length > r.Length)
+                        return false;
+                }
 
-            buffer.TakeUintBE(out msg._ssoSequence);
+                r.TakeUintBE(out ssoMsg._sequence);
 
-            buffer.TakeUintBE(out var zeroUint);
-            {
-                if (zeroUint != 0)
-                    return false;
-            }
+                r.TakeUintBE(out var zeroUint);
+                {
+                    if (zeroUint != 0)
+                        return false;
+                }
 
-            buffer.TakeBytes(out var unknownBytes,
+                r.TakeBytes(out var unknownBytes,
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                r.TakeString(out ssoMsg._command,
                     ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-            buffer.TakeString(out msg._ssoCommand,
-                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                r.TakeBytes(out var session,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                {
+                    if (session.Length != 4)
+                        return false;
 
-            buffer.TakeBytes(out var session,
-                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-            {
-                if (session.Length != 4)
-                    return false;
+                    ssoMsg._session = ByteConverter.BytesToUInt32(session, 0);
+                }
 
-                msg.SSOSession = ByteConverter.BytesToUInt32(session, 0);
-            }
+                r.TakeUintBE(out zeroUint);
+                {
+                    if (zeroUint != 0)
+                        return false;
+                }
 
-            buffer.TakeUintBE(out zeroUint);
-            {
-                if (zeroUint != 0)
-                    return false;
-            }
-
-            buffer.TakeBytes(out var bytes,
-                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-            {
-                msg.Payload = new ByteBuffer(bytes);
+                r.TakeBytes(out var bytes,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                {
+                    ssoMsg._payload = new ByteBuffer(bytes);
+                }
             }
 
             return true;
         }
+
+        public static bool PackType0x0A()
+            => throw new NotImplementedException();
+
+        public static bool PackType0x0B()
+            => throw new NotImplementedException();
     }
 }

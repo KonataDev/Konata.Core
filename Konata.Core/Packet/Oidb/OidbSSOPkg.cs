@@ -2,7 +2,7 @@
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
 
-namespace Konata.Model.Packet.Oidb
+namespace Konata.Core.Packet.Oidb
 {
     public delegate void OidbPayloadWriter(ProtoTreeRoot writer);
     public delegate void OidbPayloadReader(ProtoTreeRoot reader);

@@ -4,7 +4,7 @@
 using System;
 using Konata.Utils.Protobuf;
 
-namespace Konata.Model.Packet.Oidb.OidbModel
+namespace Konata.Core.Packet.Oidb.OidbModel
 {
     public abstract class OidbCmd0x899 : OidbSSOPkg
     {

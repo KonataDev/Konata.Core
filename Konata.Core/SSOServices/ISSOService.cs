@@ -9,7 +9,7 @@ namespace Konata.Core.Packet
     /// <summary>
     /// 协议处理者接口
     /// </summary>
-    public interface IPacketWorker
+    public interface ISSOService
     {
         /// <summary>
         /// 将事件信息序列化为byte[]报文

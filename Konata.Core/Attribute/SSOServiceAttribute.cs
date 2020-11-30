@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Packet
 {
     /// <summary>
     /// 报文解析服务标签
     /// </summary>
-    public class PacketAttribute:Attribute
+    public class SSOServiceAttribute : Attribute
     {
-        public string PacketName { get; set; } = "";
+        public string ServiceName { get; set; } = "";
 
         public string Description { get; set; } = "";
-        public PacketAttribute(string name,string description)
+
+        public SSOServiceAttribute(string name, string description)
         {
-            PacketName = name;
+            ServiceName = name;
             Description = description;
         }
     }

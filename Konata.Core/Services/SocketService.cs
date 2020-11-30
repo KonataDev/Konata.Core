@@ -1,15 +1,15 @@
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 using Konata.Runtime.Base;
 using Konata.Runtime.Builder;
 using Konata.Runtime.Network;
 using Konata.Runtime.Extensions;
-using System.Collections.Generic;
 
 namespace Konata.Core
 {
-    [Service("Socket管理服务", des: "Socket统一管理服务")]
+    [Service("Socket管理服务", "Socket统一管理服务")]
     public class SocketService : ILoad, IDisposable
     {
         private Dictionary<Entity, ISocket> _socketList = null;
@@ -40,7 +40,7 @@ namespace Konata.Core
                 return socket;
             }
 
-            PacketAnalysisService service = ServiceManager.Instance.GetService<PacketAnalysisService>();
+            PacketService service = ServiceManager.Instance.GetService<PacketService>();
 
             socket = new SocketBuilder()
                 .SocketConfig(conf =>

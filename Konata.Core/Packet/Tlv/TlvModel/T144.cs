@@ -1,8 +1,8 @@
 ﻿using System;
-using Konata.Model.Types;
-using Konata.Model.Packet.Protobuf;
+using Konata.Core.Types;
+using Konata.Core.Packet.Protobuf;
 
-namespace Konata.Model.Packet.Tlv.TlvModel
+namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T144Body : TlvBody
     {

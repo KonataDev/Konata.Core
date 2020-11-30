@@ -3,7 +3,7 @@
 namespace Konata.Runtime.Base
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class BaseAttribute : System.Attribute
+    public class BaseAttribute : Attribute
     {
         public Type AttributeType { get; private set; }
 
@@ -11,11 +11,11 @@ namespace Konata.Runtime.Base
 
         public string Description { get; private set; }
 
-        public BaseAttribute(string name = "UnDefined", string des = "")
+        public BaseAttribute(string name = "UnDefined", string description = "")
         {
-            this.AttributeType = this.GetType();
-            this.Name = name;
-            this.Description = des;
+            Name = name;
+            Description = description;
+            AttributeType = GetType();
         }
     }
 }

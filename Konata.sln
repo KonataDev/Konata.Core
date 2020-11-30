@@ -14,12 +14,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFDA5A63-B0A7-4C9C-AEBD-4F462208100A}"
 	ProjectSection(SolutionItems) = preProject
 		appsettings.json = appsettings.json
-		Blueprint\wtlogin.drawio = Blueprint\wtlogin.drawio
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Runtime", "Konata.Runtime\Konata.Runtime.csproj", "{D58DB768-3B01-407A-B9E5-9162F7E12825}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Console", "Konata.Console\Konata.Console.csproj", "{97B95A02-704D-47E8-A434-EE6F7E53BE38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blueprint", "Blueprint", "{4FA698FA-02D0-4749-BA5F-18D919A9887B}"
+	ProjectSection(SolutionItems) = preProject
+		Blueprint\messaging.incoming.svg = Blueprint\messaging.incoming.svg
+		Blueprint\wtlogin.login.svg = Blueprint\wtlogin.login.svg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
