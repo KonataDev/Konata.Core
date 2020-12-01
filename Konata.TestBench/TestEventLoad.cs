@@ -8,7 +8,7 @@ using System.Text;
 namespace Konata.Console
 {
     [Event(type: "DataComing", runtype: EventRunType.BeforeListener,
-        name: "数据到来事件", des: "当数据到来时候触发的事件")]
+        name: "数据到来事件", description: "当数据到来时候触发的事件")]
     public class Test1 : IEvent
     {
         public void Handle(KonataEventArgs arg)
@@ -18,7 +18,7 @@ namespace Konata.Console
     }
 
     [Event(type: "OnDataFixed", runtype: EventRunType.OnlySymbol,
-    name: "数据处理完毕时", des: "当数据被处理完毕时的执行内容")]
+    name: "数据处理完毕时", description: "当数据被处理完毕时的执行内容")]
     public class Test2
     {
     }
