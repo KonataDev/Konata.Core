@@ -14,7 +14,6 @@ namespace Konata.Runtime.Base
         /// </summary>
         public string EventType { get; set; }
 
-
         public EventRunType EventRunType { get; set; }
         /// <summary>
         /// 
@@ -25,13 +24,13 @@ namespace Konata.Runtime.Base
         /// <param name="name">事件名
         /// <para>该名称仅用来标记该事件称呼,不会被用作框架事件注册</para>
         /// </param>
-        /// <param name="des"></param>
+        /// <param name="description"></param>
         public EventAttribute(string type,
-            EventRunType runtype = EventRunType.OnlySymbol, string name = "UnDefined", string des = "")
-            : base(name, des)
+            EventRunType runtype = EventRunType.OnlySymbol, string name = "UnDefined", string description = "")
+            : base(name, description)
         {
-            this.EventRunType = runtype;
-            this.EventType = type;
+            EventType = type;
+            EventRunType = runtype;
         }
     }
 }

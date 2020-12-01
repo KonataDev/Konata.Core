@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Konata.Core.Packet;
+using Konata.Core.EventArgs;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Services.Heartbeat
@@ -8,12 +9,12 @@ namespace Konata.Core.Services.Heartbeat
     [SSOService("Heartbeat.Alive", "Heartbeat for client")]
     public class Alive : ISSOService
     {
-        public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
+        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }
 
-        public bool Serialize(KonataEventArgs original, out byte[] message)
+        public bool HandleOutGoing(KonataEventArgs original, out byte[] message)
         {
             throw new NotImplementedException();
         }

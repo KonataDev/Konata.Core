@@ -2,6 +2,7 @@
 using System.Text;
 
 using Konata.Core.Packet;
+using Konata.Core.EventArgs;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Services.OnlinePush
@@ -9,12 +10,12 @@ namespace Konata.Core.Services.OnlinePush
     [SSOService("OnlinePush.PbPushGroupMsg", "Push group message from server")]
     public class PbPushGroupMsg : ISSOService
     {
-        public bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage)
+        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }
 
-        public bool Serialize(KonataEventArgs original, out byte[] message)
+        public bool HandleOutGoing(KonataEventArgs original, out byte[] message)
         {
             throw new NotImplementedException();
         }

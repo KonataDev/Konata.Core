@@ -1,5 +1,4 @@
-﻿using Konata.Resource.Localization;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +30,7 @@ namespace Konata.Utils.IO
         }
 
         private static readonly IOException eobException =
-            new IOException(Localization.BufferException);
+            new IOException("Insufficient buffer space");
 
         private static int minBufferBase = 8;
         private static uint minBufferSize = 1U << minBufferBase;

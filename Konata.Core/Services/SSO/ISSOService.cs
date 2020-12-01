@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Text;
-using System.Collections.Generic;
 
+using Konata.Core.EventArgs;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.Packet
+namespace Konata.Core.Services
 {
     /// <summary>
-    /// 协议处理者接口
+    /// SSO Service interface
     /// </summary>
     public interface ISSOService
     {
         /// <summary>
-        /// 将事件信息序列化为byte[]报文
+        /// In-coming business
         /// </summary>
-        /// <param name="original"></param>
-        /// <param name="message"></param>
+        /// <param name="ssoMessage"></param>
+        /// <param name="output"></param>
         /// <returns></returns>
-        bool Serialize(KonataEventArgs original, out byte[] message);
+        bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output);
 
         /// <summary>
-        /// 将预翻译消息反序列化为内定消息报文
+        /// Out-going business
         /// </summary>
-        /// <param name="original"></param>
-        /// <param name="evnentpackage"></param>
+        /// <param name="eventArgs"></param>
+        /// <param name="output"></param>
         /// <returns></returns>
-        bool DeSerialize(KonataEventArgs original, out KonataEventArgs evnentpackage);
+        bool HandleOutGoing(KonataEventArgs eventArgs, out byte[] output);
     }
 }

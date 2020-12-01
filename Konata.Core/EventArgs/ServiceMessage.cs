@@ -2,7 +2,6 @@
 
 using Konata.Utils.IO;
 using Konata.Core.Packet;
-using Konata.Core.Packet.Sso;
 using Konata.Runtime.Network;
 using Konata.Runtime.Base.Event;
 

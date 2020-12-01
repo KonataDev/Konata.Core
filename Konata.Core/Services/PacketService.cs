@@ -68,17 +68,25 @@ namespace Konata.Core.Services
                 _ssoMsgActionBlock = new ActionBlock<SSOMessage>
                 (ssoMessage =>
                 {
-                    // Get packet worker by sso command
+                    // Get service by sso command
                     if (_ssoServiceList.TryGetValue(ssoMessage.Command, out ISSOService service))
                     {
-                        // DeSerialize the packet
-                        if (service.DeSerialize(ssoMessage, out var arg))
+                        try
                         {
-                            // Post data to target service entity
-                            if (_entityEventActionBlock.TryGetValue(ssoMessage.Owner.Id, out var action))
+                            if (service.HandleInComing(ssoMessage, out var output))
                             {
-                                action.SendAsync(arg);
+                                // Post data to target service entity
+                                if (output != null
+                                    && _entityEventActionBlock.TryGetValue(ssoMessage.Owner.Id, out var action))
+                                {
+                                    action.SendAsync(output);
+                                }
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
                         }
                     }
                 });
@@ -97,16 +105,16 @@ namespace Konata.Core.Services
                 (eventMessage =>
                 {
                     // Get service by sso command
-                    if (_ssoServiceList.TryGetValue(eventMessage.EventName, out ISSOService worker))
+                    if (_ssoServiceList.TryGetValue(eventMessage.EventName, out ISSOService service))
                     {
                         // Serialize the packet
-                        if (worker.Serialize(eventMessage, out var data))
+                        if (service.HandleOutGoing(eventMessage, out var output))
                         {
-                            if (data != null
+                            if (output != null
                                 && _entitySocketList.TryGetValue(eventMessage.Owner.Id, out ISocket socket)
                                 && socket.Connected)
                             {
-                                socket.Send(data);
+                                socket.Send(output);
                             }
                         }
                     }

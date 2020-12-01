@@ -13,11 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="EventArgs\EventWtLogin.cs~RF623d1b72.TMP" />
+    <None Remove="EventArgs\WtLoginFailed.cs~RF61aad96e.TMP" />
     <None Remove="Services\SSO\FriendList\ModifyGroupCardReq.cs~RF591f1234.TMP" />
+    <None Remove="Services\SSO\WtLogin\Login.cs~RF616a3ce7.TMP" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Konata.Resource\Konata.Resource.csproj" />
     <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
     <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
