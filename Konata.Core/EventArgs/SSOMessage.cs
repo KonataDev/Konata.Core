@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Konata.Utils.IO;
-using Konata.Core.Packet.Sso;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.EventArgs
