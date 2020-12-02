@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Konata.Core.Packet;
-using Konata.Core.EventArgs;
+using Konata.Core.Events;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Services.Heartbeat

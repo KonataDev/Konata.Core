@@ -2,7 +2,7 @@
 
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.EventArgs
+namespace Konata.Core.Events
 {
     public class EventWtLogin : KonataEventArgs
     {

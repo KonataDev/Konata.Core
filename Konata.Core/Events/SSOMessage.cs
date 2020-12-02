@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Konata.Utils.IO;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.EventArgs
+namespace Konata.Core.Events
 {
     public enum RequestPktType : uint
     {

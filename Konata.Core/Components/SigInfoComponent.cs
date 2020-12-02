@@ -1,20 +1,23 @@
-﻿using Konata.Core.Packet.Oicq;
-using Konata.Packets.Protobuf;
-using Konata.Utils.Crypto;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
-namespace Konata.Core
+using Konata.Core.Packet.Oicq;
+using Konata.Packets.Protobuf;
+using Konata.Runtime.Base;
+using Konata.Utils.Crypto;
+
+namespace Konata.Core.Components
 {
     /// <summary>
     /// 登录信息
     /// </summary>
-    public class SigInfo
+
+    public class SigInfoComponent : Component
     {
         public uint Uin { get; private set; }
+
         public string UinName { get; set; }
 
         public byte[] PasswordMd5 { get; private set; }
@@ -104,13 +107,18 @@ namespace Konata.Core
 
         #endregion
 
-        public SigInfo(uint uin, string password)
+        public SigInfoComponent(uint uin, string password)
         {
-            this.Uin = uin;
+            Uin = uin;
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
             Tlv106Key = new Md5Cryptor().Encrypt(PasswordMd5
                         .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
                         .Concat(BitConverter.GetBytes(uin).Reverse()).ToArray());
+
+            DPassword = MakeDpassword();
+            GSecret = MakeGSecret(DeviceInfo.System.Imei, DPassword, null);
+
+            SyncCookie = MakeSyncCookie();
         }
 
 
@@ -138,6 +146,7 @@ namespace Konata.Core
 
             return new Md5Cryptor().Encrypt(buffer);
         }
+
         private static string MakeDpassword()
         {
             try

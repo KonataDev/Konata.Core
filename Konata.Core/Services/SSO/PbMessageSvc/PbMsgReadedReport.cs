@@ -2,7 +2,7 @@
 using System.Text;
 
 using Konata.Core.Packet;
-using Konata.Core.EventArgs;
+using Konata.Core.Events;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Services.PbMessageSvc

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Konata.Core.EventArgs;
+using Konata.Core.Events;
 using Konata.Core.Packet;
 using Konata.Runtime.Base.Event;
 

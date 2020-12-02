@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks.Dataflow;
 
 using Konata.Core.Packet;
-using Konata.Core.EventArgs;
+using Konata.Core.Events;
 using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Network;

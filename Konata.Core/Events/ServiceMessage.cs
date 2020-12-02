@@ -5,7 +5,7 @@ using Konata.Core.Packet;
 using Konata.Runtime.Network;
 using Konata.Runtime.Base.Event;
 
-namespace Konata.Core.EventArgs
+namespace Konata.Core.Events
 {
     public enum AuthFlag : byte
     {

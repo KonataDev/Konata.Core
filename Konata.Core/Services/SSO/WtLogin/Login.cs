@@ -1,10 +1,12 @@
 ﻿using System;
 
+using Konata.Core.Events;
 using Konata.Core.Packet;
 using Konata.Core.Packet.Tlv;
 using Konata.Core.Packet.Tlv.TlvModel;
 using Konata.Core.Packet.Oicq;
-using Konata.Core.EventArgs;
+using Konata.Core.Components;
+
 using Konata.Utils;
 using Konata.Utils.Crypto;
 using Konata.Runtime.Base.Event;
@@ -16,7 +18,7 @@ namespace Konata.Core.Services.WtLogin
     {
         public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
         {
-            var sigInfo = ssoMessage.Owner.GetComponent<SigInfo>();
+            var sigInfo = ssoMessage.Owner.GetComponent<SigInfoComponent>();
             var oicqRequest = new OicqRequest(ssoMessage.Payload.GetBytes(), sigInfo.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
@@ -344,6 +346,5 @@ namespace Konata.Core.Services.WtLogin
 
 
         #endregion
-
     }
 }
