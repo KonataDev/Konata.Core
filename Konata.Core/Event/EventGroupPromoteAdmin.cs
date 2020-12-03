@@ -10,6 +10,7 @@ namespace Konata.Core.Event
 
         public uint MemberUin { get; set; }
 
+        /// <summary>
         /// <b>PromoteAdmin</b>: Set or Unset
         /// </summary>
         public bool ToggleType { get; set; }

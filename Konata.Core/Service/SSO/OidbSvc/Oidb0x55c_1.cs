@@ -4,6 +4,7 @@ using System.Text;
 using Konata.Core.Event;
 using Konata.Core.Packet;
 using Konata.Core.Manager;
+using Konata.Core.Packet.Oidb.OidbModel;
 using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Service.OidbSvc
@@ -24,9 +25,10 @@ namespace Konata.Core.Service.OidbSvc
             {
                 var sigManager = e.Owner.GetComponent<UserSigManager>();
                 var ssoManager = e.Owner.GetComponent<SsoInfoManager>();
+                var oidbRequest = new OidbCmd0x55c_1(e.GroupUin, e.MemberUin, e.ToggleType);
 
                 if (EventSsoFrame.Create("OidbSvc.0x55c_1", PacketType.TypeB,
-                    ssoManager.NewSequence, ssoManager.Session, null, out var ssoFrame))
+                    ssoManager.NewSequence, ssoManager.Session, oidbRequest, out var ssoFrame))
                 {
                     if (EventServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
                         sigManager.Uin, sigManager.D2Token, sigManager.D2Key, out var toService))
