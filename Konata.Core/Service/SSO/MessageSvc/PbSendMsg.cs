@@ -10,7 +10,7 @@ namespace Konata.Core.Service.MessageSvc
     [SSOService("MessageSvc.PbSendMsg", "Send message")]
     public class PbSendMsg : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

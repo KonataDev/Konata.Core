@@ -5,7 +5,7 @@ using Konata.Core.Packet;
 using Konata.Core.Packet.Tlv;
 using Konata.Core.Packet.Tlv.TlvModel;
 using Konata.Core.Packet.Oicq;
-using Konata.Core.Component;
+using Konata.Core.Manager;
 
 using Konata.Utils;
 using Konata.Utils.Crypto;
@@ -16,9 +16,9 @@ namespace Konata.Core.Service.WtLogin
     [SSOService("wtlogin.login", "WtLogin exchange")]
     public class Login : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
-            var sigInfo = ssoMessage.Owner.GetComponent<SigInfoComponent>();
+            var sigInfo = ssoMessage.Owner.GetComponent<UserSigManager>();
             var oicqRequest = new OicqRequest(ssoMessage.Payload.GetBytes(), sigInfo.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");

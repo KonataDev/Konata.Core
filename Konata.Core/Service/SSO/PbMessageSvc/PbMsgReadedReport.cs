@@ -10,7 +10,7 @@ namespace Konata.Core.Service.PbMessageSvc
     [SSOService("PbMessageSvc.PbMsgReadedReport", "Push have been read message")]
     public class PbMsgReadReport : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

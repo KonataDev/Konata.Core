@@ -20,10 +20,10 @@ namespace Konata.Core.Service
         private List<SSOServiceAttribute> _ssoServiceInfo = null;
         private Dictionary<string, ISSOService> _ssoServiceList = null;
 
-        private TransformBlock<ServiceMessage, SSOMessage> _serviceMsgTransformBlock;
-        private TransformBlock<SocketPackage, ServiceMessage> _socketMsgTransformBlock;
+        private TransformBlock<EventServiceMessage, EventSsoFrame> _serviceMsgTransformBlock;
+        private TransformBlock<SocketPackage, EventServiceMessage> _socketMsgTransformBlock;
 
-        private ActionBlock<SSOMessage> _ssoMsgActionBlock;
+        private ActionBlock<EventSsoFrame> _ssoMsgActionBlock;
         private ActionBlock<KonataEventArgs> _eventActionBlock;
 
         private ConcurrentDictionary<long, ISocket> _entitySocketList = null;
@@ -54,30 +54,30 @@ namespace Konata.Core.Service
                 }
 
                 // [Incoming] Working pipeline
-                //   Socket -> ServiceMessage
-                _socketMsgTransformBlock = new TransformBlock<SocketPackage, ServiceMessage>
-                    (socketData => ServiceMessage.Parse(socketData, out var serviceMsg) ? serviceMsg : null);
+                //   SocketPackage -> EventServiceMessage
+                _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>
+                     (socketData => EventServiceMessage.Parse(socketData, out var fromService) ? fromService : null);
 
                 // [Incoming] Working pipeline
-                //   ServiceMessage -> SSOMessage
-                _serviceMsgTransformBlock = new TransformBlock<ServiceMessage, SSOMessage>
-                    (serviceMsg => SSOMessage.Parse(serviceMsg, out var ssoMessage) ? ssoMessage : null);
+                //   EventServiceMessage -> EventSsoFrame
+                _serviceMsgTransformBlock = new TransformBlock<EventServiceMessage, EventSsoFrame>
+                    (fromService => EventSsoFrame.Parse(fromService, out var ssoFrame) ? ssoFrame : null);
 
                 // [Incoming] Action pipeline
-                //   SSOMessage -> SSO Service
-                _ssoMsgActionBlock = new ActionBlock<SSOMessage>
-                (ssoMessage =>
+                //   EventSsoFrame -> SSO Service
+                _ssoMsgActionBlock = new ActionBlock<EventSsoFrame>
+                (ssoFrame =>
                 {
                     // Get service by sso command
-                    if (_ssoServiceList.TryGetValue(ssoMessage.Command, out ISSOService service))
+                    if (_ssoServiceList.TryGetValue(ssoFrame.Command, out ISSOService service))
                     {
                         try
                         {
-                            if (service.HandleInComing(ssoMessage, out var output))
+                            if (service.HandleInComing(ssoFrame, out var output))
                             {
                                 // Post data to target service entity
                                 if (output != null
-                                    && _entityEventActionBlock.TryGetValue(ssoMessage.Owner.Id, out var action))
+                                    && _entityEventActionBlock.TryGetValue(ssoFrame.Owner.Id, out var action))
                                 {
                                     action.SendAsync(output);
                                 }
@@ -94,10 +94,10 @@ namespace Konata.Core.Service
                 // [Incoming] Connect the working pipelines up
                 //   ServiceMessage -> SSOMessage -> Service Entity
                 _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock,
-                    new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
+                    new DataflowLinkOptions { PropagateCompletion = true }, ssoFrame => ssoFrame != null);
 
                 _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock,
-                    new DataflowLinkOptions { PropagateCompletion = true }, ssoMessage => ssoMessage != null);
+                    new DataflowLinkOptions { PropagateCompletion = true }, ssoFrame => ssoFrame != null);
 
                 // [OutGoing] Action pipeline
                 //   SSO Service -> Socket

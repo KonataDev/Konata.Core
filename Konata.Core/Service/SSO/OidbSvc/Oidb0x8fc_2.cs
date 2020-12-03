@@ -10,7 +10,7 @@ namespace Konata.Core.Service.OidbSvc
     [SSOService("OidbSvc.0x8fc_2", "Set special title for member")]
     public class Oidb0x8fc_2 : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

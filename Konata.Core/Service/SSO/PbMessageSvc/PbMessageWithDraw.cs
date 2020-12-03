@@ -10,7 +10,7 @@ namespace Konata.Core.Service.PbMessageSvc
     [SSOService("PbMessageSvc.PbMessageWithDraw", "Withdraw message")]
     public class PbMessageWithDraw : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

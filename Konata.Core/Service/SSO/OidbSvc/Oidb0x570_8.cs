@@ -10,7 +10,7 @@ namespace Konata.Core.Service.OidbSvc
     [SSOService("OidbSvc.0x570_8", "Mute member in the group")]
     public class Oidb0x570_8 : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

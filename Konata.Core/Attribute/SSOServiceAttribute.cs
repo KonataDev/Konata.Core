@@ -3,7 +3,7 @@
 namespace Konata.Core.Packet
 {
     /// <summary>
-    /// 报文解析服务标签
+    /// SSO Service Attribute
     /// </summary>
     public class SSOServiceAttribute : Attribute
     {

@@ -10,7 +10,7 @@ namespace Konata.Core.Service.Friendlist
     [SSOService("friendlist.ModifyGroupCardReq", "Modify group card")]
     public class ModifyGroupCardReq : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

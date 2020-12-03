@@ -9,7 +9,7 @@ namespace Konata.Core.Service.Heartbeat
     [SSOService("Heartbeat.Alive", "Heartbeat for client")]
     public class Alive : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

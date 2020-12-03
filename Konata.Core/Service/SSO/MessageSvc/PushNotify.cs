@@ -10,7 +10,7 @@ namespace Konata.Core.Service.MessageSvc
     [SSOService("MessageSvc.PushNotify", "Push notify on received a private message")]
     public class PushNotify : ISSOService
     {
-        public bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
         {
             throw new NotImplementedException();
         }

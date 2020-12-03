@@ -17,7 +17,7 @@ namespace Konata.Core.Service
         /// <param name="ssoMessage"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool HandleInComing(SSOMessage ssoMessage, out KonataEventArgs output);
+        bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output);
 
         /// <summary>
         /// Out-going business

@@ -8,13 +8,13 @@ using Konata.Packets.Protobuf;
 using Konata.Runtime.Base;
 using Konata.Utils.Crypto;
 
-namespace Konata.Core.Component
+namespace Konata.Core.Manager
 {
     /// <summary>
     /// 登录信息
     /// </summary>
 
-    public class SigInfoComponent : Runtime.Base.Component
+    public class UserSigManager : Component
     {
         public uint Uin { get; private set; }
 
@@ -107,7 +107,7 @@ namespace Konata.Core.Component
 
         #endregion
 
-        public SigInfoComponent(uint uin, string password)
+        public UserSigManager(uint uin, string password)
         {
             Uin = uin;
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
