@@ -11,7 +11,7 @@ namespace Konata.Core.Packet.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0002;
 
-        public OicqRequestCheckImage(SigInfo sigInfo, string sigTicket)
+        public OicqRequestCheckImage(SigInfoComponent sigInfo, string sigTicket)
 
             : base(OicqCommand, OicqSubCommand, sigInfo.Uin,
                   OicqEncryptMethod.ECDH7, new XCaptcha(sigInfo.WtLoginSession, sigTicket),
