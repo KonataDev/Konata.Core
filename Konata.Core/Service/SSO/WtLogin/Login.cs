@@ -347,7 +347,7 @@ namespace Konata.Core.Service.WtLogin
                 var ssoManager = e.Owner.GetComponent<SsoInfoManager>();
                 var configManager = e.Owner.GetComponent<ConfigManager>();
 
-                OicqRequest oicqRequest = null;
+                OicqRequest oicqRequest;
                 var oicqKeyRing = new OicqKeyRing
                 {
                     tgtgKey = sigManager.TgtgKey,
@@ -400,7 +400,7 @@ namespace Konata.Core.Service.WtLogin
             return false;
         }
 
-        #region Event Requests
+        #region Event Builders
 
         private OicqRequest BuildRequestTgtgt(uint uin, uint ssoSequence,
             OicqKeyRing keyRing, ConfigManager configInfo)
