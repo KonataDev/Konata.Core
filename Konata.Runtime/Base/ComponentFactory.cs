@@ -45,6 +45,7 @@ namespace Konata.Runtime.Base
             Root.Instance.AddComponent(component);
             return component;
         }
+
         public static T Create<T>(long id = 0)
             where T : Component
         {

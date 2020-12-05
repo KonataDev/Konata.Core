@@ -13,7 +13,6 @@ namespace Konata.Core.Manager
     /// <summary>
     /// 登录信息
     /// </summary>
-
     public class UserSigManager : Component
     {
         public uint Uin { get; private set; }
@@ -107,7 +106,7 @@ namespace Konata.Core.Manager
 
         #endregion
 
-        public UserSigManager(uint uin, string password)
+        public void InitializeProfile(uint uin, string password)
         {
             Uin = uin;
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
@@ -120,7 +119,6 @@ namespace Konata.Core.Manager
 
             SyncCookie = MakeSyncCookie();
         }
-
 
         private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
         {

@@ -8,7 +8,7 @@ namespace Konata.Runtime.Base
     {
         public Entity Parent { get; set; }
 
-        private Dictionary<Type, Component> componentDict = new Dictionary<Type, Component>();
+        private Dictionary<Type, Component> _componentDict = new Dictionary<Type, Component>();
 
         protected Entity()
             : base() { }
@@ -18,12 +18,12 @@ namespace Konata.Runtime.Base
 
         public override void Dispose()
         {
-            if (this.Id == 0)
+            if (Id == 0)
             {
                 return;
             }
-            this.Parent = null;
-            this.RemoveComponents();
+            Parent = null;
+            RemoveComponents();
             Root.Instance.RemoveEntity(this);
 
             base.Dispose();
@@ -32,19 +32,19 @@ namespace Konata.Runtime.Base
         public T AddComponent<T>()
             where T : Component, new()
         {
-            if (this.componentDict.TryGetValue(typeof(T), out Component com))
+            if (_componentDict.TryGetValue(typeof(T), out Component com))
             {
                 return (T)com;
             }
 
             T ccom = ComponentFactory.Create<T>(this);
-            this.componentDict.Add(typeof(T), com);
+            _componentDict.Add(typeof(T), com);
             return ccom;
         }
 
         public Component AddComponent(Type type)
         {
-            if (this.componentDict.TryGetValue(type, out Component com))
+            if (_componentDict.TryGetValue(type, out Component com))
             {
                 return com;
             }
@@ -54,7 +54,7 @@ namespace Konata.Runtime.Base
             {
                 return null;
             }
-            this.componentDict.Add(type, com);
+            _componentDict.Add(type, com);
             return com;
         }
 
@@ -69,20 +69,20 @@ namespace Konata.Runtime.Base
         {
             Type type = typeof(T);
             Component component;
-            if (!this.componentDict.TryGetValue(type, out component))
+            if (!_componentDict.TryGetValue(type, out component))
                 return;
-            this.componentDict.Remove(type);
+            _componentDict.Remove(type);
             component.Parent = null;
             component.Dispose();
         }
 
         public void RemoveComponent(Type type)
         {
-            if (!this.componentDict.TryGetValue(type, out Component component))
+            if (!_componentDict.TryGetValue(type, out Component component))
             {
                 return;
             }
-            this.componentDict.Remove(type);
+            _componentDict.Remove(type);
             component.Parent = null;
             component.Dispose();
             return;
@@ -90,18 +90,18 @@ namespace Konata.Runtime.Base
 
         private void RemoveComponents()
         {
-            foreach (Component com in this.componentDict.Values)
+            foreach (Component com in _componentDict.Values)
             {
                 com.Parent = null;
                 com.Dispose();
             }
-            this.componentDict.Clear();
+            _componentDict.Clear();
         }
 
         public T GetComponent<T>()
             where T : Component
         {
-            if (!this.componentDict.TryGetValue(typeof(T), out Component component))
+            if (!_componentDict.TryGetValue(typeof(T), out Component component))
             {
                 return default(T);
             }
@@ -111,7 +111,7 @@ namespace Konata.Runtime.Base
         public Component GetComponent(Type type)
         {
             Component component;
-            if (!this.componentDict.TryGetValue(type, out component))
+            if (!_componentDict.TryGetValue(type, out component))
             {
                 return null;
             }
@@ -120,7 +120,7 @@ namespace Konata.Runtime.Base
 
         public Component[] GetComponents()
         {
-            return this.componentDict.Values.ToArray();
+            return _componentDict.Values.ToArray();
         }
     }
 }
