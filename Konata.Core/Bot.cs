@@ -9,7 +9,6 @@ namespace Konata.Core
     {
         public Bot(uint botUin, string botPassword)
         {
-            AddComponent<AppInfoManager>();
             AddComponent<ConfigManager>();
             AddComponent<SsoInfoManager>();
             AddComponent<UserSigManager>().InitializeProfile(botUin, botPassword);
