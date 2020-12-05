@@ -29,6 +29,16 @@ namespace Konata.Core.Packet.Oicq
         ECDH135 = 0x87,
     }
 
+    public struct OicqKeyRing
+    {
+        public byte[] passwordMd5;
+        public byte[] tgtgKey;
+        public byte[] t106Key;
+        public byte[] shareKey;
+        public byte[] randKey;
+        public byte[] defaultPublicKey;
+    }
+
     public class OicqRequest : PacketBase
     {
         public readonly uint uin;
@@ -63,7 +73,7 @@ namespace Konata.Core.Packet.Oicq
                     PutByte((byte)method);
                     PutByte(0x00); // 永遠0
                     PutUintBE(2);
-                    PutUintBE(AppInfo.appClientVersion);
+                    PutUintBE(Default.AppClientVersion);
                     PutUintBE(0);
 
                     PutOicqRequestBody(oicqRequestBody, shareKey, randKey, publicKey);
