@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Event\EventOnlineStatus.cs~RF784d311d.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Konata.Runtime\Konata.Runtime.csproj" />
     <ProjectReference Include="..\Konata.Utils\Konata.Utils.csproj" />
   </ItemGroup>
