@@ -16,10 +16,10 @@ namespace Konata.Core.Service.WtLogin
     [SSOService("wtlogin.login", "WtLogin exchange")]
     public class Login : ISSOService
     {
-        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoFrame, out KonataEventArgs output)
         {
-            var sigInfo = ssoMessage.Owner.GetComponent<UserSigManager>();
-            var oicqRequest = new OicqRequest(ssoMessage.Payload.GetBytes(), sigInfo.ShareKey);
+            var sigManager = ssoFrame.Owner.GetComponent<UserSigManager>();
+            var oicqRequest = new OicqRequest(ssoFrame.Payload.GetBytes(), sigManager.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
             Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
@@ -28,7 +28,7 @@ namespace Konata.Core.Service.WtLogin
             switch (oicqRequest.oicqStatus)
             {
                 case OicqStatus.OK:
-                    output = OnRecvWtloginSuccess(oicqRequest, sigInfo.TgtgKey); break;
+                    output = OnRecvWtloginSuccess(oicqRequest, sigManager.TgtgKey); break;
 
                 case OicqStatus.DoVerifySliderCaptcha:
                     output = OnRecvCheckSliderCaptcha(oicqRequest); break;
@@ -48,7 +48,7 @@ namespace Konata.Core.Service.WtLogin
                     output = OnRecvUnknown(); break;
             }
 
-            output.Owner = ssoMessage.Owner;
+            output.Owner = ssoFrame.Owner;
             return true;
         }
 
