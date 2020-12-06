@@ -4,7 +4,7 @@ using Konata.Runtime.Base.Event;
 
 namespace Konata.Core.Event
 {
-    public class EventGroupSetSpecialTitle : KonataEventArgs
+    public class EventGroupSpecialTitle : KonataEventArgs
     {
         public uint GroupUin { get; set; }
 
