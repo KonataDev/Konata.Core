@@ -9,8 +9,8 @@ namespace Konata.Core.Packet.SvcRequest
         public byte isOnline;
         public byte isSetStatus;
         public byte isShowOnline;
-        public byte kikPC;
-        public byte kikWeak;
+        public bool kikPC;
+        public bool kikWeak;
         public byte onlinePush;
         public byte openPush;
         public byte regType;
@@ -66,8 +66,8 @@ namespace Konata.Core.Packet.SvcRequest
                     [5] = (JNumber)info.onlinePush,
                     [6] = (JNumber)info.isOnline,
                     [7] = (JNumber)info.isShowOnline,
-                    [8] = (JNumber)info.kikPC,
-                    [9] = (JNumber)info.kikWeak,
+                    [8] = (JNumber)(info.kikPC ? 1 : 0),
+                    [9] = (JNumber)(info.kikWeak ? 1 : 0),
                     [10] = (JNumber)info.timeStamp,
                     [11] = (JNumber)info.osVersion,
                     [12] = (JNumber)info.netType,
