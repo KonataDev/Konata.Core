@@ -20,7 +20,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.TestBench", "Konata.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blueprint", "Blueprint", "{4FA698FA-02D0-4749-BA5F-18D919A9887B}"
 	ProjectSection(SolutionItems) = preProject
+		Blueprint\manager.ssoinfo.sequence.svg = Blueprint\manager.ssoinfo.sequence.svg
 		Blueprint\messaging.incoming.svg = Blueprint\messaging.incoming.svg
+		Blueprint\messaging.outgoing.svg = Blueprint\messaging.outgoing.svg
 		Blueprint\wtlogin.login.svg = Blueprint\wtlogin.login.svg
 	EndProjectSection
 EndProject
@@ -42,10 +44,6 @@ Global
 		{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B32F6F75-BC82-477E-BC1F-AA039B8687BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B32F6F75-BC82-477E-BC1F-AA039B8687BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B32F6F75-BC82-477E-BC1F-AA039B8687BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B32F6F75-BC82-477E-BC1F-AA039B8687BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D58DB768-3B01-407A-B9E5-9162F7E12825}.Release|Any CPU.ActiveCfg = Release|Any CPU

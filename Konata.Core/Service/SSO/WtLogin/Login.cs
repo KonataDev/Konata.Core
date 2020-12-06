@@ -16,10 +16,10 @@ namespace Konata.Core.Service.WtLogin
     [SSOService("wtlogin.login", "WtLogin exchange")]
     public class Login : ISSOService
     {
-        public bool HandleInComing(EventSsoFrame ssoMessage, out KonataEventArgs output)
+        public bool HandleInComing(EventSsoFrame ssoFrame, out KonataEventArgs output)
         {
-            var sigInfo = ssoMessage.Owner.GetComponent<UserSigManager>();
-            var oicqRequest = new OicqRequest(ssoMessage.Payload.GetBytes(), sigInfo.ShareKey);
+            var sigManager = ssoFrame.Owner.GetComponent<UserSigManager>();
+            var oicqRequest = new OicqRequest(ssoFrame.Payload.GetBytes(), sigManager.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
             Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
@@ -28,7 +28,7 @@ namespace Konata.Core.Service.WtLogin
             switch (oicqRequest.oicqStatus)
             {
                 case OicqStatus.OK:
-                    output = OnRecvWtloginSuccess(oicqRequest, sigInfo.TgtgKey); break;
+                    output = OnRecvWtloginSuccess(oicqRequest, sigManager.TgtgKey); break;
 
                 case OicqStatus.DoVerifySliderCaptcha:
                     output = OnRecvCheckSliderCaptcha(oicqRequest); break;
@@ -48,7 +48,7 @@ namespace Konata.Core.Service.WtLogin
                     output = OnRecvUnknown(); break;
             }
 
-            output.Owner = ssoMessage.Owner;
+            output.Owner = ssoFrame.Owner;
             return true;
         }
 
@@ -337,13 +337,86 @@ namespace Konata.Core.Service.WtLogin
 
         #endregion
 
-        public bool HandleOutGoing(KonataEventArgs eventArg, out byte[] message)
+        public bool HandleOutGoing(KonataEventArgs eventArg, out byte[] output)
         {
-            throw new NotImplementedException();
+            output = null;
+
+            if (eventArg is EventWtLogin e)
+            {
+                var sigManager = e.Owner.GetComponent<UserSigManager>();
+                var ssoManager = e.Owner.GetComponent<SsoInfoManager>();
+                var configManager = e.Owner.GetComponent<ConfigManager>();
+
+                OicqRequest oicqRequest;
+                var oicqKeyRing = new OicqKeyRing
+                {
+                    tgtgKey = sigManager.TgtgKey,
+                    t106Key = sigManager.Tlv106Key,
+                    shareKey = sigManager.ShareKey,
+                    randKey = sigManager.RandKey,
+                    passwordMd5 = sigManager.PasswordMd5,
+                    defaultPublicKey = sigManager.DefaultPublicKey,
+                };
+
+                // Build OicqRequest
+                switch (e.EventType)
+                {
+                    case EventWtLogin.Type.Tgtgt:
+                        oicqRequest = BuildRequestTgtgt(sigManager.Uin, ssoManager.NewSequence,
+                            oicqKeyRing, configManager);
+                        break;
+
+                    case EventWtLogin.Type.CheckSMS:
+                        oicqRequest = BuildRequestCheckSms(sigManager.Uin, sigManager.WtLoginSession,
+                            sigManager.WtLoginSmsToken, e.WtLoginCaptchaResult, sigManager.GSecret, oicqKeyRing);
+                        break;
+
+                    case EventWtLogin.Type.RefreshSMS:
+                        oicqRequest = BuildRequestRefreshSms(sigManager.Uin, sigManager.WtLoginSession,
+                           sigManager.WtLoginSmsToken, oicqKeyRing);
+                        break;
+
+                    case EventWtLogin.Type.CheckSlider:
+                        oicqRequest = BuildRequestCheckSlider(sigManager.Uin,
+                            sigManager.WtLoginSession, e.WtLoginCaptchaResult, oicqKeyRing);
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                // Build to service
+                if (EventSsoFrame.Create("wtlogin.login", PacketType.TypeA,
+                    ssoManager.NewSequence, ssoManager.Session, oicqRequest, out var ssoFrame))
+                {
+                    if (EventServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
+                        sigManager.Uin, out var toService))
+                    {
+                        return EventServiceMessage.Build(toService, out output);
+                    }
+                }
+            }
+
+            return false;
         }
 
-        #region Event Request
+        #region Event Builders
 
+        private OicqRequest BuildRequestTgtgt(uint uin, uint ssoSequence,
+            OicqKeyRing keyRing, ConfigManager configInfo)
+            => new OicqRequestTgtgt(uin, ssoSequence, keyRing);
+
+        private OicqRequest BuildRequestCheckSms(uint uin, string session,
+            string smsToken, string smsCode, byte[] gSecret, OicqKeyRing keyRing)
+            => new OicqRequestCheckSms(uin, session, smsToken, smsCode, gSecret, keyRing);
+
+        private OicqRequest BuildRequestCheckSlider(uint uin, string session,
+            string ticket, OicqKeyRing keyRing)
+            => new OicqRequestCheckImage(uin, session, ticket, keyRing);
+
+        private OicqRequest BuildRequestRefreshSms(uint uin, string session,
+            string smsToken, OicqKeyRing keyRing)
+            => new OicqRequestRefreshSms(uin, session, smsToken, keyRing);
 
         #endregion
     }

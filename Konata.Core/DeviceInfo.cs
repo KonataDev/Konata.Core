@@ -213,8 +213,8 @@ namespace Konata.Core
                     return $"Mozilla/5.0 (Linux; Android {System.OsVersion}; {System.ModelName} Build/OPM2.171026.006.H1; wv) " +
                      "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 " +
                      "MQQBrowser/6.2 TBS/045328 Mobile " +
-                     $"QQ/{AppInfo.appBuildVer} " +
-                     $"Safari/537.36 V1_AND_SQ_{AppInfo.apkVersionName}_1328_YYB_D " +
+                     $"QQ/{Default.AppBuildVer} " +
+                     $"Safari/537.36 V1_AND_SQ_{Default.ApkVersionName}_1328_YYB_D " +
                      "NetType/WIFI " +
                      "WebP/0.3.0 " +
                      $"Pixel/{Display.Width} " +

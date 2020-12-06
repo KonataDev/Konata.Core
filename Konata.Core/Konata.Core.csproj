@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Service\SSO\FriendList\ModifyGroupCardReq.cs~RF591f1234.TMP" />
+    <None Remove="Event\EventOnlineStatus.cs~RF784d311d.TMP" />
   </ItemGroup>
 
   <ItemGroup>
