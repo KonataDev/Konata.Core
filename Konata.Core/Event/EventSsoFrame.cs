@@ -16,7 +16,7 @@ namespace Konata.Core.Event
     public class EventSsoFrame : KonataEventArgs
     {
         private uint _session;
-        private uint _sequence;
+        private int _sequence;
         private string _command;
         private ByteBuffer _payload;
         private PacketType _packetType;
@@ -26,7 +26,7 @@ namespace Konata.Core.Event
 
         public string Command { get => _command; }
 
-        public uint Sequence { get => _sequence; }
+        public int Sequence { get => _sequence; }
 
         public byte[] Tgtoken { get => _tgtoken; }
 
@@ -49,7 +49,7 @@ namespace Konata.Core.Event
                         return false;
                 }
 
-                read.TakeUintBE(out output._sequence);
+                read.TakeIntBE(out output._sequence);
 
                 read.TakeUintBE(out var zeroUint);
                 {
@@ -102,7 +102,7 @@ namespace Konata.Core.Event
                 {
                     if (ssoFrame.PacketType == PacketType.TypeA)
                     {
-                        write.PutUintBE(ssoFrame._sequence);
+                        write.PutIntBE(ssoFrame._sequence);
                         write.PutUintBE(Default.SubAppId);
                         write.PutUintBE(Default.SubAppId);
                         write.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
@@ -149,7 +149,7 @@ namespace Konata.Core.Event
             return write;
         }
 
-        public static bool Create(string command, PacketType pktType, uint sequence,
+        public static bool Create(string command, PacketType pktType, int sequence,
             byte[] tgtoken, uint session, ByteBuffer payload, out EventSsoFrame ssoFrame)
         {
             ssoFrame = new EventSsoFrame
@@ -165,7 +165,7 @@ namespace Konata.Core.Event
             return true;
         }
 
-        public static bool Create(string command, PacketType pktType, uint sequence,
+        public static bool Create(string command, PacketType pktType, int sequence,
             uint session, ByteBuffer payload, out EventSsoFrame ssoFrame)
           => Create(command, pktType, sequence, null, session, payload, out ssoFrame);
     }

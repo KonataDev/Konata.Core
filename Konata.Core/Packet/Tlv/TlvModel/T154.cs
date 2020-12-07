@@ -4,20 +4,20 @@ namespace Konata.Core.Packet.Tlv.TlvModel
 {
     public class T154Body : TlvBody
     {
-        public readonly uint _ssoSequenceId;
+        public readonly int _ssoSequence;
 
-        public T154Body(uint ssoSequenceId)
+        public T154Body(int ssoSequenceId)
             : base()
         {
-            _ssoSequenceId = ssoSequenceId;
+            _ssoSequence = ssoSequenceId;
 
-            PutUintBE(_ssoSequenceId);
+            PutIntBE(_ssoSequence);
         }
 
         public T154Body(byte[] data)
             : base(data)
         {
-            TakeUintBE(out _ssoSequenceId);
+            TakeIntBE(out _ssoSequence);
         }
     }
 }

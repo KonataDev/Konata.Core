@@ -402,7 +402,7 @@ namespace Konata.Core.Service.WtLogin
 
         #region Event Builders
 
-        private OicqRequest BuildRequestTgtgt(uint uin, uint ssoSequence,
+        private OicqRequest BuildRequestTgtgt(uint uin, int ssoSequence,
             OicqKeyRing keyRing, ConfigManager configInfo)
             => new OicqRequestTgtgt(uin, ssoSequence, keyRing);
 

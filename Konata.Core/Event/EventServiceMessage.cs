@@ -131,7 +131,7 @@ namespace Konata.Core.Event
                     headExtra = d2Token;
 
                     if (ssoFrame.PacketType == PacketType.TypeB)
-                        headExtra = ByteConverter.UInt32ToBytes(ssoFrame.Sequence, Endian.Big);
+                        headExtra = ByteConverter.Int32ToBytes(ssoFrame.Sequence, Endian.Big);
                     break;
                 case AuthFlag.WtLoginExchange:
                     keyData = new byte[16];
