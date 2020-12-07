@@ -27,6 +27,12 @@ namespace Konata.Core.Manager
         /// </summary>
         public uint Session { get; set; }
 
+        public SsoInfoManager()
+        {
+            _globalSequence = 10000;
+            _serviceSequence = new ConcurrentDictionary<string, int>();
+        }
+
         /// <summary>
         /// Get sequence with auto increment
         /// </summary>
