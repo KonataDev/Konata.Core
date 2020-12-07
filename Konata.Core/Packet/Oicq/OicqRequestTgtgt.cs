@@ -15,7 +15,7 @@ namespace Konata.Core.Packet.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0009;
 
-        public OicqRequestTgtgt(uint uin, uint ssoSequence, OicqKeyRing keyRing)
+        public OicqRequestTgtgt(uint uin, int ssoSequence, OicqKeyRing keyRing)
             : base(OicqCommand, OicqSubCommand, uin, OicqEncryptMethod.ECDH135,
                   new XTGTGT(uin, ssoSequence, keyRing), keyRing.shareKey, keyRing.randKey, keyRing.defaultPublicKey)
         {
@@ -24,7 +24,7 @@ namespace Konata.Core.Packet.Oicq
 
         public class XTGTGT : OicqRequestBody
         {
-            public XTGTGT(uint uin, uint ssoSequence, OicqKeyRing keyRing)
+            public XTGTGT(uint uin, int ssoSequence, OicqKeyRing keyRing)
                 : base()
             {
                 // 設備訊息上報
