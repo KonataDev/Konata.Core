@@ -10,9 +10,9 @@ using Konata.Runtime.Base.Event;
 namespace Konata.Runtime.Base
 {
     public delegate void EventCallback(object sender, KonataEventArgs arg);
+
     internal class EventContainer
     {
-
         public EventInfo Info { get; set; }
 
         public IEvent Event { get; set; }
@@ -28,23 +28,19 @@ namespace Konata.Runtime.Base
         public void Invoke(KonataEventArgs arg) => listener.Invoke(this, arg);
     }
 
-
-    [Component(name: "事件组件", des: "面向当前实体的事件子容器")]
+    [Component(name: "事件组件", description: "面向当前实体的事件子容器")]
     public class EventComponent : Component, ILoad
     {
-        private ActionBlock<KonataEventArgs> endblock = null;
-
-        private CancellationTokenSource blockcancel = null;
-
-        private Dictionary<CoreEventType, EventContainer> eventinstance = null;
-
-        private ReaderWriterLockSlim instancelock = null;
+        private ReaderWriterLockSlim _instanceLock;
+        private CancellationTokenSource _blockCancel;
+        private ActionBlock<KonataEventArgs> _endBlock;
+        private Dictionary<CoreEventType, EventContainer> _eventInstance;
 
         public void Load()
         {
-            if (eventinstance == null)
+            if (_eventInstance == null)
             {
-                instancelock = new ReaderWriterLockSlim();
+                _instanceLock = new ReaderWriterLockSlim();
                 IReadOnlyDictionary<CoreEventType, EventInfo> eventinfos = EventManager.Instance.GetCoreEventInfo();
 
                 //需要针对当前子容器进行事件列表初始化
@@ -56,7 +52,7 @@ namespace Konata.Runtime.Base
                         obj = (IEvent)Activator.CreateInstance(valuePair.Value.Type);
                     }
                     EventContainer container = new EventContainer { Info = valuePair.Value, Event = obj };
-                    eventinstance.Add(valuePair.Key, container);
+                    _eventInstance.Add(valuePair.Key, container);
                 }
             }
             EventManager.Instance.RegisterNewEntity(Parent);
@@ -64,36 +60,34 @@ namespace Konata.Runtime.Base
 
         public void AddNewListener(CoreEventType type, EventCallback listener)
         {
-            if (eventinstance != null)
+            if (_eventInstance != null)
             {
-                instancelock.EnterReadLock();
+                _instanceLock.EnterReadLock();
                 try
                 {
-                    if (eventinstance.TryGetValue(type, out var value))
+                    if (_eventInstance.TryGetValue(type, out var value))
                     {
                         value.Listener += listener;
                     }
                 }
                 finally
                 {
-                    instancelock.ExitReadLock();
+                    _instanceLock.ExitReadLock();
                 }
             }
         }
 
-
-
         public ITargetBlock<KonataEventArgs> GetPipe()
         {
-            if (endblock == null)
+            if (_endBlock == null)
             {
-                blockcancel = new CancellationTokenSource();
+                _blockCancel = new CancellationTokenSource();
 
-                endblock = new ActionBlock<KonataEventArgs>((arg) => { ContainerFilter(arg); },
-                    new ExecutionDataflowBlockOptions { CancellationToken = blockcancel.Token, MaxDegreeOfParallelism = 2 });
+                _endBlock = new ActionBlock<KonataEventArgs>((arg) => { ContainerFilter(arg); },
+                    new ExecutionDataflowBlockOptions { CancellationToken = _blockCancel.Token, MaxDegreeOfParallelism = 2 });
             }
 
-            return endblock;
+            return _endBlock;
         }
 
         /// <summary>
@@ -108,10 +102,10 @@ namespace Konata.Runtime.Base
         public override void Dispose()
         {
             //标记子容器事件队列终结[拒绝继续获取/处理事务]
-            if (endblock != null)
+            if (_endBlock != null)
             {
-                endblock.Complete();
-                blockcancel.Cancel();
+                _endBlock.Complete();
+                _blockCancel.Cancel();
             }
             EventManager.Instance.UnRegisterEntity(Parent);
             base.Dispose();

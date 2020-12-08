@@ -23,7 +23,7 @@ namespace Konata.Console
     {
     }
 
-    [Component(name: "Socket组件", des: "标准socket组件")]
+    [Component(name: "Socket组件", description: "标准socket组件")]
     public class Test3 :Component,ILoad
     {
         ISocket socket = null;
