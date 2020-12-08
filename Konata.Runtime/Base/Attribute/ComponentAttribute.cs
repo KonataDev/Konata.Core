@@ -5,8 +5,8 @@
     /// </summary>
     public class ComponentAttribute : BaseAttribute
     {
-        public ComponentAttribute(string name = "UnDefined", string des = "")
-            : base(name, des)
+        public ComponentAttribute(string name = "UnDefined", string description = "")
+            : base(name, description)
         {
 
         }
