@@ -11,24 +11,24 @@ namespace Konata.Runtime.Base
 
         protected BaseObject()
         {
-            this.Id = IdGenerater.GenerateID();
+            Id = IdGenerater.GenerateID();
         }
 
         protected BaseObject(long id)
         {
-            this.Id = id;
+            Id = id;
         }
 
         public bool IsDisposed
         {
-            get => (this.Id == 0);
+            get => (Id == 0);
         }
 
         public virtual void Dispose()
         {
-            if (!this.IsDisposed)
+            if (!IsDisposed)
             {
-                this.Id = 0;
+                Id = 0;
                 if (Recycle)
                     ObjectPool.Instance.Recycle(this);
             }
@@ -36,7 +36,7 @@ namespace Konata.Runtime.Base
 
         ~BaseObject()
         {
-            this.Id = 0;
+            Id = 0;
         }
     }
 }

@@ -164,6 +164,11 @@ namespace Konata.Core.Service
             }
         }
 
+        public async KonataEventArgs WaitForResponse()
+        {
+
+        }
+
         /// <summary>
         /// 注册新的实体接收管道
         /// </summary>

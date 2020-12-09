@@ -7,12 +7,14 @@ namespace Konata.Runtime.Builder
 {
     public interface IMQBuilder<T>
     {
-        IDictionary<string, object> Properties { get; }
-
         Type MQType { get; }
 
         IDictionary<string, object> Sources { get; }
-        IMQBuilder<T> SetCustomMQ(Type mq);
+
+        IDictionary<string, object> Properties { get; }
+
         IMQ<T> Build();
+
+        IMQBuilder<T> SetCustomMQ(Type mq);
     }
 }

@@ -8,37 +8,35 @@ namespace Konata.Runtime.Base
     {
         public Entity Parent { get; set; }
 
-        public T GetEntity<T>()
-            where T : Entity
-        {
-            return (T)this.Parent;
-        }
-
         protected Component()
             : base() { }
 
         protected Component(long id)
-            : base() { }
+            : base(id) { }
 
         /// <summary>
-        /// 获取当前组件绑定的实体上其他的组件
+        /// Get self entity
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetEntity<T>()
+            where T : Entity => (T)Parent;
+
+        /// <summary>
+        /// Get another components on this entity 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T GetComponent<T>()
-            where T : Component
-        {
-            return this.Parent?.GetComponent<T>();
-        }
+            where T : Component => Parent?.GetComponent<T>();
 
         public override void Dispose()
         {
-            if (this.IsDisposed)
+            if (IsDisposed)
                 return;
 
-            long currentid = this.Id;
             base.Dispose();
-            Root.Instance.RemoveComponent(currentid);
+            Root.Instance.RemoveComponent(Id);
         }
     }
 }

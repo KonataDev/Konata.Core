@@ -15,15 +15,16 @@ namespace Konata.Runtime
     /// </summary>
     public class EventInfo
     {
+        public Type Type { get; set; } = null;
+
+        public EventRunType RunType { get; set; } = EventRunType.OnlySymbol;
+
         public bool Enable { get; set; } = true;
 
         public string Name { get; set; } = "";
 
-        public EventRunType RunType { get; set; } = EventRunType.OnlySymbol;
-
         public string Description { get; set; } = "";
 
-        public Type Type { get; set; } = null;
     }
 
     /// <summary>
@@ -31,27 +32,27 @@ namespace Konata.Runtime
     /// </summary>
     public class EventManager
     {
-        private static EventManager instance;
-        private readonly ReaderWriterLockSlim coreEventLock;
-        private readonly Dictionary<CoreEventType, EventInfo> coreEventList;
-        private readonly Dictionary<long, EventComponent> bindComponentList;
+        private static EventManager _instance;
+        private readonly ReaderWriterLockSlim _coreEventLock;
+        private readonly Dictionary<CoreEventType, EventInfo> _coreEventList;
+        private readonly Dictionary<long, EventComponent> _bindComponentList;
 
         public static EventManager Instance
         {
-            get => instance ?? (instance = new EventManager());
+            get => _instance ?? (_instance = new EventManager());
         }
 
         private EventManager()
         {
-            coreEventLock = new ReaderWriterLockSlim();
-            bindComponentList = new Dictionary<long, EventComponent>();
-            coreEventList = new Dictionary<CoreEventType, EventInfo>
+            _coreEventLock = new ReaderWriterLockSlim();
+            _coreEventList = new Dictionary<CoreEventType, EventInfo>
                 (new EnumComparer<CoreEventType>());
+            _bindComponentList = new Dictionary<long, EventComponent>();
         }
 
         public bool CoreEventLoaded
         {
-            get => (this.coreEventList.Count > 0);
+            get => (_coreEventList.Count > 0);
         }
 
         /// <summary>
@@ -60,27 +61,24 @@ namespace Konata.Runtime
         /// <param name="types"></param>
         public void LoadCoreEvent(IList<Type> types)
         {
-            if (this.CoreEventLoaded)
+            if (CoreEventLoaded)
             {
                 throw new TypeLoadException("Core Events have been loaded!");
             }
 
-            coreEventLock.EnterWriteLock();
+            _coreEventLock.EnterWriteLock();
             try
             {
                 foreach (Type type in types)
                 {
                     object attribute = type.GetCustomAttributes(typeof(CoreEventAttribute), false).FirstOrDefault();
-
                     if (attribute == null)
                     {
                         throw new NullReferenceException("Event type find no attribute(should not be happened)");
                     }
 
-                    CoreEventAttribute eventAttr = (attribute as CoreEventAttribute);
-                    CoreEventType eventType = eventAttr.EventType;
-
-                    if (this.coreEventList.ContainsKey(eventType))
+                    var eventType = ((CoreEventAttribute)attribute).EventType;
+                    if (_coreEventList.ContainsKey(eventType))
                     {
                         throw new ArgumentException($"Find same type core event:even set assemblyheader ({eventType})");
                     }
@@ -95,7 +93,7 @@ namespace Konata.Runtime
             }
             finally
             {
-                coreEventLock.ExitWriteLock();
+                _coreEventLock.ExitWriteLock();
             }
         }
 
@@ -107,10 +105,10 @@ namespace Konata.Runtime
         /// <returns></returns>
         public void RegisterNewEntity(Entity entity)
         {
-            coreEventLock.EnterWriteLock();
+            _coreEventLock.EnterWriteLock();
             try
             {
-                if (bindComponentList.ContainsKey(entity.Id))
+                if (_bindComponentList.ContainsKey(entity.Id))
                 {
                     throw new ArgumentException($"Entity already Registered");
                 }
@@ -121,27 +119,27 @@ namespace Konata.Runtime
                 {
                     throw new ArgumentException();
                 }
-                bindComponentList.Add(entity.Id, component);
+                _bindComponentList.Add(entity.Id, component);
             }
             finally
             {
-                coreEventLock.ExitWriteLock();
+                _coreEventLock.ExitWriteLock();
             }
         }
 
         public void UnRegisterEntity(Entity entity)
         {
-            coreEventLock.EnterWriteLock();
+            _coreEventLock.EnterWriteLock();
             try
             {
-                if (bindComponentList.TryGetValue(entity.Id, out EventComponent component))
+                if (_bindComponentList.TryGetValue(entity.Id, out EventComponent component))
                 {
-                    bindComponentList.Remove(entity.Id);
+                    _bindComponentList.Remove(entity.Id);
                 }
             }
             finally
             {
-                coreEventLock.ExitWriteLock();
+                _coreEventLock.ExitWriteLock();
             }
         }
 
@@ -151,13 +149,12 @@ namespace Konata.Runtime
         /// <param name="entity"></param>
         /// <param name="output"></param>
         /// 
-
         public ITargetBlock<KonataEventArgs> LinkPipeLineToEntity(Entity entity)
         {
-            coreEventLock.EnterReadLock();
+            _coreEventLock.EnterReadLock();
             try
             {
-                if (bindComponentList.TryGetValue(entity.Id,out var component))
+                if (_bindComponentList.TryGetValue(entity.Id, out var component))
                 {
                     return component.GetPipe();
                 }
@@ -165,7 +162,7 @@ namespace Konata.Runtime
             }
             finally
             {
-                coreEventLock.ExitReadLock();
+                _coreEventLock.ExitReadLock();
             }
         }
 
@@ -175,14 +172,14 @@ namespace Konata.Runtime
             {
                 return null;
             }
-            coreEventLock.EnterReadLock();
+            _coreEventLock.EnterReadLock();
             try
             {
-                return coreEventList;
+                return _coreEventList;
             }
             finally
             {
-                coreEventLock.ExitReadLock();
+                _coreEventLock.ExitReadLock();
             }
         }
     }

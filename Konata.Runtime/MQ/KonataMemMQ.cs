@@ -17,73 +17,80 @@ namespace Konata.Runtime.MQ
     /// <typeparam name="T"></typeparam>
     public class KonataMemMQ<T> : IMQ<T>, IDisposable
     {
-        private Type msgtype = typeof(T);
-        private int readtimeout = -1;
-       
+        private int _readTimeout = -1;
+        private Type _messageType;
+
+        private BlockingCollection<T> _queue;
+        private CancellationTokenSource _cancelToken;
+
+        private event Action<T> _processItemEvent;
+        private TaskQueue _processQueue;
+
+        private bool _isRunning;
+        private string _taskQueueGuid;
+
         public Type MsgType
         {
-            get => msgtype;
+            get => _messageType;
         }
 
-        public String TaskQueueID
+        public string TaskQueueId
         {
-            get;
-            private set;
+            get => _taskQueueGuid;
         }
 
         public bool Running
         {
-            get; private set;
+            get => _isRunning;
         }
 
         public int MQCount
         {
-            get => this._queue.Count;
+            get => _queue.Count;
         }
 
         public bool Closed
         {
-            get => this._queue.IsCompleted;
+            get => _queue.IsCompleted;
         }
-
-        private BlockingCollection<T> _queue = null;
-        private CancellationTokenSource _source = null;
-        private event Action<T> _processItemEvent = null;
-        private TaskQueue _processqueue = null;
 
         public KonataMemMQ(IMQBuilder<T> builder)
         {
             MQConfig config = builder.GetMQConfig();
             List<Action<T>> processitemmethods = builder.GetMQReceiver();
-            this.readtimeout = config.ReadTimeout;
-            this.TaskQueueID = IdGenerater.GenerateGUID();
-            this._processqueue = builder.GetExternalTaskQueue() ??
-                TaskQueue.CreateGlobalQueue(TaskQueueID, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
+
+            _messageType = default;
+            _readTimeout = config.ReadTimeout;
+            _processQueue = builder.GetExternalTaskQueue() ??
+                TaskQueue.CreateGlobalQueue(TaskQueueId, (config.MaxProcessMTask > 0) ? config.MaxProcessMTask : 8); ;
+            _taskQueueGuid = IdGenerater.GenerateGUID();
+
             if (config.MaxMQLenth > 0)
             {
-                this._queue = new BlockingCollection<T>(config.MaxMQLenth);
+                _queue = new BlockingCollection<T>(config.MaxMQLenth);
             }
             else
             {
-                this._queue = new BlockingCollection<T>();
+                _queue = new BlockingCollection<T>();
             }
-            this._source = new CancellationTokenSource();
+            _cancelToken = new CancellationTokenSource();
 
             foreach (var e in processitemmethods)
             {
-                this._processItemEvent += e;
+                _processItemEvent += e;
             }
         }
+
         public void Add(T data)
         {
-            this._queue.Add(data);
+            _queue.Add(data);
         }
 
         public void Add(T data, CancellationToken token)
         {
             try
             {
-                this._queue.Add(data, token);
+                _queue.Add(data, token);
             }
             catch (OperationCanceledException)
             {
@@ -93,45 +100,45 @@ namespace Konata.Runtime.MQ
 
         public bool TryAdd(T data, int timeout)
         {
-            return this._queue.TryAdd(data, timeout);
+            return _queue.TryAdd(data, timeout);
         }
 
         public void StartTakeProcess()
         {
-            if (!this.Running)
+            if (!Running)
             {
-                if (this._source.IsCancellationRequested)
+                if (_cancelToken.IsCancellationRequested)
                 {
-                    this._source = new CancellationTokenSource();
+                    _cancelToken = new CancellationTokenSource();
                 }
-                this.Running = true;
-                this._processqueue.RunAsync(TakeProcess);
+                _isRunning = true;
+                _processQueue.RunAsync(TakeProcess);
             }
         }
 
         public void StopTakeProcess()
         {
-            this._source.Cancel();
+            _cancelToken.Cancel();
         }
 
         private void TakeProcess()
         {
-            if (this._queue != null && !this._queue.IsCompleted && !this._source.Token.IsCancellationRequested)
+            if (_queue != null && !_queue.IsCompleted && !_cancelToken.Token.IsCancellationRequested)
             {
-                while (!this._queue.IsCompleted && !this._source.Token.IsCancellationRequested)
+                while (!_queue.IsCompleted && !_cancelToken.Token.IsCancellationRequested)
                 {
                     try
                     {
                         T data = default(T);
-                        if (this.readtimeout > 0)
+                        if (_readTimeout > 0)
                         {
-                            if (!this._queue.TryTake(out data, this.readtimeout))
+                            if (!_queue.TryTake(out data, _readTimeout))
                             {
                                 continue;
                             }
                             else
                             {
-                                if (this._source.Token.IsCancellationRequested)
+                                if (_cancelToken.Token.IsCancellationRequested)
                                 {
                                     break;
                                 }
@@ -139,11 +146,11 @@ namespace Konata.Runtime.MQ
                         }
                         else
                         {
-                            data = this._queue.Take(this._source.Token);
+                            data = _queue.Take(_cancelToken.Token);
                         }
-                        this._processqueue.RunAsync(() =>
+                        _processQueue.RunAsync(() =>
                         {
-                            this._processItemEvent?.Invoke(data);
+                            _processItemEvent?.Invoke(data);
                         });
                     }
                     catch (OperationCanceledException)
@@ -153,23 +160,18 @@ namespace Konata.Runtime.MQ
 
                 }
             }
-            this.Running = false;
+            _isRunning = false;
         }
 
         public void Dispose()
         {
-            this._source?.Cancel();
-            this._queue?.CompleteAdding();
-            this._queue?.Dispose();
-            this._processItemEvent = null;
+            _cancelToken?.Cancel();
+            _queue?.CompleteAdding();
+            _queue?.Dispose();
+            _processItemEvent = null;
         }
 
         ~KonataMemMQ()
-        {
-            this._source?.Cancel();
-            this._queue?.CompleteAdding();
-            this._queue?.Dispose();
-            this._processItemEvent = null;
-        }
+            => Dispose();
     }
 }
