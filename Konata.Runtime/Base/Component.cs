@@ -8,6 +8,7 @@ namespace Konata.Runtime.Base
     {
         public Entity Parent { get; set; }
 
+
         public T GetEntity<T>()
             where T : Entity
         {
@@ -18,7 +19,7 @@ namespace Konata.Runtime.Base
             : base() { }
 
         protected Component(long id)
-            : base() { }
+            : base(id) { }
 
         /// <summary>
         /// 获取当前组件绑定的实体上其他的组件

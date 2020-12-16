@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Utils;
+using System.Threading.Tasks;
 
 namespace Konata.Runtime
 {
@@ -101,7 +102,7 @@ namespace Konata.Runtime
 
         /// <summary>
         /// 向事件管理器注册新的实体对象
-        /// <para>这将为其创建新的事件组件并挂载到目标对象</para>
+        /// <para>该方法不应被EventComponent以外调用</para>
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -116,10 +117,9 @@ namespace Konata.Runtime
                 }
 
                 EventComponent component = entity.GetComponent<EventComponent>();
-
                 if (component == null)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException($"Target Entity has no EventComponent");
                 }
                 bindComponentList.Add(entity.Id, component);
             }
@@ -129,6 +129,10 @@ namespace Konata.Runtime
             }
         }
 
+        /// <summary>
+        /// 从事件管理器移除目标实体[这不会销毁目标实体上事件组件]
+        /// </summary>
+        /// <param name="entity"></param>
         public void UnRegisterEntity(Entity entity)
         {
             coreEventLock.EnterWriteLock();
@@ -146,13 +150,12 @@ namespace Konata.Runtime
         }
 
         /// <summary>
-        /// 直接向目标实体添加事件输出源
+        /// 直接获取目标实体事件输出管道
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="output"></param>
         /// 
-
-        public ITargetBlock<KonataEventArgs> LinkPipeLineToEntity(Entity entity)
+        public ITargetBlock<KonataEventArgs> EntityEventPipe(Entity entity)
         {
             coreEventLock.EnterReadLock();
             try
@@ -162,6 +165,27 @@ namespace Konata.Runtime
                     return component.GetPipe();
                 }
                 return null;
+            }
+            finally
+            {
+                coreEventLock.ExitReadLock();
+            }
+        }
+
+        /// <summary>
+        /// 向目标实体发送事件
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="arg"></param>
+        public async Task SendEventToEntity(Entity entity,KonataEventArgs arg)
+        {
+            coreEventLock.EnterReadLock();
+            try
+            {
+                if (bindComponentList.TryGetValue(entity.Id, out var component))
+                {
+                    await component.GetPipe().SendAsync(arg);
+                }
             }
             finally
             {

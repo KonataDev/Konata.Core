@@ -84,7 +84,7 @@ namespace Konata.Runtime.Base
                 _blockCancel = new CancellationTokenSource();
 
                 _endBlock = new ActionBlock<KonataEventArgs>((arg) => { ContainerFilter(arg); },
-                    new ExecutionDataflowBlockOptions { CancellationToken = _blockCancel.Token, MaxDegreeOfParallelism = 2 });
+                    new ExecutionDataflowBlockOptions { CancellationToken = _blockCancel.Token});
             }
 
             return _endBlock;
@@ -106,6 +106,7 @@ namespace Konata.Runtime.Base
             {
                 _endBlock.Complete();
                 _blockCancel.Cancel();
+                _endBlock = null;
             }
             EventManager.Instance.UnRegisterEntity(Parent);
             base.Dispose();

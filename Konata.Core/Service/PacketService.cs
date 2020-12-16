@@ -11,6 +11,8 @@ using Konata.Core.Event;
 using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Network;
+using Konata.Runtime;
+using System.Threading.Tasks;
 
 namespace Konata.Core.Service
 {
@@ -26,9 +28,6 @@ namespace Konata.Core.Service
         private ActionBlock<EventSsoFrame> _ssoMsgActionBlock;
         private ActionBlock<KonataEventArgs> _eventActionBlock;
 
-        private ConcurrentDictionary<long, ISocket> _entitySocketList = null;
-        private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
-
         /// <summary>
         /// Service Onload
         /// </summary>
@@ -38,8 +37,6 @@ namespace Konata.Core.Service
             {
                 _ssoServiceInfo = new List<SSOServiceAttribute>();
                 _ssoServiceList = new Dictionary<string, ISSOService>();
-                _entitySocketList = new ConcurrentDictionary<long, ISocket>();
-                _entityEventActionBlock = new ConcurrentDictionary<long, ActionBlock<KonataEventArgs>>();
 
                 // Load all of the workers with specific attribute
                 foreach (Type type in typeof(PacketService).Assembly.GetTypes())
@@ -53,6 +50,7 @@ namespace Konata.Core.Service
                     }
                 }
 
+                #region Socket->Event Method Set
                 // [Incoming] Working pipeline
                 //   SocketPackage -> EventServiceMessage
                 _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>
@@ -76,10 +74,9 @@ namespace Konata.Core.Service
                             if (service.HandleInComing(ssoFrame, out var output))
                             {
                                 // Post data to target service entity
-                                if (output != null
-                                    && _entityEventActionBlock.TryGetValue(ssoFrame.Owner.Id, out var action))
+                                if (output != null)
                                 {
-                                    action.SendAsync(output);
+                                    EventManager.Instance.SendEventToEntity(ssoFrame.Owner, output);
                                 }
                             }
                         }
@@ -90,7 +87,9 @@ namespace Konata.Core.Service
                         }
                     }
                 });
+                #endregion
 
+                #region LinkPipe
                 // [Incoming] Connect the working pipelines up
                 //   ServiceMessage -> SSOMessage -> Service Entity
                 _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock,
@@ -98,7 +97,8 @@ namespace Konata.Core.Service
 
                 _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock,
                     new DataflowLinkOptions { PropagateCompletion = true }, ssoFrame => ssoFrame != null);
-
+                #endregion
+                
                 // [OutGoing] Action pipeline
                 //   SSO Service -> Socket
                 _eventActionBlock = new ActionBlock<KonataEventArgs>
@@ -110,11 +110,10 @@ namespace Konata.Core.Service
                         // Serialize the packet
                         if (service.HandleOutGoing(eventMessage, out var output))
                         {
-                            if (output != null
-                                && _entitySocketList.TryGetValue(eventMessage.Owner.Id, out ISocket socket)
-                                && socket.Connected)
+                            if (output != null)
                             {
-                                socket.Send(output);
+                                SocketService socketservice = ServiceManager.Instance.GetService<SocketService>();
+                                socketservice.SendSocketPackage(eventMessage.Owner, output);
                             }
                         }
                     }
@@ -123,7 +122,7 @@ namespace Konata.Core.Service
         }
 
         /// <summary>
-        /// 发送socket消息包
+        /// 直接发送socket包
         /// </summary>
         /// <param name="package"></param>
         /// <param name="timeoutMs"></param>
@@ -144,7 +143,7 @@ namespace Konata.Core.Service
         }
 
         /// <summary>
-        /// 将事件消息发送到
+        /// 将事件发送去服务器
         /// </summary>
         /// <param name="eventArgs"></param>
         /// <param name="timeoutMs"></param>
@@ -164,37 +163,6 @@ namespace Konata.Core.Service
             }
         }
 
-        /// <summary>
-        /// 注册新的实体接收管道
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="pipe"></param>
-        /// <returns></returns>
-        public bool RegisterNewReceiver(Entity entity, ActionBlock<KonataEventArgs> pipe)
-        {
-            return _entityEventActionBlock.TryAdd(entity.Id, pipe);
-        }
-
-        /// <summary>
-        /// 移除指定实体接收管道
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public bool UnRegisterReceiver(Entity entity)
-        {
-            return _entityEventActionBlock.TryRemove(entity.Id, out var _);
-        }
-
-        public bool RegisterNewSocket(Entity entity, ISocket socket)
-        {
-            return _entitySocketList.TryAdd(entity.Id, socket);
-        }
-
-        public bool UnRegisterSocket(Entity entity)
-        {
-            return _entitySocketList.TryRemove(entity.Id, out var _);
-        }
-
         public void Dispose()
         {
             //socket-servicemsg-ssomsg linked with PropagateCompletion
@@ -202,13 +170,6 @@ namespace Konata.Core.Service
             _socketMsgTransformBlock.Complete();
             _ssoServiceList.Clear();
             _ssoServiceList = null;
-
-            foreach (var data in _entityEventActionBlock.Values)
-            {
-                data.Complete();
-            }
-            _entityEventActionBlock.Clear();
-            _entityEventActionBlock = null;
         }
     }
 }
