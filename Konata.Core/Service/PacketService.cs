@@ -27,7 +27,6 @@ namespace Konata.Core.Service
 
         private ActionBlock<EventSsoFrame> _ssoMsgActionBlock;
         private ActionBlock<KonataEventArgs> _eventActionBlock;
-
         /// <summary>
         /// Service Onload
         /// </summary>
@@ -161,6 +160,26 @@ namespace Konata.Core.Service
                     await _eventActionBlock.SendAsync(eventArgs);
                 }
             }
+        }
+
+        /// <summary>
+        /// 将需要等待回复的事件发送去服务器
+        /// <para>ssoreq限制,本质同步</para>
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public TaskCompletionSource<KonataEventArgs> SendDataToServer(KonataEventArgs eventArgs,CancellationToken token)
+        {
+            if (eventArgs.Owner != null)
+            {
+                var com=eventArgs.Owner.GetComponent<EventComponent>();
+                var callbacksource=com?.AddTaskSource(eventArgs.EventName,token);
+                if(callbacksource!=null)
+                    this.SendDataToServer(eventArgs);
+                return callbacksource;
+            }
+            return null;
         }
 
         public void Dispose()
