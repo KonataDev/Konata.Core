@@ -52,13 +52,48 @@ namespace Konata.Core.Service
                 #region Socket->Event Method Set
                 // [Incoming] Working pipeline
                 //   SocketPackage -> EventServiceMessage
-                _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>
-                     (socketData => EventServiceMessage.Parse(socketData, out var fromService) ? fromService : null);
+                _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>(socketData => {
+                    if(EventServiceMessage.Parse(socketData, out var fromService))
+                    {
+                        if (fromService != null)
+                        {
+                            if (fromService.IsServerResponse)
+                            {
+                                fromService.CoreEventType = CoreEventType.TaskComplate;
+                                EventManager.Instance.SendEventToEntity(fromService.Owner, fromService);
+                            }
+                            else
+                            {
+                                return fromService;
+                            }
+                            
+                        }
+                    }
+                    return null;
+                });
 
                 // [Incoming] Working pipeline
                 //   EventServiceMessage -> EventSsoFrame
                 _serviceMsgTransformBlock = new TransformBlock<EventServiceMessage, EventSsoFrame>
-                    (fromService => EventSsoFrame.Parse(fromService, out var ssoFrame) ? ssoFrame : null);
+                    (fromService => {
+                        if(EventSsoFrame.Parse(fromService,out var ssoFrame))
+                        {
+                            if (ssoFrame != null)
+                            {
+                                if (ssoFrame.IsServerResponse)
+                                {
+                                    ssoFrame.CoreEventType = CoreEventType.TaskComplate;
+                                    EventManager.Instance.SendEventToEntity(ssoFrame.Owner, ssoFrame);
+                                }
+                                else
+                                {
+                                    return ssoFrame;
+                                }
+
+                            }
+                        }
+                        return null;
+                    });
 
                 // [Incoming] Action pipeline
                 //   EventSsoFrame -> SSO Service
@@ -174,9 +209,7 @@ namespace Konata.Core.Service
             if (eventArgs.Owner != null)
             {
                 var com=eventArgs.Owner.GetComponent<EventComponent>();
-                var callbacksource=com?.AddTaskSource(eventArgs.EventName,token);
-                if(callbacksource!=null)
-                    this.SendDataToServer(eventArgs);
+                var callbacksource=com?.RegisterSyncTaskSource(eventArgs.EventName,()=> { this.SendDataToServer(eventArgs);},token);
                 return callbacksource;
             }
             return null;

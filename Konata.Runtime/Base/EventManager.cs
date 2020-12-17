@@ -177,7 +177,7 @@ namespace Konata.Runtime
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="arg"></param>
-        public async Task SendEventToEntity(Entity entity,KonataEventArgs arg)
+        public async void SendEventToEntity(Entity entity,KonataEventArgs arg)
         {
             coreEventLock.EnterReadLock();
             try

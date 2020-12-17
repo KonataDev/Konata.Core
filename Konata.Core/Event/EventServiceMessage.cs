@@ -38,6 +38,9 @@ namespace Konata.Core.Event
 
         public PacketType MessagePktType { get => _packetType; }
 
+        public bool IsServerResponse { get; private set; } = false;
+
+
         public static bool Build(EventServiceMessage toService, out byte[] output)
         {
             var write = new PacketBase();
@@ -109,8 +112,11 @@ namespace Konata.Core.Event
                     read.TakeDecryptedBytes(out output._payloadData, TeaCryptor.Instance, sigInfo.ZeroKey);
                     break;
             }
-
             output.Owner = package.Owner;
+            //TODO:
+            //IsServerResponse?
+            //output.IsServerResponse = true;
+
             return true;
         }
 
