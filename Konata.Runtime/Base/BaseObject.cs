@@ -7,7 +7,7 @@ namespace Konata.Runtime.Base
     {
         public long Id { get; set; }
 
-        public bool Recycle { get; set; } = true;
+        public virtual bool Recycle { get; set; } = true;
 
         public bool IsDisposed
         {

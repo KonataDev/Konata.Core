@@ -12,6 +12,7 @@ namespace Konata.Runtime.Base.Event
         /// </summary>
         public Entity Owner { get; set; }
 
+        public CoreEventType CoreEventType { get; set; }
         /// <summary>
         /// Event name
         /// </summary>

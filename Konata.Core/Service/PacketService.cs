@@ -4,14 +4,15 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 using Konata.Core.Packet;
 using Konata.Core.Event;
+using Konata.Runtime;
 using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Network;
-using System.Threading.Tasks;
 
 namespace Konata.Core.Service
 {
@@ -27,10 +28,6 @@ namespace Konata.Core.Service
         private ActionBlock<EventSsoFrame> _ssoMsgActionBlock;
         private ActionBlock<KonataEventArgs> _eventActionBlock;
 
-        private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
-
-        private ConcurrentDictionary<int, TaskCompletionSource<KonataEventArgs>> _taskCompletionTable;
-
         /// <summary>
         /// Service Onload
         /// </summary>
@@ -40,8 +37,6 @@ namespace Konata.Core.Service
             {
                 _ssoServiceInfo = new List<SSOServiceAttribute>();
                 _ssoServiceList = new Dictionary<string, ISSOService>();
-                _entityEventActionBlock = new ConcurrentDictionary<long, ActionBlock<KonataEventArgs>>();
-                _taskCompletionTable = new ConcurrentDictionary<int, TaskCompletionSource<KonataEventArgs>>();
 
                 // Load all of the workers with specific attribute
                 foreach (Type type in typeof(PacketService).Assembly.GetTypes())
@@ -55,15 +50,51 @@ namespace Konata.Core.Service
                     }
                 }
 
+                #region Socket->Event Method Set
                 // [Incoming] Working pipeline
                 //   SocketPackage -> EventServiceMessage
-                _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>
-                     (socketData => EventServiceMessage.Parse(socketData, out var fromService) ? fromService : null);
+                _socketMsgTransformBlock = new TransformBlock<SocketPackage, EventServiceMessage>(socketData => {
+                    if(EventServiceMessage.Parse(socketData, out var fromService))
+                    {
+                        if (fromService != null)
+                        {
+                            if (fromService.IsServerResponse)
+                            {
+                                fromService.CoreEventType = CoreEventType.TaskComplate;
+                                EventManager.Instance.SendEventToEntity(fromService.Owner, fromService);
+                            }
+                            else
+                            {
+                                return fromService;
+                            }
+                            
+                        }
+                    }
+                    return null;
+                });
 
                 // [Incoming] Working pipeline
                 //   EventServiceMessage -> EventSsoFrame
                 _serviceMsgTransformBlock = new TransformBlock<EventServiceMessage, EventSsoFrame>
-                    (fromService => EventSsoFrame.Parse(fromService, out var ssoFrame) ? ssoFrame : null);
+                    (fromService => {
+                        if(EventSsoFrame.Parse(fromService,out var ssoFrame))
+                        {
+                            if (ssoFrame != null)
+                            {
+                                if (ssoFrame.IsServerResponse)
+                                {
+                                    ssoFrame.CoreEventType = CoreEventType.TaskComplate;
+                                    EventManager.Instance.SendEventToEntity(ssoFrame.Owner, ssoFrame);
+                                }
+                                else
+                                {
+                                    return ssoFrame;
+                                }
+
+                            }
+                        }
+                        return null;
+                    });
 
                 // [Incoming] Action pipeline
                 //   EventSsoFrame -> SSO Service
@@ -78,10 +109,9 @@ namespace Konata.Core.Service
                             if (service.HandleInComing(ssoFrame, out var output))
                             {
                                 // Post data to target service entity
-                                if (output != null
-                                    && _entityEventActionBlock.TryGetValue(ssoFrame.Owner.Id, out var action))
+                                if (output != null)
                                 {
-                                    action.SendAsync(output);
+                                    EventManager.Instance.SendEventToEntity(ssoFrame.Owner, output);
                                 }
                             }
                         }
@@ -92,7 +122,9 @@ namespace Konata.Core.Service
                         }
                     }
                 });
+                #endregion
 
+                #region LinkPipe
                 // [Incoming] Connect the working pipelines up
                 //   ServiceMessage -> SSOMessage -> Service Entity
                 _socketMsgTransformBlock.LinkTo(_serviceMsgTransformBlock,
@@ -100,7 +132,8 @@ namespace Konata.Core.Service
 
                 _serviceMsgTransformBlock.LinkTo(_ssoMsgActionBlock,
                     new DataflowLinkOptions { PropagateCompletion = true }, ssoFrame => ssoFrame != null);
-
+                #endregion
+                
                 // [OutGoing] Action pipeline
                 //   SSO Service -> Socket
                 _eventActionBlock = new ActionBlock<KonataEventArgs>
@@ -125,7 +158,7 @@ namespace Konata.Core.Service
         }
 
         /// <summary>
-        /// 发送socket消息包
+        /// 直接发送socket包
         /// </summary>
         /// <param name="package"></param>
         /// <param name="timeoutMs"></param>
@@ -146,7 +179,7 @@ namespace Konata.Core.Service
         }
 
         /// <summary>
-        /// 将事件消息发送到
+        /// 将事件发送去服务器
         /// </summary>
         /// <param name="eventArgs"></param>
         /// <param name="timeoutMs"></param>
@@ -167,24 +200,21 @@ namespace Konata.Core.Service
         }
 
         /// <summary>
-        /// 注册新的实体接收管道
+        /// 将需要等待回复的事件发送去服务器
+        /// <para>ssoreq限制,本质同步</para>
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="pipe"></param>
+        /// <param name="eventArgs"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public bool RegisterNewReceiver(Entity entity, ActionBlock<KonataEventArgs> pipe)
+        public TaskCompletionSource<KonataEventArgs> SendDataToServer(KonataEventArgs eventArgs,CancellationToken token)
         {
-            return _entityEventActionBlock.TryAdd(entity.Id, pipe);
-        }
-
-        /// <summary>
-        /// 移除指定实体接收管道
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public bool UnRegisterReceiver(Entity entity)
-        {
-            return _entityEventActionBlock.TryRemove(entity.Id, out var _);
+            if (eventArgs.Owner != null)
+            {
+                var com=eventArgs.Owner.GetComponent<EventComponent>();
+                var callbacksource=com?.RegisterSyncTaskSource(eventArgs.EventName,()=> { this.SendDataToServer(eventArgs);},token);
+                return callbacksource;
+            }
+            return null;
         }
 
         public void Dispose()
@@ -194,13 +224,6 @@ namespace Konata.Core.Service
             _socketMsgTransformBlock.Complete();
             _ssoServiceList.Clear();
             _ssoServiceList = null;
-
-            foreach (var data in _entityEventActionBlock.Values)
-            {
-                data.Complete();
-            }
-            _entityEventActionBlock.Clear();
-            _entityEventActionBlock = null;
         }
     }
 }

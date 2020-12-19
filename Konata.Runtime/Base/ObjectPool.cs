@@ -84,19 +84,19 @@ namespace Konata.Runtime.Base
             poolLock.EnterWriteLock();
             try
             {
-
+                Type type = baseObject.GetType();
+                if (!this.pool.TryGetValue(type, out Queue<BaseObject> queue))
+                {
+                    queue = new Queue<BaseObject>();
+                    this.pool.Add(type, queue);
+                }
+                queue.Enqueue(baseObject);
             }
             finally
             {
                 poolLock.ExitWriteLock();
             }
-            Type type = baseObject.GetType();
-            if (!this.pool.TryGetValue(type, out Queue<BaseObject> queue))
-            {
-                queue = new Queue<BaseObject>();
-                this.pool.Add(type, queue);
-            }
-            queue.Enqueue(baseObject);
+
         }
 
         /// <summary>

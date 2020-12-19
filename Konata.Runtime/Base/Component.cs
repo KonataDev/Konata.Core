@@ -8,6 +8,12 @@ namespace Konata.Runtime.Base
     {
         public Entity Parent { get; set; }
 
+        public T GetEntity<T>()
+            where T : Entity
+        {
+            return (T)this.Parent;
+        }
+
         protected Component()
             : base() { }
 

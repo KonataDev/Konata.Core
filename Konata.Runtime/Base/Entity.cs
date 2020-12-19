@@ -87,6 +87,7 @@ namespace Konata.Runtime.Base
             component.Dispose();
             return;
         }
+       
 
         private void RemoveComponents()
         {

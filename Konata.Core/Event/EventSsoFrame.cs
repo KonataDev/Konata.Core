@@ -34,6 +34,7 @@ namespace Konata.Core.Event
 
         public PacketType PacketType { get => _packetType; }
 
+        public bool IsServerResponse { get; private set; }
         public static bool Parse(EventServiceMessage fromService, out EventSsoFrame output)
         {
             output = new EventSsoFrame
@@ -86,6 +87,9 @@ namespace Konata.Core.Event
             }
 
             output.Owner = fromService.Owner;
+            //TODO:
+            //IsServerResponse?
+            //output.IsServerResponse = true;
             return true;
         }
 
