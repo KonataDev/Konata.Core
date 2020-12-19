@@ -25,7 +25,7 @@ namespace Konata.Runtime.Base.Event
 
             if (target == null)
             {
-                throw new ArgumentNullException("Event must a object");
+                throw new ArgumentNullException("Event must an object");
             }
 
             locker.EnterWriteLock();
@@ -122,6 +122,7 @@ namespace Konata.Runtime.Base.Event
             return invokeHandlers != null;
 
         }
+
         private sealed class WeakEventHandler
         {
             internal object Target { get; private set; }

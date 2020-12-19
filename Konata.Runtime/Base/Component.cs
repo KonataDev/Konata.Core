@@ -35,8 +35,8 @@ namespace Konata.Runtime.Base
             if (IsDisposed)
                 return;
 
-            base.Dispose();
             Root.Instance.RemoveComponent(Id);
+            base.Dispose();
         }
     }
 }

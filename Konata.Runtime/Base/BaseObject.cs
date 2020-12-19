@@ -9,19 +9,20 @@ namespace Konata.Runtime.Base
 
         public bool Recycle { get; set; } = true;
 
-        protected BaseObject()
-        {
-            Id = IdGenerater.GenerateID();
-        }
-
-        protected BaseObject(long id)
-        {
-            Id = id;
-        }
-
         public bool IsDisposed
         {
             get => (Id == 0);
+        }
+
+        protected BaseObject()
+            => Id = IdGenerater.GenerateID();
+
+        protected BaseObject(long id)
+            => Id = id;
+
+        ~BaseObject()
+        {
+            Id = 0;
         }
 
         public virtual void Dispose()
@@ -32,11 +33,6 @@ namespace Konata.Runtime.Base
                 if (Recycle)
                     ObjectPool.Instance.Recycle(this);
             }
-        }
-
-        ~BaseObject()
-        {
-            Id = 0;
         }
     }
 }

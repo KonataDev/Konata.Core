@@ -11,14 +11,15 @@ using Konata.Core.Event;
 using Konata.Runtime.Base;
 using Konata.Runtime.Base.Event;
 using Konata.Runtime.Network;
+using System.Threading.Tasks;
 
 namespace Konata.Core.Service
 {
     [Service("消息解析服务", "全局消息解析服务，用于消息序列化/反序列化")]
     class PacketService : ILoad, IDisposable
     {
-        private List<SSOServiceAttribute> _ssoServiceInfo = null;
-        private Dictionary<string, ISSOService> _ssoServiceList = null;
+        private List<SSOServiceAttribute> _ssoServiceInfo;
+        private Dictionary<string, ISSOService> _ssoServiceList;
 
         private TransformBlock<EventServiceMessage, EventSsoFrame> _serviceMsgTransformBlock;
         private TransformBlock<SocketPackage, EventServiceMessage> _socketMsgTransformBlock;
@@ -26,8 +27,9 @@ namespace Konata.Core.Service
         private ActionBlock<EventSsoFrame> _ssoMsgActionBlock;
         private ActionBlock<KonataEventArgs> _eventActionBlock;
 
-        private ConcurrentDictionary<long, ISocket> _entitySocketList = null;
         private ConcurrentDictionary<long, ActionBlock<KonataEventArgs>> _entityEventActionBlock;
+
+        private ConcurrentDictionary<int, TaskCompletionSource<KonataEventArgs>> _taskCompletionTable;
 
         /// <summary>
         /// Service Onload
@@ -38,8 +40,8 @@ namespace Konata.Core.Service
             {
                 _ssoServiceInfo = new List<SSOServiceAttribute>();
                 _ssoServiceList = new Dictionary<string, ISSOService>();
-                _entitySocketList = new ConcurrentDictionary<long, ISocket>();
                 _entityEventActionBlock = new ConcurrentDictionary<long, ActionBlock<KonataEventArgs>>();
+                _taskCompletionTable = new ConcurrentDictionary<int, TaskCompletionSource<KonataEventArgs>>();
 
                 // Load all of the workers with specific attribute
                 foreach (Type type in typeof(PacketService).Assembly.GetTypes())
@@ -110,11 +112,11 @@ namespace Konata.Core.Service
                         // Serialize the packet
                         if (service.HandleOutGoing(eventMessage, out var output))
                         {
-                            if (output != null
-                                && _entitySocketList.TryGetValue(eventMessage.Owner.Id, out ISocket socket)
-                                && socket.Connected)
+                            if (output != null)
                             {
-                                socket.Send(output);
+                                ServiceManager.Instance
+                                    .GetService<SocketService>()
+                                    .SendData(eventMessage.Owner, output);
                             }
                         }
                     }
@@ -164,11 +166,6 @@ namespace Konata.Core.Service
             }
         }
 
-        public async KonataEventArgs WaitForResponse()
-        {
-
-        }
-
         /// <summary>
         /// 注册新的实体接收管道
         /// </summary>
@@ -188,16 +185,6 @@ namespace Konata.Core.Service
         public bool UnRegisterReceiver(Entity entity)
         {
             return _entityEventActionBlock.TryRemove(entity.Id, out var _);
-        }
-
-        public bool RegisterNewSocket(Entity entity, ISocket socket)
-        {
-            return _entitySocketList.TryAdd(entity.Id, socket);
-        }
-
-        public bool UnRegisterSocket(Entity entity)
-        {
-            return _entitySocketList.TryRemove(entity.Id, out var _);
         }
 
         public void Dispose()

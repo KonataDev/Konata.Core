@@ -1,24 +1,25 @@
 using System;
 using System.Text;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 using Konata.Runtime.Base;
 using Konata.Runtime.Builder;
 using Konata.Runtime.Network;
 using Konata.Runtime.Extensions;
+using System.Collections.Generic;
 
 namespace Konata.Core.Service
 {
     [Service("Socket管理服务", "Socket统一管理服务")]
     public class SocketService : ILoad, IDisposable
     {
-        private Dictionary<Entity, ISocket> _socketList = null;
+        private ConcurrentDictionary<Entity, ISocket> _socketList = null;
 
         public void Load()
         {
             if (_socketList == null)
             {
-                _socketList = new Dictionary<Entity, ISocket>();
+                _socketList = new ConcurrentDictionary<Entity, ISocket>();
             }
         }
 
@@ -61,8 +62,27 @@ namespace Konata.Core.Service
                 })
                 .Build();
 
-            _socketList.Add(entity, socket);
+            _socketList.TryAdd(entity, socket);
             return socket;
+        }
+
+        public void SendData(Entity entity, byte[] data)
+        {
+            if (_socketList.TryGetValue(entity, out ISocket socket)
+                && socket.Connected)
+            {
+                socket.Send(data);
+            }
+        }
+
+        public bool RegisterNewSocket(Entity entity, ISocket socket)
+        {
+            return _socketList.TryAdd(entity, socket);
+        }
+
+        public bool UnRegisterSocket(Entity entity)
+        {
+            return _socketList.TryRemove(entity, out var _);
         }
 
         public void UnloadSocketInstance(Entity entity)

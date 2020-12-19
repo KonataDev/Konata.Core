@@ -175,6 +175,7 @@ namespace Konata.Core.Manager
                 return "1234567890123456";
             }
         }
+
         private static byte[] MakeSyncCookie()
         {
             return new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds()).Serialize().GetBytes();
