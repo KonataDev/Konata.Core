@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>(C) 2021 Konata Project</Copyright>
+    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
