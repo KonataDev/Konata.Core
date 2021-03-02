@@ -10,9 +10,17 @@ namespace Konata.Core.Component
     {
         public SignInfo SignInfo { get; private set; }
 
+        public BotDevice DeviceInfo { get; private set; }
+
+        public BotConfig GlobalConfig { get; private set; }
+
+        public void LoadSignInfo(SignInfo signinfo)
+            => SignInfo = signinfo;
+
         public void LoadConfig(BotConfig config)
-        {
-            SignInfo = new SignInfo(config.Uin, config.Password);
-        }
+            => GlobalConfig = config;
+
+        public void LoadDeviceInfo(BotDevice device)
+            => DeviceInfo = device;
     }
 }

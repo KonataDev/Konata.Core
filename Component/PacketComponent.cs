@@ -137,7 +137,8 @@ namespace Konata.Core.Component
                 // Enumerate all of the service then make binary packet
                 foreach (var service in serviceList)
                 {
-                    if (service.Build(_serviceSequence, protocolEvent, config.SignInfo, out var sequence, out var buffer))
+                    if (service.Build(_serviceSequence, protocolEvent,
+                        config.SignInfo, config.DeviceInfo, out var sequence, out var buffer))
                     {
                         // Pass messages to socket
                         PostEvent<SocketComponent>(new PacketEvent

@@ -88,6 +88,12 @@ namespace Konata.Core.Component
             return false;
         }
 
+        public Task<bool> Logout()
+        {
+            // <TODO>
+            return Task.FromResult(false);
+        }
+
         public void SubmitSMSCode(string code)
             => _userOperation.SetResult(new WtLoginEvent
             { EventType = WtLoginEvent.Type.CheckSMS, CaptchaResult = code });
@@ -168,6 +174,43 @@ namespace Konata.Core.Component
                 GroupUin = groupUin,
                 Message = message
             });
+
+        public async Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, List<MessageChain> message)
+            => (PrivateMessageEvent)await PostEvent<PacketComponent>
+            (new PrivateMessageEvent
+            {
+                FriendUin = friendUin,
+                Message = message
+            });
+
+        public OnlineStatusEvent.Type GetOnlineStatus()
+            => _onlineType;
+
+        public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
+        {
+            if (_onlineType == status)
+            {
+                return Task.FromResult(true);
+            }
+
+            switch (_onlineType)
+            {
+                // Not supported yet
+                case OnlineStatusEvent.Type.Online:
+                case OnlineStatusEvent.Type.Leave:
+                case OnlineStatusEvent.Type.Busy:
+                case OnlineStatusEvent.Type.Hidden:
+                case OnlineStatusEvent.Type.QMe:
+                case OnlineStatusEvent.Type.DoNotDistrub:
+                    return Task.FromResult(false);
+
+                // Login
+                case OnlineStatusEvent.Type.Offline:
+                    return Login();
+            }
+
+            return Task.FromResult(false);
+        }
 
         internal override void EventHandler(KonataTask task)
         {

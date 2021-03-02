@@ -12,8 +12,8 @@ namespace Konata.Core.Service.MessageSvc
         public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
             => (output = new PrivateMessageNotifyEvent()) == output;
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = 0;

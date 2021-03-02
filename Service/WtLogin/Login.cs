@@ -338,8 +338,8 @@ namespace Konata.Core.Service.WtLogin
 
         #endregion
 
-        public bool Build(Sequence sequence, WtLoginEvent input, SignInfo signInfo,
-            out int newSequece, out byte[] output)
+        public bool Build(Sequence sequence, WtLoginEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequece, out byte[] output)
         {
             output = null;
             newSequece = sequence.GetSessionSequence("wtlogin.login");
@@ -350,7 +350,7 @@ namespace Konata.Core.Service.WtLogin
             switch (input.EventType)
             {
                 case WtLoginEvent.Type.Tgtgt:
-                    oicqRequest = BuildRequestTgtgt(newSequece, signInfo);
+                    oicqRequest = BuildRequestTgtgt(newSequece, signInfo, device);
                     break;
 
                 case WtLoginEvent.Type.CheckSMS:
@@ -376,21 +376,22 @@ namespace Konata.Core.Service.WtLogin
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
                     signInfo.UinInfo.Uin, out var toService))
                 {
-                    return ServiceMessage.Build(toService, out output);
+                    return ServiceMessage.Build(toService, device, out output);
                 }
             }
 
             return false;
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signinfo,
-            out int outsequence, out byte[] output)
-            => Build(sequence, (WtLoginEvent)input, signinfo, out outsequence, out output);
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signinfo, BotDevice device, out int outsequence, out byte[] output)
+            => Build(sequence, (WtLoginEvent)input, signinfo, device, out outsequence, out output);
 
         #region Event Builders
 
-        private OicqRequest BuildRequestTgtgt(int sequence, SignInfo signinfo)
-            => new OicqRequestTgtgt(sequence, signinfo);
+        private OicqRequest BuildRequestTgtgt(int sequence, SignInfo signinfo,
+            BotDevice device)
+            => new OicqRequestTgtgt(sequence, signinfo, device);
 
         private OicqRequest BuildRequestCheckSms(string code, SignInfo signinfo)
             => new OicqRequestCheckSms(code, signinfo);

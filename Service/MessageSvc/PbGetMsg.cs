@@ -134,8 +134,8 @@ namespace Konata.Core.Service.MessageSvc
             };
         }
 
-        public bool Build(Sequence sequence, PrivateMessagePullEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, PrivateMessagePullEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -148,15 +148,15 @@ namespace Konata.Core.Service.MessageSvc
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
                     signInfo.UinInfo.Uin, signInfo.D2Token, signInfo.D2Key, out var toService))
                 {
-                    return ServiceMessage.Build(toService, out output);
+                    return ServiceMessage.Build(toService, device, out output);
                 }
             }
 
             return false;
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
-            => Build(sequence, (PrivateMessagePullEvent)input, signInfo, out newSequence, out output);
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            => Build(sequence, (PrivateMessagePullEvent)input, signInfo, device, out newSequence, out output);
     }
 }

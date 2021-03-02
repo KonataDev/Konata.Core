@@ -15,8 +15,8 @@ namespace Konata.Core.Service.PbMessageSvc
         public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
             => (output = null) == null;
 
-        public bool Build(Sequence sequence, GroupMessageReadEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, GroupMessageReadEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = input.SessionSequence;
@@ -29,15 +29,15 @@ namespace Konata.Core.Service.PbMessageSvc
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
                     signInfo.UinInfo.Uin, signInfo.D2Token, signInfo.D2Key, out var toService))
                 {
-                    return ServiceMessage.Build(toService, out output);
+                    return ServiceMessage.Build(toService, device, out output);
                 }
             }
 
             return false;
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
-              => Build(sequence, (GroupMessageReadEvent)input, signInfo, out newSequence, out output);
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+              => Build(sequence, (GroupMessageReadEvent)input, signInfo, device, out newSequence, out output);
     }
 }

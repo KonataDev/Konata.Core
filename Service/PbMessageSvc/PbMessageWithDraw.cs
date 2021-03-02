@@ -13,8 +13,8 @@ namespace Konata.Core.Service.PbMessageSvc
             throw new NotImplementedException();
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             throw new NotImplementedException();
         }

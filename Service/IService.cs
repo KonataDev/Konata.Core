@@ -26,10 +26,11 @@ namespace Konata.Core.Service
         /// <param name="sequence"></param>
         /// <param name="input"></param>
         /// <param name="signInfo"></param>
+        /// <param name="device"></param>
         /// <param name="newSequence"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output);
+        bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output);
     }
 }

@@ -6,27 +6,27 @@ using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Component;
 using Konata.Core.Event.EventModel;
-using Konata.Core.Service;
 
 namespace Konata.Core
 {
-    public class Bot : BaseEntity
+    public sealed class Bot : BaseEntity
     {
         internal Bot() { }
 
-        public UinInfo Account
-        {
-            get
-            {
-                return GetComponent<ConfigComponent>().SignInfo.UinInfo;
-            }
-        }
+        #region Protocol Methods
 
         /// <summary>
         /// Login
         /// </summary>
         public Task<bool> Login()
             => GetComponent<BusinessComponent>().Login();
+
+        /// <summary>
+        /// Logout
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> Logout()
+            => GetComponent<BusinessComponent>().Logout();
 
         /// <summary>
         /// Submit Slider ticket
@@ -63,10 +63,43 @@ namespace Konata.Core
         /// <summary>
         /// Send group message
         /// </summary>
-        /// <param name="groupUin"></param>
-        /// <param name="message"></param>
+        /// <param name="groupUin"><b>[In]</b> Group uin.</param>
+        /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
         public Task<GroupMessageEvent> SendGroupMessage(uint groupUin, List<MessageChain> message)
             => GetComponent<BusinessComponent>().SendGroupMessage(groupUin, message);
+
+        /// <summary>
+        /// Send friend message
+        /// </summary>
+        /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
+        /// <param name="message"><b>[In]</b> Message chain to be send.</param>
+        /// <returns></returns>
+        public Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, List<MessageChain> message)
+            => GetComponent<BusinessComponent>().SendPrivateMessage(friendUin, message);
+
+        /// <summary>
+        /// Get online status
+        /// </summary>
+        /// <returns></returns>
+        public OnlineStatusEvent.Type GetOnlineStatus()
+            => GetComponent<BusinessComponent>().GetOnlineStatus();
+
+        /// <summary>
+        /// Set online status
+        /// </summary>
+        /// <param name="status"><b>[In]</b> Online status</param>
+        /// <returns></returns>
+        public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
+            => GetComponent<BusinessComponent>().SetOnlineStatus(status);
+
+        /// <summary>
+        /// Is Online
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOnline()
+            => GetOnlineStatus() != OnlineStatusEvent.Type.Offline;
+
+        #endregion
     }
 }

@@ -7,9 +7,9 @@ namespace Konata.Core.Packet.Tlv.TlvModel
         public readonly ushort _version;
         public readonly string _apnName;
         public readonly string _simOperatorName;
-        public readonly NetworkType _networkType;
+        public readonly BotDevice.NetworkType _networkType;
 
-        public T141Body(string simOperatorName, NetworkType networkType, string apnName)
+        public T141Body(string simOperatorName, BotDevice.NetworkType networkType, string apnName)
             : base()
         {
             _version = 1;
@@ -28,7 +28,7 @@ namespace Konata.Core.Packet.Tlv.TlvModel
         {
             TakeUshortBE(out _version);
             TakeString(out _simOperatorName, Prefix.Uint16);
-            TakeUshortBE(out var type); _networkType = (NetworkType)type;
+            TakeUshortBE(out var type); _networkType = (BotDevice.NetworkType)type;
             TakeString(out _apnName, Prefix.Uint16);
         }
     }

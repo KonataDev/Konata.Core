@@ -8,12 +8,12 @@ namespace Konata.Core.Packet.Tlv.TlvModel
     {
         private readonly string _osType;
         private readonly string _osVersion;
-        private readonly NetworkType _networkType;
+        private readonly BotDevice.NetworkType _networkType;
         private readonly string _networkDetail;
         private readonly string _address;
         private readonly string _apnName;
 
-        public T124Body(string osType, string osVersion, NetworkType networkType,
+        public T124Body(string osType, string osVersion, BotDevice.NetworkType networkType,
             string networkDetail, string apnName)
             : base()
         {
@@ -37,7 +37,7 @@ namespace Konata.Core.Packet.Tlv.TlvModel
         {
             TakeString(out _osType, Prefix.Uint16);
             TakeString(out _osVersion, Prefix.Uint16);
-            TakeUshortBE(out var type); _networkType = (NetworkType)type;
+            TakeUshortBE(out var type); _networkType = (BotDevice.NetworkType)type;
             TakeString(out _networkDetail, Prefix.Uint16);
             TakeString(out _address, Prefix.Uint16);
             TakeString(out _apnName, Prefix.Uint16);

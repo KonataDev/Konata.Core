@@ -2,8 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <Product>Konata Core</Product>
+    <Authors>Konata Project</Authors>
     <Copyright>(C) 2021 Konata Project</Copyright>
     <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
+    
+    <Version>0.0.1</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

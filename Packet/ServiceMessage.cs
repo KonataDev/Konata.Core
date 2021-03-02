@@ -38,7 +38,8 @@ namespace Konata.Core.Packet
         public bool IsServerResponse { get; private set; } = false;
 
 
-        public static bool Build(ServiceMessage toService, out byte[] output)
+        public static bool Build(ServiceMessage toService, BotDevice device,
+            out byte[] output)
         {
             var body = new PacketBase();
             var write = new PacketBase();
@@ -56,9 +57,9 @@ namespace Konata.Core.Packet
                     ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                 if (toService._keyData == null)
-                    body.PutByteBuffer(SSOFrame.Build(toService._payloadFrame));
+                    body.PutByteBuffer(SSOFrame.Build(toService._payloadFrame, device));
                 else
-                    body.PutEncryptedBytes(SSOFrame.Build(toService._payloadFrame).GetBytes(),
+                    body.PutEncryptedBytes(SSOFrame.Build(toService._payloadFrame, device).GetBytes(),
                     TeaCryptor.Instance, toService._keyData);
             }
             write.PutByteBuffer(body,

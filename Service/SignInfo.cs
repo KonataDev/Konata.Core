@@ -25,31 +25,33 @@ namespace Konata.Core.Service
     {
         public UinInfo UinInfo { get; set; }
 
-        public byte[] PasswordMd5 { get; private set; }
+        public byte[] PasswordMd5 { get; set; }
+            = new byte[] { };
 
         public byte[] SyncCookie { get; set; }
+            = new byte[] { };
 
         #region WtLogin
 
-        public byte[] GSecret { get; private set; }
+        public byte[] GSecret { get; set; }
+            = new byte[] { };
 
-        public string DPassword { get; private set; }
+        public string DSecret { get; set; }
 
-        public string WtLoginSmsToken { get; set; }
+        internal string WtLoginSmsToken { get; set; }
 
-        public string WtLoginSmsPhone { get; set; }
+        internal string WtLoginSmsPhone { get; set; }
 
-        public string WtLoginSmsCountry { get; set; }
+        internal string WtLoginSmsCountry { get; set; }
 
-        public string WtLoginSession { get; set; }
-
-        public OicqStatus WtLoginStatus { get; set; }
+        internal string WtLoginSession { get; set; }
 
         #endregion
 
         #region Keys And Tokens
 
         public byte[] Tlv106Key { get; private set; }
+            = new byte[] { };
 
         public byte[] TgtgKey { get; private set; } =
         {
@@ -95,34 +97,47 @@ namespace Konata.Core.Service
         };
 
         public byte[] TgtKey { get; set; }
+            = new byte[] { };
 
         public byte[] TgtToken { get; set; }
+            = new byte[] { };
 
         public byte[] D2Key { get; set; }
+            = new byte[] { };
 
         public byte[] D2Token { get; set; }
+            = new byte[] { };
 
         public byte[] GtKey { get; set; }
+            = new byte[] { };
 
         public byte[] StKey { get; set; }
+            = new byte[] { };
 
         public byte[] WtSessionTicketSig { get; set; }
+            = new byte[] { };
 
         public byte[] WtSessionTicketKey { get; set; }
+            = new byte[] { };
 
         #endregion
 
-        public SignInfo(uint uin, string password)
+        public SignInfo()
         {
-            UinInfo = new UinInfo { Uin = uin };
+
+        }
+
+        public SignInfo(string uin, string password, string imei)
+        {
+            UinInfo = new UinInfo { Uin = uint.Parse(uin) };
 
             PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
             Tlv106Key = new Md5Cryptor().Encrypt(PasswordMd5
                         .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
-                        .Concat(BitConverter.GetBytes(uin).Reverse()).ToArray());
+                        .Concat(BitConverter.GetBytes(UinInfo.Uin).Reverse()).ToArray());
 
-            DPassword = MakeDpassword();
-            GSecret = MakeGSecret(DeviceInfo.System.Imei, DPassword, null);
+            DSecret = MakeDpassword();
+            GSecret = MakeGSecret(imei, DSecret, null);
 
             SyncCookie = MakeSyncCookie();
         }

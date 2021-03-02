@@ -166,8 +166,8 @@ namespace Konata.Core.Service.OnlinePush
             };
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = 0;

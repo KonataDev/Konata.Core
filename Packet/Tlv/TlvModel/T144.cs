@@ -42,7 +42,7 @@ namespace Konata.Core.Packet.Tlv.TlvModel
         }
 
         public T144Body(string androidId, DeviceReport deviceReport, string osType, string osVersion,
-            NetworkType networkType, string networkDetail, string apnName, bool isNewInstall,
+            BotDevice.NetworkType networkType, string networkDetail, string apnName, bool isNewInstall,
             bool isGuidAvaliable, bool isGuidChanged, byte[] guid, uint guidFlag,
             string deviceModel, string deviceBrand)
         {

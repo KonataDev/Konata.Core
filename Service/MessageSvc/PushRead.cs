@@ -11,7 +11,8 @@ namespace Konata.Core.Service.MessageSvc
         public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
             => (output = null) == null;
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signInfo,
-            out int newSequence, out byte[] output) => throw new NotImplementedException();
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            => throw new NotImplementedException();
     }
 }

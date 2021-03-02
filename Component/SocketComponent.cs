@@ -30,18 +30,16 @@ namespace Konata.Core.Component
 
         private static ServerInfo[] DefaultServers { get; } =
         {
-            //new ServerInfo { Host = "192.168.1.2", Port = 8080 },
-            //new ServerInfo { Host = "127.0.0.1", Port = 8080 },
             new ServerInfo { Host = "msfwifi.3g.qq.com", Port = 8080 },
-            //new ServerInfo { Host = "14.215.138.110", Port = 8080 },
-            //new ServerInfo { Host = "113.96.12.224", Port = 8080 },
-            //new ServerInfo { Host = "157.255.13.77", Port = 14000 },
-            //new ServerInfo { Host = "120.232.18.27", Port = 443 },
-            //new ServerInfo { Host = "183.3.235.162", Port = 14000 },
-            //new ServerInfo { Host = "163.177.89.195", Port = 443 },
-            //new ServerInfo { Host = "183.232.94.44", Port = 80 },
-            //new ServerInfo { Host = "203.205.255.224", Port = 8080 },
-            //new ServerInfo { Host = "203.205.255.221", Port = 8080 },
+            new ServerInfo { Host = "14.215.138.110", Port = 8080 },
+            new ServerInfo { Host = "113.96.12.224", Port = 8080 },
+            new ServerInfo { Host = "157.255.13.77", Port = 14000 },
+            new ServerInfo { Host = "120.232.18.27", Port = 443 },
+            new ServerInfo { Host = "183.3.235.162", Port = 14000 },
+            new ServerInfo { Host = "163.177.89.195", Port = 443 },
+            new ServerInfo { Host = "183.232.94.44", Port = 80 },
+            new ServerInfo { Host = "203.205.255.224", Port = 8080 },
+            new ServerInfo { Host = "203.205.255.221", Port = 8080 },
         };
 
         public string TAG = "SocketComponent";

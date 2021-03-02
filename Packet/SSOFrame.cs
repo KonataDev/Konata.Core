@@ -88,7 +88,7 @@ namespace Konata.Core.Packet
             return true;
         }
 
-        public static ByteBuffer Build(SSOFrame ssoFrame)
+        public static ByteBuffer Build(SSOFrame ssoFrame, BotDevice device)
         {
             byte[] unknownBytes0 = { };
             byte[] unknownBytes1 = { };
@@ -114,7 +114,7 @@ namespace Konata.Core.Packet
                     head.PutBytes(sessionBytes,
                             ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-                    head.PutString(DeviceInfo.System.Imei,
+                    head.PutString(device.Model.IMEI,
                             ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes0,

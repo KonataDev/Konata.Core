@@ -54,5 +54,35 @@ namespace Konata.Utils
 
             return list;
         }
+
+        /// <summary>
+        /// Deep clone object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static T Clone<T>(T t)
+        {
+            if (t is string || t.GetType().IsValueType)
+            {
+                return t;
+            }
+
+            var type = t.GetType();
+
+            var retval = Activator.CreateInstance(type);
+            {
+                FieldInfo[] fields = type.GetFields(BindingFlags.Public
+                    | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+                foreach (FieldInfo field in fields)
+                {
+                    try { field.SetValue(retval, Clone(field.GetValue(t))); }
+                    catch { /* Always ignore exceptions */}
+                }
+            }
+
+            return (T)retval;
+        }
     }
 }

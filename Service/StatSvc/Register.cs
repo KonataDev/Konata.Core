@@ -25,8 +25,8 @@ namespace Konata.Core.Service.StatSvc
             return true;
         }
 
-        public bool Build(Sequence sequence, OnlineStatusEvent input, SignInfo signinfo,
-            out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, OnlineStatusEvent input,
+            SignInfo signinfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -47,20 +47,20 @@ namespace Konata.Core.Service.StatSvc
                 osVersion = 27,
                 netType = 1,
                 regType = 0,
-                guid = DeviceInfo.Guid,
+                guid = device.Guid,
                 localeID = 2052,
                 slientPush = 0,
-                devName = DeviceInfo.System.ModelName,
-                devType = DeviceInfo.System.ModelName,
-                osVer = DeviceInfo.System.OsVersion,
+                devName = device.Model.Name,
+                devType = device.Model.Name,
+                osVer = device.System.Version,
                 openPush = 1,
                 largeSeq = 99,
                 oldSSOIp = 0,
                 newSSOIp = 0,
                 channelNo = "",
                 cpId = 0,
-                vendorName = DeviceInfo.System.Manufacturer,
-                vendorOSName = DeviceInfo.System.OsName,
+                vendorName = device.Model.Manufacturer,
+                vendorOSName = device.System.Name,
                 osIdfa = "",
                 cmd0x769Reqbody = new byte[]
                 {
@@ -80,15 +80,15 @@ namespace Konata.Core.Service.StatSvc
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
                     signinfo.UinInfo.Uin, signinfo.D2Token, signinfo.D2Key, out var toService))
                 {
-                    return ServiceMessage.Build(toService, out output);
+                    return ServiceMessage.Build(toService, device, out output);
                 }
             }
 
             return false;
         }
 
-        public bool Build(Sequence sequence, ProtocolEvent input, SignInfo signinfo,
-            out int outsequence, out byte[] output)
-            => Build(sequence, (OnlineStatusEvent)input, signinfo, out outsequence, out output);
+        public bool Build(Sequence sequence, ProtocolEvent input,
+            SignInfo signinfo, BotDevice device, out int outsequence, out byte[] output)
+            => Build(sequence, (OnlineStatusEvent)input, signinfo, device, out outsequence, out output);
     }
 }
