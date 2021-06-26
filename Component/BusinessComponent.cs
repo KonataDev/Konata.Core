@@ -152,12 +152,12 @@ namespace Konata.Core.Component
         internal async void PrivateMessagePulldown()
             => await PostEvent<PacketComponent>(new PrivateMessagePullEvent
             {
-                SyncCookie = GetComponent<ConfigComponent>().SignInfo.SyncCookie
+                SyncCookie = GetComponent<ConfigComponent>().SignInfo.Account.SyncCookie
             });
 
         internal void ConfirmPrivateMessage(PrivateMessageEvent privateMessage)
         {
-            GetComponent<ConfigComponent>().SignInfo.SyncCookie
+            GetComponent<ConfigComponent>().SignInfo.Account.SyncCookie
                 = privateMessage.SyncCookie;
         }
 

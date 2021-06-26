@@ -120,7 +120,7 @@ namespace Konata.Core.Component
                     }
                     else LogW(TAG, $"Parse sso frame failed. { ssoFrame.Command }");
                 }
-                else LogW(TAG, $"Parse service message failed. \n D2 => { ByteConverter.Hex(config.SignInfo.D2Key, true) }");
+                else LogW(TAG, $"Parse service message failed. \n D2 => { ByteConverter.Hex(config.SignInfo.Session.D2Key, true) }");
             }
 
             // Protocol Event

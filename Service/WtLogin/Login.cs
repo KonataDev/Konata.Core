@@ -66,7 +66,7 @@ namespace Konata.Core.Service.WtLogin
                 var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
                 var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
 
-                signinfo.WtLoginSession = sigSession;
+                signinfo.Session.WtLoginSession = sigSession;
 
                 return new WtLoginEvent
                 {
@@ -108,10 +108,10 @@ namespace Konata.Core.Service.WtLogin
                     var smsCountryCode = ((T178Body)tlv178._tlvBody)._countryCode;
                     var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
 
-                    signinfo.WtLoginSession = sigSession;
-                    signinfo.WtLoginSmsPhone = smsPhone;
-                    signinfo.WtLoginSmsToken = smsToken;
-                    signinfo.WtLoginSmsCountry = smsCountryCode;
+                    signinfo.Session.WtLoginSession = sigSession;
+                    signinfo.Session.WtLoginSmsPhone = smsPhone;
+                    signinfo.Session.WtLoginSmsToken = smsToken;
+                    signinfo.Session.WtLoginSmsCountry = smsCountryCode;
 
                     return new WtLoginEvent
                     {
@@ -128,12 +128,12 @@ namespace Konata.Core.Service.WtLogin
                 {
                     var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
 
-                    signinfo.WtLoginSession = sigSession;
+                    signinfo.Session.WtLoginSession = sigSession;
 
                     return new WtLoginEvent
                     {
-                        SmsPhone = signinfo.WtLoginSmsPhone,
-                        SmsCountry = signinfo.WtLoginSmsCountry,
+                        SmsPhone = signinfo.Session.WtLoginSmsPhone,
+                        SmsCountry = signinfo.Session.WtLoginSmsCountry,
                         EventType = WtLoginEvent.Type.CheckSMS
                     };
                 }
@@ -231,31 +231,31 @@ namespace Konata.Core.Service.WtLogin
                     var userFace = ((T11aBody)tlv11a._tlvBody)._face;
                     var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
 
-                    signinfo.TgtKey = tgtKey;
-                    signinfo.TgtToken = tgtToken;
-                    signinfo.D2Key = d2Key;
-                    signinfo.D2Token = d2Token;
-                    signinfo.WtSessionTicketSig = wtSessionTicketSig;
-                    signinfo.WtSessionTicketKey = wtSessionTicketKey;
-                    signinfo.GtKey = gtKey;
-                    signinfo.StKey = stKey;
-                    signinfo.UinInfo = new UinInfo
+                    signinfo.Session.TgtKey = tgtKey;
+                    signinfo.Session.TgtToken = tgtToken;
+                    signinfo.Session.D2Key = d2Key;
+                    signinfo.Session.D2Token = d2Token;
+                    signinfo.Session.WtSessionTicketSig = wtSessionTicketSig;
+                    signinfo.Session.WtSessionTicketKey = wtSessionTicketKey;
+                    signinfo.Session.GtKey = gtKey;
+                    signinfo.Session.StKey = stKey;
+                    signinfo.Account = new SignInfo.UserInfo
                     {
                         Age = userAge,
                         Face = userFace,
                         Name = userNickname,
-                        Uin = signinfo.UinInfo.Uin
+                        Uin = signinfo.Account.Uin
                     };
 
-                    Console.WriteLine($"  [SignInfo] gtKey => { ByteConverter.Hex(signinfo.GtKey, true) }");
-                    Console.WriteLine($"  [SignInfo] stKey => { ByteConverter.Hex(signinfo.StKey, true) }");
-                    Console.WriteLine($"  [SignInfo] tgtKey => { ByteConverter.Hex(signinfo.TgtKey, true) }");
-                    Console.WriteLine($"  [SignInfo] tgtToken => { ByteConverter.Hex(signinfo.TgtToken, true) }");
-                    Console.WriteLine($"  [SignInfo] d2Key => { ByteConverter.Hex(signinfo.D2Key, true) }");
-                    Console.WriteLine($"  [SignInfo] d2Token => { ByteConverter.Hex(signinfo.D2Token, true) }");
+                    Console.WriteLine($"  [SignInfo] gtKey => { ByteConverter.Hex(signinfo.Session.GtKey, true) }");
+                    Console.WriteLine($"  [SignInfo] stKey => { ByteConverter.Hex(signinfo.Session.StKey, true) }");
+                    Console.WriteLine($"  [SignInfo] tgtKey => { ByteConverter.Hex(signinfo.Session.TgtKey, true) }");
+                    Console.WriteLine($"  [SignInfo] tgtToken => { ByteConverter.Hex(signinfo.Session.TgtToken, true) }");
+                    Console.WriteLine($"  [SignInfo] d2Key => { ByteConverter.Hex(signinfo.Session.D2Key, true) }");
+                    Console.WriteLine($"  [SignInfo] d2Token => { ByteConverter.Hex(signinfo.Session.D2Token, true) }");
 
-                    Console.WriteLine($"  [UinInfo] Uin => { signinfo.UinInfo.Uin }");
-                    Console.WriteLine($"  [UinInfo] Name => { signinfo.UinInfo.Name }");
+                    Console.WriteLine($"  [UinInfo] Uin => { signinfo.Account.Uin }");
+                    Console.WriteLine($"  [UinInfo] Name => { signinfo.Account.Name }");
 
                     return new WtLoginEvent
                     {
@@ -374,7 +374,7 @@ namespace Konata.Core.Service.WtLogin
                 newSequece, sequence.Session, oicqRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
-                    signInfo.UinInfo.Uin, out var toService))
+                    signInfo.Account.Uin, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }

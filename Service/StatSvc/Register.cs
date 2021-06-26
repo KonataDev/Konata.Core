@@ -33,7 +33,7 @@ namespace Konata.Core.Service.StatSvc
 
             var svcRequest = new SvcReqRegister(new RegisterInfo
             {
-                uin = signinfo.UinInfo.Uin,
+                uin = signinfo.Account.Uin,
                 bid = 7,
                 connType = 0,
                 other = "",
@@ -47,7 +47,7 @@ namespace Konata.Core.Service.StatSvc
                 osVersion = 27,
                 netType = 1,
                 regType = 0,
-                guid = device.Guid,
+                guid = device.System.Guid,
                 localeID = 2052,
                 slientPush = 0,
                 devName = device.Model.Name,
@@ -75,10 +75,10 @@ namespace Konata.Core.Service.StatSvc
             });
 
             if (SSOFrame.Create("StatSvc.register", PacketType.TypeA, newSequence,
-                 signinfo.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
+                 signinfo.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signinfo.UinInfo.Uin, signinfo.D2Token, signinfo.D2Key, out var toService))
+                    signinfo.Account.Uin, signinfo.Session.D2Token, signinfo.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }

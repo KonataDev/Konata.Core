@@ -70,7 +70,7 @@ namespace Konata.Core.Packet
         }
 
         public static bool Parse(byte[] buffer, SignInfo signinfo, out ServiceMessage output)
-            => Parse(buffer, signinfo.D2Key, signinfo.ZeroKey, out output);
+            => Parse(buffer, signinfo.Session.D2Key, signinfo.ZeroKey, out output);
 
         public static bool Parse(byte[] buffer, byte[] d2Key, byte[] zeroKey, out ServiceMessage output)
         {
@@ -133,7 +133,7 @@ namespace Konata.Core.Packet
 
         public static bool Create(SSOFrame ssoFrame, AuthFlag reqFlag, uint reqUin,
             SignInfo signinfo, out ServiceMessage output)
-            => Create(ssoFrame, reqFlag, reqUin, signinfo.D2Token, signinfo.D2Key, out output);
+            => Create(ssoFrame, reqFlag, reqUin, signinfo.Session.D2Token, signinfo.Session.D2Key, out output);
 
         public static bool Create(SSOFrame ssoFrame, AuthFlag reqFlag,
             uint reqUin, out ServiceMessage output)

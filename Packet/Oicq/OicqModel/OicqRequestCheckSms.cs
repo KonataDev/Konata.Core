@@ -14,8 +14,8 @@ namespace Konata.Core.Packet.Oicq
 
         public OicqRequestCheckSms(string code, SignInfo signinfo)
 
-            : base(OicqCommand, OicqSubCommand, signinfo.UinInfo.Uin, OicqEncryptMethod.ECDH7,
-                  new XCheckSms(signinfo.WtLoginSession, signinfo.WtLoginSmsToken, code, signinfo.GSecret),
+            : base(OicqCommand, OicqSubCommand, signinfo.Account.Uin, OicqEncryptMethod.ECDH7,
+                  new XCheckSms(signinfo.Session.WtLoginSession, signinfo.Session.WtLoginSmsToken, code, signinfo.Session.GSecret),
                   signinfo.ShareKey, signinfo.RandKey, signinfo.DefaultPublicKey)
         {
 

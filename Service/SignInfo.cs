@@ -10,48 +10,35 @@ using Konata.Utils.Protobuf;
 
 namespace Konata.Core.Service
 {
-    public struct UinInfo
-    {
-        public uint Uin { get; set; }
-
-        public int Age { get; set; }
-
-        public int Face { get; set; }
-
-        public string Name { get; set; }
-    }
-
     public class SignInfo
     {
-        public UinInfo UinInfo { get; set; }
+        internal class UserInfo : BotKeyStore.User
+        {
+            public int Age { get; set; }
+        }
 
-        public byte[] PasswordMd5 { get; set; }
-            = new byte[] { };
+        internal class WtLoginInfo : BotKeyStore.WtLogin
+        {
+            public byte[] WtSessionTicketSig { get; set; }
+                = new byte[] { };
 
-        public byte[] SyncCookie { get; set; }
-            = new byte[] { };
+            public byte[] WtSessionTicketKey { get; set; }
+                = new byte[] { };
 
-        #region WtLogin
+            public string WtLoginSmsToken { get; set; }
 
-        public byte[] GSecret { get; set; }
-            = new byte[] { };
+            public string WtLoginSmsPhone { get; set; }
 
-        public string DSecret { get; set; }
+            public string WtLoginSmsCountry { get; set; }
 
-        internal string WtLoginSmsToken { get; set; }
+            public string WtLoginSession { get; set; }
+        }
 
-        internal string WtLoginSmsPhone { get; set; }
+        internal UserInfo Account { get; set; }
 
-        internal string WtLoginSmsCountry { get; set; }
-
-        internal string WtLoginSession { get; set; }
-
-        #endregion
+        internal WtLoginInfo Session { get; set; }
 
         #region Keys And Tokens
-
-        public byte[] Tlv106Key { get; private set; }
-            = new byte[] { };
 
         public byte[] TgtgKey { get; private set; } =
         {
@@ -65,19 +52,19 @@ namespace Konata.Core.Service
             0x56, 0xEB, 0x8B, 0x4C, 0x62, 0x7C, 0x22, 0xC4
         };
 
-        public byte[] ShareKey { get; private set; } =
+        internal byte[] ShareKey { get; } =
         {
             0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2,
             0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7
         };
 
-        public byte[] ZeroKey { get; private set; } =
+        internal byte[] ZeroKey { get; } =
         {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         };
 
-        public byte[] DefaultPublicKey { get; private set; } =
+        internal byte[] DefaultPublicKey { get; } =
         {
             0x02, 0x0B, 0x03, 0xCF, 0x3D, 0x99, 0x54, 0x1F,
             0x29, 0xFF, 0xEC, 0x28, 0x1B, 0xEB, 0xBD, 0x4E,
@@ -85,7 +72,7 @@ namespace Konata.Core.Service
             0x28
         };
 
-        public byte[] ServerPublicKey { get; private set; } =
+        internal byte[] ServerPublicKey { get; } =
         {
             0x04, 0x92, 0x8D, 0x88, 0x50, 0x67, 0x30, 0x88,
             0xB3, 0x43, 0x26, 0x4E, 0x0C, 0x6B, 0xAC, 0xB8,
@@ -95,112 +82,32 @@ namespace Konata.Core.Service
             0x98, 0xB5, 0x1A, 0x99, 0x2D, 0x50, 0x81, 0x3D,
             0xA8
         };
-
-        public byte[] TgtKey { get; set; }
-            = new byte[] { };
-
-        public byte[] TgtToken { get; set; }
-            = new byte[] { };
-
-        public byte[] D2Key { get; set; }
-            = new byte[] { };
-
-        public byte[] D2Token { get; set; }
-            = new byte[] { };
-
-        public byte[] GtKey { get; set; }
-            = new byte[] { };
-
-        public byte[] StKey { get; set; }
-            = new byte[] { };
-
-        public byte[] WtSessionTicketSig { get; set; }
-            = new byte[] { };
-
-        public byte[] WtSessionTicketKey { get; set; }
-            = new byte[] { };
-
         #endregion
 
-        public SignInfo()
+        public SignInfo(BotKeyStore keystore)
         {
-
-        }
-
-        public SignInfo(string uin, string password, string imei)
-        {
-            UinInfo = new UinInfo { Uin = uint.Parse(uin) };
-
-            PasswordMd5 = new Md5Cryptor().Encrypt(Encoding.UTF8.GetBytes(password));
-            Tlv106Key = new Md5Cryptor().Encrypt(PasswordMd5
-                        .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
-                        .Concat(BitConverter.GetBytes(UinInfo.Uin).Reverse()).ToArray());
-
-            DSecret = MakeDpassword();
-            GSecret = MakeGSecret(imei, DSecret, null);
-
-            SyncCookie = MakeSyncCookie();
-        }
-
-        private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
-        {
-            byte[] buffer;
-            var imeiByte = Encoding.UTF8.GetBytes(imei);
-            var dpwdByte = Encoding.UTF8.GetBytes(dpwd);
-
-            if (salt != null)
+            Account = new UserInfo
             {
-                buffer = new byte[imeiByte.Length + dpwdByte.Length + salt.Length];
+                Age = 0,
+                Uin = keystore.Account.Uin,
+                Name = keystore.Account.Name,
+                Face = keystore.Account.Face,
+                SyncCookie = keystore.Account.SyncCookie,
+                PasswordMd5 = keystore.Account.PasswordMd5
+            };
 
-                Array.Copy(imeiByte, buffer, imei.Length);
-                Array.Copy(dpwdByte, 0, buffer, imei.Length, dpwdByte.Length);
-                Array.Copy(salt, 0, buffer, imei.Length + dpwdByte.Length, salt.Length);
-            }
-            else
+            Session = new WtLoginInfo
             {
-                buffer = new byte[imeiByte.Length + dpwdByte.Length];
-
-                Array.Copy(imeiByte, buffer, imei.Length);
-                Array.Copy(dpwdByte, 0, buffer, imei.Length, dpwdByte.Length);
-            }
-
-            return new Md5Cryptor().Encrypt(buffer);
-        }
-
-        private static string MakeDpassword()
-        {
-            try
-            {
-                var random = new Random();
-                var seedTable = new byte[16];
-
-                bool RandBoolean()
-                {
-                    return random.Next(0, 1) == 1;
-                }
-
-                using (RNGCryptoServiceProvider SecurityRandom =
-                    new RNGCryptoServiceProvider())
-                {
-                    SecurityRandom.GetBytes(seedTable);
-                }
-
-                for (int i = 0; i < seedTable.Length; ++i)
-                {
-                    seedTable[i] = (byte)(Math.Abs(seedTable[i] % 26) + (RandBoolean() ? 97 : 65));
-                }
-
-                return Encoding.UTF8.GetString(seedTable);
-            }
-            catch
-            {
-                return "1234567890123456";
-            }
-        }
-
-        private static byte[] MakeSyncCookie()
-        {
-            return ProtoTreeRoot.Serialize(new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
+                D2Key = keystore.Session.D2Key,
+                D2Token = keystore.Session.D2Token,
+                DSecret = keystore.Session.DSecret,
+                GSecret = keystore.Session.GSecret,
+                GtKey = keystore.Session.GtKey,
+                StKey = keystore.Session.StKey,
+                TgtKey = keystore.Session.TgtKey,
+                TgtToken = keystore.Session.TgtToken,
+                Tlv106Key = keystore.Session.Tlv106Key
+            };
         }
     }
 }

@@ -10,26 +10,13 @@ namespace Konata.Core
     {
         public ModelInfo Model { get; set; }
 
+        public DisplayInfo Display { get; set; }
+
         public SystemInfo System { get; set; }
 
         public NetworkInfo Network { get; set; }
 
-        public byte[] Guid { get; set; }
-
-        //public BotDevice(ModelInfo model,
-        //    SystemInfo system, NetworkInfo network)
-        //{
-        //    Model = model;
-        //    System = system;
-        //    Network = network;
-
-        //    Guid = new Md5Cryptor()
-        //        .Encrypt(Encoding.UTF8.GetBytes(System.AndroidId)
-        //        .Concat(network.Wifi.IpAddress)
-        //        .ToArray());
-        //}
-
-        public struct ModelInfo
+        public class ModelInfo
         {
             public string Name { get; set; }
 
@@ -42,11 +29,9 @@ namespace Konata.Core
             public string BaseBand { get; set; }
 
             public string CodeName { get; set; }
-
-            public DisplayInfo Display { get; set; }
         }
 
-        public struct SystemInfo
+        public class SystemInfo
         {
             public string Name { get; set; }
 
@@ -65,15 +50,34 @@ namespace Konata.Core
             public string InnerVersion { get; set; }
 
             public string FingerPrint { get; set; }
+
+            public byte[] Guid { get; set; }
         }
 
-        public struct NetworkInfo
+        public class NetworkInfo
         {
-            public NetworkType Type { get; set; }
+            public NetworkType NetType { get; set; }
 
-            public WifiInfo Wifi { get; set; }
+            [Obsolete]
+            public string NetApn { get; set; }
 
-            public MobileInfo Mobile { get; set; }
+            public string NetOperator { get; set; }
+
+            [Obsolete]
+            public byte[] NetIpAddress { get; set; }
+
+            public byte[] WifiMacAddress { get; set; }
+
+            public string WifiSsid { get; set; }
+
+            public byte[] WifiBssid { get; set; }
+        }
+
+        public class DisplayInfo
+        {
+            public int Width { get; set; }
+
+            public int Height { get; set; }
         }
 
         public enum NetworkType
@@ -81,35 +85,6 @@ namespace Konata.Core
             Other = 0,
             Mobile = 1,
             Wifi = 2,
-        }
-
-        public struct WifiInfo
-        {
-            [Obsolete]
-            public string Apn { get; set; }
-
-            [Obsolete]
-            public byte[] IpAddress { get; set; }
-
-            public byte[] MacAddress { get; set; }
-
-            public string Ssid { get; set; }
-
-            public byte[] Bssid { get; set; }
-        }
-
-        public struct MobileInfo
-        {
-            public string Apn { get; set; }
-
-            public string Operator { get; set; }
-        }
-
-        public struct DisplayInfo
-        {
-            public int Width { get; set; }
-
-            public int Height { get; set; }
         }
     }
 }

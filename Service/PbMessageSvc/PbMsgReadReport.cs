@@ -27,7 +27,7 @@ namespace Konata.Core.Service.PbMessageSvc
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(readReport), out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signInfo.UinInfo.Uin, signInfo.D2Token, signInfo.D2Key, out var toService))
+                    signInfo.Account.Uin, signInfo.Session.D2Token, signInfo.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }

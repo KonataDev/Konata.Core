@@ -14,8 +14,8 @@ namespace Konata.Core.Packet.Oicq
 
         public OicqRequestCheckImage(string ticket, SignInfo signinfo)
 
-            : base(OicqCommand, OicqSubCommand, signinfo.UinInfo.Uin,
-                  OicqEncryptMethod.ECDH7, new XCaptcha(signinfo.WtLoginSession, ticket),
+            : base(OicqCommand, OicqSubCommand, signinfo.Account.Uin,
+                  OicqEncryptMethod.ECDH7, new XCaptcha(signinfo.Session.WtLoginSession, ticket),
                   signinfo.ShareKey, signinfo.RandKey, signinfo.DefaultPublicKey)
         {
 
