@@ -6,6 +6,7 @@
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
     <Copyright>(C) 2021 Konata Project</Copyright>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
     
     <Version>0.0.1</Version>
@@ -15,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Stamp.Fody" Version="1.4.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
   </ItemGroup>
 
