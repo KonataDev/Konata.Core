@@ -13,6 +13,16 @@ namespace Konata.Core
     {
         internal Bot() { }
 
+        #region Bot Information
+
+        public uint Uin
+            => GetComponent<ConfigComponent>().SignInfo.Account.Uin;
+
+        public string Name
+            => GetComponent<ConfigComponent>().SignInfo.Account.Name;
+
+        #endregion
+
         #region Protocol Methods
 
         /// <summary>

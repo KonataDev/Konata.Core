@@ -11,11 +11,11 @@ namespace Konata.Core.Entity
 {
     public class BaseEntity
     {
-        private ActionBlock<BaseEvent> _eventHandler;
+        private Action<CoreEvent> _eventHandler;
         private Dictionary<Type, BaseComponent> _componentDict
             = new Dictionary<Type, BaseComponent>();
 
-        internal void SetEventHandler(ActionBlock<BaseEvent> handler)
+        internal void SetEventHandler(Action<CoreEvent> handler)
             => _eventHandler = handler;
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Konata.Core.Entity
         /// </summary>
         /// <param name="anyEvent"></param>
         internal void PostEventToEntity(BaseEvent anyEvent)
-            => _eventHandler.SendAsync(anyEvent);
+            => _eventHandler?.Invoke(new CoreEvent(((Bot)this).Uin, anyEvent));
 
         /// <summary>
         /// Post an event to any component attached under this entity

@@ -80,7 +80,7 @@ namespace Konata.Core.Component
                     }
                 }
 
-                LogW(TAG, "You goes here? What the happend?");
+                LogW(TAG, "You're here? What the happened?");
                 return false;
             }
 

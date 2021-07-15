@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks.Dataflow;
 
 using Konata.Utils;
 using Konata.Core.Event;
@@ -19,7 +18,7 @@ namespace Konata.Core
         /// <param name="device"><b>[In] </b>bot device definition</param>
         /// <returns></returns>
         public static Bot CreateBot(BotConfig config, BotDevice device,
-            BotKeyStore keystore, ActionBlock<BaseEvent> handler)
+            BotKeyStore keystore, Action<CoreEvent> handler)
         {
             var entity = new Bot();
             {

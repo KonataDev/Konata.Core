@@ -2,7 +2,7 @@
 
 namespace Konata.Core.Event
 {
-    public class BaseEvent
+    public class BaseEvent : EventArgs
     {
         public DateTime EventTime { get; set; }
 
