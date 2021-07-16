@@ -1,17 +1,45 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Component;
+using Konata.Core.Event;
 using Konata.Core.Event.EventModel;
+using Konata.Core.Service;
+using Konata.Utils;
 
 namespace Konata.Core
 {
-    public sealed class Bot : BaseEntity
+    public class Bot : BaseEntity
     {
-        internal Bot() { }
+        /// <summary>
+        /// Create a bot
+        /// </summary>
+        /// <param name="handler"><b>[In] </b>bot event handler</param>
+        /// <param name="config"><b>[In] </b>bot configuration</param>
+        /// <param name="device"><b>[In] </b>bot device definition</param>
+        public Bot(BotConfig config, BotDevice device,
+            BotKeyStore keystore, Action<CoreEvent> handler)
+        {
+            // Load components
+            foreach (var type in Reflection
+                .GetClassesByAttribute<ComponentAttribute>())
+            {
+                AddComponent((BaseComponent)Activator.CreateInstance(type));
+            }
+
+            // Setup event handler
+            SetEventHandler(handler);
+
+            // Setup configs
+            var component = GetComponent<ConfigComponent>();
+            {
+                component.LoadConfig(config);
+                component.LoadDeviceInfo(device);
+                component.LoadSignInfo(new SignInfo(keystore));
+            }
+        }
 
         #region Bot Information
 
@@ -76,7 +104,7 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
-        public Task<GroupMessageEvent> SendGroupMessage(uint groupUin, List<MessageChain> message)
+        public Task<GroupMessageEvent> SendGroupMessage(uint groupUin, MessageChain message)
             => GetComponent<BusinessComponent>().SendGroupMessage(groupUin, message);
 
         /// <summary>
@@ -85,7 +113,7 @@ namespace Konata.Core
         /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
-        public Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, List<MessageChain> message)
+        public Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, MessageChain message)
             => GetComponent<BusinessComponent>().SendPrivateMessage(friendUin, message);
 
         /// <summary>
