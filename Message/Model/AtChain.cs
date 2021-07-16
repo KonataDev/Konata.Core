@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Konata.Core.Message.Model
 {
-    public class AtChain : MessageChain
+    public class AtChain : BaseChain
     {
         public uint AtUin { get; set; }
 

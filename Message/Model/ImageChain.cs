@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Message.Model
 {
-    public class ImageChain : MessageChain
+    public class ImageChain : BaseChain
     {
         public string ImageUrl { get; set; }
 

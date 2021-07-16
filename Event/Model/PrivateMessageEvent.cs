@@ -11,7 +11,7 @@ namespace Konata.Core.Event.EventModel
 
         public uint FriendUin { get; set; }
 
-        public List<MessageChain> Message { get; set; }
+        public MessageChain Message { get; set; }
 
         public bool IsFromTemporary { get; set; }
 
@@ -22,17 +22,6 @@ namespace Konata.Core.Event.EventModel
         public uint SliceFlags { get; set; }
 
         public override string ToString()
-        {
-            if (Message == null)
-                return "";
-
-            var content = "";
-            foreach (var element in Message)
-            {
-                content += element.ToString();
-            }
-
-            return content;
-        }
+            => Message.ToString();
     }
 }

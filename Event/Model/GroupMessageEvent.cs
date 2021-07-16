@@ -15,7 +15,7 @@ namespace Konata.Core.Event.EventModel
 
         public string MemberCard { get; set; }
 
-        public List<MessageChain> Message { get; set; }
+        public MessageChain Message { get; set; }
 
         public uint MessageId { get; set; }
 
@@ -27,21 +27,10 @@ namespace Konata.Core.Event.EventModel
 
         public uint SliceFlags { get; set; }
 
-        public override string ToString()
-        {
-            if (Message == null)
-                return "";
-
-            var content = "";
-            foreach (var element in Message)
-            {
-                content += element.ToString();
-            }
-
-            return content;
-        }
-
         public GroupMessageEvent()
             => WaitForResponse = true;
+
+        public override string ToString()
+            => Message.ToString();
     }
 }

@@ -6,13 +6,13 @@ namespace Konata.Core.Event
 {
     public class CoreEvent : EventArgs
     {
-        public uint Uin { get; }
+        public Bot Bot { get; }
 
         public BaseEvent BaseEvent { get; }
 
-        public CoreEvent(uint uin, BaseEvent anyEvent)
+        public CoreEvent(Bot bot, BaseEvent anyEvent)
         {
-            Uin = uin;
+            Bot = bot;
             BaseEvent = anyEvent;
         }
     }

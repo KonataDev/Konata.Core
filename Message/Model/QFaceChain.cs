@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Konata.Core.Message.Model
 {
-    public class QFaceChain : MessageChain
+    public class QFaceChain : BaseChain
     {
         public uint FaceId;
 

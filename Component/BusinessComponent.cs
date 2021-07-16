@@ -167,7 +167,7 @@ namespace Konata.Core.Component
             return await _userOperation.Task;
         }
 
-        public async Task<GroupMessageEvent> SendGroupMessage(uint groupUin, List<MessageChain> message)
+        public async Task<GroupMessageEvent> SendGroupMessage(uint groupUin, MessageChain message)
           => (GroupMessageEvent)await PostEvent<PacketComponent>
             (new GroupMessageEvent
             {
@@ -175,7 +175,7 @@ namespace Konata.Core.Component
                 Message = message
             });
 
-        public async Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, List<MessageChain> message)
+        public async Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, MessageChain message)
             => (PrivateMessageEvent)await PostEvent<PacketComponent>
             (new PrivateMessageEvent
             {

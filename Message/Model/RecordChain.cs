@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Konata.Core.Message.Model
 {
-    public class RecordChain : MessageChain
+    public class RecordChain : BaseChain
     {
         public string FileName { get; set; }
 

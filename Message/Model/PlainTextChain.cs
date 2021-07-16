@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Konata.Core.Message.Model
 {
-    public class PlainTextChain : MessageChain
+    public class PlainTextChain : BaseChain
     {
         public string Content { get; set; }
 

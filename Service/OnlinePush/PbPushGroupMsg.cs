@@ -64,7 +64,7 @@ namespace Konata.Core.Service.OnlinePush
                     // Parse message content
                     var contentRoot = (ProtoTreeRoot)root.PathTo("0A.1A.0A");
                     {
-                        List<MessageChain> list = new List<MessageChain>();
+                        var list = new MessageChain();
 
                         contentRoot.ForEach((_, __) =>
                         {
@@ -72,7 +72,7 @@ namespace Konata.Core.Service.OnlinePush
                             {
                                 ((ProtoTreeRoot)__).ForEach((key, value) =>
                                 {
-                                    MessageChain chain = null;
+                                    BaseChain chain = null;
                                     try
                                     {
                                         switch (key)
@@ -118,7 +118,7 @@ namespace Konata.Core.Service.OnlinePush
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
-        private MessageChain ParsePicture(ProtoTreeRoot tree)
+        private BaseChain ParsePicture(ProtoTreeRoot tree)
         {
             return new ImageChain
             {
@@ -133,7 +133,7 @@ namespace Konata.Core.Service.OnlinePush
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
-        private MessageChain ParsePlainText(ProtoTreeRoot tree)
+        private BaseChain ParsePlainText(ProtoTreeRoot tree)
         {
             // At chain
             if (tree.TryGetLeafBytes("1A", out var atBytes))
@@ -158,7 +158,7 @@ namespace Konata.Core.Service.OnlinePush
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
-        private MessageChain ParseQFace(ProtoTreeRoot tree)
+        private BaseChain ParseQFace(ProtoTreeRoot tree)
         {
             return new QFaceChain
             {
