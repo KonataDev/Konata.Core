@@ -24,7 +24,7 @@ namespace Konata.Core.Message
 
             public Builder()
             {
-
+                _chain = new();
             }
 
             public MessageChain Build()
