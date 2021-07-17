@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <!-- Get Build Stamp -->
-  <Target Name="GetBuildStamp" BeforeTargets="GnerateBuildStamp" Condition="'$(BuildHash)' == ''">
+  <Target Name="GetBuildStamp" BeforeTargets="GenerateBuildStamp" Condition="'$(BuildHash)' == ''">
     <PropertyGroup>
       <BuildStampFile>$(IntermediateOutputPath)BuildStamp</BuildStampFile>
     </PropertyGroup>
@@ -47,8 +47,8 @@
     </PropertyGroup>
   </Target>
 
-  <!-- Gnerate Build Stamp -->
-  <Target Name="GnerateBuildStamp" BeforeTargets="CoreCompile">
+  <!-- Generate Build Stamp -->
+  <Target Name="GenerateBuildStamp" BeforeTargets="CoreCompile">
     <PropertyGroup>
       <CustomAssemblyInfoFile>$(IntermediateOutputPath)CustomAssemblyInfo.cs</CustomAssemblyInfoFile>
     </PropertyGroup>

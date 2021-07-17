@@ -131,6 +131,15 @@ namespace Konata.Core.Component
                     ToggleType = preventRequest
                 });
 
+        public async Task<GroupMuteMemberEvent> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
+            => (GroupMuteMemberEvent)await PostEvent<PacketComponent>
+                (new GroupMuteMemberEvent
+                {
+                    GroupUin = groupUin,
+                    MemberUin = memberUin,
+                    TimeSeconds = timeSeconds
+                });
+
         public async Task<GroupPromoteAdminEvent> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
             => (GroupPromoteAdminEvent)await PostEvent<PacketComponent>
                 (new GroupPromoteAdminEvent

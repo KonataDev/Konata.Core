@@ -90,6 +90,15 @@ namespace Konata.Core
             => GetComponent<BusinessComponent>().GroupKickMember(groupUin, memberUin, preventRequest);
 
         /// <summary>
+        /// Mute a member in the specific group.
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
+        /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
+        /// <param name="timeSeconds"><b>[In]</b> Mute time. </param>
+        public Task<GroupMuteMemberEvent> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
+            => GetComponent<BusinessComponent>().GroupMuteMember(groupUin, memberUin, timeSeconds);
+
+        /// <summary>
         /// Promote a member to admin in the specific group.
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
