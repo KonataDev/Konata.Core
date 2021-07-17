@@ -22,5 +22,12 @@ namespace Konata.Core.Component
 
         public void LoadDeviceInfo(BotDevice device)
             => DeviceInfo = device;
+
+        /// <summary>
+        /// Sync cookie
+        /// </summary>
+        /// <param name="cookie"></param>
+        public void SyncCookie(byte[] cookie)
+            => SignInfo.Account.SyncCookie = cookie;
     }
 }

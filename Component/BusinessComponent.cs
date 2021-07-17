@@ -70,10 +70,12 @@ namespace Konata.Core.Component
                             case WtLoginEvent.Type.InvalidLoginEnvironment:
                             case WtLoginEvent.Type.InvalidUinOrPassword:
                                 PostEventToEntity(wtStatus);
+                                await socketComp.DisConnect("Wtlogin failed.");
                                 return false;
 
                             default:
                             case WtLoginEvent.Type.NotImplemented:
+                                await socketComp.DisConnect("Wtlogin failed.");
                                 LogW(TAG, "Login fail. Unsupported wtlogin event type received.");
                                 return false;
                         }
@@ -165,10 +167,7 @@ namespace Konata.Core.Component
             });
 
         internal void ConfirmPrivateMessage(PrivateMessageEvent privateMessage)
-        {
-            GetComponent<ConfigComponent>().SignInfo.Account.SyncCookie
-                = privateMessage.SyncCookie;
-        }
+            => GetComponent<ConfigComponent>().SyncCookie(privateMessage.SyncCookie);
 
         private async Task<WtLoginEvent> WaitForUserOperation()
         {

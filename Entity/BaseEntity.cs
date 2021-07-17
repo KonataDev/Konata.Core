@@ -68,7 +68,7 @@ namespace Konata.Core.Entity
         /// </summary>
         /// <param name="anyEvent"></param>
         internal void PostEventToEntity(BaseEvent anyEvent)
-            => _eventHandler?.Invoke(new CoreEvent(((Bot)this), anyEvent));
+            => RunAsync(() => _eventHandler?.Invoke(new CoreEvent((Bot)this, anyEvent)));
 
         /// <summary>
         /// Post an event to any component attached under this entity
