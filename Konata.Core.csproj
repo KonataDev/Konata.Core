@@ -7,7 +7,6 @@
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
     <Copyright>(C) 2021 Konata Project</Copyright>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
     
     <Version>0.0.1</Version>
