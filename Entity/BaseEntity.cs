@@ -5,7 +5,7 @@ using System.Threading.Tasks.Dataflow;
 using System.Collections.Generic;
 
 using Konata.Utils;
-using Konata.Core.Event;
+using Konata.Core.Events;
 using Konata.Core.Components;
 
 namespace Konata.Core.Entity

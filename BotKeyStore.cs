@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 using Konata.Utils.Crypto;
 using Konata.Utils.Protobuf;
-using Konata.Core.Packet.Protobuf;
+using Konata.Core.Packets.Protobuf;
 
 namespace Konata.Core
 {

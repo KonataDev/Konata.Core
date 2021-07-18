@@ -6,10 +6,10 @@ using System.Collections.Concurrent;
 
 using Konata.Utils;
 using Konata.Utils.IO;
-using Konata.Core.Event;
+using Konata.Core.Events;
 using Konata.Core.Entity;
-using Konata.Core.Service;
-using Konata.Core.Packet;
+using Konata.Core.Services;
+using Konata.Core.Packets;
 using Konata.Core.Attributes;
 
 namespace Konata.Core.Components.Model

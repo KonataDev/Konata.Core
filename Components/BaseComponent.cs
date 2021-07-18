@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-using Konata.Core.Event;
+using Konata.Core.Events;
 using Konata.Core.Entity;
 
 namespace Konata.Core.Components
