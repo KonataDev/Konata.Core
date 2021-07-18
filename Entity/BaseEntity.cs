@@ -4,26 +4,40 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Collections.Generic;
 
+using Konata.Utils;
 using Konata.Core.Event;
-using Konata.Core.Component;
+using Konata.Core.Components;
 
 namespace Konata.Core.Entity
 {
     public class BaseEntity
     {
-        private Action<CoreEvent> _eventHandler;
-        private Dictionary<Type, BaseComponent> _componentDict
-            = new Dictionary<Type, BaseComponent>();
+        private IEventListener _eventListener;
+        private Dictionary<Type, BaseComponent> _componentDict = new();
 
-        internal void SetEventHandler(Action<CoreEvent> handler)
-            => _eventHandler = handler;
+        public void SetEventListener(IEventListener handler)
+            => _eventListener = handler;
+
+        /// <summary>
+        /// Load components
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void LoadComponents<T>()
+            where T : Attribute
+        {
+            foreach (var type in Reflection
+                .GetClassesByAttribute(typeof(T)))
+            {
+                AddComponent((BaseComponent)Activator.CreateInstance(type));
+            }
+        }
 
         /// <summary>
         /// Get component which attached on this entity
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        internal T GetComponent<T>()
+        public T GetComponent<T>()
             where T : BaseComponent
         {
             if (!_componentDict.TryGetValue(typeof(T), out BaseComponent component))
@@ -37,7 +51,7 @@ namespace Konata.Core.Entity
         /// Add component to this entity
         /// </summary>
         /// <param name="component"></param>
-        internal void AddComponent(BaseComponent component)
+        public void AddComponent(BaseComponent component)
         {
             if (_componentDict.TryGetValue(component.GetType(), out var _))
             {
@@ -53,7 +67,7 @@ namespace Konata.Core.Entity
         /// Delete component
         /// </summary>
         /// <param name="type"></param>
-        internal void RemoveComponent(Type type)
+        public void RemoveComponent(Type type)
         {
             if (!_componentDict.TryGetValue(type, out BaseComponent component))
             {
@@ -67,8 +81,8 @@ namespace Konata.Core.Entity
         /// Post an event to entity
         /// </summary>
         /// <param name="anyEvent"></param>
-        internal void PostEventToEntity(BaseEvent anyEvent)
-            => RunAsync(() => _eventHandler?.Invoke(new CoreEvent((Bot)this, anyEvent)));
+        public void PostEventToEntity(BaseEvent anyEvent)
+            => RunAsync(() => _eventListener?.OnDispatchEvent(this, anyEvent));
 
         /// <summary>
         /// Post an event to any component attached under this entity
@@ -76,7 +90,7 @@ namespace Konata.Core.Entity
         /// <typeparam name="T"></typeparam>
         /// <param name="anyEvent"></param>
         /// <returns></returns>
-        internal Task<BaseEvent> PostEvent<T>(BaseEvent anyEvent)
+        public Task<BaseEvent> PostEvent<T>(BaseEvent anyEvent)
             where T : BaseComponent
         {
             var task = new KonataTask(anyEvent);
@@ -91,7 +105,7 @@ namespace Konata.Core.Entity
         /// Broad an event to all components
         /// </summary>
         /// <param name="anyEvent"></param>
-        internal void BroadcastEvent(BaseEvent anyEvent)
+        public void BroadcastEvent(BaseEvent anyEvent)
         {
             foreach (var component in _componentDict)
             {
@@ -120,7 +134,7 @@ namespace Konata.Core.Entity
         }
     }
 
-    internal class KonataTask
+    public class KonataTask
     {
         public BaseEvent EventPayload { get; }
 
@@ -131,5 +145,10 @@ namespace Konata.Core.Entity
             EventPayload = e;
             CompletionSource = new TaskCompletionSource<BaseEvent>();
         }
+    }
+
+    public interface IEventListener
+    {
+        void OnDispatchEvent(object sender, BaseEvent @event);
     }
 }
