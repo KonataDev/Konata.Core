@@ -2,7 +2,7 @@
 using System.Text;
 
 using Konata.Core.Events;
-using Konata.Core.Events.EventModel;
+using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.OidbModel;
 using Konata.Core.Attributes;

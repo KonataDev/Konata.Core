@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Konata.Core.Events;
-using Konata.Core.Events.EventModel;
+using Konata.Core.Events.Model;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;

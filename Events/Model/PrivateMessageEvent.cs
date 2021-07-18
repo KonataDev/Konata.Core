@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Konata.Core.Message;
 
-namespace Konata.Core.Events.EventModel
+namespace Konata.Core.Events.Model
 {
     public class PrivateMessageEvent : ProtocolEvent
     {

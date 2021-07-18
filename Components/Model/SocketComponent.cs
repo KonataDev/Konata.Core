@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Konata.Utils;
 using Konata.Utils.IO;
 using Konata.Core.Events;
-using Konata.Core.Events.EventModel;
+using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
 

@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Konata.Core.Events;
-using Konata.Core.Events.EventModel;
+using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Attributes;

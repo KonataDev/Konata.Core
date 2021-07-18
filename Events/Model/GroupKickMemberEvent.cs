@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Konata.Core.Events.EventModel
+namespace Konata.Core.Events.Model
 {
     public class GroupKickMemberEvent : ProtocolEvent
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Konata.Core.Events;
-using Konata.Core.Events.EventModel;
+using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.TlvModel;
