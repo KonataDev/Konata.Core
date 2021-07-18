@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core
+namespace Konata.Core.Attributes
 {
     /// <summary>
     /// SSO Service Attribute

@@ -3,6 +3,7 @@
 using Konata.Core.Packet;
 using Konata.Core.Event;
 using Konata.Core.Event.EventModel;
+using Konata.Core.Attributes;
 
 namespace Konata.Core.Service.MessageSvc
 {

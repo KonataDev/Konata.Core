@@ -10,6 +10,10 @@ namespace Konata.Core
 
         public uint ReConnectTryCount { get; set; }
 
-        public string ServerIp { get; set; }
+        #region Custom Server IP
+
+        public string CustomHost { get; set; }
+
+        #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Konata.Core
+namespace Konata.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     internal class EventDependsAttribute : Attribute

@@ -10,6 +10,7 @@ using Konata.Core.Packet.Protobuf;
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
 using Konata.Utils.Protobuf.ProtoModel;
+using Konata.Core.Attributes;
 
 namespace Konata.Core.Service.MessageSvc
 {

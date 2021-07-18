@@ -6,6 +6,7 @@ using Konata.Core.Packet;
 using Konata.Core.Packet.Tlv;
 using Konata.Core.Packet.Tlv.TlvModel;
 using Konata.Core.Packet.Oicq;
+using Konata.Core.Attributes;
 
 using Konata.Utils.IO;
 using Konata.Utils.Crypto;

@@ -23,6 +23,22 @@ namespace Konata.Utils
             return list;
         }
 
+        public static IEnumerable<Type> GetClassesByAttribute(Type t)
+        {
+            var list = new List<Type>();
+            var types = t.Assembly.GetTypes();
+
+            foreach (var type in types)
+            {
+                if (type?.GetCustomAttribute(t) != null)
+                {
+                    list.Add(type);
+                }
+            }
+
+            return list;
+        }
+
         public static IEnumerable<Type> GetChildClasses<T>()
         {
             var list = new List<Type>();

@@ -4,6 +4,7 @@ using Konata.Core.Event;
 using Konata.Core.Event.EventModel;
 using Konata.Core.Packet;
 using Konata.Core.Packet.SvcRequest;
+using Konata.Core.Attributes;
 
 namespace Konata.Core.Service.Friendlist
 {

@@ -7,6 +7,7 @@ using Konata.Core.Event.EventModel;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packet;
+using Konata.Core.Attributes;
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
 using Konata.Utils.Protobuf.ProtoModel;

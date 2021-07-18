@@ -4,6 +4,7 @@ using Konata.Core.Event;
 using Konata.Core.Event.EventModel;
 using Konata.Core.Packet;
 using Konata.Core.Packet.Protobuf;
+using Konata.Core.Attributes;
 using Konata.Utils.Protobuf;
 
 namespace Konata.Core.Service.PbMessageSvc
