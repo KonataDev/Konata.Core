@@ -8,13 +8,13 @@ namespace Konata.Core.Service.MessageSvc
     [Service("MessageSvc.PbDeleteMsg", "Delete message")]
     public class PbDeleteMsg : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
             throw new NotImplementedException();
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             throw new NotImplementedException();
         }

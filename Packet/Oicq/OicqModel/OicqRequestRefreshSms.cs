@@ -12,10 +12,10 @@ namespace Konata.Core.Packet.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0008;
 
-        public OicqRequestRefreshSms(SignInfo signinfo)
+        public OicqRequestRefreshSms(BotKeyStore signinfo)
             : base(OicqCommand, OicqSubCommand, signinfo.Account.Uin, OicqEncryptMethod.ECDH7,
                   new XRefreshSms(signinfo.Session.WtLoginSession, signinfo.Session.WtLoginSmsToken),
-                  signinfo.ShareKey, signinfo.RandKey, signinfo.DefaultPublicKey)
+                  signinfo.KeyStub.ShareKey, signinfo.KeyStub.RandKey, signinfo.KeyStub.DefaultPublicKey)
         {
 
         }

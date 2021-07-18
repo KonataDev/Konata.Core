@@ -12,11 +12,11 @@ namespace Konata.Core.Service.PbMessageSvc
     [EventDepends(typeof(GroupMessageReadEvent))]
     internal class PbMsgReadReport : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
             => (output = null) == null;
 
         public bool Build(Sequence sequence, GroupMessageReadEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = input.SessionSequence;
@@ -37,7 +37,7 @@ namespace Konata.Core.Service.PbMessageSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
               => Build(sequence, (GroupMessageReadEvent)input, signInfo, device, out newSequence, out output);
     }
 }

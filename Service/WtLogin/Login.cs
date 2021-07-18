@@ -16,9 +16,9 @@ namespace Konata.Core.Service.WtLogin
     [EventDepends(typeof(WtLoginEvent))]
     public class Login : IService
     {
-        public bool Parse(SSOFrame ssoFrame, SignInfo signinfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame ssoFrame, BotKeyStore signinfo, out ProtocolEvent output)
         {
-            var oicqRequest = new OicqRequest(ssoFrame.Payload.GetBytes(), signinfo.ShareKey);
+            var oicqRequest = new OicqRequest(ssoFrame.Payload.GetBytes(), signinfo.KeyStub.ShareKey);
 
             Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
             Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
@@ -52,7 +52,7 @@ namespace Konata.Core.Service.WtLogin
 
         #region Event Handlers
 
-        private ProtocolEvent OnRecvCheckSliderCaptcha(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvCheckSliderCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
             Console.WriteLine("  Do slider verification.");
 
@@ -78,7 +78,7 @@ namespace Konata.Core.Service.WtLogin
             return OnRecvUnknown();
         }
 
-        private ProtocolEvent OnRecvCheckSmsCaptcha(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvCheckSmsCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
             Console.WriteLine("  Do sms verification.");
 
@@ -142,7 +142,7 @@ namespace Konata.Core.Service.WtLogin
             return OnRecvUnknown();
         }
 
-        private ProtocolEvent OnRecvResponseVerifyImageCaptcha(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvResponseVerifyImageCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
             // <TODO> Image captcha
 
@@ -153,7 +153,7 @@ namespace Konata.Core.Service.WtLogin
             };
         }
 
-        private ProtocolEvent OnRecvResponseVerifyDeviceLock(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvResponseVerifyDeviceLock(OicqRequest request, BotKeyStore signinfo)
         {
             // <TODO> Device lock
 
@@ -164,7 +164,7 @@ namespace Konata.Core.Service.WtLogin
             };
         }
 
-        private ProtocolEvent OnRecvWtloginSuccess(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvWtloginSuccess(OicqRequest request, BotKeyStore signinfo)
         {
             Console.WriteLine("  Wtlogin success.");
 
@@ -179,7 +179,7 @@ namespace Konata.Core.Service.WtLogin
                 if (tlv119 != null && tlv161 != null)
                 {
                     var decrypted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, signinfo.TgtgKey);
+                        TeaCryptor.Instance, signinfo.KeyStub.TgtgKey);
 
                     var tlv119Unpacker = new TlvUnpacker(decrypted, true);
 
@@ -239,13 +239,10 @@ namespace Konata.Core.Service.WtLogin
                     signinfo.Session.WtSessionTicketKey = wtSessionTicketKey;
                     signinfo.Session.GtKey = gtKey;
                     signinfo.Session.StKey = stKey;
-                    signinfo.Account = new SignInfo.UserInfo
-                    {
-                        Age = userAge,
-                        Face = userFace,
-                        Name = userNickname,
-                        Uin = signinfo.Account.Uin
-                    };
+                    signinfo.Account.Age = userAge;
+                    signinfo.Account.Face = userFace;
+                    signinfo.Account.Name = userNickname;
+                    signinfo.Account.Age = userAge;
 
                     Console.WriteLine($"  [SignInfo] gtKey => { ByteConverter.Hex(signinfo.Session.GtKey, true) }");
                     Console.WriteLine($"  [SignInfo] stKey => { ByteConverter.Hex(signinfo.Session.StKey, true) }");
@@ -267,7 +264,7 @@ namespace Konata.Core.Service.WtLogin
             return OnRecvUnknown();
         }
 
-        private ProtocolEvent OnRecvInvalidUsrPwd(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvInvalidUsrPwd(OicqRequest request, BotKeyStore signinfo)
         {
             return new WtLoginEvent
             {
@@ -276,7 +273,7 @@ namespace Konata.Core.Service.WtLogin
             };
         }
 
-        private ProtocolEvent OnRecvInvalidSmsCode(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvInvalidSmsCode(OicqRequest request, BotKeyStore signinfo)
         {
             return new WtLoginEvent
             {
@@ -285,7 +282,7 @@ namespace Konata.Core.Service.WtLogin
             };
         }
 
-        private ProtocolEvent OnRecvInvalidLoginEnv(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvInvalidLoginEnv(OicqRequest request, BotKeyStore signinfo)
         {
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -306,7 +303,7 @@ namespace Konata.Core.Service.WtLogin
             return OnRecvUnknown();
         }
 
-        private ProtocolEvent OnRecvLoginDenied(OicqRequest request, SignInfo signinfo)
+        private ProtocolEvent OnRecvLoginDenied(OicqRequest request, BotKeyStore signinfo)
         {
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
@@ -339,7 +336,7 @@ namespace Konata.Core.Service.WtLogin
         #endregion
 
         public bool Build(Sequence sequence, WtLoginEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequece, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequece, out byte[] output)
         {
             output = null;
             newSequece = sequence.GetSessionSequence("wtlogin.login");
@@ -384,22 +381,22 @@ namespace Konata.Core.Service.WtLogin
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signinfo, BotDevice device, out int outsequence, out byte[] output)
+            BotKeyStore signinfo, BotDevice device, out int outsequence, out byte[] output)
             => Build(sequence, (WtLoginEvent)input, signinfo, device, out outsequence, out output);
 
         #region Event Builders
 
-        private OicqRequest BuildRequestTgtgt(int sequence, SignInfo signinfo,
+        private OicqRequest BuildRequestTgtgt(int sequence, BotKeyStore signinfo,
             BotDevice device)
             => new OicqRequestTgtgt(sequence, signinfo, device);
 
-        private OicqRequest BuildRequestCheckSms(string code, SignInfo signinfo)
+        private OicqRequest BuildRequestCheckSms(string code, BotKeyStore signinfo)
             => new OicqRequestCheckSms(code, signinfo);
 
-        private OicqRequest BuildRequestCheckSlider(string ticket, SignInfo signinfo)
+        private OicqRequest BuildRequestCheckSlider(string ticket, BotKeyStore signinfo)
             => new OicqRequestCheckImage(ticket, signinfo);
 
-        private OicqRequest BuildRequestRefreshSms(SignInfo signinfo)
+        private OicqRequest BuildRequestRefreshSms(BotKeyStore signinfo)
             => new OicqRequestRefreshSms(signinfo);
 
         #endregion

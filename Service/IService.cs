@@ -18,7 +18,7 @@ namespace Konata.Core.Service
         /// <param name="signInfo"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output);
+        bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output);
 
         /// <summary>
         /// Build binary packet
@@ -31,6 +31,6 @@ namespace Konata.Core.Service
         /// <param name="output"></param>
         /// <returns></returns>
         bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output);
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output);
     }
 }

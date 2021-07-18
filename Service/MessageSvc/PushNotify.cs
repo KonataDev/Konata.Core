@@ -9,11 +9,11 @@ namespace Konata.Core.Service.MessageSvc
     [Service("MessageSvc.PushNotify", "Push notify on received a private message")]
     public class PushNotify : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
             => (output = new PrivateMessageNotifyEvent()) == output;
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = 0;

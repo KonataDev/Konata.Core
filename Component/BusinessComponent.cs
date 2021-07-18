@@ -43,6 +43,7 @@ namespace Konata.Core.Component
                                 if ((await SetClientOnineType(OnlineStatusEvent.Type.Online)).
                                     EventType == OnlineStatusEvent.Type.Online)
                                 {
+                                    _onlineType = OnlineStatusEvent.Type.Online;
                                     return true;
                                 }
                                 else
@@ -163,7 +164,7 @@ namespace Konata.Core.Component
         internal async void PrivateMessagePulldown()
             => await PostEvent<PacketComponent>(new PrivateMessagePullEvent
             {
-                SyncCookie = GetComponent<ConfigComponent>().SignInfo.Account.SyncCookie
+                SyncCookie = GetComponent<ConfigComponent>().KeyStore.Account.SyncCookie
             });
 
         internal void ConfirmPrivateMessage(PrivateMessageEvent privateMessage)

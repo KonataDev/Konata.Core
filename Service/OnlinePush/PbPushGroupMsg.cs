@@ -17,7 +17,7 @@ namespace Konata.Core.Service.OnlinePush
     [EventDepends(typeof(GroupMessageEvent))]
     public class PbPushGroupMsg : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
             var message = new GroupMessageEvent();
             {
@@ -167,7 +167,7 @@ namespace Konata.Core.Service.OnlinePush
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = 0;

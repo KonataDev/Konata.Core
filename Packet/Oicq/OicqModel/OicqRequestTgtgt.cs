@@ -15,17 +15,17 @@ namespace Konata.Core.Packet.Oicq
         private const ushort OicqCommand = 0x0810;
         private const ushort OicqSubCommand = 0x0009;
 
-        public OicqRequestTgtgt(int sequence, SignInfo signinfo, BotDevice device)
+        public OicqRequestTgtgt(int sequence, BotKeyStore signinfo, BotDevice device)
             : base(OicqCommand, OicqSubCommand, signinfo.Account.Uin, OicqEncryptMethod.ECDH135,
                   new XTGTGT(signinfo.Account.Uin, sequence, signinfo, device),
-                  signinfo.ShareKey, signinfo.RandKey, signinfo.DefaultPublicKey)
+                  signinfo.KeyStub.ShareKey, signinfo.KeyStub.RandKey, signinfo.KeyStub.DefaultPublicKey)
         {
 
         }
 
         public class XTGTGT : OicqRequestBody
         {
-            public XTGTGT(uint uin, int ssoSequence, SignInfo signinfo, BotDevice device)
+            public XTGTGT(uint uin, int ssoSequence, BotKeyStore signinfo, BotDevice device)
                 : base()
             {
                 // 設備訊息上報
@@ -48,7 +48,7 @@ namespace Konata.Core.Packet.Oicq
 
                     tlvs.PutTlv(new Tlv(0x0106, new T106Body(AppInfo.AppId, AppInfo.SubAppId, AppInfo.AppClientVersion,
                         uin, new byte[4], true, signinfo.Account.PasswordMd5, 0, true, device.System.Guid, LoginType.Password,
-                        signinfo.TgtgKey), signinfo.Session.Tlv106Key));
+                        signinfo.KeyStub.TgtgKey), signinfo.Session.Tlv106Key));
 
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(AppInfo.WtLoginSdk.MiscBitmap | (uint)WtLoginSigType.WLOGIN_DA2,
                         AppInfo.WtLoginSdk.SubSigBitmap, AppInfo.WtLoginSdk.SubAppIdList)));
@@ -63,7 +63,7 @@ namespace Konata.Core.Packet.Oicq
                         device.Network.NetType, device.Network.NetOperator,
                         device.Network.NetApn, true, true, false,
                         device.System.Guid, 285212672, device.Model.Name,
-                        device.Model.Manufacturer), signinfo.TgtgKey));
+                        device.Model.Manufacturer), signinfo.KeyStub.TgtgKey));
 
                     tlvs.PutTlv(new Tlv(0x0145, new T145Body(device.System.Guid)));
 

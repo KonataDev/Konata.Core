@@ -18,7 +18,7 @@ namespace Konata.Core.Service.MessageSvc
     [EventDepends(typeof(PrivateMessagePullEvent))]
     internal class PbGetMsg : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
             var message = new PrivateMessageEvent();
             {
@@ -135,7 +135,7 @@ namespace Konata.Core.Service.MessageSvc
         }
 
         public bool Build(Sequence sequence, PrivateMessagePullEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -156,7 +156,7 @@ namespace Konata.Core.Service.MessageSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
             => Build(sequence, (PrivateMessagePullEvent)input, signInfo, device, out newSequence, out output);
     }
 }

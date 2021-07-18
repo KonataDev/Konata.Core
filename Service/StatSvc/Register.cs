@@ -12,7 +12,7 @@ namespace Konata.Core.Service.StatSvc
     [EventDepends(typeof(OnlineStatusEvent))]
     public class Register : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signinfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signinfo, out ProtocolEvent output)
         {
             var svcResponse = new SvcRspRegister(input.Payload.GetBytes());
 
@@ -26,7 +26,7 @@ namespace Konata.Core.Service.StatSvc
         }
 
         public bool Build(Sequence sequence, OnlineStatusEvent input,
-            SignInfo signinfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signinfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -88,7 +88,7 @@ namespace Konata.Core.Service.StatSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signinfo, BotDevice device, out int outsequence, out byte[] output)
+            BotKeyStore signinfo, BotDevice device, out int outsequence, out byte[] output)
             => Build(sequence, (OnlineStatusEvent)input, signinfo, device, out outsequence, out output);
     }
 }

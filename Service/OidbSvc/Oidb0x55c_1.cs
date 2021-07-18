@@ -11,13 +11,13 @@ namespace Konata.Core.Service.OidbSvc
     [EventDepends(typeof(GroupPromoteAdminEvent))]
     public class Oidb0x55c_1 : IService
     {
-        public bool Parse(SSOFrame input, SignInfo signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
             throw new NotImplementedException();
         }
 
         public bool Build(Sequence sequence, GroupPromoteAdminEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -38,7 +38,7 @@ namespace Konata.Core.Service.OidbSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            SignInfo signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
             => Build(sequence, (GroupPromoteAdminEvent)input, signInfo, device, out newSequence, out output);
     }
 }

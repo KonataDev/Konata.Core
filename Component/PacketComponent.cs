@@ -78,7 +78,7 @@ namespace Konata.Core.Component
             if (task.EventPayload is PacketEvent packetEvent)
             {
                 // Parse service message
-                if (ServiceMessage.Parse(packetEvent.Buffer, config.SignInfo, out var serviceMsg))
+                if (ServiceMessage.Parse(packetEvent.Buffer, config.KeyStore, out var serviceMsg))
                 {
                     // Parse SSO frame
                     if (SSOFrame.Parse(serviceMsg, out var ssoFrame))
@@ -91,7 +91,7 @@ namespace Konata.Core.Component
                             try
                             {
                                 // Translate bytes to ProtocolEvent 
-                                if (service.Parse(ssoFrame, config.SignInfo, out var outEvent))
+                                if (service.Parse(ssoFrame, config.KeyStore, out var outEvent))
                                 {
                                     if (outEvent != null)
                                     {
@@ -120,7 +120,7 @@ namespace Konata.Core.Component
                     }
                     else LogW(TAG, $"Parse sso frame failed. { ssoFrame.Command }");
                 }
-                else LogW(TAG, $"Parse service message failed. \n D2 => { ByteConverter.Hex(config.SignInfo.Session.D2Key, true) }");
+                else LogW(TAG, $"Parse service message failed. \n D2 => { ByteConverter.Hex(config.KeyStore.Session.D2Key, true) }");
             }
 
             // Protocol Event
@@ -138,7 +138,7 @@ namespace Konata.Core.Component
                 foreach (var service in serviceList)
                 {
                     if (service.Build(_serviceSequence, protocolEvent,
-                        config.SignInfo, config.DeviceInfo, out var sequence, out var buffer))
+                        config.KeyStore, config.DeviceInfo, out var sequence, out var buffer))
                     {
                         // Pass messages to socket
                         PostEvent<SocketComponent>(new PacketEvent

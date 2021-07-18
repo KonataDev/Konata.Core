@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Konata.Utils;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Component;
 using Konata.Core.Event;
 using Konata.Core.Event.EventModel;
-using Konata.Core.Service;
-using Konata.Utils;
 
 namespace Konata.Core
 {
@@ -37,17 +36,20 @@ namespace Konata.Core
             {
                 component.LoadConfig(config);
                 component.LoadDeviceInfo(device);
-                component.LoadSignInfo(new SignInfo(keystore));
+                component.LoadKeyStore(keystore, device.Model.IMEI);
             }
         }
 
         #region Bot Information
 
         public uint Uin
-            => GetComponent<ConfigComponent>().SignInfo.Account.Uin;
+            => KeyStore.Account.Uin;
 
         public string Name
-            => GetComponent<ConfigComponent>().SignInfo.Account.Name;
+            => KeyStore.Account.Name;
+
+        public BotKeyStore KeyStore
+            => GetComponent<ConfigComponent>().KeyStore;
 
         #endregion
 
