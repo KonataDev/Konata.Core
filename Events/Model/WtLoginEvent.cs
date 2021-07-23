@@ -80,4 +80,48 @@ namespace Konata.Core.Events.Model
         public WtLoginEvent()
             => WaitForResponse = true;
     }
+
+    public class CaptchaEvent : BaseEvent
+    {
+        public enum CaptchaType
+        {
+            Unknown,
+            SMS,
+            Slider
+        }
+
+        public CaptchaType Type
+            => _captchaType;
+
+        public string SliderUrl
+            => _sliderUrl;
+
+        public string Phone
+            => _smsPhone;
+
+        public string Country
+            => _smsCountry;
+
+        private CaptchaType _captchaType;
+        private string _sliderUrl;
+        private string _smsPhone;
+        private string _smsCountry;
+
+        public CaptchaEvent(WtLoginEvent wtEvent)
+        {
+            switch (wtEvent.EventType)
+            {
+                case WtLoginEvent.Type.CheckSMS:
+                    _smsPhone = wtEvent.SmsPhone;
+                    _smsCountry = wtEvent.SmsCountry;
+                    _captchaType = CaptchaType.SMS;
+                    break;
+
+                case WtLoginEvent.Type.CheckSlider:
+                    _sliderUrl = wtEvent.SliderURL;
+                    _captchaType = CaptchaType.Slider;
+                    break;
+            }
+        }
+    }
 }
