@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Packets.Oidb.OidbModel
+namespace Konata.Core.Packets.Oidb.Model
 {
     /// <summary>
     /// 獲取群管理列表

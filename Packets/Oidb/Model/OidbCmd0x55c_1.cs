@@ -1,7 +1,7 @@
 ﻿using System;
 using Konata.Utils.IO;
 
-namespace Konata.Core.Packets.Oidb.OidbModel
+namespace Konata.Core.Packets.Oidb.Model
 {
     /// <summary>
     /// 設置取消群管理員

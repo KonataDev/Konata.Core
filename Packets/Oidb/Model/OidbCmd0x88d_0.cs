@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Packets.Oidb.OidbModel
+namespace Konata.Core.Packets.Oidb.Model
 {
     /// <summary>
     /// 拉取群聊資料

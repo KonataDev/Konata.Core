@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Packets.Oidb.OidbModel
+namespace Konata.Core.Packets.Oidb.Model
 {
     /// <summary>
     /// 設置自身群名片
