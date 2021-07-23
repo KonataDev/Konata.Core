@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Konata.Core.Events;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Events.Model;
@@ -9,7 +10,7 @@ using Konata.Core.Attributes;
 
 namespace Konata.Core
 {
-    public class Bot : BaseEntity
+    public partial class Bot : BaseEntity
     {
         /// <summary>
         /// Create a bot
@@ -18,14 +19,11 @@ namespace Konata.Core
         /// <param name="device"><b>[In] </b>bot device definition</param>
         /// <param name="keystore"><b>[In] </b>bot keystore</param>
         /// <param name="listener"><b>[In] </b>bot event handler</param>
-        public Bot(BotConfig config, BotDevice device,
-            BotKeyStore keystore, IEventListener listener)
+        public Bot(BotConfig config,
+            BotDevice device, BotKeyStore keystore)
         {
             // Load components
             LoadComponents<ComponentAttribute>();
-
-            // Setup event handler
-            SetEventListener(listener);
 
             // Setup configs
             var component = GetComponent<ConfigComponent>();
@@ -159,9 +157,6 @@ namespace Konata.Core
         /// <returns></returns>
         public bool IsOnline()
             => GetOnlineStatus() != OnlineStatusEvent.Type.Offline;
-
         #endregion
     }
-
-
 }

@@ -7,16 +7,13 @@ using System.Collections.Generic;
 using Konata.Utils;
 using Konata.Core.Events;
 using Konata.Core.Components;
+using System.Reflection;
 
 namespace Konata.Core.Entity
 {
     public class BaseEntity
     {
-        private IEventListener _eventListener;
         private Dictionary<Type, BaseComponent> _componentDict = new();
-
-        public void SetEventListener(IEventListener handler)
-            => _eventListener = handler;
 
         /// <summary>
         /// Load components
@@ -30,6 +27,32 @@ namespace Konata.Core.Entity
             {
                 AddComponent((BaseComponent)Activator.CreateInstance(type));
             }
+        }
+
+        /// Load components with filter
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void LoadComponents<T>(Func<T, bool> filter)
+            where T : Attribute
+        {
+            foreach (var type in Reflection
+                .GetClassesByAttribute(typeof(T)))
+            {
+                if (filter.Invoke((T)type.GetCustomAttribute(typeof(T))))
+                {
+                    AddComponent((BaseComponent)Activator.CreateInstance(type));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Unload all components
+        /// </summary>
+        /// <returns></returns>
+        public void UnloadComponents()
+        {
+            // TODO
+            _componentDict.Clear();
         }
 
         /// <summary>
@@ -69,7 +92,8 @@ namespace Konata.Core.Entity
         /// <param name="type"></param>
         public void RemoveComponent(Type type)
         {
-            if (!_componentDict.TryGetValue(type, out BaseComponent component))
+            if (!_componentDict.TryGetValue
+                (type, out BaseComponent component))
             {
                 return;
             }
@@ -81,8 +105,7 @@ namespace Konata.Core.Entity
         /// Post an event to entity
         /// </summary>
         /// <param name="anyEvent"></param>
-        public void PostEventToEntity(BaseEvent anyEvent)
-            => RunAsync(() => _eventListener?.OnDispatchEvent(this, anyEvent));
+        public virtual void PostEventToEntity(BaseEvent anyEvent) { }
 
         /// <summary>
         /// Post an event to any component attached under this entity
@@ -145,10 +168,5 @@ namespace Konata.Core.Entity
             EventPayload = e;
             CompletionSource = new TaskCompletionSource<BaseEvent>();
         }
-    }
-
-    public interface IEventListener
-    {
-        void OnDispatchEvent(object sender, BaseEvent @event);
     }
 }
