@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Message.Model
 {
@@ -11,7 +9,10 @@ namespace Konata.Core.Message.Model
         public PlainTextChain()
             => Type = ChainType.Text;
 
-        public override string ToString()
-            => Content;
+        public PlainTextChain(string content)
+        {
+            Content = content;
+            Type = ChainType.Text;
+        }
     }
 }

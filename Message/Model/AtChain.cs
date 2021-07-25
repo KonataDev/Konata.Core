@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Message.Model
 {
@@ -11,7 +9,10 @@ namespace Konata.Core.Message.Model
         public AtChain()
             => Type = ChainType.At;
 
-        public override string ToString()
-            => $"[KQ:at,qq={(AtUin == 0 ? "all" : AtUin.ToString())}]";
+        public AtChain(uint uin)
+        {
+            AtUin = uin;
+            Type = ChainType.At;
+        }
     }
 }

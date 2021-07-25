@@ -13,7 +13,12 @@ namespace Konata.Core.Message.Model
         public ImageChain()
             => Type = ChainType.Image;
 
-        public override string ToString()
-            => $"[KQ:image,file={FileName}]";
+        public ImageChain(string url, string filename, string filehash)
+        {
+            ImageUrl = url;
+            FileName = filename;
+            FileHash = filehash;
+            Type = ChainType.Image;
+        }
     }
 }

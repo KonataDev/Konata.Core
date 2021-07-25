@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Konata.Core.Message;
 
@@ -20,8 +19,5 @@ namespace Konata.Core.Events.Model
         public uint SliceIndex { get; set; }
 
         public uint SliceFlags { get; set; }
-
-        public override string ToString()
-            => Message.ToString();
     }
 }

@@ -29,8 +29,5 @@ namespace Konata.Core.Events.Model
 
         public GroupMessageEvent()
             => WaitForResponse = true;
-
-        public override string ToString()
-            => Message.ToString();
     }
 }

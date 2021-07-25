@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Message.Model
 {
@@ -11,7 +9,10 @@ namespace Konata.Core.Message.Model
         public QFaceChain()
             => Type = ChainType.QFace;
 
-        public override string ToString()
-            => $"[KQ:face,id={FaceId}]";
+        public QFaceChain(uint face)
+        {
+            FaceId = face;
+            Type = ChainType.QFace;
+        }
     }
 }

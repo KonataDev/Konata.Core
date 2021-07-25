@@ -7,17 +7,6 @@ namespace Konata.Core.Message
 {
     public class MessageChain : List<BaseChain>
     {
-        public override string ToString()
-        {
-            var content = "";
-            foreach (var element in this)
-            {
-                content += element.ToString();
-            }
-
-            return content;
-        }
-
         public class Builder
         {
             private MessageChain _chain;
