@@ -66,7 +66,35 @@ namespace Konata.Core.Services.OnlinePush
 
                     // 17 Recall Message
                     case 0x11:
-                        break;
+
+                        var recallSuffix = "";
+
+                        // Length
+                        buffer.EatBytes(2);
+
+                        // Get data
+                        var recallTree = new ProtoTreeRoot(buffer.TakeAllBytes(out _), true);
+                        {
+                            var info5A = (ProtoTreeRoot)recallTree.GetLeaf("5A");
+                            var info1A = (ProtoTreeRoot)info5A.GetLeaf("1A");
+                            var info4A = (ProtoTreeRoot)info5A.GetLeaf("4A");
+                            {
+                                operatorUin = (uint)info5A.GetLeafVar("08");
+                                affectedUin = (uint)info1A.GetLeafVar("30");
+                            }
+
+                            recallSuffix = info4A.GetLeafString("12");
+                        }
+
+                        pushEvent = new GroupMessageRecallEvent
+                        {
+                            GroupUin = fromGroup,
+                            MemberUin = affectedUin,
+                            OperatorUin = operatorUin,
+                            RecallSuffix = recallSuffix
+                        };
+
+                        return true;
 
                     // 12 Mute
                     case 0x0C:
@@ -108,15 +136,16 @@ namespace Konata.Core.Services.OnlinePush
                         var actionPrefix = "";
                         var actionSuffix = "";
 
-                        buffer.EatBytes(2); // 01 F0
+                        // Length
+                        buffer.EatBytes(2);
 
                         // Decode proto tree
-                        var proto = new ProtoTreeRoot(buffer.TakeAllBytes(out _), true);
+                        var pokeTree = new ProtoTreeRoot(buffer.TakeAllBytes(out _), true);
                         {
-                            fromGroup = (uint)proto.GetLeafVar("20");
+                            fromGroup = (uint)pokeTree.GetLeafVar("20");
 
                             // Find keys
-                            var keyValPair = (ProtoTreeRoot)proto.GetLeaf("D201");
+                            var keyValPair = (ProtoTreeRoot)pokeTree.GetLeaf("D201");
                             foreach (ProtoTreeRoot i in keyValPair.GetLeaves("3A"))
                             {
                                 // Get key name
@@ -128,16 +157,16 @@ namespace Konata.Core.Services.OnlinePush
                                         actionPrefix = i.GetLeafString("12");
                                         break;
 
+                                    case "suffix_str":
+                                        actionSuffix = i.GetLeafString("12");
+                                        break;
+
                                     case "uin_str1":
                                         operatorUin = uint.Parse(i.GetLeafString("12"));
                                         break;
 
                                     case "uin_str2":
                                         affectedUin = uint.Parse(i.GetLeafString("12"));
-                                        break;
-
-                                    case "suffix_str":
-                                        actionSuffix = i.GetLeafString("12");
                                         break;
                                 }
                             }
