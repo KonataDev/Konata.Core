@@ -9,7 +9,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.Friendlist
 {
     [Service("friendlist.ModifyGroupCardReq", "Modify group card")]
-    [EventDepends(typeof(GroupModifyMemberCardEvent))]
+    [EventSubscribe(typeof(GroupModifyMemberCardEvent))]
     public class ModifyGroupCardReq : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

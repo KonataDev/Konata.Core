@@ -10,7 +10,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.StatSvc
 {
     [Service("StatSvc.register", "Register client")]
-    [EventDepends(typeof(OnlineStatusEvent))]
+    [EventSubscribe(typeof(OnlineStatusEvent))]
     public class Register : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signinfo, out ProtocolEvent output)

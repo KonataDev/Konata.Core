@@ -52,7 +52,7 @@ namespace Konata.Core.Components.Model
             // Create sso services
             foreach (var type in Reflection.GetClassesByAttribute<ServiceAttribute>())
             {
-                var eventAttrs = type.GetCustomAttributes<EventDependsAttribute>();
+                var eventAttrs = type.GetCustomAttributes<EventSubscribeAttribute>();
                 var serviceAttr = type.GetCustomAttribute<ServiceAttribute>();
 
                 if (serviceAttr != null)

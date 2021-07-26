@@ -14,7 +14,7 @@ using Konata.Utils.Crypto;
 namespace Konata.Core.Services.WtLogin
 {
     [Service("wtlogin.login", "WtLogin exchange")]
-    [EventDepends(typeof(WtLoginEvent))]
+    [EventSubscribe(typeof(WtLoginEvent))]
     public class Login : IService
     {
         public bool Parse(SSOFrame ssoFrame, BotKeyStore signinfo, out ProtocolEvent output)

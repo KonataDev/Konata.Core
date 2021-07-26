@@ -12,16 +12,16 @@ using Konata.Utils.Protobuf.ProtoModel;
 namespace Konata.Core.Services.OnlinePush
 {
     [Service("OnlinePush.ReqPush", "Push messages from server")]
-    [EventDepends(typeof(GroupMessageRecallEvent))]
-    [EventDepends(typeof(GroupSettingsAnonymousEvent))]
-    [EventDepends(typeof(GroupNewMemberEvent))]
-    [EventDepends(typeof(GroupMuteMemberEvent))]
-    [EventDepends(typeof(GroupSettingsFrankSpeekingEvent))]
-    [EventDepends(typeof(GroupSettingsDirectMessageEvent))]
-    [EventDepends(typeof(GroupSettingsUploadEvent))]
-    [EventDepends(typeof(GroupSettingsGroupCompostion))]
-    //[EventDepends(typeof(GroupPokeEvent))]
-    //[EventDepends(typeof(PrivatePokeEvent))]
+    [EventSubscribe(typeof(GroupMessageRecallEvent))]
+    [EventSubscribe(typeof(GroupSettingsAnonymousEvent))]
+    [EventSubscribe(typeof(GroupNewMemberEvent))]
+    [EventSubscribe(typeof(GroupMuteMemberEvent))]
+    [EventSubscribe(typeof(GroupSettingsFrankSpeekingEvent))]
+    [EventSubscribe(typeof(GroupSettingsDirectMessageEvent))]
+    [EventSubscribe(typeof(GroupSettingsUploadEvent))]
+    [EventSubscribe(typeof(GroupSettingsGroupCompostion))]
+    [EventSubscribe(typeof(GroupPokeEvent))]
+    [EventSubscribe(typeof(PrivatePokeEvent))]
     public class ReqPush : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

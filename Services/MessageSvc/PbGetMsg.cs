@@ -15,8 +15,8 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.MessageSvc
 {
     [Service("MessageSvc.PbGetMsg", "Get message")]
-    [EventDepends(typeof(PrivateMessageEvent))]
-    [EventDepends(typeof(PrivateMessagePullEvent))]
+    [EventSubscribe(typeof(PrivateMessageEvent))]
+    [EventSubscribe(typeof(PrivateMessagePullEvent))]
     internal class PbGetMsg : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

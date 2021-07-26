@@ -10,7 +10,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.OidbSvc
 {
     [Service("OidbSvc.0x8a0_1", "Kick member in the group")]
-    [EventDepends(typeof(GroupKickMemberEvent))]
+    [EventSubscribe(typeof(GroupKickMemberEvent))]
     class Oidb0x8a0_1 : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

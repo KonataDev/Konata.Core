@@ -10,7 +10,7 @@ using Konata.Utils.Protobuf;
 namespace Konata.Core.Services.PbMessageSvc
 {
     [Service("PbMessageSvc.PbMsgReadedReport", "Push read signal")]
-    [EventDepends(typeof(GroupMessageReadEvent))]
+    [EventSubscribe(typeof(GroupMessageReadEvent))]
     internal class PbMsgReadReport : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

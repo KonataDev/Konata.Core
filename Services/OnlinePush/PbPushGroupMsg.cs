@@ -15,7 +15,7 @@ using Konata.Utils.Protobuf.ProtoModel;
 namespace Konata.Core.Services.OnlinePush
 {
     [Service("OnlinePush.PbPushGroupMsg", "Receive group message from server")]
-    [EventDepends(typeof(GroupMessageEvent))]
+    [EventSubscribe(typeof(GroupMessageEvent))]
     public class PbPushGroupMsg : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

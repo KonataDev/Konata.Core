@@ -4,11 +4,11 @@ using System.Text;
 namespace Konata.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    internal class EventDependsAttribute : Attribute
+    internal class EventSubscribeAttribute : Attribute
     {
         public Type Event { get; set; }
 
-        public EventDependsAttribute(Type type)
+        public EventSubscribeAttribute(Type type)
         {
             Event = type;
         }

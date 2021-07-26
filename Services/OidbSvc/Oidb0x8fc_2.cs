@@ -9,7 +9,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.OidbSvc
 {
     [Service("OidbSvc.0x8fc_2", "Set special title for member")]
-    [EventDepends(typeof(GroupSpecialTitleEvent))]
+    [EventSubscribe(typeof(GroupSpecialTitleEvent))]
     public class Oidb0x8fc_2 : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)

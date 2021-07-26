@@ -11,7 +11,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.MessageSvc
 {
     [Service("MessageSvc.PbSendMsg", "Send message")]
-    [EventDepends(typeof(GroupMessageEvent))]
+    [EventSubscribe(typeof(GroupMessageEvent))]
     public class PbSendMsg : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
