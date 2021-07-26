@@ -8,6 +8,8 @@ namespace Konata.Core.Events.Model
 
         public uint MemberUin { get; set; }
 
+        public uint OperatorUin { get; set; }
+
         /// <summary>
         /// <b>MuteMember</b>: Mute time <br/>
         /// </summary>
