@@ -10,6 +10,7 @@ namespace Konata.Core
         public event EventHandler<CaptchaEvent> OnCaptcha;
         public event EventHandler<OnlineStatusEvent> OnOnlineStatusChanged;
         public event EventHandler<GroupMessageEvent> OnGroupMessage;
+        public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
         public event EventHandler<PrivateMessageEvent> OnPrivateMessage;
         //public event EventHandler<GroupPokenEvent> OnGroupPoke;
         //public event EventHandler<PrivatePokenEvent> OnPrivatePoke;
@@ -33,6 +34,10 @@ namespace Konata.Core
 
                 case PrivateMessageEvent pme:
                     OnPrivateMessage?.Invoke(this, pme);
+                    break;
+
+                case GroupMuteMemberEvent gmme:
+                    OnGroupMute?.Invoke(this, gmme);
                     break;
 
                 //case GroupPokeEvent gpe:
