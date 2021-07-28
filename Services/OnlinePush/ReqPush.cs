@@ -86,6 +86,7 @@ namespace Konata.Core.Services.OnlinePush
                             recallSuffix = info4A.GetLeafString("12");
                         }
 
+                        // Construct event
                         pushEvent = new GroupMessageRecallEvent
                         {
                             GroupUin = fromGroup,
@@ -107,7 +108,7 @@ namespace Konata.Core.Services.OnlinePush
                         buffer.TakeUintBE(out affectedUin);
                         buffer.TakeUintBE(out var timeSeconds);
 
-                        // Mute all members
+                        // Construct event
                         pushEvent = new GroupMuteMemberEvent
                         {
                             GroupUin = fromGroup,
@@ -120,7 +121,26 @@ namespace Konata.Core.Services.OnlinePush
 
                     // 14 Anonymous Settings
                     case 0x0E:
-                        break;
+
+                        buffer.EatBytes(1);
+                        buffer.TakeUintBE(out operatorUin);
+                        buffer.TakeUintBE(out timeSeconds);
+
+                        // Failed to parse
+                        if (operatorUin == 0)
+                        {
+                            return false;
+                        }
+
+                        // Construct event
+                        pushEvent = new GroupSettingsAnonymousEvent
+                        {
+                            GroupUin = fromGroup,
+                            OperatorUin = operatorUin,
+                            ToggleType = timeSeconds == 0 ? true : false
+                        };
+
+                        return true;
 
                     // 15 Upload File/Album Settings
                     case 0x0F:
@@ -129,6 +149,9 @@ namespace Konata.Core.Services.OnlinePush
                     // 16 System Messages
                     case 0x10:
                         break;
+
+
+
 
                     // 20 Poke
                     case 0x14:
