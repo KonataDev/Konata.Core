@@ -6,6 +6,22 @@ namespace Konata.Utils
 {
     public static class Reflection
     {
+        public static void EnumAttributes<TAttr>(Action<Type, TAttr> action)
+            where TAttr : Attribute
+        {
+            foreach (var i in typeof(TAttr).Assembly.GetTypes())
+            {
+                // Filter the attribute
+                var j = i?.GetCustomAttribute<TAttr>();
+
+                // Call action
+                if (j != null)
+                {
+                    action(i, j);
+                }
+            }
+        }
+
         public static IEnumerable<Type> GetClassesByAttribute<T>()
               where T : Attribute
         {
