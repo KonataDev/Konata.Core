@@ -7,21 +7,10 @@ using Konata.Core.Attributes;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Utils.IO;
 using Konata.Utils.Protobuf;
-using Konata.Utils.Protobuf.ProtoModel;
 
 namespace Konata.Core.Services.OnlinePush
 {
     [Service("OnlinePush.ReqPush", "Push messages from server")]
-    [EventSubscribe(typeof(GroupMessageRecallEvent))]
-    [EventSubscribe(typeof(GroupSettingsAnonymousEvent))]
-    [EventSubscribe(typeof(GroupNewMemberEvent))]
-    [EventSubscribe(typeof(GroupMuteMemberEvent))]
-    [EventSubscribe(typeof(GroupSettingsFrankSpeekingEvent))]
-    [EventSubscribe(typeof(GroupSettingsDirectMessageEvent))]
-    [EventSubscribe(typeof(GroupSettingsUploadEvent))]
-    [EventSubscribe(typeof(GroupSettingsGroupCompostion))]
-    [EventSubscribe(typeof(GroupPokeEvent))]
-    [EventSubscribe(typeof(PrivatePokeEvent))]
     public class ReqPush : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
@@ -60,10 +49,6 @@ namespace Konata.Core.Services.OnlinePush
 
                 switch (messageType)
                 {
-                    // 1 New Member
-                    case 0x01:
-                        break;
-
                     // 17 Recall Message
                     case 0x11:
 
@@ -142,17 +127,6 @@ namespace Konata.Core.Services.OnlinePush
 
                         return true;
 
-                    // 15 Upload File/Album Settings
-                    case 0x0F:
-                        break;
-
-                    // 16 System Messages
-                    case 0x10:
-                        break;
-
-
-
-
                     // 20 Poke
                     case 0x14:
 
@@ -212,6 +186,15 @@ namespace Konata.Core.Services.OnlinePush
                         };
 
                         return true;
+
+                    default:
+                    // 1 New Member
+                    case 0x01:
+                    // 15 Upload File/Album Settings
+                    case 0x0F:
+                    // 16 System Messages
+                    case 0x10:
+                        break;
                 }
             }
 
