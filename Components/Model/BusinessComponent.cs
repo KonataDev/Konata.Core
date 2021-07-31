@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
-using Konata.Core.Events;
-using Konata.Core.Events.Model;
+using Konata.Utils;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
+using Konata.Core.Events;
+using Konata.Core.Events.Model;
+using Konata.Core.Logics;
+using Konata.Core.Logics.Model;
 
 namespace Konata.Core.Components.Model
 {
@@ -15,247 +19,131 @@ namespace Konata.Core.Components.Model
     {
         public string TAG = "BusinessComponent";
 
-        private OnlineStatusEvent.Type _onlineType;
-        private TaskCompletionSource<WtLoginEvent> _userOperation;
+        private Dictionary<Type, List<BaseLogic>> _businessLogics;
 
         public BusinessComponent()
         {
-            _onlineType = OnlineStatusEvent.Type.Offline;
-        }
+            _businessLogics = new();
 
-        public async Task<bool> Login()
-        {
-            if (_onlineType == OnlineStatusEvent.Type.Offline)
+            // Load all business logics
+            Reflection.EnumAttributes<BusinessLogicAttribute>((type, attr) =>
             {
-                if (!await SocketComponent.Connect(true))
+                // Event to subscribe 
+                var events = type.GetCustomAttributes<EventSubscribeAttribute>();
+
+                // Logic instance
+                var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+                var instance = (BaseLogic)constructor[0].Invoke(new[] { this });
+
+                // Bind logic withevents
+                foreach (var i in events)
                 {
-                    return false;
+                    // Create the key
+                    if (!_businessLogics.TryGetValue(i.Event, out var list))
+                    {
+                        list = new();
+                        _businessLogics.Add(i.Event, list);
+                    }
+
+                    // Append logics
+                    list.Add(instance);
                 }
 
-                var wtStatus = await WtLogin();
+                // Save the cache
+                switch (instance)
                 {
-                    while (true)
+                    case MessagingLogic messaging:
+                        Messaging = messaging;
+                        break;
+
+                    case OperationLogic operation:
+                        Operation = operation;
+                        break;
+
+                    case WtExchangeLogic wtxchg:
+                        WtExchange = wtxchg;
+                        break;
+                }
+            });
+        }
+
+        /// <summary>
+        /// Business logics
+        /// </summary>
+        /// <param name="task"></param>
+        internal override void EventHandler(KonataTask task)
+        {
+            if (task.EventPayload is ProtocolEvent protocolEvent)
+            {
+                // Handle event
+                if (_businessLogics.TryGetValue
+                    (protocolEvent.GetType(), out var logics))
+                {
+                    foreach (var i in logics)
                     {
-                        switch (wtStatus.EventType)
+                        try
                         {
-                            case WtLoginEvent.Type.OK:
-
-                                // Set online
-                                var online = await SetClientOnineType(OnlineStatusEvent.Type.Online);
-                                {
-                                    _onlineType = online.EventType;
-
-                                    // Bot online
-                                    if (online.EventType == OnlineStatusEvent.Type.Online)
-                                    {
-                                        PostEventToEntity(online);
-                                        return true;
-                                    }
-                                    else
-                                    {
-                                        SocketComponent.DisConnect("Wtlogin failed.");
-                                        return false;
-                                    }
-                                }
-
-                            case WtLoginEvent.Type.CheckSMS:
-                            case WtLoginEvent.Type.CheckSlider:
-                                PostEventToEntity(wtStatus);
-                                wtStatus = await WtCheckUserOperation();
-                                break;
-
-                            case WtLoginEvent.Type.RefreshSMS:
-                                wtStatus = await WtRefreshSMSCode();
-                                break;
-
-                            case WtLoginEvent.Type.CheckDevLock:
-                            //wtStatus = await WtValidateDeviceLock();
-                            //break;
-
-                            case WtLoginEvent.Type.LoginDenied:
-                            case WtLoginEvent.Type.InvalidSmsCode:
-                            case WtLoginEvent.Type.InvalidLoginEnvironment:
-                            case WtLoginEvent.Type.InvalidUinOrPassword:
-                                PostEventToEntity(wtStatus);
-                                SocketComponent.DisConnect("Wtlogin failed.");
-                                return false;
-
-                            default:
-                            case WtLoginEvent.Type.NotImplemented:
-                                SocketComponent.DisConnect("Wtlogin failed.");
-                                LogW(TAG, "Login fail. Unsupported wtlogin event type received.");
-                                return false;
+                            // Execute a business logic
+                            i.Incoming(protocolEvent);
+                        }
+                        catch (Exception e)
+                        {
+                            LogE(TAG, $"The logic " +
+                                $"'{i.GetType()}' was thrown an exception:");
+                            LogE(TAG, e);
                         }
                     }
                 }
 
-                LogW(TAG, "You're here? What the happened?");
-                return false;
+                // No handler
+                else
+                {
+                    LogW(TAG, "The event has no logic to handle.");
+                }
             }
-
-            LogW(TAG, "Calling Login method again while online.");
-            return false;
         }
+
+        #region Business Logics
+
+        private WtExchangeLogic WtExchange { get; set; }
+
+        private OperationLogic Operation { get; set; }
+
+        private MessagingLogic Messaging { get; set; }
+
+        public Task<bool> Login()
+            => WtExchange.Login();
 
         public Task<bool> Logout()
-        {
-            // <TODO>
-            return Task.FromResult(false);
-        }
+            => WtExchange.Logout();
 
         public void SubmitSMSCode(string code)
-            => _userOperation.SetResult(new WtLoginEvent
-            { EventType = WtLoginEvent.Type.CheckSMS, CaptchaResult = code });
+            => WtExchange.SubmitSMSCode(code);
 
         public void SubmitSliderTicket(string ticket)
-            => _userOperation.SetResult(new WtLoginEvent
-            { EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket });
-
-        internal async Task<WtLoginEvent> WtLogin()
-            => (WtLoginEvent)await PostEvent<PacketComponent>
-            (new WtLoginEvent { EventType = WtLoginEvent.Type.Tgtgt });
-
-        internal async Task<WtLoginEvent> WtRefreshSMSCode()
-            => (WtLoginEvent)await PostEvent<PacketComponent>
-            (new WtLoginEvent { EventType = WtLoginEvent.Type.RefreshSMS });
-
-        internal async Task<WtLoginEvent> WtValidateDeviceLock()
-            => (WtLoginEvent)await PostEvent<PacketComponent>
-            (new WtLoginEvent { EventType = WtLoginEvent.Type.CheckDevLock });
-
-        internal async Task<WtLoginEvent> WtCheckUserOperation()
-            => (WtLoginEvent)await PostEvent<PacketComponent>
-            (await WaitForUserOperation());
-
-        internal async Task<OnlineStatusEvent> SetClientOnineType(OnlineStatusEvent.Type onlineType)
-            => (OnlineStatusEvent)await PostEvent<PacketComponent>
-            (new OnlineStatusEvent { EventType = onlineType });
-
-        public async Task<GroupKickMemberEvent> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
-            => (GroupKickMemberEvent)await PostEvent<PacketComponent>
-                (new GroupKickMemberEvent
-                {
-                    GroupUin = groupUin,
-                    MemberUin = memberUin,
-                    ToggleType = preventRequest
-                });
-
-        public async Task<GroupMuteMemberEvent> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
-            => (GroupMuteMemberEvent)await PostEvent<PacketComponent>
-                (new GroupMuteMemberEvent
-                {
-                    GroupUin = groupUin,
-                    MemberUin = memberUin,
-                    TimeSeconds = timeSeconds
-                });
-
-        public async Task<GroupPromoteAdminEvent> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
-            => (GroupPromoteAdminEvent)await PostEvent<PacketComponent>
-                (new GroupPromoteAdminEvent
-                {
-                    GroupUin = groupUin,
-                    MemberUin = memberUin,
-                    ToggleType = toggleAdmin
-                });
-
-        internal async void ConfirmReadGroupMessage(GroupMessageEvent groupMessage)
-            => await PostEvent<PacketComponent>
-                (new GroupMessageReadEvent
-                {
-                    GroupUin = groupMessage.GroupUin,
-                    RequestId = groupMessage.MessageId,
-                    SessionSequence = groupMessage.SessionSequence,
-                });
-
-        internal async void PrivateMessagePulldown()
-            => await PostEvent<PacketComponent>(new PrivateMessagePullEvent
-            {
-                SyncCookie = GetComponent<ConfigComponent>().KeyStore.Account.SyncCookie
-            });
-
-        internal void ConfirmPrivateMessage(PrivateMessageEvent privateMessage)
-            => GetComponent<ConfigComponent>().SyncCookie(privateMessage.SyncCookie);
-
-        private async Task<WtLoginEvent> WaitForUserOperation()
-        {
-            _userOperation = new TaskCompletionSource<WtLoginEvent>();
-            return await _userOperation.Task;
-        }
-
-        public async Task<GroupMessageEvent> SendGroupMessage(uint groupUin, MessageChain message)
-          => (GroupMessageEvent)await PostEvent<PacketComponent>
-            (new GroupMessageEvent
-            {
-                GroupUin = groupUin,
-                Message = message
-            });
-
-        public async Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, MessageChain message)
-            => (PrivateMessageEvent)await PostEvent<PacketComponent>
-            (new PrivateMessageEvent
-            {
-                FriendUin = friendUin,
-                Message = message
-            });
-
-        public OnlineStatusEvent.Type GetOnlineStatus()
-            => _onlineType;
+            => WtExchange.SubmitSliderTicket(ticket);
 
         public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
-        {
-            if (_onlineType == status)
-            {
-                return Task.FromResult(true);
-            }
+            => WtExchange.SetOnlineStatus(status);
 
-            switch (_onlineType)
-            {
-                // Not supported yet
-                case OnlineStatusEvent.Type.Online:
-                case OnlineStatusEvent.Type.Leave:
-                case OnlineStatusEvent.Type.Busy:
-                case OnlineStatusEvent.Type.Hidden:
-                case OnlineStatusEvent.Type.QMe:
-                case OnlineStatusEvent.Type.DoNotDistrub:
-                    return Task.FromResult(false);
+        public OnlineStatusEvent.Type GetOnlineStatus()
+            => WtExchange.OnlineType;
 
-                // Login
-                case OnlineStatusEvent.Type.Offline:
-                    return Login();
-            }
+        public Task<int> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
+            => Operation.GroupKickMember(groupUin, memberUin, preventRequest);
 
-            return Task.FromResult(false);
-        }
+        public Task<int> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
+            => Operation.GroupMuteMember(groupUin, memberUin, timeSeconds);
 
-        internal override void EventHandler(KonataTask task)
-        {
-            switch (task.EventPayload)
-            {
-                // Receive online status from server
-                case OnlineStatusEvent onlineStatusEvent:
-                    _onlineType = onlineStatusEvent.EventType;
-                    break;
+        public Task<int> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
+            => Operation.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
 
-                // Confirm with server about we have read group message
-                case GroupMessageEvent groupMessageEvent:
-                    ConfirmReadGroupMessage(groupMessageEvent);
-                    goto default;
+        public Task<int> SendGroupMessage(uint groupUin, MessageChain message)
+            => Messaging.SendGroupMessage(groupUin, message);
 
-                // Pull the private message when notified
-                case PrivateMessageNotifyEvent _:
-                    PrivateMessagePulldown();
-                    break;
+        public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
+            => Messaging.SendPrivateMessage(friendUin, message);
 
-                // Confirm with server about we have read private message
-                case PrivateMessageEvent privateMessageEvent:
-                    ConfirmPrivateMessage(privateMessageEvent);
-                    goto default;
-
-                // Pass messages to upstream
-                default:
-                    PostEventToEntity(task.EventPayload);
-                    break;
-            }
-        }
+        #endregion
     }
 }
