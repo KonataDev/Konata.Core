@@ -25,6 +25,13 @@ namespace Konata.Core.Components
         public Task<BaseEvent> PostEvent<T>(BaseEvent anyEvent)
             where T : BaseComponent => Entity.PostEvent<T>(anyEvent);
 
+        public async Task<TEvent> PostEvent<TEntity, TEvent>(BaseEvent anyEvent)
+            where TEvent : BaseEvent where TEntity : BaseComponent
+        {
+            var task = Entity.PostEvent<TEntity>(anyEvent);
+            return (TEvent)await task;
+        }
+
         public void BroadcastEvent(BaseEvent anyEvent)
             => Entity.BroadcastEvent(anyEvent);
 
@@ -41,22 +48,22 @@ namespace Konata.Core.Components
                 EventMessage = content
             });
 
-        protected void LogV(string tag, string content)
+        public void LogV(string tag, string content)
             => Log(LogLevel.Verbose, tag, content);
 
-        protected void LogI(string tag, string content)
+        public void LogI(string tag, string content)
             => Log(LogLevel.Information, tag, content);
 
-        protected void LogW(string tag, string content)
+        public void LogW(string tag, string content)
             => Log(LogLevel.Warning, tag, content);
 
-        protected void LogE(string tag, string content)
+        public void LogE(string tag, string content)
             => Log(LogLevel.Exception, tag, content);
 
-        protected void LogE(string tag, Exception e)
+        public void LogE(string tag, Exception e)
             => LogE(tag, $"{e.Message}\n{e.StackTrace}");
 
-        protected void LogF(string tag, string content)
+        public void LogF(string tag, string content)
             => Log(LogLevel.Fatal, tag, content);
         #endregion
     }

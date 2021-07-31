@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Konata.Core.Events;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Events.Model;
@@ -65,13 +64,13 @@ namespace Konata.Core
         #region Protocol Methods
 
         /// <summary>
-        /// Login
+        /// Bot login
         /// </summary>
         public Task<bool> Login()
             => BusinessComponent.Login();
 
         /// <summary>
-        /// Logout
+        /// Bot logout
         /// </summary>
         /// <returns></returns>
         public Task<bool> Logout()
@@ -97,7 +96,7 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="preventRequest"><b>[In]</b> Flag to prevent member request or no. </param>
-        public Task<GroupKickMemberEvent> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
+        public Task<int> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
             => BusinessComponent.GroupKickMember(groupUin, memberUin, preventRequest);
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="timeSeconds"><b>[In]</b> Mute time. </param>
-        public Task<GroupMuteMemberEvent> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
+        public Task<int> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
             => BusinessComponent.GroupMuteMember(groupUin, memberUin, timeSeconds);
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="toggleAdmin"><b>[In]</b> Flag to toggle set or unset. </param>
-        public Task<GroupPromoteAdminEvent> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
+        public Task<int> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
             => BusinessComponent.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
 
         /// <summary>
@@ -124,7 +123,7 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
-        public Task<GroupMessageEvent> SendGroupMessage(uint groupUin, MessageChain message)
+        public Task<int> SendGroupMessage(uint groupUin, MessageChain message)
             => BusinessComponent.SendGroupMessage(groupUin, message);
 
         /// <summary>
@@ -133,7 +132,7 @@ namespace Konata.Core
         /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
-        public Task<PrivateMessageEvent> SendPrivateMessage(uint friendUin, MessageChain message)
+        public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
             => BusinessComponent.SendPrivateMessage(friendUin, message);
 
         /// <summary>
