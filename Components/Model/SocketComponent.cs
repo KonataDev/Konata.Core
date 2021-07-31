@@ -65,9 +65,9 @@ namespace Konata.Core.Components.Model
         /// <summary>
         /// Connect to server
         /// </summary>
-        /// <param name="useLowLentency"><b>[Opt] </b>Auto select low letency server to connect.</param>
+        /// <param name="useLowLatency"><b>[Opt] </b>Auto select low letency server to connect.</param>
         /// <returns></returns>
-        public Task<bool> Connect(bool useLowLentency = false)
+        public Task<bool> Connect(bool useLowLatency = false)
         {
             // Check socket
             if (_socket != null && _socket.Connected)
@@ -96,7 +96,7 @@ namespace Konata.Core.Components.Model
             // Find server
             else
             {
-                if (useLowLentency)
+                if (useLowLatency)
                 {
                     foreach (var item in DefaultServers)
                     {
