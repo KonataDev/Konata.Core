@@ -16,6 +16,8 @@ namespace Konata.Core.Logics.Model
     public class WtExchangeLogic : BaseLogic
     {
         private static string TAG = "WtXchg Logic";
+        private static string ScheduleCheckConn = "Logic.WtXchg.CheckOnline";
+        private static string ScheduleHeartBeat = "Logic.WtXchg.HeartBeat";
 
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;
@@ -74,7 +76,13 @@ namespace Konata.Core.Logics.Model
                                 // Bot online
                                 if (online.EventType == OnlineStatusEvent.Type.Online)
                                 {
+                                    // Online
                                     Context.PostEventToEntity(online);
+
+                                    // Register schedules
+                                    Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600, OnSendHeartBeat);
+                                    Context.ScheduleComponent.Interval(ScheduleCheckConn, 60, OnCheckConnection);
+
                                     return true;
                                 }
                                 else
@@ -172,37 +180,15 @@ namespace Konata.Core.Logics.Model
             return Task.FromResult(false);
         }
 
+        private void OnCheckConnection()
+        {
 
-        //internal override void EventHandler(KonataTask task)
-        //{
-        //    switch (task.EventPayload)
-        //    {
-        //        // Receive online status from server
-        //        case OnlineStatusEvent onlineStatusEvent:
-        //            _onlineType = onlineStatusEvent.EventType;
-        //            break;
+        }
 
-        //        // Confirm with server about we have read group message
-        //        case GroupMessageEvent groupMessageEvent:
-        //            ConfirmReadGroupMessage(groupMessageEvent);
-        //            goto default;
+        private void OnSendHeartBeat()
+        {
 
-        //        // Pull the private message when notified
-        //        case PrivateMessageNotifyEvent _:
-        //            PrivateMessagePulldown();
-        //            break;
-
-        //        // Confirm with server about we have read private message
-        //        case PrivateMessageEvent privateMessageEvent:
-        //            ConfirmPrivateMessage(privateMessageEvent);
-        //            goto default;
-
-        //        // Pass messages to upstream
-        //        default:
-        //            PostEventToEntity(task.EventPayload);
-        //            break;
-        //    }
-        //}
+        }
     }
 }
 
