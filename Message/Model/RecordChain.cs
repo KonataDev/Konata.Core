@@ -6,7 +6,25 @@ namespace Konata.Core.Message.Model
     {
         public string FileName { get; set; }
 
-        public RecordChain()
-            => Type = ChainType.Record;
+        private RecordChain(string fileName)
+            : base(ChainType.Record)
+        {
+            FileName = fileName;
+        }
+
+        /// <summary>
+        /// Create a record chain
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static RecordChain Create(string fileName)
+        {
+            return new(fileName);
+        }
+
+        public static RecordChain Parse(string code)
+        {
+            return null;
+        }
     }
 }

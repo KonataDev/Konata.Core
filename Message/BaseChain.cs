@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Message
 {
-    public class BaseChain
+    public abstract class BaseChain
     {
         public enum ChainType
         {
@@ -17,5 +15,8 @@ namespace Konata.Core.Message
         }
 
         public ChainType Type { get; set; }
+
+        protected BaseChain(ChainType type)
+            => Type = type;
     }
 }

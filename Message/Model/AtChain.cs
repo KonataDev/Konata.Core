@@ -4,15 +4,30 @@ namespace Konata.Core.Message.Model
 {
     public class AtChain : BaseChain
     {
-        public uint AtUin { get; set; }
+        public uint AtUin { get; }
 
-        public AtChain()
-            => Type = ChainType.At;
-
-        public AtChain(uint uin)
+        private AtChain(uint uin)
+            : base(ChainType.At)
         {
             AtUin = uin;
-            Type = ChainType.At;
         }
+
+        /// <summary>
+        /// Create an at chain
+        /// </summary>
+        /// <param name="memberUin"></param>
+        /// <returns></returns>
+        public static AtChain Create(uint memberUin)
+        {
+            return new(memberUin);
+        }
+
+        internal static BaseChain Parse(string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+            => $"[KQ:at,qq={(AtUin == 0 ? "all" : AtUin.ToString())}]";
     }
 }
