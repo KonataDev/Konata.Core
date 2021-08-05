@@ -832,6 +832,16 @@ namespace Konata.Utils.IO
             throw eobException;
         }
 
+        public uint PeekUshort(uint offset, out ushort value, Endian endian)
+        {
+            if (CheckAvailable(offset + 2))
+            {
+                value = ByteConverter.BytesToUInt16(buffer, readPosition + offset, endian);
+                return value;
+            }
+            throw eobException;
+        }
+
         public int PeekIntBE(out int value)
         {
             return PeekInt(0, out value, Endian.Big);
@@ -850,6 +860,21 @@ namespace Konata.Utils.IO
         public uint PeekUintBE(uint offset, out uint value)
         {
             return PeekUint(offset, out value, Endian.Big);
+        }
+
+        public uint PeekUintLE(uint offset, out uint value)
+        {
+            return PeekUint(offset, out value, Endian.Little);
+        }
+
+        public uint PeekUshortBE(uint offset, out ushort value)
+        {
+            return PeekUshort(offset, out value, Endian.Big);
+        }
+
+        public uint PeekUshortLE(uint offset, out ushort value)
+        {
+            return PeekUshort(offset, out value, Endian.Little);
         }
 
         public byte[] PeekBytes(uint offset, uint length, out byte[] value)
