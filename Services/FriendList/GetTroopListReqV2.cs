@@ -25,7 +25,7 @@ namespace Konata.Core.Services.Friendlist
 
             var svcRequest = new SvcReqGetTroopListReqV2Simplify(input.SelfUin);
 
-            if (SSOFrame.Create("friendlist.ModifyGroupCardReq", PacketType.TypeB,
+            if (SSOFrame.Create("friendlist.GetTroopListReqV2", PacketType.TypeB,
                 newSequence, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
