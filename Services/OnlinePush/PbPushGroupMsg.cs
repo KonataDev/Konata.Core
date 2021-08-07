@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Konata.Core.Events;
@@ -115,18 +114,49 @@ namespace Konata.Core.Services.OnlinePush
         }
 
         /// <summary>
-        /// Process Picture chain
+        /// Process image chain
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParsePicture(ProtoTreeRoot tree)
         {
-            return new ImageChain
+            var url = tree.GetLeafString("8201");
+            var hashstr = ByteConverter.Hex(tree.GetLeafBytes("6A"));
+
+            var width = (uint)tree.GetLeafVar("B001");
+            var height = (uint)tree.GetLeafVar("B801");
+            var length = (uint)tree.GetLeafVar("C801");
+            var imgtype = ImageType.JPG;
+
+            // hmm not sure
+            if (tree.TryGetLeafVar("A001", out var type))
             {
-                ImageUrl = tree.GetLeafString("8201"),
-                FileHash = ByteConverter.Hex(tree.GetLeafBytes("6A")),
-                FileName = tree.GetLeafString("12").Replace("{", "").Replace("}", "").Replace("-", "")
-            };
+                imgtype = (ImageType)type;
+            }
+
+            else
+            {
+                // Try get image type
+                // from file extension
+                var split = tree.GetLeafString("12").Split('.');
+
+                if (split.Length == 2)
+                {
+                    imgtype = split[1] switch
+                    {
+                        "jpg" => ImageType.JPG,
+                        "png" => ImageType.PNG,
+                        "bmp" => ImageType.BMP,
+                        "gif" => ImageType.GIF,
+                        "webp" => ImageType.WEBP,
+                        _ => ImageType.JPG
+                    };
+                }
+            }
+
+            // Create image chain
+            return ImageChain.Create(url, hashstr,
+                hashstr, width, height, length, imgtype);
         }
 
         /// <summary>
@@ -142,13 +172,13 @@ namespace Konata.Core.Services.OnlinePush
                 var at = ByteConverter.BytesToUInt32
                     (atBytes.Skip(7).Take(4).ToArray(), 0, Endian.Big);
 
-                return new AtChain { AtUin = at };
+                return AtChain.Create(at);
             }
 
             // Plain text chain
             if (tree.TryGetLeafString("0A", out var content))
             {
-                return new PlainTextChain { Content = content };
+                return PlainTextChain.Create(content);
             }
 
             return null;
@@ -160,12 +190,7 @@ namespace Konata.Core.Services.OnlinePush
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParseQFace(ProtoTreeRoot tree)
-        {
-            return new QFaceChain
-            {
-                FaceId = (uint)tree.GetLeafVar("08")
-            };
-        }
+            => QFaceChain.Create((uint)tree.GetLeafVar("08"));
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)

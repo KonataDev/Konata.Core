@@ -98,12 +98,11 @@ namespace Konata.Core.Services.MessageSvc
         /// <returns></returns>
         private BaseChain ParsePicture(ProtoTreeRoot tree)
         {
-            return new ImageChain
-            {
-                ImageUrl = tree.GetLeafString("D201"),
-                FileHash = ByteConverter.Hex(tree.GetLeafBytes("3A")),
-                FileName = tree.GetLeafString("0A")
-            };
+            // TODO: fix args
+            return ImageChain.Create(
+                tree.GetLeafString("D201"),
+                ByteConverter.Hex(tree.GetLeafBytes("3A")),
+                tree.GetLeafString("0A"), 0, 0, 0, ImageType.JPG);
         }
 
         /// <summary>
@@ -112,15 +111,7 @@ namespace Konata.Core.Services.MessageSvc
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParsePlainText(ProtoTreeRoot tree)
-        {
-            // Plain text chain
-            if (tree.TryGetLeafString("0A", out var content))
-            {
-                return new PlainTextChain { Content = content };
-            }
-
-            return null;
-        }
+            => PlainTextChain.Create(tree.GetLeafString("0A"));
 
         /// <summary>
         /// Process QFace chain
@@ -128,12 +119,7 @@ namespace Konata.Core.Services.MessageSvc
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParseQFace(ProtoTreeRoot tree)
-        {
-            return new QFaceChain
-            {
-                FaceId = (uint)tree.GetLeafVar("08")
-            };
-        }
+            => QFaceChain.Create((uint)tree.GetLeafVar("08"));
 
         public bool Build(Sequence sequence, PrivateMessagePullEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
