@@ -7,5 +7,7 @@ namespace Konata.Core.Events
         public bool WaitForResponse { get; set; }
 
         public int SessionSequence { get; set; }
+
+        public int ResultCode { get; set; }
     }
 }
