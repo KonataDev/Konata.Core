@@ -56,6 +56,9 @@ namespace Konata.Core
         internal SocketComponent SocketComponent
             => GetComponent<SocketComponent>();
 
+        internal HighwayComponent HighwayComponent
+            => GetComponent<HighwayComponent>();
+
         public BotKeyStore KeyStore
             => ConfigComponent.KeyStore;
 
