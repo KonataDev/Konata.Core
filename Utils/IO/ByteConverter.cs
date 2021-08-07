@@ -34,7 +34,7 @@ namespace Konata.Utils.IO
         /// <param name="length">长度</param>
         /// <param name="endian">高低位,默认跟随主机配置</param>
         /// <returns></returns>
-        public static byte[] BoolToBytes(bool value, uint length, Endian endian=Endian.FollowMachine)
+        public static byte[] BoolToBytes(bool value, uint length, Endian endian = Endian.FollowMachine)
         {
             if ((int)endian == (int)Endian.FollowMachine)
             {
@@ -350,7 +350,7 @@ namespace Konata.Utils.IO
         }
 
         #endregion
-        
+
         private static bool ShouldReverse(Endian endian)
         {
             return BitConverter.IsLittleEndian ^ (endian == Endian.Little);
@@ -422,6 +422,16 @@ namespace Konata.Utils.IO
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             }
             return bytes;
+        }
+
+        public static string Base64(byte[] data)
+        {
+            return Convert.ToBase64String(data, Base64FormattingOptions.None);
+        }
+
+        public static byte[] UnBase64(string base64)
+        {
+            return Convert.FromBase64String(base64);
         }
     }
 }

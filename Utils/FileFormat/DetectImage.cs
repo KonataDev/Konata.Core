@@ -2,9 +2,9 @@
 
 using Konata.Utils.IO;
 
-namespace Konata.Core.Utils.Format
+namespace Konata.Core.Utils
 {
-    public static class Image
+    public static partial class FileFormat
     {
         //0 => ImageType.JPG,
         //1 => ImageType.PNG,
@@ -20,7 +20,7 @@ namespace Konata.Core.Utils.Format
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public static bool Detect(byte[] data,
+        public static bool DetectImage(byte[] data,
             out int type, out uint width, out uint height)
         {
             var buffer = new ByteBuffer(data);
