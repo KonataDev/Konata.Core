@@ -6,23 +6,26 @@ namespace Konata.Core.Components
 {
     internal class InternalComponent : BaseComponent
     {
-        public Bot Context
+        public Bot Bot
             => (Bot)Entity;
 
         public ConfigComponent ConfigComponent
-            => Context.ConfigComponent;
+            => Bot.ConfigComponent;
 
         public BusinessComponent BusinessComponent
-            => Context.BusinessComponent;
+            => Bot.BusinessComponent;
 
         public PacketComponent PacketComponent
-            => Context.PacketComponent;
+            => Bot.PacketComponent;
 
         public SocketComponent SocketComponent
-            => Context.SocketComponent;
+            => Bot.SocketComponent;
 
         public ScheduleComponent ScheduleComponent
-            => Context.ScheduleComponent;
+            => Bot.ScheduleComponent;
+
+        public HighwayComponent HighwayComponent
+            => Bot.HighwayComponent;
 
         internal InternalComponent()
             : base() { }
