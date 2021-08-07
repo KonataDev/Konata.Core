@@ -20,7 +20,7 @@ namespace Konata.Core.Services.OnlinePush
 
             // Convert push event to konata event
             return pushMsg.EventType == PushType.Group ?
-                 HandlePushGroupEvent(pushMsg.PushPayload, out output) :
+                 HandlePushGroupEvent(pushMsg.PushPayload, signInfo, out output) :
                  HandlePushPrivateEvent(pushMsg.PushPayload, out output);
         }
 
@@ -28,10 +28,11 @@ namespace Konata.Core.Services.OnlinePush
         /// Parse push event for group
         /// </summary>
         /// <param name="pushPayload"></param>
+        /// <param name="signInfo"></param>
         /// <param name="pushEvent"></param>
         /// <returns></returns>
         private bool HandlePushGroupEvent
-            (byte[] pushPayload, out ProtocolEvent pushEvent)
+            (byte[] pushPayload, BotKeyStore signInfo, out ProtocolEvent pushEvent)
         {
             pushEvent = null;
 
@@ -151,11 +152,11 @@ namespace Konata.Core.Services.OnlinePush
                                 switch (key)
                                 {
                                     case "action_str":
-                                        actionPrefix = i.GetLeafString("12");
+                                        i.TryGetLeafString("12", out actionPrefix);
                                         break;
 
                                     case "suffix_str":
-                                        actionSuffix = i.GetLeafString("12");
+                                        i.TryGetLeafString("12", out actionSuffix);
                                         break;
 
                                     case "uin_str1":
@@ -166,6 +167,12 @@ namespace Konata.Core.Services.OnlinePush
                                         affectedUin = uint.Parse(i.GetLeafString("12"));
                                         break;
                                 }
+                            }
+
+                            // If no affected uin included
+                            if(affectedUin == 0)
+                            {
+                                affectedUin = signInfo.Account.Uin;
                             }
 
                             // Failed to parse
