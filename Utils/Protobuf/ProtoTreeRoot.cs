@@ -212,6 +212,10 @@ namespace Konata.Utils.Protobuf
             return null;
         }
 
+        public List<T> GetLeaves<T>(string leafPath)
+            where T : IProtoType => GetLeaves(leafPath)
+            .ConvertAll(new Converter<IProtoType, T>((t) => (T)t));
+
         public List<IProtoType> GetLeaves(string leafPath)
         {
             if (Leaves.TryGetValue(leafPath, out var list))
@@ -220,7 +224,6 @@ namespace Konata.Utils.Protobuf
             }
             return null;
         }
-
 
         public delegate void TreeRootEnumerator(string key, IProtoType value);
 
@@ -237,7 +240,10 @@ namespace Konata.Utils.Protobuf
 
         public IProtoType PathTo(string leafPath)
             => PathTo(this, leafPath);
-        
+
+        public T PathTo<T>(string leafPath)
+           where T : IProtoType => (T)PathTo(this, leafPath);
+
         #endregion
 
         /// <summary>

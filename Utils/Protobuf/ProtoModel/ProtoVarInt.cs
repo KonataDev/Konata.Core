@@ -16,5 +16,14 @@ namespace Konata.Utils.Protobuf.ProtoModel
 
         public static byte[] Serialize(ProtoVarInt value)
             => ByteConverter.NumberToVarint(value.Value);
+
+        public static implicit operator long(ProtoVarInt value)
+            => value.Value;
+
+        public static implicit operator uint(ProtoVarInt value)
+            => (uint)value.Value;
+
+        public static implicit operator int(ProtoVarInt value)
+            => (int)value.Value;
     }
 }
