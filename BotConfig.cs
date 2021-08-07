@@ -15,5 +15,11 @@ namespace Konata.Core
         public string CustomHost { get; set; }
 
         #endregion
+
+        #region Image upload
+
+        public int ImageChunkSize { get; set; }
+
+        #endregion
     }
 }
