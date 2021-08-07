@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 
+using Konata.Utils;
 using Konata.Utils.IO;
 using Konata.Utils.Crypto;
-using Konata.Core.Utils.Format;
+using Konata.Core.Utils;
+using Konata.Core.Events.Model;
 
 namespace Konata.Core.Message.Model
 {
@@ -18,7 +20,7 @@ namespace Konata.Core.Message.Model
         /// <summary>
         /// MD5 byte[]
         /// </summary>
-        public byte[] HashData { get; }
+        public byte[] HashData { get; private set; }
 
         /// <summary>
         /// Image data
@@ -26,26 +28,41 @@ namespace Konata.Core.Message.Model
         public byte[] FileData { get; }
 
         /// <summary>
+        /// Image data length
+        /// </summary>
+        public uint FileLength { get; private set; }
+
+        /// <summary>
         /// Image width
         /// </summary>
-        public uint Width { get; }
+        public uint Width { get; private set; }
 
         /// <summary>
         /// Image height
         /// </summary>
-        public uint Height { get; }
+        public uint Height { get; private set; }
 
         /// <summary>
         /// Image type
         /// </summary>
-        internal ImageType ImageType { get; }
+        internal ImageType ImageType { get; private set; }
 
-        private ImageChain(string url, string filename, string filehash)
+        internal PicUpInfo PicUpInfo { get; private set; }
+
+        private ImageChain(string url, string filename,
+            string filehash, uint width, uint height, uint length, ImageType type)
             : base(ChainType.Image)
         {
             ImageUrl = url;
             FileName = filename;
             FileHash = filehash;
+            FileLength = length;
+            Width = width;
+            Height = height;
+            ImageType = type;
+
+            // Unhash
+            HashData = ByteConverter.UnHex(filehash);
         }
 
         private ImageChain(byte[] data, uint width,
@@ -53,6 +70,7 @@ namespace Konata.Core.Message.Model
             : base(ChainType.Image)
         {
             FileData = data;
+            FileLength = (uint)data.Length;
             Width = width;
             Height = height;
             HashData = md5;
@@ -62,16 +80,40 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
+        /// Set PicUp info
+        /// </summary>
+        /// <param name="info"></param>
+        public void SetPicUpInfo(PicUpInfo info)
+        {
+            PicUpInfo = info;
+
+            // Set cached info
+            if (info.UseCached)
+            {
+                Width = info.CachedInfo.Width;
+                Height = info.CachedInfo.Height;
+                HashData = info.CachedInfo.Hash;
+                ImageType = info.CachedInfo.Type;
+                FileLength = info.CachedInfo.Length;
+            }
+        }
+
+        /// <summary>
         /// Create an image chain
         /// </summary>
         /// <param name="url"></param>
         /// <param name="filename"></param>
         /// <param name="filehash"></param>
+        /// <param name="length"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
         internal static ImageChain Create(string url,
-            string filename, string filehash)
+            string filename, string filehash, uint width,
+            uint height, uint length, ImageType type)
         {
-            return new(url, filename, filehash);
+            return new(url, filename, filehash, width, height, length, type);
         }
 
         /// <summary>
@@ -82,7 +124,7 @@ namespace Konata.Core.Message.Model
         public static ImageChain Create(byte[] image)
         {
             // Detect image type
-            if (Image.Detect(image, out var type,
+            if (FileFormat.DetectImage(image, out var type,
                 out var width, out var height))
             {
                 // Image type
@@ -113,7 +155,7 @@ namespace Konata.Core.Message.Model
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public static ImageChain Create(string filepath)
+        public static ImageChain CreateFromFile(string filepath)
         {
             if (!File.Exists(filepath))
             {
@@ -124,17 +166,79 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
-        /// Parse code
+        /// Create an image chain
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static ImageChain CreateFromURL(string url)
+        {
+            return Create(Network.Download(url).Result);
+        }
+
+        /// <summary>
+        /// Create an image chain from plain base64 <br />
+        /// Not incuding the header 'base64://'
+        /// </summary>
+        /// <param name="base64"></param>
+        /// <returns></returns>
+        public static ImageChain CreateFromBase64(string base64)
+        {
+            return Create(ByteConverter.UnBase64(base64));
+        }
+
+        /// <summary>
+        /// Parse the code to a chain
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
         internal static BaseChain Parse(string code)
         {
-            throw new NotImplementedException();
+            var args = GetArgs(code);
+            {
+                var file = args["file"];
+
+                // Create from url
+                if (file.StartsWith("http://")
+                    || file.StartsWith("https://"))
+                {
+                    return CreateFromURL(file);
+                }
+
+                // Create from base64
+                if (file.StartsWith("base64://"))
+                {
+                    return CreateFromBase64(file[9..file.Length]);
+                }
+
+                // Create from local file
+                if (File.Exists(file))
+                {
+                    return CreateFromFile(file);
+                }
+
+                // Create from hash
+                if (file.Length == 32)
+                {
+                    var width = uint.Parse(args["width"]);
+                    var height = uint.Parse(args["height"]);
+                    var length = uint.Parse(args["length"]);
+                    var type = (ImageType)uint.Parse(args["type"]);
+
+                    return Create(file, file, file, width, height, length, type);
+                }
+
+                // Ignore
+                return null;
+            }
         }
 
         public override string ToString()
-            => $"[KQ:image,file={FileName}]";
+            => $"[KQ:image," +
+            $"file={FileName}," +
+            $"width={Width}," +
+            $"height={Height}," +
+            $"length={FileLength}," +
+            $"type={(int)ImageType}]";
     }
 
     public enum ImageType : int
