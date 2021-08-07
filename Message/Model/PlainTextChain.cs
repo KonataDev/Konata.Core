@@ -22,11 +22,6 @@ namespace Konata.Core.Message.Model
             return new(text);
         }
 
-        internal static BaseChain Parse(string code)
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
             => Content;
     }

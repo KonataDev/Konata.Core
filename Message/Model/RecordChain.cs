@@ -22,9 +22,17 @@ namespace Konata.Core.Message.Model
             return new(fileName);
         }
 
+        /// <summary>
+        /// Parse the code to a chain
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static RecordChain Parse(string code)
         {
             return null;
         }
+
+        public override string ToString()
+            => $"[KQ:record]"; // TODO: record code
     }
 }

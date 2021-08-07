@@ -23,9 +23,17 @@ namespace Konata.Core.Message.Model
             return new(face);
         }
 
+        /// <summary>
+        /// Parse the code to a chain
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         internal static BaseChain Parse(string code)
         {
-            throw new NotImplementedException();
+            var args = GetArgs(code);
+            {
+                return Create(uint.Parse(args["id"]));
+            }
         }
 
         public override string ToString()
