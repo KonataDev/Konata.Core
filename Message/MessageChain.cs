@@ -182,7 +182,7 @@ namespace Konata.Core.Message
         /// <returns></returns>
         public MessageBuilder Image(string filePath)
         {
-            _chain.Add(ImageChain.Create(filePath));
+            _chain.Add(ImageChain.CreateFromFile(filePath));
             return this;
         }
 
