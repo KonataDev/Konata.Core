@@ -5,8 +5,8 @@ using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
-using Konata.Utils.Protobuf;
 using Konata.Core.Attributes;
+using Konata.Utils.Protobuf;
 
 namespace Konata.Core.Services.MessageSvc
 {
@@ -16,7 +16,16 @@ namespace Konata.Core.Services.MessageSvc
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
-            throw new NotImplementedException();
+            var tree = new ProtoTreeRoot
+                (input.Payload.GetBytes(), true);
+            {
+                output = new GroupMessageEvent
+                {
+                    ResultCode = (int)tree.GetLeafVar("08")
+                };
+            }
+
+            return true;
         }
 
         public bool Build(Sequence sequence, GroupMessageEvent input,
@@ -27,7 +36,7 @@ namespace Konata.Core.Services.MessageSvc
 
             var root = new ProtoTreeRoot();
             {
-                foreach (var chain in input.Message)
+                foreach (var chain in input.Message.Chains)
                 {
                     switch (chain)
                     {
@@ -43,8 +52,11 @@ namespace Konata.Core.Services.MessageSvc
                             ConstructQFaceChain(root, qfaceChain);
                             break;
 
-                        // Not supported yet.
                         case ImageChain imageChain:
+                            ConstructImageChain(root, imageChain);
+                            break;
+
+                        // Not supported yet.
                         case RecordChain recordChain:
                             break;
                     }
@@ -80,6 +92,33 @@ namespace Konata.Core.Services.MessageSvc
         private void ConstructAtChain(ProtoTreeRoot root, AtChain chain)
         {
 
+        }
+
+        private void ConstructImageChain(ProtoTreeRoot root, ImageChain chain)
+        {
+            root.AddTree("12", (leaf) =>
+            {
+                leaf.AddTree("42", (_) =>
+                {
+                    _.AddLeafString("12", chain.FileName);
+                    _.AddLeafVar("38", chain.PicUpInfo.Ip);
+                    _.AddLeafVar("40", chain.PicUpInfo.ImageId);
+                    _.AddLeafVar("48", chain.PicUpInfo.Port);
+                    _.AddLeafVar("50", 66);
+                    //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
+                    _.AddLeafVar("60", 1);
+                    _.AddLeafBytes("6A", chain.HashData);
+                    _.AddLeafVar("A001", (long)chain.ImageType);
+                    _.AddLeafVar("B001", chain.Width);
+                    _.AddLeafVar("B801", chain.Height);
+                    _.AddLeafVar("C001", 200); // TODO: Unknown
+                    _.AddLeafVar("C801", chain.FileLength);
+                    _.AddLeafVar("D001", 1);
+                    _.AddLeafVar("E801", 0);
+                    _.AddLeafVar("F001", 0);
+                    _.AddTree("9202", __ => __.AddLeafVar("78", 2));
+                });
+            });
         }
 
         private void ConstructQFaceChain(ProtoTreeRoot root, QFaceChain chain)
