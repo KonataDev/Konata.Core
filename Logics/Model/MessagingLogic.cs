@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Konata.Core.Events;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
+using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
 
 namespace Konata.Core.Logics.Model
@@ -27,7 +29,7 @@ namespace Konata.Core.Logics.Model
             {
                 // Pull new private message
                 case PrivateMessageNotifyEvent pull:
-                    PrivateMessagePull();
+                    PullPrivateMessage();
                     return;
 
                 // Received a private message
@@ -47,23 +49,139 @@ namespace Konata.Core.Logics.Model
             // Update Group list cache or friend list cache
         }
 
-        public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
+        /// <summary>
+        /// Send the message to a friend
+        /// </summary>
+        /// <param name="friendUin"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
         {
-            // TODO: 
-            // Handle the message chain
-            // Figure out the image chains then upload them
-            throw new NotImplementedException();
+            // Upload the images
+            if (!await CheckImageAndUpload(friendUin, message, false))
+            {
+                // Templorary return
+                return -1;
+            }
+
+            // Construct the event
+            var request = new PrivateMessageEvent
+            {
+                Message = message,
+                FriendUin = friendUin,
+            };
+
+            // Send the message
+            var result = await Context.PostEvent
+                <PacketComponent, PrivateMessageEvent>(request);
+
+            return result.ResultCode;
         }
 
-        public Task<int> SendGroupMessage(uint groupUin, MessageChain message)
+        /// <summary>
+        /// Send the message to a group
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<int> SendGroupMessage(uint groupUin, MessageChain message)
         {
-            // TODO: 
-            // Handle the message chain
-            // Figure out the image chains then upload them
-            throw new NotImplementedException();
+            // Upload the images
+            if (!await CheckImageAndUpload(groupUin, message, true))
+            {
+                // Templorary return
+                return -1;
+            }
+
+            // Construct the event
+            var request = new GroupMessageEvent
+            {
+                Message = message,
+                GroupUin = groupUin,
+                MemberUin = Context.Bot.Uin
+            };
+
+            // Send the message
+            var result = await Context.PostEvent
+                <PacketComponent, GroupMessageEvent>(request);
+
+            return result.ResultCode;
         }
 
-        internal void ConfirmReadGroupMessage(GroupMessageEvent e)
+        /// <summary>
+        /// Upload the image
+        /// </summary>
+        /// <param name="uin">uin</param>
+        /// <param name="message">The message chain</param>
+        /// <param name="c2c"><b>[In] </b> Group or Private </param>
+        private async Task<bool> CheckImageAndUpload
+            (uint uin, MessageChain message, bool c2c)
+        {
+            List<ImageChain> upload = new();
+
+            // Find the image chain
+            foreach (var i in message.Chains)
+            {
+                if (i.Type == BaseChain.ChainType.Image)
+                {
+                    upload.Add((ImageChain)i);
+                }
+            }
+
+            // Do upload the image
+            if (upload.Count > 0)
+            {
+                // TODO:
+                // 1. Request ImageStore.GroupPicUp
+                // 2. Upload the image via highway
+                // 3. Return false while failed to upload
+
+                if (c2c)
+                {
+                    var request = new GroupPicUpEvent
+                    {
+                        Images = upload,
+                        GroupUin = uin,
+                        MemberUin = Context.Bot.Uin
+                    };
+
+                    var result = await Context.PostEvent
+                        <PacketComponent, GroupPicUpEvent>(request);
+
+                    // Set upload info
+                    for (var i = 0; i < upload.Count; ++i)
+                    {
+                        upload[i].SetPicUpInfo(result.UploadInfo[i]);
+                    }
+
+                    // Image upload for group messages
+                    return await Context.HighwayComponent.UploadGroupImages
+                        (Context.Bot.Uin, upload.ToArray(), result.UploadInfo.ToArray());
+                }
+                else
+                {
+                    var request = new PrivateOffPicUpEvent
+                    {
+                        Images = upload
+                    };
+
+                    var result = await Context.PostEvent
+                        <PacketComponent, PrivateOffPicUpEvent>(request);
+
+                    // Image upload for private messages
+                    return await Context.HighwayComponent.UploadPrivateImages();
+                }
+            }
+
+            // No images
+            return true;
+        }
+
+        /// <summary>
+        /// Confirm the messages
+        /// </summary>
+        /// <param name="e"></param>
+        private void ConfirmReadGroupMessage(GroupMessageEvent e)
         {
             Context.PostEvent<PacketComponent>(new GroupMessageReadEvent
             {
@@ -73,7 +191,10 @@ namespace Konata.Core.Logics.Model
             });
         }
 
-        internal void PrivateMessagePull()
+        /// <summary>
+        /// Pull the new private message
+        /// </summary>
+        private void PullPrivateMessage()
         {
             Context.PostEvent<PacketComponent>(new PrivateMessagePullEvent
             {
@@ -81,7 +202,11 @@ namespace Konata.Core.Logics.Model
             });
         }
 
-        internal void UpdateSyncCookie(PrivateMessageEvent privateMessage)
+        /// <summary>
+        /// Update the local sync cookie
+        /// </summary>
+        /// <param name="privateMessage"></param>
+        private void UpdateSyncCookie(PrivateMessageEvent privateMessage)
             => Context.GetComponent<ConfigComponent>().SyncCookie(privateMessage.SyncCookie);
     }
 }
