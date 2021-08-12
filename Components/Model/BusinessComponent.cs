@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-
 using Konata.Utils;
 using Konata.Core.Entity;
 using Konata.Core.Message;
@@ -17,7 +16,7 @@ namespace Konata.Core.Components.Model
     [Component("BusinessComponent", "Konata Business Component")]
     internal class BusinessComponent : InternalComponent
     {
-        public string TAG = "BusinessComponent";
+        private const string TAG = "BusinessComponent";
 
         private Dictionary<Type, List<BaseLogic>> _businessLogics;
 
@@ -33,7 +32,7 @@ namespace Konata.Core.Components.Model
 
                 // Logic instance
                 var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-                var instance = (BaseLogic)constructor[0].Invoke(new[] { this });
+                var instance = (BaseLogic) constructor[0].Invoke(new object[] {this});
 
                 // Bind logic withevents
                 foreach (var i in events)
@@ -88,8 +87,8 @@ namespace Konata.Core.Components.Model
                         }
                         catch (Exception e)
                         {
-                            LogE(TAG, $"The logic " +
-                                $"'{i.GetType()}' was thrown an exception:");
+                            LogE(TAG, $"The logic '{i.GetType()}'" +
+                                      " was thrown an exception:");
                             LogE(TAG, e);
                         }
                     }

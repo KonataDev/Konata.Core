@@ -15,9 +15,9 @@ namespace Konata.Core.Logics.Model
     [BusinessLogic("Wtlogin Exchange Logic", "Responsible for the online tasks.")]
     public class WtExchangeLogic : BaseLogic
     {
-        private static string TAG = "WtXchg Logic";
-        private static string ScheduleCheckConn = "Logic.WtXchg.CheckOnline";
-        private static string ScheduleHeartBeat = "Logic.WtXchg.HeartBeat";
+        private const string TAG = "WtXchg Logic";
+        private const string ScheduleCheckConn = "Logic.WtXchg.CheckOnline";
+        private const string ScheduleHeartBeat = "Logic.WtXchg.HeartBeat";
 
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;

@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Collections.Generic;
-
 using Konata.Utils;
 using Konata.Core.Events;
 using Konata.Core.Components;
-using System.Reflection;
 
 namespace Konata.Core.Entity
 {
@@ -18,29 +17,31 @@ namespace Konata.Core.Entity
         /// <summary>
         /// Load components
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void LoadComponents<T>()
-            where T : Attribute
+        /// <typeparam name="TAttribute"></typeparam>
+        public void LoadComponents<TAttribute>()
+            where TAttribute : Attribute
         {
             foreach (var type in Reflection
-                .GetClassesByAttribute(typeof(T)))
+                .GetClassesByAttribute(typeof(TAttribute)))
             {
-                AddComponent((BaseComponent)Activator.CreateInstance(type));
+                AddComponent((BaseComponent) Activator.CreateInstance(type));
             }
         }
 
+        /// <summary>
         /// Load components with filter
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void LoadComponents<T>(Func<T, bool> filter)
-            where T : Attribute
+        /// <param name="filter"></param>
+        /// <typeparam name="TAttribute"></typeparam>
+        public void LoadComponents<TAttribute>(Func<TAttribute, bool> filter)
+            where TAttribute : Attribute
         {
             foreach (var type in Reflection
-                .GetClassesByAttribute(typeof(T)))
+                .GetClassesByAttribute(typeof(TAttribute)))
             {
-                if (filter.Invoke((T)type.GetCustomAttribute(typeof(T))))
+                if (filter.Invoke((TAttribute) type.GetCustomAttribute(typeof(TAttribute))))
                 {
-                    AddComponent((BaseComponent)Activator.CreateInstance(type));
+                    AddComponent((BaseComponent) Activator.CreateInstance(type));
                 }
             }
         }
@@ -51,7 +52,7 @@ namespace Konata.Core.Entity
         /// <returns></returns>
         public void UnloadComponents()
         {
-            // TODO
+            // TODO: destroy components
             _componentDict.Clear();
         }
 
@@ -63,11 +64,13 @@ namespace Konata.Core.Entity
         public T GetComponent<T>()
             where T : BaseComponent
         {
-            if (!_componentDict.TryGetValue(typeof(T), out BaseComponent component))
+            if (!_componentDict.TryGetValue(typeof(T),
+                out BaseComponent component))
             {
                 return default(T);
             }
-            return (T)component;
+
+            return (T) component;
         }
 
         /// <summary>
@@ -93,10 +96,11 @@ namespace Konata.Core.Entity
         public void RemoveComponent(Type type)
         {
             if (!_componentDict.TryGetValue
-                (type, out BaseComponent component))
+                (type, out BaseComponent _))
             {
                 return;
             }
+
             _componentDict.Remove(type);
             return;
         }
@@ -105,20 +109,22 @@ namespace Konata.Core.Entity
         /// Post an event to entity
         /// </summary>
         /// <param name="anyEvent"></param>
-        public virtual void PostEventToEntity(BaseEvent anyEvent) { }
+        public virtual void PostEventToEntity(BaseEvent anyEvent)
+        {
+        }
 
         /// <summary>
         /// Post an event to any component attached under this entity
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="anyEvent"></param>
+        /// <typeparam name="TComponent"></typeparam>
         /// <returns></returns>
-        public Task<BaseEvent> PostEvent<T>(BaseEvent anyEvent)
-            where T : BaseComponent
+        public Task<BaseEvent> PostEvent<TComponent>(BaseEvent anyEvent)
+            where TComponent : BaseComponent
         {
             var task = new KonataTask(anyEvent);
             {
-                GetComponent<T>().EventPipeline.SendAsync(task);
+                GetComponent<TComponent>().EventPipeline.SendAsync(task);
             }
 
             return task.CompletionSource.Task;

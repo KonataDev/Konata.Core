@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Konata.Utils;
 using Konata.Utils.IO;
 using Konata.Core.Events;
@@ -31,16 +30,16 @@ namespace Konata.Core.Components.Model
 
         private static ServerInfo[] DefaultServers { get; } =
         {
-            new ServerInfo { Host = "msfwifi.3g.qq.com", Port = 8080 },
-            new ServerInfo { Host = "14.215.138.110", Port = 8080 },
-            new ServerInfo { Host = "113.96.12.224", Port = 8080 },
-            new ServerInfo { Host = "157.255.13.77", Port = 14000 },
-            new ServerInfo { Host = "120.232.18.27", Port = 443 },
-            new ServerInfo { Host = "183.3.235.162", Port = 14000 },
-            new ServerInfo { Host = "163.177.89.195", Port = 443 },
-            new ServerInfo { Host = "183.232.94.44", Port = 80 },
-            new ServerInfo { Host = "203.205.255.224", Port = 8080 },
-            new ServerInfo { Host = "203.205.255.221", Port = 8080 },
+            new ServerInfo {Host = "msfwifi.3g.qq.com", Port = 8080},
+            new ServerInfo {Host = "14.215.138.110", Port = 8080},
+            new ServerInfo {Host = "113.96.12.224", Port = 8080},
+            new ServerInfo {Host = "157.255.13.77", Port = 14000},
+            new ServerInfo {Host = "120.232.18.27", Port = 443},
+            new ServerInfo {Host = "183.3.235.162", Port = 14000},
+            new ServerInfo {Host = "163.177.89.195", Port = 443},
+            new ServerInfo {Host = "183.232.94.44", Port = 80},
+            new ServerInfo {Host = "203.205.255.224", Port = 8080},
+            new ServerInfo {Host = "203.205.255.221", Port = 8080},
         };
 
         public string TAG = "SocketComponent";
@@ -89,7 +88,8 @@ namespace Konata.Core.Components.Model
                 {
                     Host = customHost[0],
                     Port = customHost.Length == 2
-                        ? ushort.Parse(customHost[1]) : 8080
+                        ? ushort.Parse(customHost[1])
+                        : 8080
                 };
             }
 
@@ -126,7 +126,7 @@ namespace Konata.Core.Components.Model
             try
             {
                 _socket?.Dispose();
-                _socket = new Socket(AddressFamily.InterNetwork, 
+                _socket = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream, ProtocolType.Tcp);
                 _socket.BeginConnect(hostIp, port, BeginConnect, null)
                     .AsyncWaitHandle.WaitOne();
@@ -149,7 +149,7 @@ namespace Konata.Core.Components.Model
             try
             {
                 _socket.EndConnect(result);
-                _socket.BeginReceive(_recvBuffer, 0, 
+                _socket.BeginReceive(_recvBuffer, 0,
                     _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
             }
             catch (Exception e)
@@ -168,9 +168,9 @@ namespace Konata.Core.Components.Model
             try
             {
                 _recvLength += _socket.EndReceive(result);
-            // Console.WriteLine(ByteConverter.Hex(_recvBuffer));
+                // Console.WriteLine(ByteConverter.Hex(_recvBuffer));
 
-            ReceiveNext:
+                ReceiveNext:
 
                 // If receive status is Idle
                 if (_recvStatus == ReceiveStatus.Idle)
@@ -220,7 +220,7 @@ namespace Konata.Core.Components.Model
             catch (Exception e)
             {
                 LogE(TAG, e);
-                DisConnect($"Socket error while receiving data. ");
+                DisConnect("Socket error while receiving data. ");
             }
             finally
             {
@@ -249,6 +249,7 @@ namespace Konata.Core.Components.Model
         /// On Received a packet 
         /// </summary>
         /// <param name="buffer"></param>
+        /// <param name="length"></param>
         private void OnReceivePacket(byte[] buffer, int length)
         {
             var packet = new byte[length];
@@ -260,7 +261,7 @@ namespace Konata.Core.Components.Model
                     EventType = PacketEvent.Type.Receive
                 });
 
-                LogV(TAG, $"Recv data => \n  { ByteConverter.Hex(packet, true) }");
+                LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
             }
         }
 
@@ -271,7 +272,7 @@ namespace Konata.Core.Components.Model
         /// <returns></returns>
         public Task<bool> SendData(byte[] buffer)
         {
-            if (_socket == null || !_socket.Connected)
+            if (_socket is not {Connected: true})
             {
                 LogW(TAG, "Calling SendData method after socket disconnected.");
                 return Task.FromResult(false);
@@ -279,7 +280,7 @@ namespace Konata.Core.Components.Model
 
             try
             {
-                LogV(TAG, $"Send data => \n  { ByteConverter.Hex(buffer, true) }");
+                LogV(TAG, $"Send data => \n  {ByteConverter.Hex(buffer, true)}");
                 _socket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, BeginSendData, null);
             }
             catch (Exception e)
@@ -297,7 +298,7 @@ namespace Konata.Core.Components.Model
         /// <param name="reason"></param>
         public bool DisConnect(string reason)
         {
-            if (_socket == null || !_socket.Connected)
+            if (_socket is not {Connected: true})
             {
                 LogW(TAG, "Calling DisConnect method after socket disconnected.");
                 return false;

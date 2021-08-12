@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Events.Model;
@@ -17,7 +16,6 @@ namespace Konata.Core
         /// <param name="config"><b>[In] </b>bot configuration</param>
         /// <param name="device"><b>[In] </b>bot device definition</param>
         /// <param name="keystore"><b>[In] </b>bot keystore</param>
-        /// <param name="listener"><b>[In] </b>bot event handler</param>
         public Bot(BotConfig config,
             BotDevice device, BotKeyStore keystore)
         {
@@ -159,6 +157,7 @@ namespace Konata.Core
         /// <returns></returns>
         public bool IsOnline()
             => GetOnlineStatus() != OnlineStatusEvent.Type.Offline;
+
         #endregion
     }
 }
