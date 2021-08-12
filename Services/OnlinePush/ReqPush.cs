@@ -69,7 +69,10 @@ namespace Konata.Core.Services.OnlinePush
                                 affectedUin = (uint)info1A.GetLeafVar("30");
                             }
 
-                            recallSuffix = info4A.GetLeafString("12");
+                            if (info4A.TryGetLeafString("12", out var str))
+                            {
+                                recallSuffix = str;
+                            }
                         }
 
                         // Construct event
@@ -170,7 +173,7 @@ namespace Konata.Core.Services.OnlinePush
                             }
 
                             // If no affected uin included
-                            if(affectedUin == 0)
+                            if (affectedUin == 0)
                             {
                                 affectedUin = signInfo.Account.Uin;
                             }
