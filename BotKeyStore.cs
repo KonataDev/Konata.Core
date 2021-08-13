@@ -2,10 +2,11 @@
 using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
-
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Packets.Protobuf;
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Konata.Core
 {
@@ -42,9 +43,8 @@ namespace Konata.Core
             Session = new WtLogin
             {
                 DSecret = dSecret,
-                //GSecret = MakeGSecret(imei, dSecret, null),
                 Tlv106Key = new Md5Cryptor().Encrypt(passwordMd5
-                    .Concat(new byte[] { 0x00, 0x00, 0x00, 0x00 })
+                    .Concat(new byte[] {0x00, 0x00, 0x00, 0x00})
                     .Concat(BitConverter.GetBytes(uinNum).Reverse()).ToArray())
             };
 
@@ -52,7 +52,9 @@ namespace Konata.Core
         }
 
         internal void Initial(string imei)
-            => Session.GSecret = MakeGSecret(imei, Session.DSecret, null);
+        {
+            Session.GSecret ??= MakeGSecret(imei, Session.DSecret, null);
+        }
 
         private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
         {
@@ -99,7 +101,7 @@ namespace Konata.Core
 
                 for (int i = 0; i < seedTable.Length; ++i)
                 {
-                    seedTable[i] = (byte)(Math.Abs(seedTable[i] % 26) + (RandBoolean() ? 97 : 65));
+                    seedTable[i] = (byte) (Math.Abs(seedTable[i] % 26) + (RandBoolean() ? 97 : 65));
                 }
 
                 return Encoding.UTF8.GetString(seedTable);
@@ -112,8 +114,8 @@ namespace Konata.Core
 
         private static byte[] MakeSyncCookie()
         {
-            return ProtoTreeRoot.Serialize
-                (new SyncCookie(DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
+            return ProtoTreeRoot.Serialize(new SyncCookie
+                (DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
         }
     }
 
@@ -123,6 +125,7 @@ namespace Konata.Core
 
         public string Name { get; set; }
             = "";
+
         internal int Age { get; set; }
 
         public int Face { get; set; }
