@@ -1,8 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
+using Konata.Core.Utils;
+using Guid = System.Guid;
 
-using Konata.Utils.Crypto;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
 
 namespace Konata.Core
 {
@@ -35,7 +38,10 @@ namespace Konata.Core
         {
             public string Name { get; set; }
 
-            public string Type { get => "android"; }
+            public string Type
+            {
+                get => "android";
+            }
 
             public string Version { get; set; }
 
@@ -58,13 +64,11 @@ namespace Konata.Core
         {
             public NetworkType NetType { get; set; }
 
-            [Obsolete]
-            public string NetApn { get; set; }
+            [Obsolete] public string NetApn { get; set; }
 
             public string NetOperator { get; set; }
 
-            [Obsolete]
-            public byte[] NetIpAddress { get; set; }
+            [Obsolete] public byte[] NetIpAddress { get; set; }
 
             public byte[] WifiMacAddress { get; set; }
 
@@ -85,6 +89,81 @@ namespace Konata.Core
             Other = 0,
             Mobile = 1,
             Wifi = 2,
+        }
+
+        /// <summary>
+        /// Get a random device
+        /// </summary>
+        /// <returns></returns>
+        public static BotDevice Default()
+        {
+            // Roll a random model
+            var randName = $"Konata {Strings.GetRandHex(4)}";
+            var randBaseBand = $"KONATA.CORE.{Strings.GetRandHex(4, false)}.1.0.REV";
+            var randImei = Strings.GetRandNumber(14);
+            var randImsi = Strings.GetRandNumber(15);
+
+            // Roll a random system
+            var randOSVer = RandOsVer();
+            var randGuid = Guid.NewGuid().ToByteArray();
+            var randBootId = Strings.GetRandHex(16, false);
+            var randBootLoader = $"KONATA.CORE.{Strings.GetRandHex(8, false)}.BOOTLOADER_1_0";
+            var randAndroidId = Strings.GetRandHex(16, false);
+            var randIncremental = Strings.GetRandHex(16, false);
+            var randInnerVersion = $"KONATA.CORE.USERDEBUG.{randOSVer}";
+            var randFringerPrint = $"konata/core/konata:{randOSVer}/" +
+                                   $"{Strings.GetRandNumber(8)}:user/release-keys";
+
+            return new BotDevice
+            {
+                Display = new()
+                {
+                    Width = 1080,
+                    Height = 1920
+                },
+
+                Model = new()
+                {
+                    Name = randName,
+                    CodeName = "REL",
+                    Manufacturer = "Konata Manufacturer",
+                    BaseBand = randBaseBand,
+                    IMEI = randImei,
+                    IMSI = randImsi
+                },
+
+                System = new()
+                {
+                    Name = "konata",
+                    Version = randOSVer,
+                    BootId = randBootId,
+                    BootLoader = randBootLoader,
+                    AndroidId = randAndroidId,
+                    Incremental = randIncremental,
+                    InnerVersion = randInnerVersion,
+                    FingerPrint = randFringerPrint,
+                    Guid = randGuid
+                },
+
+                Network = new()
+                {
+                    NetApn = "CMNET",
+                    NetOperator = "China Mobile",
+                    NetIpAddress = new byte[] {0x00, 0x00, 0x00, 0x00},
+                    NetType = NetworkType.Wifi,
+                    WifiSsid = "<Hidden SSID>",
+                    WifiBssid = new byte[] {0xAA, 0xBB, 0xCC, 0xDD, 0xEE},
+                    WifiMacAddress = new byte[] {0xAA, 0xBB, 0xCC, 0xDD, 0xEE},
+                }
+            };
+        }
+
+        private static string RandOsVer()
+        {
+            var rand = new Random();
+            return $"{rand.Next(7, 11)}." +
+                   $"{rand.Next(0, 2)}." +
+                   $"{rand.Next(0, 2)}";
         }
     }
 }
