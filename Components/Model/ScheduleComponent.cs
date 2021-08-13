@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Collections.Generic;
 using Konata.Core.Attributes;
@@ -73,7 +74,7 @@ namespace Konata.Core.Components.Model
         // private List<Schedule> _taskList;
         private const string TAG = "ScheduleComponent";
         private readonly Thread _taskThread;
-        private readonly Dictionary<string, Schedule> _taskDict;
+        private readonly ConcurrentDictionary<string, Schedule> _taskDict;
         private readonly ManualResetEvent _taskNotify;
 
         public ScheduleComponent()
@@ -91,6 +92,7 @@ namespace Konata.Core.Components.Model
         /// </summary>
         private void SchedulerThread()
         {
+            bool needUpdate;
             int minInterval;
             DateTime startTime;
             List<Schedule> todoList;
@@ -100,6 +102,7 @@ namespace Konata.Core.Components.Model
                 todoList = new();
                 taskTable = new();
                 taskSorter = new();
+                needUpdate = false;
 
                 // Scheduler steps
                 while (true)
@@ -113,20 +116,26 @@ namespace Konata.Core.Components.Model
             // Select the task
             void Update()
             {
-                // Try get the new tasks from outside
-                foreach (var (key, value) in _taskDict)
+                if (needUpdate)
                 {
-                    if (taskTable.Find(i =>
-                        i.GetHashCode() == value.GetHashCode()) == null)
+                    // Try get the new tasks from outside
+                    foreach (var (key, value) in _taskDict)
                     {
-                        // Set the remain
-                        value.RemainTimes = value.Times;
-                        value.RemainInterval = value.Interval;
+                        if (taskTable.Find(i =>
+                            i.GetHashCode() == value.GetHashCode()) == null)
+                        {
+                            // Set the remain
+                            value.RemainTimes = value.Times;
+                            value.RemainInterval = value.Interval;
 
-                        // Join the queue
-                        taskTable.Add(value);
-                        LogV(TAG, $"Join the task => {key}");
+                            // Join the queue
+                            taskTable.Add(value);
+                            LogV(TAG, $"Join the task => {key}");
+                        }
                     }
+
+                    // Mark as no need
+                    needUpdate = false;
                 }
 
                 // Sort the task
@@ -145,8 +154,6 @@ namespace Konata.Core.Components.Model
             void WaitOne()
             {
                 startTime = DateTime.Now;
-
-                try
                 {
                     // Set sleep time
                     var sleepTime = minInterval == 0
@@ -157,21 +164,14 @@ namespace Konata.Core.Components.Model
                     _taskNotify.Reset();
                     _taskNotify.WaitOne(sleepTime);
                 }
-
-                // Don't bother me :)
-                catch (Exception e)
-                {
-                    LogW(TAG, "Anyone else?");
-                    LogE(TAG, e);
-
-                    Update();
-                    WaitOne();
-                }
-
-                todoList.Clear();
                 var passedTime = (int) ((DateTime.Now - startTime).TotalSeconds * 1000);
 
+                // If the thread woke up ahead of the minInterval
+                // So that means a new task has joined
+                needUpdate = passedTime < minInterval || minInterval == 0;
+
                 // Calculate the remain
+                todoList.Clear();
                 for (int i = taskTable.Count - 1; i >= 0; --i)
                 {
                     // Reduce the interval
@@ -199,6 +199,7 @@ namespace Konata.Core.Components.Model
                     // Cleanup died tasks
                     if (taskTable[i].RemainTimes <= 0)
                     {
+                        _taskDict.TryRemove(taskTable[i].Name, out _);
                         taskTable.RemoveAt(i);
                     }
                 }
@@ -240,7 +241,7 @@ namespace Konata.Core.Components.Model
             }
 
             // Add new task
-            _taskDict.Add(name, task);
+            _taskDict.TryAdd(name, task);
 
             // Wakeup thread to queue the tasks
             Knock();
