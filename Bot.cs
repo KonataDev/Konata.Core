@@ -1,10 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Konata.Core.Entity;
 using Konata.Core.Message;
+using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
-using Konata.Core.Attributes;
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace Konata.Core
 {
@@ -13,9 +15,9 @@ namespace Konata.Core
         /// <summary>
         /// Create a bot
         /// </summary>
-        /// <param name="config"><b>[In] </b>bot configuration</param>
-        /// <param name="device"><b>[In] </b>bot device definition</param>
-        /// <param name="keystore"><b>[In] </b>bot keystore</param>
+        /// <param name="config"><b>[In]</b> Bot configuration</param>
+        /// <param name="device"><b>[In]</b> Bot device definition</param>
+        /// <param name="keystore"><b>[In]</b> Bot keystore</param>
         public Bot(BotConfig config,
             BotDevice device, BotKeyStore keystore)
         {
@@ -85,14 +87,14 @@ namespace Konata.Core
             => BusinessComponent.SubmitSliderTicket(ticket);
 
         /// <summary>
-        /// Submit SMS code.
+        /// Submit SMS code
         /// </summary>
         /// <param name="code"><b>[In]</b> SMS code</param>
-        public void SubmitSMSCode(string code)
-            => BusinessComponent.SubmitSMSCode(code);
+        public void SubmitSmsCode(string code)
+            => BusinessComponent.SubmitSmsCode(code);
 
         /// <summary>
-        /// Kick a member in the specific group.
+        /// Kick a member in the specific group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
@@ -101,7 +103,7 @@ namespace Konata.Core
             => BusinessComponent.GroupKickMember(groupUin, memberUin, preventRequest);
 
         /// <summary>
-        /// Mute a member in the specific group.
+        /// Mute a member in the specific group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
@@ -110,7 +112,7 @@ namespace Konata.Core
             => BusinessComponent.GroupMuteMember(groupUin, memberUin, timeSeconds);
 
         /// <summary>
-        /// Promote a member to admin in the specific group.
+        /// Promote a member to admin in the specific group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>

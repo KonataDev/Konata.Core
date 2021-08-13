@@ -29,7 +29,7 @@ namespace Konata.Core.Events.Model
             /// <summary>
             ///     <b>[In] [Out]</b> Wtlogin do/submit SMS captcha
             /// </summary>
-            CheckSMS,
+            CheckSms,
 
             /// <summary>
             ///     <b>[In] [Out]</b> Wtlogin do/submit slider captcha
@@ -111,7 +111,7 @@ namespace Konata.Core.Events.Model
         {
             switch (wtEvent.EventType)
             {
-                case WtLoginEvent.Type.CheckSMS:
+                case WtLoginEvent.Type.CheckSms:
                     _smsPhone = wtEvent.SmsPhone;
                     _smsCountry = wtEvent.SmsCountry;
                     _captchaType = CaptchaType.SMS;

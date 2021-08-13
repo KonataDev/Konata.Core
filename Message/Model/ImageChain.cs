@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-
-using Konata.Utils;
-using Konata.Utils.IO;
-using Konata.Utils.Crypto;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils;
 using Konata.Core.Events.Model;
 

@@ -3,8 +3,8 @@ using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
 
-using Konata.Utils.Crypto;
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.Crypto;
+using Konata.Core.Utils.Protobuf;
 using Konata.Core.Packets.Protobuf;
 
 namespace Konata.Core
