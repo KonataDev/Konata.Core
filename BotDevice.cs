@@ -99,7 +99,7 @@ namespace Konata.Core
         {
             // Roll a random model
             var randName = $"Konata {Strings.GetRandHex(4)}";
-            var randBaseBand = $"KONATA.CORE.{Strings.GetRandHex(4, false)}.1.0.REV";
+            var randBaseBand = $"KONATA.CORE.{Strings.GetRandHex(4)}.1.0.REV";
             var randImei = Strings.GetRandNumber(14);
             var randImsi = Strings.GetRandNumber(15);
 
@@ -107,7 +107,7 @@ namespace Konata.Core
             var randOSVer = RandOsVer();
             var randGuid = Guid.NewGuid().ToByteArray();
             var randBootId = Strings.GetRandHex(16, false);
-            var randBootLoader = $"KONATA.CORE.{Strings.GetRandHex(8, false)}.BOOTLOADER_1_0";
+            var randBootLoader = $"KONATA.CORE.{Strings.GetRandHex(8)}.BOOTLOADER_1_0";
             var randAndroidId = Strings.GetRandHex(16, false);
             var randIncremental = Strings.GetRandHex(16, false);
             var randInnerVersion = $"KONATA.CORE.USERDEBUG.{randOSVer}";
@@ -126,7 +126,7 @@ namespace Konata.Core
                 {
                     Name = randName,
                     CodeName = "REL",
-                    Manufacturer = "Konata Manufacturer",
+                    Manufacturer = "Konata Project",
                     BaseBand = randBaseBand,
                     IMEI = randImei,
                     IMSI = randImsi
