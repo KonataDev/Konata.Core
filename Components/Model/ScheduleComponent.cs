@@ -17,7 +17,7 @@ namespace Konata.Core.Components.Model
     {
         private class Schedule
         {
-            public const int Infinity = -1;
+            public const int Infinity = Int32.MaxValue;
 
             /// <summary>
             /// Task name
@@ -74,12 +74,12 @@ namespace Konata.Core.Components.Model
         private const string TAG = "ScheduleComponent";
         private readonly Thread _taskThread;
         private readonly Dictionary<string, Schedule> _taskDict;
-        private readonly CancellationTokenSource _taskNotify;
+        private readonly ManualResetEvent _taskNotify;
 
         public ScheduleComponent()
         {
             _taskDict = new();
-            _taskNotify = new();
+            _taskNotify = new(false);
             _taskThread = new(SchedulerThread);
 
             // Start task thread
@@ -117,7 +117,7 @@ namespace Konata.Core.Components.Model
                 foreach (var (key, value) in _taskDict)
                 {
                     if (taskTable.Find(i =>
-                        i.GetHashCode() == value.GetHashCode()) != null)
+                        i.GetHashCode() == value.GetHashCode()) == null)
                     {
                         // Set the remain
                         value.RemainTimes = value.Times;
@@ -148,8 +148,14 @@ namespace Konata.Core.Components.Model
 
                 try
                 {
-                    var sleepTime = minInterval == 0 ? 1000 : minInterval;
-                    _taskNotify.Token.WaitHandle.WaitOne(sleepTime, false);
+                    // Set sleep time
+                    var sleepTime = minInterval == 0
+                        ? Int32.MaxValue
+                        : minInterval;
+
+                    // Reset event and wait
+                    _taskNotify.Reset();
+                    _taskNotify.WaitOne(sleepTime);
                 }
 
                 // Don't bother me :)
@@ -163,10 +169,10 @@ namespace Konata.Core.Components.Model
                 }
 
                 todoList.Clear();
-                var passedTime = (int) (DateTime.Now - startTime).TotalSeconds;
+                var passedTime = (int) ((DateTime.Now - startTime).TotalSeconds * 1000);
 
                 // Calculate the remain
-                for (int i = taskTable.Count; i >= 0; --i)
+                for (int i = taskTable.Count - 1; i >= 0; --i)
                 {
                     // Reduce the interval
                     taskTable[i].RemainInterval -= passedTime;
@@ -212,7 +218,7 @@ namespace Konata.Core.Components.Model
         /// Wakeup the scheduler thread
         /// </summary>
         private void Knock()
-            => _taskNotify.Cancel(false);
+            => _taskNotify.Set();
 
         /// <summary>
         /// Executes the task with specific interval
@@ -229,7 +235,7 @@ namespace Konata.Core.Components.Model
             // Check duplicate
             if (_taskDict.ContainsKey(name))
             {
-                LogW(TAG, $"Conlict schedule found. '{name}', overrided.");
+                LogW(TAG, $"Conlict schedule found. '{name}', override.");
                 _taskDict[name] = task;
             }
 
@@ -265,6 +271,6 @@ namespace Konata.Core.Components.Model
         /// <param name="date"></param>
         /// <param name="action"></param>
         public void RunOnce(string name, DateTime date, Action action)
-            => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds), action);
+            => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds * 1000), action);
     }
 }
