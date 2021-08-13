@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 
@@ -14,7 +13,9 @@ namespace Konata.Core
         public event EventHandler<PrivateMessageEvent> OnPrivateMessage;
         public event EventHandler<GroupMessageRecallEvent> OnGroupMessageRecall;
         public event EventHandler<GroupPokeEvent> OnGroupPoke;
+
         public event EventHandler<GroupSettingsAnonymousEvent> OnGroupSettingsAnonymous;
+
         //public event EventHandler<PrivatePokenEvent> OnPrivatePoke;
         public event EventHandler<LogEvent> OnLog;
 

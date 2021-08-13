@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-
 using Konata.Core.Message.Model;
 
 namespace Konata.Core.Message
@@ -14,7 +12,7 @@ namespace Konata.Core.Message
         public int Count
             => _chains.Count;
 
-        private List<BaseChain> _chains;
+        private readonly List<BaseChain> _chains;
 
         public MessageChain()
         {
@@ -26,7 +24,7 @@ namespace Konata.Core.Message
         /// </summary>
         /// <param name="chain"></param>
         public void Add(BaseChain chain)
-           => _chains.Add(chain);
+            => _chains.Add(chain);
 
         /// <summary>
         /// Convert a text message to chain
@@ -110,7 +108,7 @@ namespace Konata.Core.Message
 
     public class MessageBuilder
     {
-        private MessageChain _chain;
+        private readonly MessageChain _chain;
 
         public MessageBuilder()
         {

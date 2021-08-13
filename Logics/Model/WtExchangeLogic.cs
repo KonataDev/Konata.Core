@@ -80,8 +80,8 @@ namespace Konata.Core.Logics.Model
                                 Context.PostEventToEntity(online);
 
                                 // Register schedules
-                                Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600, OnSendHeartBeat);
-                                Context.ScheduleComponent.Interval(ScheduleCheckConn, 60, OnCheckConnection);
+                                Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600 * 1000, OnSendHeartBeat);
+                                Context.ScheduleComponent.Interval(ScheduleCheckConn, 60 * 1000, OnCheckConnection);
 
                                 return true;
                             }
