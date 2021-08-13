@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Konata.Utils.Ecdh.ECDHAlgorithm
+namespace Konata.Core.Utils.Ecdh.ECDHAlgorithm
 {
     using bint = BigInteger;
 

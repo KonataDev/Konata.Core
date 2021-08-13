@@ -1,7 +1,7 @@
-﻿using Konata.Utils.IO;
-using Konata.Utils.JceStruct.Model;
+﻿using Konata.Core.Utils.IO;
+using Konata.Core.Utils.JceStruct.Model;
 
-namespace Konata.Utils.JceStruct
+namespace Konata.Core.Utils.JceStruct
 {
     /// <summary>
     /// Jcez专有缓冲

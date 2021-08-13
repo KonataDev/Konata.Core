@@ -7,9 +7,9 @@ using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
-using Konata.Utils.IO;
-using Konata.Utils.Protobuf;
-using Konata.Utils.Protobuf.ProtoModel;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf.ProtoModel;
 using Konata.Core.Attributes;
 
 namespace Konata.Core.Services.MessageSvc

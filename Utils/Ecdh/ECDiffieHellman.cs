@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace Konata.Utils.Ecdh.ECDHAlgorithm
+namespace Konata.Core.Utils.Ecdh.ECDHAlgorithm
 {
     using bint = BigInteger;
 

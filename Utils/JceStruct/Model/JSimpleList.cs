@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Konata.Utils.JceStruct.Model
+namespace Konata.Core.Utils.JceStruct.Model
 {
     public struct JSimpleList : IIndexable
     {

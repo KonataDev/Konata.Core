@@ -1,8 +1,8 @@
-﻿using Konata.Utils.IO;
-using Konata.Utils.JceStruct.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.JceStruct.Model;
 
-namespace Konata.Utils.JceStruct
+namespace Konata.Core.Utils.JceStruct
 {
     public static class Jce
     {

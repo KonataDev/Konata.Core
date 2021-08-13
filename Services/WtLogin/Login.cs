@@ -8,8 +8,8 @@ using Konata.Core.Packets.Tlv.TlvModel;
 using Konata.Core.Packets.Oicq;
 using Konata.Core.Attributes;
 
-using Konata.Utils.IO;
-using Konata.Utils.Crypto;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Crypto;
 
 namespace Konata.Core.Services.WtLogin
 {
@@ -135,7 +135,7 @@ namespace Konata.Core.Services.WtLogin
                     {
                         SmsPhone = signinfo.Session.WtLoginSmsPhone,
                         SmsCountry = signinfo.Session.WtLoginSmsCountry,
-                        EventType = WtLoginEvent.Type.CheckSMS
+                        EventType = WtLoginEvent.Type.CheckSms
                     };
                 }
             }
@@ -351,7 +351,7 @@ namespace Konata.Core.Services.WtLogin
                     oicqRequest = BuildRequestTgtgt(newSequece, signInfo, device);
                     break;
 
-                case WtLoginEvent.Type.CheckSMS:
+                case WtLoginEvent.Type.CheckSms:
                     oicqRequest = BuildRequestCheckSms(input.CaptchaResult, signInfo);
                     break;
 

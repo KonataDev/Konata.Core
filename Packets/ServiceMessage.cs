@@ -1,7 +1,7 @@
 ﻿using System;
 
-using Konata.Utils.IO;
-using Konata.Utils.Crypto;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Services;
 
 namespace Konata.Core.Packets

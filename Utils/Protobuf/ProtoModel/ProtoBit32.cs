@@ -1,8 +1,7 @@
 ﻿using System;
+using Konata.Core.Utils.IO;
 
-using Konata.Utils.IO;
-
-namespace Konata.Utils.Protobuf.ProtoModel
+namespace Konata.Core.Utils.Protobuf.ProtoModel
 {
     public class ProtoBit32 : IProtoType
     {

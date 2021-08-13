@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils.IO
+namespace Konata.Core.Utils.IO
 {
     public enum Endian
     {

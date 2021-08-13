@@ -1,5 +1,5 @@
 ﻿using System;
-using Guid = Konata.Utils.Guid;
+using Guid = Konata.Core.Utils.Guid;
 
 using Konata.Core;
 

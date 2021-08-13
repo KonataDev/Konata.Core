@@ -1,9 +1,9 @@
-﻿using Konata.Utils.TeaEncrypt;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Konata.Core.Utils.TeaEncrypt;
 
-namespace Konata.Utils.Crypto
+namespace Konata.Core.Utils.Crypto
 {
     public sealed class TeaCryptor : ICryptor
     {

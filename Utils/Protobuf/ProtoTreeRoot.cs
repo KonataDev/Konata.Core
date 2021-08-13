@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Protobuf.ProtoModel;
 
-using Konata.Utils.IO;
-using Konata.Utils.Protobuf.ProtoModel;
-
-namespace Konata.Utils.Protobuf
+namespace Konata.Core.Utils.Protobuf
 {
     using ProtoLeaves = Dictionary<string, List<IProtoType>>;
 

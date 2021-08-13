@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
-
 using Konata.Core.Attributes;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Components.Model
 {

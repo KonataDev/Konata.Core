@@ -7,8 +7,8 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf;
-using Konata.Utils;
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.ImgStore
 {

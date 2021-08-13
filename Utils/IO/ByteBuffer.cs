@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Konata.Utils.IO
+namespace Konata.Core.Utils.IO
 {
     /// <summary>
     /// 字节流缓冲

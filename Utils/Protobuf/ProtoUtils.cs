@@ -1,8 +1,8 @@
 ﻿using System;
-using Konata.Utils.IO;
-using Konata.Utils.Protobuf.ProtoModel;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Protobuf.ProtoModel;
 
-namespace Konata.Utils.Protobuf
+namespace Konata.Core.Utils.Protobuf
 {
     internal static class ProtoUtils
     {

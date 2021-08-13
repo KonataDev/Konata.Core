@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Konata.Utils.Crypto
+namespace Konata.Core.Utils.Crypto
 {
     public enum EncryptType
     {

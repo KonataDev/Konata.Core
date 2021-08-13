@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-
+﻿using System.Threading.Tasks;
 using Konata.Core.Attributes;
-using Konata.Core.Components.Model;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Components.Model;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Logics.Model
 {
@@ -14,16 +14,18 @@ namespace Konata.Core.Logics.Model
     [EventSubscribe(typeof(GroupSpecialTitleEvent))]
     [EventSubscribe(typeof(GroupModifyMemberCardEvent))]
     [EventSubscribe(typeof(GroupMuteMemberEvent))]
-
     [BusinessLogic("Operation Logic", "Group and friend operations.")]
     public class OperationLogic : BaseLogic
     {
+        private const string TAG = "Operation Logic";
+
         internal OperationLogic(BusinessComponent context)
-            : base(context) { }
+            : base(context)
+        {
+        }
 
         public override void Incoming(ProtocolEvent e)
         {
-
         }
 
         public async Task<int> GroupPromoteAdmin

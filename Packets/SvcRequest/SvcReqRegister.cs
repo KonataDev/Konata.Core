@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Konata.Core.Packets.Wup;
-using Konata.Utils.JceStruct.Model;
+using Konata.Core.Utils.JceStruct.Model;
 namespace Konata.Core.Packets.SvcRequest
 {
     public struct RegisterInfo

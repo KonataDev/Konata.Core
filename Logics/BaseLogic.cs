@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Konata.Core.Events;
 using Konata.Core.Components.Model;
 

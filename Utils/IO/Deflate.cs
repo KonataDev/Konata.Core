@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Collections.Generic;
 
-namespace Konata.Utils.IO
+namespace Konata.Core.Utils.IO
 {
     public static class Deflate
     {

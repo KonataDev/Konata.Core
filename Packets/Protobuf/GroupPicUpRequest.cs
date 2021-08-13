@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
 
 namespace Konata.Core.Packets.Protobuf

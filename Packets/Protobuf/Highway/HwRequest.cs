@@ -1,7 +1,7 @@
 ﻿using System;
 
-using Konata.Utils.IO;
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf.Highway
 {

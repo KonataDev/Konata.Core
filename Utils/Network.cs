@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
-namespace Konata.Utils
+namespace Konata.Core.Utils
 {
     public class Network
     {

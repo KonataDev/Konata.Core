@@ -1,17 +1,17 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Components.Model;
 
+// ReSharper disable RedundantCaseLabel
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Konata.Core.Logics.Model
 {
     [EventSubscribe(typeof(WtLoginEvent))]
     [EventSubscribe(typeof(OnlineStatusEvent))]
-
     [BusinessLogic("Wtlogin Exchange Logic", "Responsible for the online tasks.")]
     public class WtExchangeLogic : BaseLogic
     {
@@ -70,36 +70,34 @@ namespace Konata.Core.Logics.Model
 
                             // Set online
                             var online = await SetClientOnineType(OnlineStatusEvent.Type.Online);
+                        {
+                            _onlineType = online.EventType;
+
+                            // Bot online
+                            if (online.EventType == OnlineStatusEvent.Type.Online)
                             {
-                                _onlineType = online.EventType;
+                                // Online
+                                Context.PostEventToEntity(online);
 
-                                // Bot online
-                                if (online.EventType == OnlineStatusEvent.Type.Online)
-                                {
-                                    // Online
-                                    Context.PostEventToEntity(online);
+                                // Register schedules
+                                Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600, OnSendHeartBeat);
+                                Context.ScheduleComponent.Interval(ScheduleCheckConn, 60, OnCheckConnection);
 
-                                    // Register schedules
-                                    Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600, OnSendHeartBeat);
-                                    Context.ScheduleComponent.Interval(ScheduleCheckConn, 60, OnCheckConnection);
-
-                                    return true;
-                                }
-                                else
-                                {
-                                    SocketComponent.DisConnect("Wtlogin failed.");
-                                    return false;
-                                }
+                                return true;
                             }
 
-                        case WtLoginEvent.Type.CheckSMS:
+                            SocketComponent.DisConnect("Wtlogin failed.");
+                            return false;
+                        }
+
+                        case WtLoginEvent.Type.CheckSms:
                         case WtLoginEvent.Type.CheckSlider:
                             Context.PostEventToEntity(wtStatus);
                             wtStatus = await WtCheckUserOperation();
                             break;
 
                         case WtLoginEvent.Type.RefreshSMS:
-                            wtStatus = await WtRefreshSMSCode();
+                            wtStatus = await WtRefreshSmsCode();
                             break;
 
                         case WtLoginEvent.Type.CheckDevLock:
@@ -115,6 +113,7 @@ namespace Konata.Core.Logics.Model
                             return false;
 
                         default:
+                        case WtLoginEvent.Type.Unknown:
                         case WtLoginEvent.Type.NotImplemented:
                             Context.SocketComponent.DisConnect("Wtlogin failed.");
                             Context.LogW(TAG, "Login fail. Unsupported wtlogin event type received.");
@@ -127,26 +126,30 @@ namespace Konata.Core.Logics.Model
         public Task<bool> Logout()
             => Task.FromResult(SocketComponent.DisConnect("user logout"));
 
-        internal Task<WtLoginEvent> WtLogin()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent { EventType = WtLoginEvent.Type.Tgtgt });
+        private Task<WtLoginEvent> WtLogin()
+            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.Tgtgt});
 
-        internal Task<WtLoginEvent> WtRefreshSMSCode()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent { EventType = WtLoginEvent.Type.RefreshSMS });
+        private Task<WtLoginEvent> WtRefreshSmsCode()
+            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent
+                {EventType = WtLoginEvent.Type.RefreshSMS});
 
-        internal Task<WtLoginEvent> WtValidateDeviceLock()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent { EventType = WtLoginEvent.Type.CheckDevLock });
+        private Task<WtLoginEvent> WtValidateDeviceLock()
+            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent
+                {EventType = WtLoginEvent.Type.CheckDevLock});
 
-        internal Task<WtLoginEvent> WtCheckUserOperation()
+        private Task<WtLoginEvent> WtCheckUserOperation()
             => Context.PostEvent<PacketComponent, WtLoginEvent>(WaitForUserOperation().Result);
 
-        internal Task<OnlineStatusEvent> SetClientOnineType(OnlineStatusEvent.Type onlineType)
-            => Context.PostEvent<PacketComponent, OnlineStatusEvent>(new OnlineStatusEvent { EventType = onlineType });
+        private Task<OnlineStatusEvent> SetClientOnineType(OnlineStatusEvent.Type onlineType)
+            => Context.PostEvent<PacketComponent, OnlineStatusEvent>(new OnlineStatusEvent {EventType = onlineType});
 
-        public void SubmitSMSCode(string code)
-            => _userOperation.SetResult(new WtLoginEvent { EventType = WtLoginEvent.Type.CheckSMS, CaptchaResult = code });
+        public void SubmitSmsCode(string code)
+            => _userOperation.SetResult(new WtLoginEvent
+                {EventType = WtLoginEvent.Type.CheckSms, CaptchaResult = code});
 
         public void SubmitSliderTicket(string ticket)
-            => _userOperation.SetResult(new WtLoginEvent { EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket });
+            => _userOperation.SetResult(new WtLoginEvent
+                {EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket});
 
         private async Task<WtLoginEvent> WaitForUserOperation()
         {
@@ -163,6 +166,10 @@ namespace Konata.Core.Logics.Model
 
             switch (_onlineType)
             {
+                // Login
+                case OnlineStatusEvent.Type.Offline:
+                    return Login();
+
                 // Not supported yet
                 case OnlineStatusEvent.Type.Online:
                 case OnlineStatusEvent.Type.Leave:
@@ -171,10 +178,6 @@ namespace Konata.Core.Logics.Model
                 case OnlineStatusEvent.Type.QMe:
                 case OnlineStatusEvent.Type.DoNotDistrub:
                     return Task.FromResult(false);
-
-                // Login
-                case OnlineStatusEvent.Type.Offline:
-                    return Login();
             }
 
             return Task.FromResult(false);
@@ -182,14 +185,14 @@ namespace Konata.Core.Logics.Model
 
         private void OnCheckConnection()
         {
-
+            // TODO:
+            // Check connection
         }
 
         private void OnSendHeartBeat()
         {
-
+            // TODO:
+            // Check heartbeat
         }
     }
 }
-
-

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils
+namespace Konata.Core.Utils
 {
     /// <summary>
     /// GUID生成器

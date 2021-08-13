@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text;
+using Konata.Core.Utils.IO;
 
-using Konata.Utils.IO;
-
-namespace Konata.Utils.Protobuf.ProtoModel
+namespace Konata.Core.Utils.Protobuf.ProtoModel
 {
     public class ProtoLengthDelimited : IProtoType
     {

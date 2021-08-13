@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils.JceStruct.Model
+namespace Konata.Core.Utils.JceStruct.Model
 {
     public struct JDouble : IObject
     {

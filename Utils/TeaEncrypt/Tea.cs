@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Utils.TeaEncrypt
+namespace Konata.Core.Utils.TeaEncrypt
 {
     public static class Tea
     {

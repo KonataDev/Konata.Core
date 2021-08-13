@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Utils.Crypto;
+using Konata.Core.Utils.Crypto;
 
 namespace Konata.Core.Packets.Tlv.TlvModel
 {

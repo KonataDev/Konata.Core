@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Konata.Utils;
+using Konata.Core.Utils;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
@@ -11,21 +11,22 @@ using Konata.Core.Events.Model;
 using Konata.Core.Logics;
 using Konata.Core.Logics.Model;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Konata.Core.Components.Model
 {
     [Component("BusinessComponent", "Konata Business Component")]
     internal class BusinessComponent : InternalComponent
     {
         private const string TAG = "BusinessComponent";
-
-        private Dictionary<Type, List<BaseLogic>> _businessLogics;
+        private readonly Dictionary<Type, List<BaseLogic>> _businessLogics;
 
         public BusinessComponent()
         {
             _businessLogics = new();
 
             // Load all business logics
-            Reflection.EnumAttributes<BusinessLogicAttribute>((type, attr) =>
+            Reflection.EnumAttributes<BusinessLogicAttribute>((type, _) =>
             {
                 // Event to subscribe 
                 var events = type.GetCustomAttributes<EventSubscribeAttribute>();
@@ -116,8 +117,8 @@ namespace Konata.Core.Components.Model
         public Task<bool> Logout()
             => WtExchange.Logout();
 
-        public void SubmitSMSCode(string code)
-            => WtExchange.SubmitSMSCode(code);
+        public void SubmitSmsCode(string code)
+            => WtExchange.SubmitSmsCode(code);
 
         public void SubmitSliderTicket(string ticket)
             => WtExchange.SubmitSliderTicket(ticket);

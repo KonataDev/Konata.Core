@@ -6,7 +6,7 @@ using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Attributes;
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.MessageSvc
 {

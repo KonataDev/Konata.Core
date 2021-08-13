@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-
 using Konata.Core.Events;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
@@ -9,19 +7,22 @@ using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Konata.Core.Logics.Model
 {
     [EventSubscribe(typeof(GroupMessageEvent))]
     [EventSubscribe(typeof(PrivateMessageEvent))]
     [EventSubscribe(typeof(PrivateMessageNotifyEvent))]
-
     [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
     public class MessagingLogic : BaseLogic
     {
-        private static string TAG = "Messaging Logic";
+        private const string TAG = "Messaging Logic";
 
         internal MessagingLogic(BusinessComponent context)
-            : base(context) { }
+            : base(context)
+        {
+        }
 
         public override void Incoming(ProtocolEvent e)
         {
@@ -124,7 +125,7 @@ namespace Konata.Core.Logics.Model
             {
                 if (i.Type == BaseChain.ChainType.Image)
                 {
-                    upload.Add((ImageChain)i);
+                    upload.Add((ImageChain) i);
                 }
             }
 

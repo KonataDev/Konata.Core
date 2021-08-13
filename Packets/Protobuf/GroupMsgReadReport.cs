@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf
 {

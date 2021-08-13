@@ -2,7 +2,7 @@
 // DO NOT EDIT DIRECTLY.   
 
 using System;
-using Konata.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Oidb.Model
 {

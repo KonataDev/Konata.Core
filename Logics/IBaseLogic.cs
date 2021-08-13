@@ -1,6 +1,4 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 
 namespace Konata.Core.Logics
 {

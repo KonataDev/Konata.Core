@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Konata.Utils.Crypto
+namespace Konata.Core.Utils.Crypto
 {
     public class Md5Cryptor : ICryptor
     {

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Konata.Utils;
-using Konata.Utils.IO;
+using Konata.Core.Utils;
+using Konata.Core.Utils.IO;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Entity;
@@ -42,12 +42,10 @@ namespace Konata.Core.Components.Model
             new ServerInfo {Host = "203.205.255.221", Port = 8080},
         };
 
-        public string TAG = "SocketComponent";
+        private const string TAG = "SocketComponent";
 
         private Socket _socket;
-
         private int _packetLength;
-
         private int _recvLength;
         private byte[] _recvBuffer;
         private ReceiveStatus _recvStatus;
@@ -79,7 +77,7 @@ namespace Konata.Core.Components.Model
             var selectHost = DefaultServers[0];
 
             // Using user config
-            if (ConfigComponent.GlobalConfig.CustomHost != null)
+            if (ConfigComponent.GlobalConfig!.CustomHost != "")
             {
                 var customHost = ConfigComponent
                     .GlobalConfig.CustomHost.Split(':');

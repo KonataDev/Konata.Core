@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace Konata.Utils
+namespace Konata.Core.Utils
 {
     public static class Reflection
     {
@@ -23,7 +23,7 @@ namespace Konata.Utils
         }
 
         public static IEnumerable<Type> GetClassesByAttribute<T>()
-              where T : Attribute
+            where T : Attribute
         {
             var list = new List<Type>();
             var types = typeof(T).Assembly.GetTypes();
@@ -104,17 +104,25 @@ namespace Konata.Utils
 
             var retval = Activator.CreateInstance(type);
             {
-                FieldInfo[] fields = type.GetFields(BindingFlags.Public
-                    | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                FieldInfo[] fields = type.GetFields(BindingFlags.Public |
+                                                    BindingFlags.NonPublic |
+                                                    BindingFlags.Instance |
+                                                    BindingFlags.Static);
 
                 foreach (FieldInfo field in fields)
                 {
-                    try { field.SetValue(retval, Clone(field.GetValue(t))); }
-                    catch { /* Always ignore exceptions */}
+                    try
+                    {
+                        field.SetValue(retval, Clone(field.GetValue(t)));
+                    }
+                    catch
+                    {
+                        /* Always ignore exceptions */
+                    }
                 }
             }
 
-            return (T)retval;
+            return (T) retval;
         }
     }
 }

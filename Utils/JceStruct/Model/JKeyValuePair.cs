@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Konata.Utils.JceStruct.Model
+namespace Konata.Core.Utils.JceStruct.Model
 {
     public struct JKeyValuePair : IObject
     {

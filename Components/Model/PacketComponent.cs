@@ -3,14 +3,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-
-using Konata.Utils;
-using Konata.Utils.IO;
+using Konata.Core.Utils;
 using Konata.Core.Events;
 using Konata.Core.Entity;
 using Konata.Core.Services;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Components.Model
 {
@@ -19,13 +19,11 @@ namespace Konata.Core.Components.Model
     {
         private const string TAG = "PacketComponent";
 
-        private Dictionary<string, IService> _services;
-        private Dictionary<Type, IService> _servicesType;
-        private Dictionary<Type, List<IService>> _servicesEventType;
-
-        private ConcurrentDictionary<int, TaskCompletionSource<BaseEvent>> _pendingRequests;
-
-        private Sequence _serviceSequence;
+        private readonly Dictionary<string, IService> _services;
+        private readonly Dictionary<Type, IService> _servicesType;
+        private readonly Dictionary<Type, List<IService>> _servicesEventType;
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<BaseEvent>> _pendingRequests;
+        private readonly Sequence _serviceSequence;
 
         public PacketComponent()
         {
@@ -57,7 +55,7 @@ namespace Konata.Core.Components.Model
 
                 if (serviceAttr != null)
                 {
-                    var service = (IService)Activator.CreateInstance(type);
+                    var service = (IService) Activator.CreateInstance(type);
 
                     // Bind service name with service
                     _services.Add(serviceAttr.ServiceName, service);
@@ -109,19 +107,19 @@ namespace Konata.Core.Components.Model
                                         }
                                     }
                                 }
-                                else LogW(TAG, $"This message cannot be processed. { ssoFrame.Command }");
+                                else LogW(TAG, $"This message cannot be processed. {ssoFrame.Command}");
                             }
                             catch (Exception e)
                             {
-                                LogW(TAG, $"Thrown an exception while processing a message. { ssoFrame.Command }");
+                                LogW(TAG, $"Thrown an exception while processing a message. {ssoFrame.Command}");
                                 LogE(TAG, e);
                             }
                         }
-                        else LogW(TAG, $"Unsupported sso frame received. { ssoFrame.Command }");
+                        else LogW(TAG, $"Unsupported sso frame received. {ssoFrame.Command}");
                     }
-                    else LogW(TAG, $"Parse sso frame failed. { ssoFrame.Command }");
+                    else LogW(TAG, $"Parse sso frame failed. {ssoFrame.Command}");
                 }
-                else LogW(TAG, $"Parse service message failed. \n D2 => { ByteConverter.Hex(config.KeyStore.Session.D2Key, true) }");
+                else LogW(TAG, "Parse service message failed.");
             }
 
             // Protocol Event
@@ -151,7 +149,7 @@ namespace Konata.Core.Components.Model
                         // Is need response from server
                         if (protocolEvent.WaitForResponse)
                         {
-                        AddPending:
+                            AddPending:
                             if (!_pendingRequests.TryAdd(sequence, task.CompletionSource))
                             {
                                 _pendingRequests[sequence].SetCanceled();

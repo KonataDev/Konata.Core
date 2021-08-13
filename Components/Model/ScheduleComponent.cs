@@ -6,6 +6,7 @@ using Konata.Core.Attributes;
 // ReSharper disable FunctionNeverReturns
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBePrivate.Local
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
@@ -103,14 +104,14 @@ namespace Konata.Core.Components.Model
                 // Scheduler steps
                 while (true)
                 {
-                    Select();
+                    Update();
                     WaitOne();
                     DoTheTask();
                 }
             }
 
             // Select the task
-            void Select()
+            void Update()
             {
                 // Try get the new tasks from outside
                 foreach (var (key, value) in _taskDict)
@@ -157,7 +158,7 @@ namespace Konata.Core.Components.Model
                     LogW(TAG, "Anyone else?");
                     LogE(TAG, e);
 
-                    Select();
+                    Update();
                     WaitOne();
                 }
 

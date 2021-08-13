@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Collections.Generic;
 
-using Konata.Utils.IO;
-using Konata.Utils.Crypto;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;

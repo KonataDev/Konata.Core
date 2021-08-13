@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Konata.Utils.IO;
-using Konata.Utils.JceStruct;
-using Konata.Utils.JceStruct.Model;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.JceStruct;
+using Konata.Core.Utils.JceStruct.Model;
 
 namespace Konata.Core.Packets.Wup
 {
