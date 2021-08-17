@@ -1,23 +1,32 @@
-﻿using System;
-
-using Konata.Core.Packets;
+﻿using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Packets.SvcResponse;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.Friendlist
 {
+    [EventSubscribe(typeof(PullGroupListEvent))]
     [Service("friendlist.GetTroopListReqV2", "Pull group list")]
-    [EventSubscribe(typeof(PullTroopListEvent))]
     public class GetTroopListReqV2 : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
-            throw new NotImplementedException();
+            var response = new SvcRspGetTroopListRespV2(input.Payload.GetBytes());
+
+            output = new PullGroupListEvent
+            {
+                ResultCode = 0,
+                GroupInfo = response.Groups
+            };
+
+            return true;
         }
 
-        public bool Build(Sequence sequence, PullTroopListEvent input,
+        private bool Build(Sequence sequence, PullGroupListEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
@@ -40,6 +49,6 @@ namespace Konata.Core.Services.Friendlist
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (PullTroopListEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (PullGroupListEvent) input, signInfo, device, out newSequence, out output);
     }
 }
