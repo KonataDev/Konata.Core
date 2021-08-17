@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Konata.Core.Attributes;
 
 // ReSharper disable FunctionNeverReturns
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable MemberCanBePrivate.Local
-// ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 namespace Konata.Core.Components.Model
@@ -37,7 +35,6 @@ namespace Konata.Core.Components.Model
 
             /// <summary>
             /// Execute how many times
-            /// Keep zero for infinite
             /// </summary>
             public int Times { get; }
 
@@ -124,7 +121,7 @@ namespace Konata.Core.Components.Model
                         if (taskTable.Find(i =>
                             i.GetHashCode() == value.GetHashCode()) == null)
                         {
-                            // Set the remain
+                            // Set the value
                             value.RemainTimes = value.Times;
                             value.RemainInterval = value.Interval;
 
@@ -199,6 +196,8 @@ namespace Konata.Core.Components.Model
                     // Cleanup died tasks
                     if (taskTable[i].RemainTimes <= 0)
                     {
+                        LogI(TAG, $"Destroy the task => '{taskTable[i].Name}'");
+                        
                         _taskDict.TryRemove(taskTable[i].Name, out _);
                         taskTable.RemoveAt(i);
                     }
@@ -216,18 +215,33 @@ namespace Konata.Core.Components.Model
         }
 
         /// <summary>
-        /// Wakeup the scheduler thread
+        /// Cancel the task
         /// </summary>
-        private void Knock()
-            => _taskNotify.Set();
+        /// <param name="name"><b>[In]</b> Task identity name</param>
+        /// <exception cref="ObjectDisposedException"></exception>
+        public void Cancel(string name)
+        {
+            // Remove the task
+            if (_taskDict.TryGetValue(name, out var task))
+            {
+                // Cancel the task
+                task.RemainTimes = -1;
+                task.RemainInterval = Schedule.Infinity;
+
+                // Wakeup the scheduler thread
+                _taskNotify.Set();
+            }
+        }
 
         /// <summary>
         /// Executes the task with specific interval
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="interval"></param>
-        /// <param name="times"></param>
-        /// <param name="action"></param>
+        /// <param name="name"><b>[In]</b> Task identity name</param>
+        /// <param name="interval"><b>[In]</b> Interval in milliseconds</param>
+        /// <param name="times"><b>[In]</b> Execute times</param>
+        /// <param name="action"><b>[In]</b> Callback action</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         private void Interval(string name, int interval, int times, Action action)
         {
             var task = new Schedule
@@ -243,34 +257,40 @@ namespace Konata.Core.Components.Model
             // Add new task
             _taskDict.TryAdd(name, task);
 
-            // Wakeup thread to queue the tasks
-            Knock();
+            // Wakeup the scheduler thread
+            _taskNotify.Set();
         }
 
         /// <summary>
         /// Executes the task with specific interval
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="interval"></param>
-        /// <param name="action"></param>
+        /// <param name="name"><b>[In]</b> Task identity name</param>
+        /// <param name="interval"><b>[In]</b> Interval in milliseconds</param>
+        /// <param name="action"><b>[In]</b> Callback action</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         public void Interval(string name, int interval, Action action)
             => Interval(name, interval, Schedule.Infinity, action);
 
         /// <summary>
-        /// Executes the task once
+        /// Executes once the task
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="delay"></param>
-        /// <param name="action"></param>
+        /// <param name="name"><b>[In]</b> Task identity name</param>
+        /// <param name="delay"><b>[In]</b> Delay time in milliseconds</param>
+        /// <param name="action"><b>[In]</b> Callback action</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         public void RunOnce(string name, int delay, Action action)
             => Interval(name, delay, 1, action);
 
         /// <summary>
-        /// Executes the task once
+        /// Executes once the task
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="date"></param>
-        /// <param name="action"></param>
+        /// <param name="name"><b>[In]</b> Task identity name</param>
+        /// <param name="date"><b>[In]</b> Execute date</param>
+        /// <param name="action"><b>[In]</b> Callback action</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         public void RunOnce(string name, DateTime date, Action action)
             => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds * 1000), action);
     }
