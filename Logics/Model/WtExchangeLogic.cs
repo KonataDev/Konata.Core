@@ -16,8 +16,8 @@ namespace Konata.Core.Logics.Model
     public class WtExchangeLogic : BaseLogic
     {
         private const string TAG = "WtXchg Logic";
-        private const string ScheduleCheckConn = "Logic.WtXchg.CheckOnline";
-        private const string ScheduleHeartBeat = "Logic.WtXchg.HeartBeat";
+        private const string ScheduleKeepOnline = "Logic.WtXchg.KeepOnline";
+        private const string ScheduleCheckConnection = "Logic.WtXchg.CheckConnection";
 
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;
@@ -70,25 +70,24 @@ namespace Konata.Core.Logics.Model
 
                             // Set online
                             var online = await SetClientOnineType(OnlineStatusEvent.Type.Online);
-                        {
-                            _onlineType = online.EventType;
 
-                            // Bot online
+                            // Update online status
                             if (online.EventType == OnlineStatusEvent.Type.Online)
                             {
-                                // Online
+                                // Bot online
                                 Context.PostEventToEntity(online);
+                                await Context.PostEvent<BusinessComponent>(online);
 
                                 // Register schedules
-                                Context.ScheduleComponent.Interval(ScheduleHeartBeat, 600 * 1000, OnSendHeartBeat);
-                                Context.ScheduleComponent.Interval(ScheduleCheckConn, 60 * 1000, OnCheckConnection);
+                                Context.ScheduleComponent.Interval(ScheduleKeepOnline, 600 * 1000, OnKeepOnline);
+                                Context.ScheduleComponent.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
 
                                 return true;
                             }
 
+                            // Oops...
                             SocketComponent.DisConnect("Wtlogin failed.");
                             return false;
-                        }
 
                         case WtLoginEvent.Type.CheckSms:
                         case WtLoginEvent.Type.CheckSlider:
@@ -130,12 +129,10 @@ namespace Konata.Core.Logics.Model
             => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.Tgtgt});
 
         private Task<WtLoginEvent> WtRefreshSmsCode()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent
-                {EventType = WtLoginEvent.Type.RefreshSMS});
+            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.RefreshSMS});
 
         private Task<WtLoginEvent> WtValidateDeviceLock()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent
-                {EventType = WtLoginEvent.Type.CheckDevLock});
+            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckDevLock});
 
         private Task<WtLoginEvent> WtCheckUserOperation()
             => Context.PostEvent<PacketComponent, WtLoginEvent>(WaitForUserOperation().Result);
@@ -144,12 +141,10 @@ namespace Konata.Core.Logics.Model
             => Context.PostEvent<PacketComponent, OnlineStatusEvent>(new OnlineStatusEvent {EventType = onlineType});
 
         public void SubmitSmsCode(string code)
-            => _userOperation.SetResult(new WtLoginEvent
-                {EventType = WtLoginEvent.Type.CheckSms, CaptchaResult = code});
+            => _userOperation.SetResult(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckSms, CaptchaResult = code});
 
         public void SubmitSliderTicket(string ticket)
-            => _userOperation.SetResult(new WtLoginEvent
-                {EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket});
+            => _userOperation.SetResult(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket});
 
         private async Task<WtLoginEvent> WaitForUserOperation()
         {
@@ -189,10 +184,10 @@ namespace Konata.Core.Logics.Model
             // Check connection
         }
 
-        private void OnSendHeartBeat()
+        private void OnKeepOnline()
         {
             // TODO:
-            // Check heartbeat
+            // Keep online
         }
     }
 }

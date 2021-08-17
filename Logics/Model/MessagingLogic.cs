@@ -6,6 +6,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
+using Konata.Core.Utils.IO;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -29,12 +30,13 @@ namespace Konata.Core.Logics.Model
             switch (e)
             {
                 // Pull new private message
-                case PrivateMessageNotifyEvent pull:
+                case PrivateMessageNotifyEvent:
                     PullPrivateMessage();
                     return;
 
                 // Received a private message
-                case PrivateMessageEvent priv:
+                case PrivateMessageEvent friend:
+                    SyncPrivateCookie(friend);
                     break;
 
                 // Received a group message
@@ -45,9 +47,6 @@ namespace Konata.Core.Logics.Model
 
             // Forward messages to userend
             Context.PostEventToEntity(e);
-
-            // TODO:
-            // Update Group list cache or friend list cache
         }
 
         /// <summary>
@@ -112,9 +111,9 @@ namespace Konata.Core.Logics.Model
         /// <summary>
         /// Upload the image
         /// </summary>
-        /// <param name="uin">uin</param>
-        /// <param name="message">The message chain</param>
-        /// <param name="c2c"><b>[In] </b> Group or Private </param>
+        /// <param name="uin"><b>[In]</b> Uin</param>
+        /// <param name="message"><b>[In]</b> The message chain</param>
+        /// <param name="c2c"><b>[In]</b> Group or Private </param>
         private async Task<bool> CheckImageAndUpload
             (uint uin, MessageChain message, bool c2c)
         {
@@ -132,7 +131,6 @@ namespace Konata.Core.Logics.Model
             // Do upload the image
             if (upload.Count > 0)
             {
-                // TODO:
                 // 1. Request ImageStore.GroupPicUp
                 // 2. Upload the image via highway
                 // 3. Return false while failed to upload
@@ -166,6 +164,9 @@ namespace Konata.Core.Logics.Model
                         Images = upload
                     };
 
+                    // TODO:
+                    // Off picup
+                    
                     var result = await Context.PostEvent
                         <PacketComponent, PrivateOffPicUpEvent>(request);
 
@@ -196,18 +197,16 @@ namespace Konata.Core.Logics.Model
         /// Pull the new private message
         /// </summary>
         private void PullPrivateMessage()
-        {
-            Context.PostEvent<PacketComponent>(new PrivateMessagePullEvent
-            {
-                SyncCookie = Context.GetComponent<ConfigComponent>().KeyStore.Account.SyncCookie
-            });
-        }
+            => Context.PostEvent<PacketComponent>(new PrivateMessagePullEvent {SyncCookie = ConfigComponent.SyncCookie});
 
         /// <summary>
         /// Update the local sync cookie
         /// </summary>
-        /// <param name="privateMessage"></param>
-        private void UpdateSyncCookie(PrivateMessageEvent privateMessage)
-            => Context.GetComponent<ConfigComponent>().SyncCookie(privateMessage.SyncCookie);
+        /// <param name="e"></param>
+        private void SyncPrivateCookie(PrivateMessageEvent e)
+        {
+            ConfigComponent.SyncCookie = e.SyncCookie;
+            Context.LogI(TAG, $"New cookie synced => {ByteConverter.Hex(e.SyncCookie)}");
+        }
     }
 }
