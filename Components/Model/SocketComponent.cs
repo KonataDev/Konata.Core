@@ -10,6 +10,8 @@ using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Konata.Core.Components.Model
 {
     [Component("SocketComponent", "Konata Socket Client Component")]
@@ -77,18 +79,25 @@ namespace Konata.Core.Components.Model
             var selectHost = DefaultServers[0];
 
             // Using user config
-            if (ConfigComponent.GlobalConfig!.CustomHost != "")
+            if (ConfigComponent.GlobalConfig!.CustomHost != null)
             {
                 var customHost = ConfigComponent
                     .GlobalConfig.CustomHost.Split(':');
 
-                selectHost = new ServerInfo
+                // Parse config
+                if (customHost.Length == 2)
                 {
-                    Host = customHost[0],
-                    Port = customHost.Length == 2
-                        ? ushort.Parse(customHost[1])
-                        : 8080
-                };
+                    selectHost = new ServerInfo
+                    {
+                        Host = customHost[0],
+                        Port = customHost.Length == 2
+                            ? ushort.Parse(customHost[1])
+                            : 8080
+                    };
+                }
+
+                // Parse config failed
+                else LogW(TAG, "Invalid custom host config passed in.");
             }
 
             // Find server
@@ -299,7 +308,7 @@ namespace Konata.Core.Components.Model
             if (_socket is not {Connected: true})
             {
                 LogW(TAG, "Calling DisConnect method after socket disconnected.");
-                return false;
+                return true;
             }
 
             _socket.Close();
