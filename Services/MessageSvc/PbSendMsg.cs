@@ -1,11 +1,10 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.MessageSvc
@@ -21,7 +20,7 @@ namespace Konata.Core.Services.MessageSvc
             {
                 output = new GroupMessageEvent
                 {
-                    ResultCode = (int)tree.GetLeafVar("08")
+                    ResultCode = (int) tree.GetLeafVar("08")
                 };
             }
 
@@ -78,8 +77,9 @@ namespace Konata.Core.Services.MessageSvc
             return false;
         }
 
-        private void ConstructPlainTextChain(ProtoTreeRoot root, PlainTextChain chain)
+        private static void ConstructPlainTextChain(ProtoTreeRoot root, PlainTextChain chain)
         {
+            // @formatter:off
             root.AddTree("12", (leaf) =>
             {
                 leaf.AddTree("0A", (_) =>
@@ -87,14 +87,33 @@ namespace Konata.Core.Services.MessageSvc
                     _.AddLeafString("0A", chain.Content);
                 });
             });
+            // @formatter:on
         }
 
-        private void ConstructAtChain(ProtoTreeRoot root, AtChain chain)
+        private static void ConstructAtChain(ProtoTreeRoot root, AtChain chain)
         {
+            // Construct parameters
+            var data = new ByteBuffer();
+            {
+                data.PutByte(0x00);
+                data.PutUintLE(1);
+                data.PutByte((byte) chain.DisplayString.Length);
+                data.PutByte(0x01);
+                data.PutUintBE(chain.AtUin);
+                data.PutShortBE(0x0000);
+            }
 
+            root.AddTree("12", (leaf) =>
+            {
+                leaf.AddTree("0A", (_) =>
+                {
+                    _.AddLeafString("0A", chain.DisplayString);
+                    _.AddLeafBytes("1A", data.GetBytes());
+                });
+            });
         }
 
-        private void ConstructImageChain(ProtoTreeRoot root, ImageChain chain)
+        private static void ConstructImageChain(ProtoTreeRoot root, ImageChain chain)
         {
             root.AddTree("12", (leaf) =>
             {
@@ -108,7 +127,7 @@ namespace Konata.Core.Services.MessageSvc
                     //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
                     _.AddLeafVar("60", 1);
                     _.AddLeafBytes("6A", chain.HashData);
-                    _.AddLeafVar("A001", (long)chain.ImageType);
+                    _.AddLeafVar("A001", (long) chain.ImageType);
                     _.AddLeafVar("B001", chain.Width);
                     _.AddLeafVar("B801", chain.Height);
                     _.AddLeafVar("C001", 200); // TODO: Unknown
@@ -121,8 +140,9 @@ namespace Konata.Core.Services.MessageSvc
             });
         }
 
-        private void ConstructQFaceChain(ProtoTreeRoot root, QFaceChain chain)
+        private static void ConstructQFaceChain(ProtoTreeRoot root, QFaceChain chain)
         {
+            // @formatter:off
             root.AddTree("12", (leaf) =>
             {
                 leaf.AddTree("12", (_) =>
@@ -130,10 +150,11 @@ namespace Konata.Core.Services.MessageSvc
                     _.AddLeafVar("08", chain.FaceId);
                 });
             });
+            // @formatter:on
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupMessageEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (GroupMessageEvent) input, signInfo, device, out newSequence, out output);
     }
 }

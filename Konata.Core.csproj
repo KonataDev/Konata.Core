@@ -19,6 +19,10 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions" />
+  </ItemGroup>
+
   <!-- Get Build Stamp -->
   <Target Name="GetBuildStamp" BeforeTargets="GenerateBuildStamp" Condition="'$(BuildHash)' == ''">
     <PropertyGroup>

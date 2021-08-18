@@ -15,23 +15,24 @@ namespace Konata.Core.Packets.SvcResponse
             : base(payload, (userdata, r) =>
             {
                 // Initialize
-                var p = (SvcRspGetTroopListRespV2)userdata;
+                var p = (SvcRspGetTroopListRespV2) userdata;
                 p.Groups = new();
 
                 // Read group list
-                var list = (JList)r["0.5"];
+                var list = (JList) r["0.5"];
                 foreach (JStruct i in list)
                 {
                     // Parse one group
                     var group = new BotGroup
                     {
-                        Uin = (uint)(JNumber)i["1"],
-                        Name = (string)(JString)i["4"],
-                        MemberCount = (uint)(JNumber)i["19"],
-                        MaxMemberCount = (uint)(JNumber)i["29"],
-                        OwnerUin = (uint)(JNumber)i["23"],
-                        Muted = (uint)(JNumber)i["9"],
-                        MutedMe = (uint)(JNumber)i["10"] * 1000,
+                        Uin = (uint) (JNumber) i["0"],
+                        Code = (ulong) (long) (JNumber) i["1"],
+                        Name = (string) (JString) i["4"],
+                        MemberCount = (uint) (JNumber) i["19"],
+                        MaxMemberCount = (uint) (JNumber) i["29"],
+                        OwnerUin = (uint) (JNumber) i["23"],
+                        Muted = (uint) (JNumber) i["9"],
+                        MutedMe = (uint) (JNumber) i["10"] * 1000,
                     };
 
                     // Some conditions
