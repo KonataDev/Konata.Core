@@ -47,18 +47,18 @@ namespace Konata.Core.Logics.Model
         /// <summary>
         /// Sync group list
         /// </summary>
-        private async void SyncGroupList()
+        internal async void SyncGroupList()
         {
-            var result = await Context.PostEvent<PacketComponent, PullGroupListEvent>
-                (new PullGroupListEvent {SelfUin = Context.Bot.Uin});
-
-            // Request successfully
-            if (result.ResultCode == 0)
+            var result = await PullGroupList(Context, Context.Bot.Uin);
             {
-                // Sync group list
-                foreach (var i in result.GroupInfo)
+                // Request successfully
+                if (result.ResultCode == 0)
                 {
-                    ConfigComponent.TouchGroupInfo(i);
+                    // Sync group list
+                    foreach (var i in result.GroupInfo)
+                    {
+                        ConfigComponent.TouchGroupInfo(i);
+                    }
                 }
             }
 
@@ -67,9 +67,58 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
+        /// Sync group member list
+        /// </summary>
+        /// <param name="groupUin"></param>
+        internal async Task<bool> SyncGroupMemberList(uint groupUin)
+        {
+            var nextUin = 0U;
+            var memberCount = 0;
+            var groupCode = ConfigComponent.GetGroupCode(groupUin);
+
+            // Convert group code failed
+            if (groupCode == 0)
+            {
+                return false;
+            }
+
+            // Sync until finished
+            do
+            {
+                // Pull group member list
+                var result = await PullGroupMemberList
+                    (Context, Context.Bot.Uin, nextUin, groupCode, nextUin);
+
+                // Check if failed 
+                if (result.ResultCode != 0)
+                {
+                    Context.LogE(TAG, $"Sync group member failed " +
+                                      $"with an error code {result.ErrorCode}");
+                    return false;
+                }
+
+                // Sync the member list
+                foreach (var i in result.Members)
+                {
+                    ConfigComponent.TouchGroupMemberInfo(groupUin, i);
+                }
+
+                nextUin = result.NextUin;
+                memberCount += result.Members.Count;
+
+                // Continue
+            } while (nextUin != 0);
+
+            Context.LogI(TAG, $"Group [{groupUin}] sync finished, " +
+                              $"Total {memberCount} members.");
+
+            return true;
+        }
+
+        /// <summary>
         /// Sync friend list cache
         /// </summary>
-        private void SyncFriendList()
+        internal void SyncFriendList()
         {
             // TODO:
             // Sync friend list cache
@@ -86,5 +135,15 @@ namespace Konata.Core.Logics.Model
             // TODO:
             // Sync friend cache
         }
+
+        #region Stub methods
+
+        private static Task<PullGroupListEvent> PullGroupList(BusinessComponent context, uint selfUin)
+            => context.PostEvent<PacketComponent, PullGroupListEvent>(new PullGroupListEvent {SelfUin = selfUin});
+
+        private static Task<PullGroupMemberListEvent> PullGroupMemberList(BusinessComponent context, uint selfUin, uint groupUin, ulong groupCode, uint nextUin)
+            => context.PostEvent<PacketComponent, PullGroupMemberListEvent>(new PullGroupMemberListEvent {SelfUin = selfUin, GroupUin = groupUin, GroupCode = groupCode, NextUin = nextUin});
+
+        #endregion
     }
 }

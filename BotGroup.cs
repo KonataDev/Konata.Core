@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Konata.Core
 {
@@ -8,6 +9,11 @@ namespace Konata.Core
         /// Group uin
         /// </summary>
         public uint Uin { get; set; }
+
+        /// <summary>
+        /// Group code
+        /// </summary>
+        public ulong Code { get; set; }
 
         /// <summary>
         /// Group name
@@ -22,7 +28,7 @@ namespace Konata.Core
         /// <summary>
         /// Group admins
         /// </summary>
-        public List<uint> AdminUins { get; set; }
+        public List<uint> AdminUins { get; }
 
         /// <summary>
         /// Group member count
@@ -45,9 +51,14 @@ namespace Konata.Core
         public uint MutedMe { get; set; }
 
         /// <summary>
+        /// Last update time
+        /// </summary>
+        internal DateTime LastUpdate { get; set; }
+
+        /// <summary>
         /// Group members
         /// </summary>
-        public Dictionary<uint, BotMember> Members { get; set; }
+        public Dictionary<uint, BotMember> Members { get; }
 
         public BotGroup()
         {

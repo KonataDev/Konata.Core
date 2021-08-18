@@ -8,6 +8,7 @@ using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Utils.IO;
 
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Logics.Model
@@ -72,10 +73,7 @@ namespace Konata.Core.Logics.Model
             };
 
             // Send the message
-            var result = await Context.PostEvent
-                <PacketComponent, PrivateMessageEvent>(request);
-
-            return result.ResultCode;
+            return (await SendPrivateMessage(request)).ResultCode;
         }
 
         /// <summary>
@@ -89,8 +87,13 @@ namespace Konata.Core.Logics.Model
             // Upload the images
             if (!await CheckImageAndUpload(groupUin, message, true))
             {
-                // Templorary return
                 return -1;
+            }
+
+            // Check the at chain
+            if (!await CheckAt(groupUin, message))
+            {
+                return -2;
             }
 
             // Construct the event
@@ -102,10 +105,73 @@ namespace Konata.Core.Logics.Model
             };
 
             // Send the message
-            var result = await Context.PostEvent
-                <PacketComponent, GroupMessageEvent>(request);
+            return (await SendGroupMessage(request)).ResultCode;
+        }
 
-            return result.ResultCode;
+        /// <summary>
+        /// Check at
+        /// </summary>
+        /// <param name="uin"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task<bool> CheckAt(uint uin, MessageChain message)
+        {
+            // Find the at chains
+            foreach (var i in message.Chains)
+            {
+                // Process the relationship
+                // between group and member
+                if (i.Type == BaseChain.ChainType.At)
+                {
+                    var chain = (AtChain) i;
+
+                    // If uin is zero
+                    // meant to ping all members
+                    if (chain.AtUin == 0)
+                    {
+                        chain.DisplayString = "@全体成员 ";
+                    }
+
+                    // None zero,
+                    // Then check the relationship
+                    else
+                    {
+                        // Okay we've got it
+                        if (ConfigComponent.TryGetMemberInfo
+                            (uin, chain.AtUin, out var member))
+                        {
+                            chain.DisplayString = $"@{member.NickName} ";
+                        }
+
+                        // F! We might have to pull
+                        // more member data from server
+                        else
+                        {
+                            // Check if lacks the member cache
+                            if (ConfigComponent.IsLackMemberCacheForGroup(uin))
+                            {
+                                // Pull the cache and try again
+                                if (await Context.SyncGroupMemberList(uin))
+                                {
+                                    // Okay try again
+                                    chain.DisplayString = ConfigComponent.TryGetMemberInfo
+                                        (uin, chain.AtUin, out member)
+                                        ? $"@{member.NickName} "
+                                        : $"@{chain.AtUin} ";
+                                }
+
+                                // F? Sync failed
+                                else chain.DisplayString = $"@{chain.AtUin} ";
+                            }
+
+                            // F? The wrong user
+                            else chain.DisplayString = $"@{chain.AtUin} ";
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -166,7 +232,7 @@ namespace Konata.Core.Logics.Model
 
                     // TODO:
                     // Off picup
-                    
+
                     var result = await Context.PostEvent
                         <PacketComponent, PrivateOffPicUpEvent>(request);
 
@@ -198,6 +264,12 @@ namespace Konata.Core.Logics.Model
         /// </summary>
         private void PullPrivateMessage()
             => Context.PostEvent<PacketComponent>(new PrivateMessagePullEvent {SyncCookie = ConfigComponent.SyncCookie});
+
+        private Task<GroupMessageEvent> SendGroupMessage(GroupMessageEvent e)
+            => Context.PostEvent<PacketComponent, GroupMessageEvent>(e);
+
+        private Task<GroupMessageEvent> SendPrivateMessage(PrivateMessageEvent e)
+            => Context.PostEvent<PacketComponent, GroupMessageEvent>(e);
 
         /// <summary>
         /// Update the local sync cookie

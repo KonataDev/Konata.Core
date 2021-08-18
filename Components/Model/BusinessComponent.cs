@@ -63,6 +63,10 @@ namespace Konata.Core.Components.Model
                     case WtExchangeLogic wtxchg:
                         WtExchange = wtxchg;
                         break;
+
+                    case CacheSyncLogic cache:
+                        CacheSync = cache;
+                        break;
                 }
             });
         }
@@ -111,6 +115,8 @@ namespace Konata.Core.Components.Model
 
         private MessagingLogic Messaging { get; set; }
 
+        private CacheSyncLogic CacheSync { get; set; }
+
         public Task<bool> Login()
             => WtExchange.Login();
 
@@ -143,6 +149,15 @@ namespace Konata.Core.Components.Model
 
         public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
             => Messaging.SendPrivateMessage(friendUin, message);
+
+        internal void SyncGroupList()
+            => CacheSync.SyncGroupList();
+
+        internal Task<bool> SyncGroupMemberList(uint groupUin)
+            => CacheSync.SyncGroupMemberList(groupUin);
+
+        internal void SyncFriendList()
+            => CacheSync.SyncFriendList();
 
         #endregion
     }

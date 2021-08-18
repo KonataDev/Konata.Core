@@ -1,6 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Linq;
+using System.Collections.Concurrent;
 using Konata.Core.Attributes;
 
+// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Components.Model
@@ -23,8 +27,8 @@ namespace Konata.Core.Components.Model
             internal set => KeyStore.Account.SyncCookie = value;
         }
 
-        private ConcurrentDictionary<uint, BotGroup> _groupList;
-        private ConcurrentDictionary<uint, BotMember> _friendList;
+        private readonly ConcurrentDictionary<uint, BotGroup> _groupList;
+        private readonly ConcurrentDictionary<uint, BotMember> _friendList;
 
         public ConfigComponent()
         {
@@ -97,7 +101,12 @@ namespace Konata.Core.Components.Model
             else
             {
                 // Update group information
-                _groupList[groupInfo.Uin] = groupInfo;
+                _groupList[groupInfo.Uin].Name = groupInfo.Name;
+                _groupList[groupInfo.Uin].MemberCount = groupInfo.MemberCount;
+                _groupList[groupInfo.Uin].MaxMemberCount = groupInfo.MaxMemberCount;
+                _groupList[groupInfo.Uin].Muted = groupInfo.Muted;
+                _groupList[groupInfo.Uin].MutedMe = groupInfo.MutedMe;
+                _groupList[groupInfo.Uin].LastUpdate = DateTime.Now;
             }
 
             return groupInfo;
@@ -134,6 +143,41 @@ namespace Konata.Core.Components.Model
             }
 
             return group;
+        }
+
+        /// <summary>
+        /// Add or update group member
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin</param>
+        /// <param name="memberInfo">><b>[In]</b> Member info</param>
+        /// <returns></returns>
+        public BotMember TouchGroupMemberInfo(uint groupUin, BotMember memberInfo)
+        {
+            // Touch if the group does not exist 
+            if (!TryGetMemberInfo(groupUin, memberInfo.Uin, out var member))
+            {
+                // Add the member
+                _groupList[groupUin].Members
+                    .Add(memberInfo.Uin, memberInfo);
+            }
+
+            else
+            {
+                // Update member information
+                member.Age = memberInfo.Age;
+                member.Name = memberInfo.Name;
+                member.NickName = member.NickName;
+                member.Gender = memberInfo.Gender;
+                member.Level = member.Level;
+                member.FaceId = member.FaceId;
+                member.IsAdmin = member.IsAdmin;
+                member.MuteTimestamp = member.MuteTimestamp;
+                member.LastSpeakTime = member.LastSpeakTime;
+                member.SpecialTitle = member.SpecialTitle;
+                member.SpecialTitleExpiredTime = member.SpecialTitleExpiredTime;
+            }
+
+            return memberInfo;
         }
 
         /// <summary>
@@ -175,5 +219,37 @@ namespace Konata.Core.Components.Model
 
             return member;
         }
+
+        /// <summary>
+        /// Check if lacks the member cache
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLackMemberCacheForGroup(uint groupUin)
+        {
+            // Check the cache
+            if (TryGetGroupInfo(groupUin, out var group))
+            {
+                return group.MemberCount != group.Members.Count;
+            }
+
+            // Group not existed
+            return false;
+        }
+
+        /// <summary>
+        /// Get group uin from a code
+        /// </summary>
+        /// <param name="groupCode"></param>
+        /// <returns></returns>
+        public ulong GetGroupUin(uint groupCode)
+            => _groupList.FirstOrDefault(x => x.Value.Code == groupCode).Key;
+
+        /// <summary>
+        /// Get group code from an uin
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <returns></returns>
+        public ulong GetGroupCode(uint groupUin)
+            => TryGetGroupInfo(groupUin, out var group) ? group.Code : 0;
     }
 }

@@ -1,10 +1,13 @@
-﻿using System;
-
-namespace Konata.Core.Message.Model
+﻿namespace Konata.Core.Message.Model
 {
     public class AtChain : BaseChain
     {
         public uint AtUin { get; }
+
+        /// <summary>
+        /// Display string
+        /// </summary>
+        internal string DisplayString { get; set; }
 
         private AtChain(uint uin)
             : base(ChainType.At)
@@ -31,7 +34,8 @@ namespace Konata.Core.Message.Model
         {
             var args = GetArgs(code);
             {
-                return Create(uint.Parse(args["qq"]));
+                var atUin = args["qq"];
+                return Create(atUin == "all" ? 0 : uint.Parse(atUin));
             }
         }
 
