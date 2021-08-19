@@ -4,6 +4,7 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils;
 using Konata.Core.Events.Model;
+using Konata.Core.Utils.FileFormat;
 
 namespace Konata.Core.Message.Model
 {

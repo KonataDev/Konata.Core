@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Konata.Core.Utils.IO;
 
-using Konata.Core.Utils.IO;
-
-namespace Konata.Core.Utils
+namespace Konata.Core.Utils.FileFormat
 {
     public static partial class FileFormat
     {
@@ -82,22 +80,46 @@ namespace Konata.Core.Utils
             buffer.EatBytes(2);
 
             // Ignore tags
-            while (buffer.PeekUshortBE(0, out _) != 0xFFC0)
+            ushort dataTag = 0x0000;
+            while (buffer.RemainLength > 2)
             {
                 // Take tag
-                buffer.TakeUshortBE(out _);
+                buffer.TakeUshortBE(out dataTag);
+                if (dataTag is >= 0xFFC0 and <= 0xFFC3)
+                {
+                    break;
+                }
+
+                // Jump 1 byte
+                if (dataTag == 0xFFFF)
+                {
+                    buffer.EatBytes(1);
+                    continue;
+                }
 
                 // Take length
                 buffer.TakeUshortBE(out var len);
 
                 // Eat bytes
-                buffer.EatBytes((uint)len - 2);
+                buffer.EatBytes((uint) len - 2);
             }
 
-            // FF C0
-            // The start of a frame
-            buffer.PeekUshortLE(0x06, out var w); width = w;
-            buffer.PeekUshortLE(0x08, out var h); height = h;
+            // Invalid JFIF file
+            if (dataTag == 0x0000)
+            {
+                width = height = 0;
+                return false;
+            }
+
+            // FF C0 baseline
+            // FF C1 extended
+            // FF C2 progressive
+            // FF C3 lossless
+            buffer.PeekUshortLE(0x03, out var h);
+            height = h;
+            buffer.PeekUshortLE(0x05, out var w);
+            width = w;
+
             return true;
         }
 
@@ -112,8 +134,10 @@ namespace Konata.Core.Utils
         private static bool DetectGIF(ByteBuffer buffer,
             out uint width, out uint height)
         {
-            buffer.PeekUshortLE(0x06, out var w); width = w;
-            buffer.PeekUshortLE(0x08, out var h); height = h;
+            buffer.PeekUshortLE(0x06, out var w);
+            width = w;
+            buffer.PeekUshortLE(0x08, out var h);
+            height = h;
             return true;
         }
 
@@ -128,8 +152,10 @@ namespace Konata.Core.Utils
         private static bool DetectWEBP(ByteBuffer buffer,
             out uint width, out uint height)
         {
-            buffer.PeekUshortLE(0x1A, out var w); width = w;
-            buffer.PeekUshortLE(0x1C, out var h); height = h;
+            buffer.PeekUshortLE(0x1A, out var w);
+            width = w;
+            buffer.PeekUshortLE(0x1C, out var h);
+            height = h;
             return true;
         }
     }
