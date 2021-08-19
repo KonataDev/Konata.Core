@@ -42,14 +42,14 @@ namespace Konata.Core.Utils.FileFormat
                 // GIF
                 if (value >> 8 == 0x474946)
                 {
-                    type = 3;
+                    type = 2;
                     return DetectGIF(buffer, out width, out height);
                 }
 
                 // BM
                 if (value >> 16 == 0x424D)
                 {
-                    type = 4;
+                    type = 3;
                     return DetectBMP(buffer, out width, out height);
                 }
 
@@ -60,7 +60,7 @@ namespace Konata.Core.Utils.FileFormat
                     buffer.PeekUintBE(8, out value);
                     if (value == 0x57454250)
                     {
-                        type = 5;
+                        type = 4;
                         return DetectWEBP(buffer, out width, out height);
                     }
                 }
