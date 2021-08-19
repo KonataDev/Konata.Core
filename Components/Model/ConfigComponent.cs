@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Konata.Core.Attributes;
 
 // ReSharper disable CollectionNeverUpdated.Local
@@ -28,7 +29,7 @@ namespace Konata.Core.Components.Model
         }
 
         private readonly ConcurrentDictionary<uint, BotGroup> _groupList;
-        private readonly ConcurrentDictionary<uint, BotMember> _friendList;
+        private readonly ConcurrentDictionary<uint, BotFriend> _friendList;
 
         public ConfigComponent()
         {
@@ -53,36 +54,33 @@ namespace Konata.Core.Components.Model
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin</param>
         /// <param name="memberUin"><b>[In]</b> Member uin</param>
-        /// <param name="member"><b>[Out]</b> Member information</param>
+        /// <param name="memberInfo"><b>[Out]</b> Member information</param>
         public bool TryGetMemberInfo(uint groupUin,
-            uint memberUin, out BotMember member)
+            uint memberUin, out BotMember memberInfo)
         {
             // Get member information
-            member = null;
-            return _groupList.TryGetValue(groupUin, out var group)
-                   && group.Members.TryGetValue(memberUin, out member);
+            memberInfo = null;
+            return _groupList.TryGetValue(groupUin, out var groupInfo)
+                   && groupInfo.Members.TryGetValue(memberUin, out memberInfo);
         }
 
         /// <summary>
         /// Get group information
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin</param>
-        /// <param name="group"><b>[Out]</b> Group information</param>
+        /// <param name="groupInfo"><b>[Out]</b> Group information</param>
         /// <returns></returns>
-        public bool TryGetGroupInfo(uint groupUin, out BotGroup group)
-        {
-            return _groupList.TryGetValue(groupUin, out group);
-        }
+        public bool TryGetGroupInfo(uint groupUin, out BotGroup groupInfo)
+            => _groupList.TryGetValue(groupUin, out groupInfo);
 
         /// <summary>
         /// Get friend information
         /// </summary>
-        /// <param name="friendUin"></param>
+        /// <param name="friendUin"><b>[In]</b> Friend uin</param>
+        /// <param name="friendInfo"><b>[Out]</b> Friend information</param>
         /// <returns></returns>
-        public BotMember GetFriendInfo(uint friendUin)
-        {
-            return _friendList.TryGetValue(friendUin, out var friend) ? friend : null;
-        }
+        public bool TryGetFriendInfo(uint friendUin, out BotFriend friendInfo)
+            => _friendList.TryGetValue(friendUin, out friendInfo);
 
         /// <summary>
         /// Add or update group
@@ -92,24 +90,25 @@ namespace Konata.Core.Components.Model
         public BotGroup TouchGroupInfo(BotGroup groupInfo)
         {
             // Touch if the group does not exist 
-            if (!_groupList.ContainsKey(groupInfo.Uin))
+            if (!_groupList.TryGetValue(groupInfo.Uin, out var group))
             {
                 // Add the group
+                group = groupInfo;
                 _groupList.TryAdd(groupInfo.Uin, groupInfo);
             }
 
             else
             {
                 // Update group information
-                _groupList[groupInfo.Uin].Name = groupInfo.Name;
-                _groupList[groupInfo.Uin].MemberCount = groupInfo.MemberCount;
-                _groupList[groupInfo.Uin].MaxMemberCount = groupInfo.MaxMemberCount;
-                _groupList[groupInfo.Uin].Muted = groupInfo.Muted;
-                _groupList[groupInfo.Uin].MutedMe = groupInfo.MutedMe;
-                _groupList[groupInfo.Uin].LastUpdate = DateTime.Now;
+                group.Name = groupInfo.Name;
+                group.MemberCount = groupInfo.MemberCount;
+                group.MaxMemberCount = groupInfo.MaxMemberCount;
+                group.Muted = groupInfo.Muted;
+                group.MutedMe = groupInfo.MutedMe;
+                group.LastUpdate = DateTime.Now;
             }
 
-            return groupInfo;
+            return group;
         }
 
         /// <summary>
@@ -157,8 +156,8 @@ namespace Konata.Core.Components.Model
             if (!TryGetMemberInfo(groupUin, memberInfo.Uin, out var member))
             {
                 // Add the member
-                _groupList[groupUin].Members
-                    .Add(memberInfo.Uin, memberInfo);
+                member = memberInfo;
+                _groupList[groupUin].Members.Add(memberInfo.Uin, memberInfo);
             }
 
             else
@@ -177,7 +176,7 @@ namespace Konata.Core.Components.Model
                 member.SpecialTitleExpiredTime = member.SpecialTitleExpiredTime;
             }
 
-            return memberInfo;
+            return member;
         }
 
         /// <summary>
@@ -221,6 +220,31 @@ namespace Konata.Core.Components.Model
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public BotFriend TouchFriendInfo(BotFriend friendInfo)
+        {
+            // Touch if the group does not exist 
+            if (!TryGetFriendInfo(friendInfo.Uin, out var friend))
+            {
+                // Add the member
+                friend = friendInfo;
+                _friendList.TryAdd(friendInfo.Uin, friendInfo);
+            }
+
+            else
+            {
+                // Update friend information
+                friend.Name = friend.Name;
+                friend.Gender = friend.Gender;
+                friend.FaceId = friend.FaceId;
+            }
+
+            return friend;
+        }
+
+        /// <summary>
         /// Check if lacks the member cache
         /// </summary>
         /// <returns></returns>
@@ -251,5 +275,19 @@ namespace Konata.Core.Components.Model
         /// <returns></returns>
         public ulong GetGroupCode(uint groupUin)
             => TryGetGroupInfo(groupUin, out var group) ? group.Code : 0;
+
+        /// <summary>
+        /// Get group list
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<BotGroup> GetGroupList()
+            => _groupList.Values;
+
+        /// <summary>
+        /// Get friend list
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<BotFriend> GetFriendList()
+            => _friendList.Values;
     }
 }

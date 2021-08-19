@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
-using Konata.Core.Utils.Crypto;
 
 namespace Konata.Core.Packets.Tlv
 {
@@ -20,6 +18,7 @@ namespace Konata.Core.Packets.Tlv
             {
                 countMax = packet.TakeUshortBE(out ushort _);
             }
+
             while (packet.RemainLength > 0)
             {
                 ++count;
@@ -34,6 +33,7 @@ namespace Konata.Core.Packets.Tlv
                     map.Add(cmd, new Tlv(cmd, tlv));
                 }
             }
+
             if (prefixTlvCount && count < countMax)
             {
                 throw new IOException("Insufficient Tlv number.");
@@ -55,6 +55,9 @@ namespace Konata.Core.Packets.Tlv
             return map.ContainsKey(tlvCommand) ? map[tlvCommand] : null;
         }
 
-        public int Count { get { return map.Count; } }
+        public int Count
+        {
+            get { return map.Count; }
+        }
     }
 }

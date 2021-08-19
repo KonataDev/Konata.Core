@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Konata.Core.Utils.JceStruct.Model
 {
@@ -27,7 +25,7 @@ namespace Konata.Core.Utils.JceStruct.Model
                     case Type.Byte:
                     case Type.Short:
                     case Type.Int:
-                        return (int)Value;
+                        return (int) Value;
                     default:
                         throw new InvalidCastException();
                 }
@@ -44,7 +42,7 @@ namespace Konata.Core.Utils.JceStruct.Model
                     case Type.ZeroTag:
                     case Type.Byte:
                     case Type.Short:
-                        return (short)Value;
+                        return (short) Value;
                     default:
                         throw new InvalidCastException();
                 }
@@ -60,7 +58,7 @@ namespace Konata.Core.Utils.JceStruct.Model
                 {
                     case Type.ZeroTag:
                     case Type.Byte:
-                        return (sbyte)Value;
+                        return (sbyte) Value;
                     default:
                         throw new InvalidCastException();
                 }

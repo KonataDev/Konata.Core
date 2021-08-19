@@ -23,7 +23,7 @@ namespace Konata.Core.Services.Friendlist
                 ResultCode = response.Result,
                 GroupUin = response.GroupUin,
                 GroupCode = response.GroupCode,
-                Members = response.Members,
+                MemberInfo = response.Members,
                 NextUin = response.NextUin,
             };
 

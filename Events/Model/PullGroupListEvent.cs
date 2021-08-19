@@ -5,8 +5,8 @@ namespace Konata.Core.Events.Model
     public class PullGroupListEvent : ProtocolEvent
     {
         /// <summary>
-        /// <b>[In]</b>          <br/>
-        ///   Self uin.          <br/>
+        /// <b>[In]</b>           <br/>
+        /// Self uin.             <br/>
         /// </summary>
         public uint SelfUin { get; set; }
 

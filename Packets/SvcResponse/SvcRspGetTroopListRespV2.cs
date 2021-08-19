@@ -19,8 +19,7 @@ namespace Konata.Core.Packets.SvcResponse
                 p.Groups = new();
 
                 // Read group list
-                var list = (JList) r["0.5"];
-                foreach (JStruct i in list)
+                foreach (JStruct i in (JList) r["0.5"])
                 {
                     // Parse one group
                     var group = new BotGroup

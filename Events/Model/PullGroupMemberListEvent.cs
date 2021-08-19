@@ -5,26 +5,26 @@ namespace Konata.Core.Events.Model
     public class PullGroupMemberListEvent : ProtocolEvent
     {
         /// <summary>
-        /// <b>[In]</b>          <br/>
-        /// Self uin.            <br/>
+        /// <b>[In]</b>            <br/>
+        /// Self uin.              <br/>
         /// </summary>
         public uint SelfUin { get; set; }
 
         /// <summary>
-        /// <b>[In]</b>          <br/>
-        /// Group code.          <br/>
+        /// <b>[In]</b>            <br/>
+        /// Group code.            <br/>
         /// </summary>
         public ulong GroupCode { get; set; }
 
         /// <summary>
-        /// <b>[In]</b>          <br/>
-        /// Group uin.           <br/>
+        /// <b>[In]</b>            <br/>
+        /// Group uin.             <br/>
         /// </summary>
         public uint GroupUin { get; set; }
 
         /// <summary>
-        /// <b>[In] [Out]</b>     <br/>
-        /// Next uin.             <br/>
+        /// <b>[In] [Out]</b>      <br/>
+        /// Next uin.              <br/>
         /// </summary>
         public uint NextUin { get; set; }
 
@@ -50,7 +50,7 @@ namespace Konata.Core.Events.Model
         /// <b>[Out]</b>          <br/>
         /// Partial member list   <br/>
         /// </summary>
-        public List<BotMember> Members { get; set; }
+        public List<BotMember> MemberInfo { get; set; }
 
         public PullGroupMemberListEvent()
             => WaitForResponse = true;

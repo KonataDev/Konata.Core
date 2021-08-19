@@ -31,15 +31,11 @@ namespace Konata.Core.Logics.Model
         public async Task<int> GroupPromoteAdmin
             (uint groupUin, uint memberUin, bool toggleAdmin)
         {
-            var request = new GroupPromoteAdminEvent
-            {
-                GroupUin = groupUin,
-                MemberUin = memberUin,
-                ToggleType = toggleAdmin
-            };
-
-            var result = await Context.PostEvent
-                <PacketComponent, GroupPromoteAdminEvent>(request);
+            // TODO:
+            // Check the permission
+            
+            var result = await GroupPromoteAdmin
+                (Context, groupUin, memberUin, toggleAdmin);
 
             // TODO:
             // The operation result
@@ -50,15 +46,11 @@ namespace Konata.Core.Logics.Model
         public async Task<int> GroupMuteMember
             (uint groupUin, uint memberUin, uint timeSeconds)
         {
-            var request = new GroupMuteMemberEvent
-            {
-                GroupUin = groupUin,
-                MemberUin = memberUin,
-                TimeSeconds = timeSeconds
-            };
-
-            var result = await Context.PostEvent
-                <PacketComponent, GroupMuteMemberEvent>(request);
+            // TODO:
+            // Check the permission
+            
+            var result = await GroupMuteMember
+                (Context, groupUin, memberUin, timeSeconds);
 
             // TODO:
             // The operation result
@@ -69,20 +61,29 @@ namespace Konata.Core.Logics.Model
         public async Task<int> GroupKickMember
             (uint groupUin, uint memberUin, bool preventRequest)
         {
-            var request = new GroupKickMemberEvent
-            {
-                GroupUin = groupUin,
-                MemberUin = memberUin,
-                ToggleType = preventRequest
-            };
-
-            var result = await Context.PostEvent
-                <PacketComponent, GroupKickMemberEvent>(request);
+            // TODO:
+            // Check the permission
+            
+            var result = await GroupKickMember
+                (Context, groupUin, memberUin, preventRequest);
 
             // TODO:
             // The operation result
 
             return 0;
         }
+
+        #region Stub methods
+
+        private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
+            => context.PostEvent<PacketComponent, GroupPromoteAdminEvent>(new GroupPromoteAdminEvent {GroupUin = groupUin, MemberUin = memberUin, ToggleType = toggleAdmin});
+
+        private static Task<GroupMuteMemberEvent> GroupMuteMember(BusinessComponent context, uint groupUin, uint memberUin, uint timeSeconds)
+            => context.PostEvent<PacketComponent, GroupMuteMemberEvent>(new GroupMuteMemberEvent {GroupUin = groupUin, MemberUin = memberUin, TimeSeconds = timeSeconds});
+
+        private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
+            => context.PostEvent<PacketComponent, GroupKickMemberEvent>(new GroupKickMemberEvent {GroupUin = groupUin, MemberUin = memberUin, ToggleType = preventRequest});
+
+        #endregion
     }
 }

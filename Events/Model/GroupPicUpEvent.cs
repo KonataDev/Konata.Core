@@ -7,9 +7,9 @@ namespace Konata.Core.Events.Model
 {
     public class GroupPicUpEvent : ProtocolEvent
     {
-        public uint GroupUin { get; set; }
+        public uint SelfUin { get; set; }
 
-        public uint MemberUin { get; set; }
+        public uint GroupUin { get; set; }
 
         public List<ImageChain> Images { get; set; }
 

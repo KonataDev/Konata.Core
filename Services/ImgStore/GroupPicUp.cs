@@ -23,7 +23,7 @@ namespace Konata.Core.Services.ImgStore
             output = null;
             newSequence = input.SessionSequence;
 
-            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.MemberUin, input.Images);
+            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.Images);
 
             if (SSOFrame.Create("ImgStore.GroupPicUp", PacketType.TypeB,
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(picupRequest), out var ssoFrame))

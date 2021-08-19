@@ -1,15 +1,17 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.TlvModel;
 using Konata.Core.Packets.Oicq;
 using Konata.Core.Attributes;
-
-using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
+
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedVariable
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.WtLogin
 {
@@ -19,34 +21,20 @@ namespace Konata.Core.Services.WtLogin
     {
         public bool Parse(SSOFrame ssoFrame, BotKeyStore signinfo, out ProtocolEvent output)
         {
-            var oicqRequest = new OicqRequest(ssoFrame.Payload.GetBytes(), signinfo.KeyStub.ShareKey);
+            var oicqRequest = new OicqRequest
+                (ssoFrame.Payload.GetBytes(), signinfo.KeyStub.ShareKey);
 
-            Console.WriteLine($"  [oicqRequest] oicqCommand => {oicqRequest.oicqCommand}");
-            Console.WriteLine($"  [oicqRequest] oicqVersion => {oicqRequest.oicqVersion}");
-            Console.WriteLine($"  [oicqRequest] oicqStatus => {oicqRequest.oicqStatus}");
-
-            switch (oicqRequest.oicqStatus)
+            output = oicqRequest.oicqStatus switch
             {
-                case OicqStatus.OK:
-                    output = OnRecvWtloginSuccess(oicqRequest, signinfo); break;
-
-                case OicqStatus.DoVerifySliderCaptcha:
-                    output = OnRecvCheckSliderCaptcha(oicqRequest, signinfo); break;
-                case OicqStatus.DoVerifySms:
-                    output = OnRecvCheckSmsCaptcha(oicqRequest, signinfo); break;
-
-                case OicqStatus.PreventByIncorrectUserOrPwd:
-                    output = OnRecvInvalidUsrPwd(oicqRequest, signinfo); break;
-                case OicqStatus.PreventByIncorrectSmsCode:
-                    output = OnRecvInvalidSmsCode(oicqRequest, signinfo); break;
-                case OicqStatus.PreventByInvalidEnvironment:
-                    output = OnRecvInvalidLoginEnv(oicqRequest, signinfo); break;
-                case OicqStatus.PreventByLoginDenied:
-                    output = OnRecvLoginDenied(oicqRequest, signinfo); break;
-
-                default:
-                    output = OnRecvUnknown(); break;
-            }
+                OicqStatus.OK => OnRecvWtloginSuccess(oicqRequest, signinfo),
+                OicqStatus.DoVerifySliderCaptcha => OnRecvCheckSliderCaptcha(oicqRequest, signinfo),
+                OicqStatus.DoVerifySms => OnRecvCheckSmsCaptcha(oicqRequest, signinfo),
+                OicqStatus.PreventByIncorrectUserOrPwd => OnRecvInvalidUsrPwd(oicqRequest, signinfo),
+                OicqStatus.PreventByIncorrectSmsCode => OnRecvInvalidSmsCode(oicqRequest, signinfo),
+                OicqStatus.PreventByInvalidEnvironment => OnRecvInvalidLoginEnv(oicqRequest, signinfo),
+                OicqStatus.PreventByLoginDenied => OnRecvLoginDenied(oicqRequest, signinfo),
+                _ => OnRecvUnknown()
+            };
 
             return true;
         }
@@ -55,8 +43,6 @@ namespace Konata.Core.Services.WtLogin
 
         private ProtocolEvent OnRecvCheckSliderCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
-            Console.WriteLine("  Do slider verification.");
-
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
@@ -64,8 +50,8 @@ namespace Konata.Core.Services.WtLogin
             Tlv tlv192 = unpacker.TryGetTlv(0x192);
             if (tlv104 != null && tlv192 != null)
             {
-                var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
-                var sigCaptchaURL = ((T192Body)tlv192._tlvBody)._url;
+                var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
+                var sigCaptchaURL = ((T192Body) tlv192._tlvBody)._url;
 
                 signinfo.Session.WtLoginSession = sigSession;
 
@@ -81,8 +67,6 @@ namespace Konata.Core.Services.WtLogin
 
         private ProtocolEvent OnRecvCheckSmsCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
-            Console.WriteLine("  Do sms verification.");
-
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
@@ -98,16 +82,16 @@ namespace Konata.Core.Services.WtLogin
                 Tlv tlv403 = unpacker.TryGetTlv(0x403);
                 Tlv tlv17e = unpacker.TryGetTlv(0x17e);
 
-                if (tlv104 != null && tlv174 != null
-                    && tlv204 != null && tlv178 != null
-                    && tlv17d != null && tlv402 != null
-                    && tlv403 != null && tlv17e != null)
+                if (tlv104 != null && tlv174 != null &&
+                    tlv204 != null && tlv178 != null &&
+                    tlv17d != null && tlv402 != null &&
+                    tlv403 != null && tlv17e != null)
                 {
-                    var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
-                    var sigMessage = ((T17eBody)tlv17e._tlvBody)._message;
-                    var smsPhone = ((T178Body)tlv178._tlvBody)._phone;
-                    var smsCountryCode = ((T178Body)tlv178._tlvBody)._countryCode;
-                    var smsToken = ((T174Body)tlv174._tlvBody)._smsToken;
+                    var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
+                    var sigMessage = ((T17eBody) tlv17e._tlvBody)._message;
+                    var smsPhone = ((T178Body) tlv178._tlvBody)._phone;
+                    var smsCountryCode = ((T178Body) tlv178._tlvBody)._countryCode;
+                    var smsToken = ((T174Body) tlv174._tlvBody)._smsToken;
 
                     signinfo.Session.WtLoginSession = sigSession;
                     signinfo.Session.WtLoginSmsPhone = smsPhone;
@@ -127,7 +111,7 @@ namespace Konata.Core.Services.WtLogin
 
                 if (tlv104 != null && tlv17b != null)
                 {
-                    var sigSession = ((T104Body)tlv104._tlvBody)._sigSession;
+                    var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
 
                     signinfo.Session.WtLoginSession = sigSession;
 
@@ -145,8 +129,6 @@ namespace Konata.Core.Services.WtLogin
 
         private ProtocolEvent OnRecvResponseVerifyImageCaptcha(OicqRequest request, BotKeyStore signinfo)
         {
-            // <TODO> Image captcha
-
             return new WtLoginEvent
             {
                 EventType = WtLoginEvent.Type.NotImplemented,
@@ -167,8 +149,6 @@ namespace Konata.Core.Services.WtLogin
 
         private ProtocolEvent OnRecvWtloginSuccess(OicqRequest request, BotKeyStore signinfo)
         {
-            Console.WriteLine("  Wtlogin success.");
-
             var tlvs = request.oicqRequestBody.TakeAllBytes(out var _);
             var unpacker = new TlvUnpacker(tlvs, true);
 
@@ -214,23 +194,23 @@ namespace Konata.Core.Services.WtLogin
                     Tlv tlv130 = tlv119Unpacker.TryGetTlv(0x130);
                     Tlv tlv403 = tlv119Unpacker.TryGetTlv(0x403);
 
-                    var noPicSig = ((T16aBody)tlv16a._tlvBody)._noPicSig;
+                    var noPicSig = ((T16aBody) tlv16a._tlvBody)._noPicSig;
 
-                    var tgtKey = ((T10dBody)tlv10d._tlvBody)._tgtKey;
-                    var tgtToken = ((T10aBody)tlv10a._tlvBody)._tgtToken;
+                    var tgtKey = ((T10dBody) tlv10d._tlvBody)._tgtKey;
+                    var tgtToken = ((T10aBody) tlv10a._tlvBody)._tgtToken;
 
-                    var d2Key = ((T305Body)tlv305._tlvBody)._d2Key;
-                    var d2Token = ((T143Body)tlv143._tlvBody)._d2Token;
+                    var d2Key = ((T305Body) tlv305._tlvBody)._d2Key;
+                    var d2Token = ((T143Body) tlv143._tlvBody)._d2Token;
 
-                    var wtSessionTicketSig = ((T133Body)tlv133._tlvBody)._wtSessionTicketSig;
-                    var wtSessionTicketKey = ((T134Body)tlv134._tlvBody)._wtSessionTicketKey;
+                    var wtSessionTicketSig = ((T133Body) tlv133._tlvBody)._wtSessionTicketSig;
+                    var wtSessionTicketKey = ((T134Body) tlv134._tlvBody)._wtSessionTicketKey;
 
-                    var gtKey = ((T10cBody)tlv10c._tlvBody)._gtKey;
-                    var stKey = ((T10eBody)tlv10e._tlvBody)._stKey;
+                    var gtKey = ((T10cBody) tlv10c._tlvBody)._gtKey;
+                    var stKey = ((T10eBody) tlv10e._tlvBody)._stKey;
 
-                    var userAge = ((T11aBody)tlv11a._tlvBody)._age;
-                    var userFace = ((T11aBody)tlv11a._tlvBody)._face;
-                    var userNickname = ((T11aBody)tlv11a._tlvBody)._nickName;
+                    var userAge = ((T11aBody) tlv11a._tlvBody)._age;
+                    var userFace = ((T11aBody) tlv11a._tlvBody)._face;
+                    var userNickname = ((T11aBody) tlv11a._tlvBody)._nickName;
 
                     signinfo.Session.TgtKey = tgtKey;
                     signinfo.Session.TgtToken = tgtToken;
@@ -244,16 +224,6 @@ namespace Konata.Core.Services.WtLogin
                     signinfo.Account.Face = userFace;
                     signinfo.Account.Name = userNickname;
                     signinfo.Account.Age = userAge;
-
-                    Console.WriteLine($"  [SignInfo] gtKey => { ByteConverter.Hex(signinfo.Session.GtKey, true) }");
-                    Console.WriteLine($"  [SignInfo] stKey => { ByteConverter.Hex(signinfo.Session.StKey, true) }");
-                    Console.WriteLine($"  [SignInfo] tgtKey => { ByteConverter.Hex(signinfo.Session.TgtKey, true) }");
-                    Console.WriteLine($"  [SignInfo] tgtToken => { ByteConverter.Hex(signinfo.Session.TgtToken, true) }");
-                    Console.WriteLine($"  [SignInfo] d2Key => { ByteConverter.Hex(signinfo.Session.D2Key, true) }");
-                    Console.WriteLine($"  [SignInfo] d2Token => { ByteConverter.Hex(signinfo.Session.D2Token, true) }");
-
-                    Console.WriteLine($"  [UinInfo] Uin => { signinfo.Account.Uin }");
-                    Console.WriteLine($"  [UinInfo] Name => { signinfo.Account.Name }");
 
                     return new WtLoginEvent
                     {
@@ -291,8 +261,8 @@ namespace Konata.Core.Services.WtLogin
             Tlv tlv146 = unpacker.TryGetTlv(0x146);
             if (tlv146 != null)
             {
-                var errorTitle = ((T146Body)tlv146._tlvBody)._title;
-                var errorMessage = ((T146Body)tlv146._tlvBody)._message;
+                var errorTitle = ((T146Body) tlv146._tlvBody)._title;
+                var errorMessage = ((T146Body) tlv146._tlvBody)._message;
 
                 return new WtLoginEvent
                 {
@@ -312,8 +282,8 @@ namespace Konata.Core.Services.WtLogin
             Tlv tlv146 = unpacker.TryGetTlv(0x146);
             if (tlv146 != null)
             {
-                var errorTitle = ((T146Body)tlv146._tlvBody)._title;
-                var errorMessage = ((T146Body)tlv146._tlvBody)._message;
+                var errorTitle = ((T146Body) tlv146._tlvBody)._title;
+                var errorMessage = ((T146Body) tlv146._tlvBody)._message;
 
                 return new WtLoginEvent
                 {
@@ -383,12 +353,11 @@ namespace Konata.Core.Services.WtLogin
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signinfo, BotDevice device, out int outsequence, out byte[] output)
-            => Build(sequence, (WtLoginEvent)input, signinfo, device, out outsequence, out output);
+            => Build(sequence, (WtLoginEvent) input, signinfo, device, out outsequence, out output);
 
         #region Event Builders
 
-        private OicqRequest BuildRequestTgtgt(int sequence, BotKeyStore signinfo,
-            BotDevice device)
+        private OicqRequest BuildRequestTgtgt(int sequence, BotKeyStore signinfo, BotDevice device)
             => new OicqRequestTgtgt(sequence, signinfo, device);
 
         private OicqRequest BuildRequestCheckSms(string code, BotKeyStore signinfo)

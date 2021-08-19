@@ -8,11 +8,14 @@ using Konata.Core.Utils;
 using Konata.Core.Events;
 using Konata.Core.Components;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
+
 namespace Konata.Core.Entity
 {
     public class BaseEntity
     {
-        private Dictionary<Type, BaseComponent> _componentDict = new();
+        private readonly Dictionary<Type, BaseComponent> _componentDict = new();
 
         /// <summary>
         /// Load components
@@ -102,7 +105,6 @@ namespace Konata.Core.Entity
             }
 
             _componentDict.Remove(type);
-            return;
         }
 
         /// <summary>

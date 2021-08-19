@@ -20,7 +20,7 @@ namespace Konata.Core.Services.MessageSvc
             {
                 output = new GroupMessageEvent
                 {
-                    ResultCode = (int)tree.GetLeafVar("08")
+                    ResultCode = (int) tree.GetLeafVar("08")
                 };
             }
 
@@ -97,8 +97,8 @@ namespace Konata.Core.Services.MessageSvc
             {
                 data.PutByte(0x00);
                 data.PutUintLE(1);
-                data.PutByte((byte)chain.DisplayString.Length);
-                data.PutByte((byte)(chain.AtUin == 0 ? 0x01 : 0x00));
+                data.PutByte((byte) chain.DisplayString.Length);
+                data.PutByte((byte) (chain.AtUin == 0 ? 0x01 : 0x00));
                 data.PutUintBE(chain.AtUin);
                 data.PutShortBE(0x0000);
             }
@@ -127,7 +127,7 @@ namespace Konata.Core.Services.MessageSvc
                     //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
                     _.AddLeafVar("60", 1);
                     _.AddLeafBytes("6A", chain.HashData);
-                    _.AddLeafVar("A001", (long)chain.ImageType);
+                    _.AddLeafVar("A001", (long) chain.ImageType);
                     _.AddLeafVar("B001", chain.Width);
                     _.AddLeafVar("B801", chain.Height);
                     _.AddLeafVar("C001", 200); // TODO: Unknown
@@ -155,6 +155,6 @@ namespace Konata.Core.Services.MessageSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupMessageEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (GroupMessageEvent) input, signInfo, device, out newSequence, out output);
     }
 }

@@ -32,7 +32,7 @@ namespace Konata.Core.Logics.Model
             {
                 // Pull new private message
                 case PrivateMessageNotifyEvent:
-                    PullPrivateMessage();
+                    PullPrivateMessage(Context, ConfigComponent.SyncCookie);
                     return;
 
                 // Received a private message
@@ -42,7 +42,7 @@ namespace Konata.Core.Logics.Model
 
                 // Received a group message
                 case GroupMessageEvent group:
-                    ConfirmReadGroupMessage(group);
+                    ConfirmReadGroupMessage(Context, group);
                     break;
             }
 
@@ -65,15 +65,9 @@ namespace Konata.Core.Logics.Model
                 return -1;
             }
 
-            // Construct the event
-            var request = new PrivateMessageEvent
-            {
-                Message = message,
-                FriendUin = friendUin,
-            };
-
             // Send the message
-            return (await SendPrivateMessage(request)).ResultCode;
+            return (await SendPrivateMessage
+                (Context, message, friendUin)).ResultCode;
         }
 
         /// <summary>
@@ -96,16 +90,9 @@ namespace Konata.Core.Logics.Model
                 return -2;
             }
 
-            // Construct the event
-            var request = new GroupMessageEvent
-            {
-                Message = message,
-                GroupUin = groupUin,
-                MemberUin = Context.Bot.Uin
-            };
-
             // Send the message
-            return (await SendGroupMessage(request)).ResultCode;
+            return (await SendGroupMessage
+                (Context, message, groupUin)).ResultCode;
         }
 
         /// <summary>
@@ -129,7 +116,7 @@ namespace Konata.Core.Logics.Model
                     // meant to ping all members
                     if (chain.AtUin == 0)
                     {
-                        chain.DisplayString = "@全体成员 ";
+                        chain.DisplayString = "@全体成员";
                     }
 
                     // None zero,
@@ -140,7 +127,7 @@ namespace Konata.Core.Logics.Model
                         if (ConfigComponent.TryGetMemberInfo
                             (uin, chain.AtUin, out var member))
                         {
-                            chain.DisplayString = $"@{member.NickName} ";
+                            chain.DisplayString = $"@{member.NickName}";
                         }
 
                         // F! We might have to pull
@@ -156,16 +143,16 @@ namespace Konata.Core.Logics.Model
                                     // Okay try again
                                     chain.DisplayString = ConfigComponent.TryGetMemberInfo
                                         (uin, chain.AtUin, out member)
-                                        ? $"@{member.NickName} "
-                                        : $"@{chain.AtUin} ";
+                                        ? $"@{member.NickName}"
+                                        : $"@{chain.AtUin}";
                                 }
 
                                 // F? Sync failed
-                                else chain.DisplayString = $"@{chain.AtUin} ";
+                                else chain.DisplayString = $"@{chain.AtUin}";
                             }
 
                             // F? The wrong user
-                            else chain.DisplayString = $"@{chain.AtUin} ";
+                            else chain.DisplayString = $"@{chain.AtUin}";
                         }
                     }
                 }
@@ -203,38 +190,26 @@ namespace Konata.Core.Logics.Model
 
                 if (c2c)
                 {
-                    var request = new GroupPicUpEvent
+                    // Request image upload
+                    var result = await GroupPicUp(Context, uin, upload);
                     {
-                        Images = upload,
-                        GroupUin = uin,
-                        MemberUin = Context.Bot.Uin
-                    };
-
-                    var result = await Context.PostEvent
-                        <PacketComponent, GroupPicUpEvent>(request);
-
-                    // Set upload info
-                    for (var i = 0; i < upload.Count; ++i)
-                    {
-                        upload[i].SetPicUpInfo(result.UploadInfo[i]);
+                        // Set upload data
+                        for (var i = 0; i < upload.Count; ++i)
+                        {
+                            upload[i].SetPicUpInfo(result.UploadInfo[i]);
+                        }
                     }
 
-                    // Image upload for group messages
+                    // Highway image upload
                     return await Context.HighwayComponent.UploadGroupImages
                         (Context.Bot.Uin, upload.ToArray(), result.UploadInfo.ToArray());
                 }
                 else
                 {
-                    var request = new PrivateOffPicUpEvent
-                    {
-                        Images = upload
-                    };
-
                     // TODO:
                     // Off picup
 
-                    var result = await Context.PostEvent
-                        <PacketComponent, PrivateOffPicUpEvent>(request);
+                    // var result = await PrivateOffPicUp(Context, uin, upload);
 
                     // Image upload for private messages
                     return await Context.HighwayComponent.UploadPrivateImages();
@@ -246,32 +221,6 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Confirm the messages
-        /// </summary>
-        /// <param name="e"></param>
-        private void ConfirmReadGroupMessage(GroupMessageEvent e)
-        {
-            Context.PostEvent<PacketComponent>(new GroupMessageReadEvent
-            {
-                GroupUin = e.GroupUin,
-                RequestId = e.MessageId,
-                SessionSequence = e.SessionSequence,
-            });
-        }
-
-        /// <summary>
-        /// Pull the new private message
-        /// </summary>
-        private void PullPrivateMessage()
-            => Context.PostEvent<PacketComponent>(new PrivateMessagePullEvent {SyncCookie = ConfigComponent.SyncCookie});
-
-        private Task<GroupMessageEvent> SendGroupMessage(GroupMessageEvent e)
-            => Context.PostEvent<PacketComponent, GroupMessageEvent>(e);
-
-        private Task<GroupMessageEvent> SendPrivateMessage(PrivateMessageEvent e)
-            => Context.PostEvent<PacketComponent, GroupMessageEvent>(e);
-
-        /// <summary>
         /// Update the local sync cookie
         /// </summary>
         /// <param name="e"></param>
@@ -280,5 +229,27 @@ namespace Konata.Core.Logics.Model
             ConfigComponent.SyncCookie = e.SyncCookie;
             Context.LogI(TAG, $"New cookie synced => {ByteConverter.Hex(e.SyncCookie)}");
         }
+
+        #region Stub methods
+
+        private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
+            => context.PostEvent<PacketComponent>(new GroupMessageReadEvent {GroupUin = e.GroupUin, RequestId = e.MessageId, SessionSequence = e.SessionSequence});
+
+        private static void PullPrivateMessage(BusinessComponent context, byte[] syncCookie)
+            => context.PostEvent<PacketComponent>(new PrivateMessagePullEvent {SyncCookie = syncCookie});
+
+        private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, MessageChain message, uint groupUin)
+            => context.PostEvent<PacketComponent, GroupMessageEvent>(new GroupMessageEvent {Message = message, MemberUin = context.Bot.Uin, GroupUin = groupUin});
+
+        private static Task<PrivateMessageEvent> SendPrivateMessage(BusinessComponent context, MessageChain message, uint friendUin)
+            => context.PostEvent<PacketComponent, PrivateMessageEvent>(new PrivateMessageEvent {Message = message, FriendUin = friendUin});
+
+        private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
+            => context.PostEvent<PacketComponent, GroupPicUpEvent>(new GroupPicUpEvent {Images = images, SelfUin = context.Bot.Uin, GroupUin = groupUin});
+
+        private static Task<PrivateOffPicUpEvent> PrivateOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
+            => context.PostEvent<PacketComponent, PrivateOffPicUpEvent>(new PrivateOffPicUpEvent {Images = images});
+
+        #endregion
     }
 }

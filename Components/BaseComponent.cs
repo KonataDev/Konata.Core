@@ -40,7 +40,7 @@ namespace Konata.Core.Components
 
         #region Log Methods
 
-        protected void Log(LogLevel logLevel, string tag, string content)
+        private void Log(LogLevel logLevel, string tag, string content)
             => PostEventToEntity(new LogEvent
             {
                 Tag = tag,

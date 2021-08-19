@@ -156,7 +156,7 @@ namespace Konata.Core.Components.Model
         internal Task<bool> SyncGroupMemberList(uint groupUin)
             => CacheSync.SyncGroupMemberList(groupUin);
 
-        internal void SyncFriendList()
+        internal Task<bool> SyncFriendList()
             => CacheSync.SyncFriendList();
 
         #endregion
