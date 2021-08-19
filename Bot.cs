@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 
+// ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
 
@@ -73,28 +75,28 @@ namespace Konata.Core
             => BusinessComponent.Login();
 
         /// <summary>
-        /// Bot logout
+        /// Disconnect the socket and logout
         /// </summary>
         /// <returns></returns>
         public Task<bool> Logout()
             => BusinessComponent.Logout();
 
         /// <summary>
-        /// Submit Slider ticket
+        /// Submit Slider ticket while login
         /// </summary>
         /// <param name="ticket"><b>[In]</b> Slider ticket</param>
         public void SubmitSliderTicket(string ticket)
             => BusinessComponent.SubmitSliderTicket(ticket);
 
         /// <summary>
-        /// Submit SMS code
+        /// Submit SMS code while login
         /// </summary>
         /// <param name="code"><b>[In]</b> SMS code</param>
         public void SubmitSmsCode(string code)
             => BusinessComponent.SubmitSmsCode(code);
 
         /// <summary>
-        /// Kick a member in the specific group
+        /// Kick the member in a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
@@ -103,7 +105,7 @@ namespace Konata.Core
             => BusinessComponent.GroupKickMember(groupUin, memberUin, preventRequest);
 
         /// <summary>
-        /// Mute a member in the specific group
+        /// Mute the member in a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
@@ -112,7 +114,7 @@ namespace Konata.Core
             => BusinessComponent.GroupMuteMember(groupUin, memberUin, timeSeconds);
 
         /// <summary>
-        /// Promote a member to admin in the specific group
+        /// Promote the member to admin in a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
@@ -121,7 +123,7 @@ namespace Konata.Core
             => BusinessComponent.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
 
         /// <summary>
-        /// Send group message
+        /// Send the message to a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
@@ -130,13 +132,27 @@ namespace Konata.Core
             => BusinessComponent.SendGroupMessage(groupUin, message);
 
         /// <summary>
-        /// Send friend message
+        /// Send the message to a given frinend
         /// </summary>
         /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
         /// <param name="message"><b>[In]</b> Message chain to be send.</param>
         /// <returns></returns>
         public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
             => BusinessComponent.SendPrivateMessage(friendUin, message);
+
+        /// <summary>
+        /// Get group list
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<BotGroup> GetGroupList()
+            => ConfigComponent.GetGroupList();
+
+        /// <summary>
+        /// Get friend list
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<BotFriend> GetFriendList()
+            => ConfigComponent.GetFriendList();
 
         /// <summary>
         /// Get online status
