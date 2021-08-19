@@ -45,11 +45,6 @@ namespace Konata.Core
         public byte Gender { get; set; }
 
         /// <summary>
-        /// Member birth
-        /// </summary>
-        public int Birth { get; set; }
-
-        /// <summary>
         /// Member level
         /// </summary>
         public int Level { get; set; }
