@@ -6,6 +6,9 @@ using Konata.Core.Utils;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.FileFormat;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Konata.Core.Message.Model
 {
     public class ImageChain : BaseChain
@@ -48,20 +51,20 @@ namespace Konata.Core.Message.Model
 
         internal PicUpInfo PicUpInfo { get; private set; }
 
-        private ImageChain(string url, string filename,
-            string filehash, uint width, uint height, uint length, ImageType type)
+        private ImageChain(string url, string fileName,
+            string fileHash, uint width, uint height, uint length, ImageType type)
             : base(ChainType.Image)
         {
             ImageUrl = url;
-            FileName = filename;
-            FileHash = filehash;
+            FileName = fileName;
+            FileHash = fileHash;
             FileLength = length;
             Width = width;
             Height = height;
             ImageType = type;
 
             // Unhash
-            HashData = ByteConverter.UnHex(filehash);
+            HashData = ByteConverter.UnHex(fileHash);
         }
 
         private ImageChain(byte[] data, uint width,
@@ -69,7 +72,7 @@ namespace Konata.Core.Message.Model
             : base(ChainType.Image)
         {
             FileData = data;
-            FileLength = (uint)data.Length;
+            FileLength = (uint) data.Length;
             Width = width;
             Height = height;
             HashData = md5;
@@ -101,18 +104,18 @@ namespace Konata.Core.Message.Model
         /// Create an image chain
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="filename"></param>
-        /// <param name="filehash"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileHash"></param>
         /// <param name="length"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="type"></param>
         /// <returns></returns>
         internal static ImageChain Create(string url,
-            string filename, string filehash, uint width,
+            string fileName, string fileHash, uint width,
             uint height, uint length, ImageType type)
         {
-            return new(url, filename, filehash, width, height, length, type);
+            return new(url, fileName, fileHash, width, height, length, type);
         }
 
         /// <summary>
@@ -152,8 +155,9 @@ namespace Konata.Core.Message.Model
         /// <summary>
         /// Create an image chain
         /// </summary>
-        /// <param name="image"></param>
+        /// <param name="filepath"></param>
         /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
         public static ImageChain CreateFromFile(string filepath)
         {
             if (!File.Exists(filepath))
@@ -221,7 +225,7 @@ namespace Konata.Core.Message.Model
                     var width = uint.Parse(args["width"]);
                     var height = uint.Parse(args["height"]);
                     var length = uint.Parse(args["length"]);
-                    var type = (ImageType)uint.Parse(args["type"]);
+                    var type = (ImageType) uint.Parse(args["type"]);
 
                     return Create(file, file, file, width, height, length, type);
                 }
@@ -233,14 +237,14 @@ namespace Konata.Core.Message.Model
 
         public override string ToString()
             => $"[KQ:image," +
-            $"file={FileName}," +
-            $"width={Width}," +
-            $"height={Height}," +
-            $"length={FileLength}," +
-            $"type={(int)ImageType}]";
+               $"file={FileName}," +
+               $"width={Width}," +
+               $"height={Height}," +
+               $"length={FileLength}," +
+               $"type={(int) ImageType}]";
     }
 
-    public enum ImageType : int
+    public enum ImageType
     {
         FACE = 4,
         JPG = 1000,

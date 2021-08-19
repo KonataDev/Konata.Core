@@ -1,25 +1,34 @@
-﻿using System;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Konata.Core.Message.Model
 {
     public class RecordChain : BaseChain
     {
-        public string FileName { get; set; }
+        public string RecordUrl { get; }
 
-        private RecordChain(string fileName)
+        public string FileName { get; }
+
+        public string FileHash { get; }
+
+        private RecordChain(string url, string fileName, string fileHash)
             : base(ChainType.Record)
         {
+            RecordUrl = url;
             FileName = fileName;
+            FileHash = fileHash;
         }
 
         /// <summary>
         /// Create a record chain
         /// </summary>
+        /// <param name="url"></param>
         /// <param name="fileName"></param>
+        /// <param name="fileHash"></param>
         /// <returns></returns>
-        public static RecordChain Create(string fileName)
+        public static RecordChain Create(string url, string fileName, string fileHash)
         {
-            return new(fileName);
+            return new(url, fileName, fileHash);
         }
 
         /// <summary>
@@ -33,6 +42,7 @@ namespace Konata.Core.Message.Model
         }
 
         public override string ToString()
-            => $"[KQ:record]"; // TODO: record code
+            => $"[KQ:record," +
+               $"file={FileName}]";
     }
 }
