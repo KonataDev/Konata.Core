@@ -7,7 +7,7 @@ namespace Konata.Core.Message.Model
         public string Content { get; }
 
         private PlainTextChain(string content)
-            : base(ChainType.Text)
+            : base(ChainType.Text, ChainMode.Multiple)
         {
             Content = content;
         }

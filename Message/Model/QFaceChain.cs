@@ -4,10 +4,10 @@ namespace Konata.Core.Message.Model
 {
     public class QFaceChain : BaseChain
     {
-        public uint FaceId;
+        public uint FaceId { get; }
 
-        public QFaceChain(uint face)
-            : base(ChainType.QFace)
+        private QFaceChain(uint face)
+            : base(ChainType.QFace, ChainMode.Multiple)
         {
             FaceId = face;
         }
@@ -16,9 +16,8 @@ namespace Konata.Core.Message.Model
         /// Create a qface chain
         /// </summary>
         /// <param name="face"></param>
-        /// <param name="chain"></param>
         /// <returns></returns>
-        public static QFaceChain Create(uint face)
+        internal static QFaceChain Create(uint face)
         {
             return new(face);
         }

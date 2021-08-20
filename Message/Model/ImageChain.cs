@@ -53,7 +53,7 @@ namespace Konata.Core.Message.Model
 
         private ImageChain(string url, string fileName,
             string fileHash, uint width, uint height, uint length, ImageType type)
-            : base(ChainType.Image)
+            : base(ChainType.Image, ChainMode.Multiple)
         {
             ImageUrl = url;
             FileName = fileName;
@@ -69,7 +69,7 @@ namespace Konata.Core.Message.Model
 
         private ImageChain(byte[] data, uint width,
             uint height, byte[] md5, string md5str, ImageType type)
-            : base(ChainType.Image)
+            : base(ChainType.Image, ChainMode.Multiple)
         {
             FileData = data;
             FileLength = (uint) data.Length;

@@ -10,7 +10,7 @@
         internal string DisplayString { get; set; }
 
         private AtChain(uint uin)
-            : base(ChainType.At)
+            : base(ChainType.At, ChainMode.Multiple)
         {
             AtUin = uin;
         }
@@ -20,7 +20,7 @@
         /// </summary>
         /// <param name="memberUin"></param>
         /// <returns></returns>
-        public static AtChain Create(uint memberUin)
+        internal static AtChain Create(uint memberUin)
         {
             return new(memberUin);
         }

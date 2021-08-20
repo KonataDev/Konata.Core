@@ -12,7 +12,7 @@ namespace Konata.Core.Message.Model
         public string FileHash { get; }
 
         private RecordChain(string url, string fileName, string fileHash)
-            : base(ChainType.Record)
+            : base(ChainType.Record, ChainMode.Singleton)
         {
             RecordUrl = url;
             FileName = fileName;
@@ -26,7 +26,8 @@ namespace Konata.Core.Message.Model
         /// <param name="fileName"></param>
         /// <param name="fileHash"></param>
         /// <returns></returns>
-        public static RecordChain Create(string url, string fileName, string fileHash)
+        internal static RecordChain Create(string url,
+            string fileName, string fileHash)
         {
             return new(url, fileName, fileHash);
         }
