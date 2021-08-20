@@ -4,6 +4,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Attributes;
 
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
 
@@ -149,7 +150,7 @@ namespace Konata.Core.Logics.Model
                 {
                     ConfigComponent.TouchFriendInfo(i);
                 }
-                
+
                 nextIndex += limit;
                 friendCount += result.FriendInfo.Count;
                 if (friendCount >= result.TotalFriendCount)
@@ -181,13 +182,13 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static Task<PullGroupListEvent> PullGroupList(BusinessComponent context)
-            => context.PostEvent<PacketComponent, PullGroupListEvent>(new PullGroupListEvent {SelfUin = context.Bot.Uin});
+            => context.PostEvent<PacketComponent, PullGroupListEvent>(PullGroupListEvent.Create(context.Bot.Uin));
 
         private static Task<PullFriendListEvent> PullFriendList(BusinessComponent context, uint startIndex, uint limitNum)
-            => context.PostEvent<PacketComponent, PullFriendListEvent>(new PullFriendListEvent {SelfUin = context.Bot.Uin, StartIndex = startIndex, LimitNum = limitNum});
+            => context.PostEvent<PacketComponent, PullFriendListEvent>(PullFriendListEvent.Create(context.Bot.Uin, startIndex, limitNum));
 
         private static Task<PullGroupMemberListEvent> PullGroupMemberList(BusinessComponent context, uint groupUin, ulong groupCode, uint nextUin)
-            => context.PostEvent<PacketComponent, PullGroupMemberListEvent>(new PullGroupMemberListEvent {SelfUin = context.Bot.Uin, GroupUin = groupUin, GroupCode = groupCode, NextUin = nextUin});
+            => context.PostEvent<PacketComponent, PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
 
         #endregion
     }

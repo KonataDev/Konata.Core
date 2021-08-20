@@ -30,7 +30,7 @@
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        internal static BaseChain Parse(string code)
+        internal static AtChain Parse(string code)
         {
             var args = GetArgs(code);
             {

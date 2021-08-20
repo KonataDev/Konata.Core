@@ -4,6 +4,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Components.Model;
 
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable ClassNeverInstantiated.Global
@@ -60,7 +61,7 @@ namespace Konata.Core.Logics.Model
             }
 
             // Login
-            var wtStatus = await WtLogin();
+            var wtStatus = await WtLogin(Context);
             {
                 while (true)
                 {
@@ -69,7 +70,7 @@ namespace Konata.Core.Logics.Model
                         case WtLoginEvent.Type.OK:
 
                             // Set online
-                            var online = await SetClientOnineType(OnlineStatusEvent.Type.Online);
+                            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
 
                             // Update online status
                             if (online.EventType == OnlineStatusEvent.Type.Online)
@@ -92,11 +93,11 @@ namespace Konata.Core.Logics.Model
                         case WtLoginEvent.Type.CheckSms:
                         case WtLoginEvent.Type.CheckSlider:
                             Context.PostEventToEntity(wtStatus);
-                            wtStatus = await WtCheckUserOperation();
+                            wtStatus = await WtCheckUserOperation(Context, await WaitForUserOperation());
                             break;
 
                         case WtLoginEvent.Type.RefreshSMS:
-                            wtStatus = await WtRefreshSmsCode();
+                            wtStatus = await WtRefreshSmsCode(Context);
                             break;
 
                         case WtLoginEvent.Type.CheckDevLock:
@@ -125,31 +126,16 @@ namespace Konata.Core.Logics.Model
         public Task<bool> Logout()
             => Task.FromResult(SocketComponent.DisConnect("user logout"));
 
-        private Task<WtLoginEvent> WtLogin()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.Tgtgt});
-
-        private Task<WtLoginEvent> WtRefreshSmsCode()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.RefreshSMS});
-
-        private Task<WtLoginEvent> WtValidateDeviceLock()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckDevLock});
-
-        private Task<WtLoginEvent> WtCheckUserOperation()
-            => Context.PostEvent<PacketComponent, WtLoginEvent>(WaitForUserOperation().Result);
-
-        private Task<OnlineStatusEvent> SetClientOnineType(OnlineStatusEvent.Type onlineType)
-            => Context.PostEvent<PacketComponent, OnlineStatusEvent>(new OnlineStatusEvent {EventType = onlineType});
-
         public void SubmitSmsCode(string code)
-            => _userOperation.SetResult(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckSms, CaptchaResult = code});
+            => _userOperation.SetResult(WtLoginEvent.CreateSubmitSmsCode(code));
 
         public void SubmitSliderTicket(string ticket)
-            => _userOperation.SetResult(new WtLoginEvent {EventType = WtLoginEvent.Type.CheckSlider, CaptchaResult = ticket});
+            => _userOperation.SetResult(WtLoginEvent.CreateSubmitTicket(ticket));
 
-        private async Task<WtLoginEvent> WaitForUserOperation()
+        private Task<WtLoginEvent> WaitForUserOperation()
         {
             _userOperation = new TaskCompletionSource<WtLoginEvent>();
-            return await _userOperation.Task;
+            return _userOperation.Task;
         }
 
         public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
@@ -182,12 +168,33 @@ namespace Konata.Core.Logics.Model
         {
             // TODO:
             // Check connection
+            Context.LogI(TAG, "OnCheckConnection");
         }
 
         private void OnKeepOnline()
         {
             // TODO:
             // Keep online
+            Context.LogI(TAG, "OnKeepOnline");
         }
+
+        #region Stub methods
+
+        private static Task<WtLoginEvent> WtLogin(BusinessComponent context)
+            => context.PostEvent<PacketComponent, WtLoginEvent>(WtLoginEvent.CreateTgtgt());
+
+        private static Task<WtLoginEvent> WtRefreshSmsCode(BusinessComponent context)
+            => context.PostEvent<PacketComponent, WtLoginEvent>(WtLoginEvent.CreateRefreshSms());
+
+        private static Task<WtLoginEvent> WtValidateDeviceLock(BusinessComponent context)
+            => context.PostEvent<PacketComponent, WtLoginEvent>(WtLoginEvent.CreateCheckDevLock());
+
+        private static Task<WtLoginEvent> WtCheckUserOperation(BusinessComponent context, WtLoginEvent userOperation)
+            => context.PostEvent<PacketComponent, WtLoginEvent>(userOperation);
+
+        private static Task<OnlineStatusEvent> SetClientOnineType(BusinessComponent context, OnlineStatusEvent.Type onlineType)
+            => context.PostEvent<PacketComponent, OnlineStatusEvent>(OnlineStatusEvent.Create(onlineType));
+
+        #endregion
     }
 }

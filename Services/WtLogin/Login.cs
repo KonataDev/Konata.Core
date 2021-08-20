@@ -33,7 +33,7 @@ namespace Konata.Core.Services.WtLogin
                 OicqStatus.PreventByIncorrectSmsCode => OnRecvInvalidSmsCode(oicqRequest, signinfo),
                 OicqStatus.PreventByInvalidEnvironment => OnRecvInvalidLoginEnv(oicqRequest, signinfo),
                 OicqStatus.PreventByLoginDenied => OnRecvLoginDenied(oicqRequest, signinfo),
-                _ => OnRecvUnknown()
+                _ => OnRecvUnknown(oicqRequest)
             };
 
             return true;
@@ -55,14 +55,11 @@ namespace Konata.Core.Services.WtLogin
 
                 signinfo.Session.WtLoginSession = sigSession;
 
-                return new WtLoginEvent
-                {
-                    SliderURL = sigCaptchaURL,
-                    EventType = WtLoginEvent.Type.CheckSlider
-                };
+                return WtLoginEvent.ResultCheckSlider
+                    ((int) request.oicqStatus, sigCaptchaURL);
             }
 
-            return OnRecvUnknown();
+            return OnRecvUnknown(request);
         }
 
         private ProtocolEvent OnRecvCheckSmsCaptcha(OicqRequest request, BotKeyStore signinfo)
@@ -98,10 +95,7 @@ namespace Konata.Core.Services.WtLogin
                     signinfo.Session.WtLoginSmsToken = smsToken;
                     signinfo.Session.WtLoginSmsCountry = smsCountryCode;
 
-                    return new WtLoginEvent
-                    {
-                        EventType = WtLoginEvent.Type.RefreshSMS
-                    };
+                    return WtLoginEvent.ResultRefreshSms((int) request.oicqStatus);
                 }
             }
             else if (unpacker.Count == 2)
@@ -115,37 +109,20 @@ namespace Konata.Core.Services.WtLogin
 
                     signinfo.Session.WtLoginSession = sigSession;
 
-                    return new WtLoginEvent
-                    {
-                        SmsPhone = signinfo.Session.WtLoginSmsPhone,
-                        SmsCountry = signinfo.Session.WtLoginSmsCountry,
-                        EventType = WtLoginEvent.Type.CheckSms
-                    };
+                    return WtLoginEvent.ResultCheckSms((int) request.oicqStatus,
+                        signinfo.Session.WtLoginSmsPhone, signinfo.Session.WtLoginSmsCountry);
                 }
             }
 
-            return OnRecvUnknown();
+            return OnRecvUnknown(request);
         }
 
         private ProtocolEvent OnRecvResponseVerifyImageCaptcha(OicqRequest request, BotKeyStore signinfo)
-        {
-            return new WtLoginEvent
-            {
-                EventType = WtLoginEvent.Type.NotImplemented,
-                EventMessage = "Image captcha not implemented."
-            };
-        }
+            => WtLoginEvent.ResultNotImplemented((int) request.oicqStatus, "Image captcha not implemented.");
 
+        // <TODO> Device lock
         private ProtocolEvent OnRecvResponseVerifyDeviceLock(OicqRequest request, BotKeyStore signinfo)
-        {
-            // <TODO> Device lock
-
-            return new WtLoginEvent
-            {
-                EventType = WtLoginEvent.Type.CheckDevLock,
-                EventMessage = "DeviceLock not implemented. Please turn off your device lock and try again."
-            };
-        }
+            => WtLoginEvent.ResultNotImplemented((int) request.oicqStatus, "DeviceLock not implemented. Please turn off your device lock and try again.");
 
         private ProtocolEvent OnRecvWtloginSuccess(OicqRequest request, BotKeyStore signinfo)
         {
@@ -225,33 +202,18 @@ namespace Konata.Core.Services.WtLogin
                     signinfo.Account.Name = userNickname;
                     signinfo.Account.Age = userAge;
 
-                    return new WtLoginEvent
-                    {
-                        EventType = WtLoginEvent.Type.OK
-                    };
+                    return WtLoginEvent.ResultOk((int) request.oicqStatus);
                 }
             }
 
-            return OnRecvUnknown();
+            return OnRecvUnknown(request);
         }
 
         private ProtocolEvent OnRecvInvalidUsrPwd(OicqRequest request, BotKeyStore signinfo)
-        {
-            return new WtLoginEvent
-            {
-                EventType = WtLoginEvent.Type.InvalidUinOrPassword,
-                EventMessage = "Incorrect account or password."
-            };
-        }
+            => WtLoginEvent.ResultInvalidUsrPwd((int) request.oicqStatus);
 
         private ProtocolEvent OnRecvInvalidSmsCode(OicqRequest request, BotKeyStore signinfo)
-        {
-            return new WtLoginEvent
-            {
-                EventType = WtLoginEvent.Type.InvalidSmsCode,
-                EventMessage = "Incorrect sms code."
-            };
-        }
+            => WtLoginEvent.ResultInvalidSmsCode((int) request.oicqStatus);
 
         private ProtocolEvent OnRecvInvalidLoginEnv(OicqRequest request, BotKeyStore signinfo)
         {
@@ -264,14 +226,11 @@ namespace Konata.Core.Services.WtLogin
                 var errorTitle = ((T146Body) tlv146._tlvBody)._title;
                 var errorMessage = ((T146Body) tlv146._tlvBody)._message;
 
-                return new WtLoginEvent
-                {
-                    EventType = WtLoginEvent.Type.InvalidLoginEnvironment,
-                    EventMessage = $"{errorTitle} {errorMessage}"
-                };
+                return WtLoginEvent.ResultInvalidLoginEnv
+                    ((int) request.oicqStatus, $"{errorTitle} {errorMessage}");
             }
 
-            return OnRecvUnknown();
+            return OnRecvUnknown(request);
         }
 
         private ProtocolEvent OnRecvLoginDenied(OicqRequest request, BotKeyStore signinfo)
@@ -285,24 +244,15 @@ namespace Konata.Core.Services.WtLogin
                 var errorTitle = ((T146Body) tlv146._tlvBody)._title;
                 var errorMessage = ((T146Body) tlv146._tlvBody)._message;
 
-                return new WtLoginEvent
-                {
-                    EventType = WtLoginEvent.Type.LoginDenied,
-                    EventMessage = $"{errorTitle} {errorMessage}"
-                };
+                return WtLoginEvent.ResultLoginDenied
+                    ((int) request.oicqStatus, $"{errorTitle} {errorMessage}");
             }
 
-            return OnRecvUnknown();
+            return OnRecvUnknown(request);
         }
 
-        private ProtocolEvent OnRecvUnknown()
-        {
-            return new WtLoginEvent
-            {
-                EventType = WtLoginEvent.Type.Unknown,
-                EventMessage = "Unknown OicqRequest received."
-            };
-        }
+        private ProtocolEvent OnRecvUnknown(OicqRequest request)
+            => WtLoginEvent.ResultUnknown((int) request.oicqStatus, "Unknown OicqRequest received.");
 
         #endregion
 

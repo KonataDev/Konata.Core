@@ -27,7 +27,7 @@ namespace Konata.Core.Entity
             foreach (var type in Reflection
                 .GetClassesByAttribute(typeof(TAttribute)))
             {
-                AddComponent((BaseComponent) Activator.CreateInstance(type));
+                AddComponent((BaseComponent)Activator.CreateInstance(type));
             }
         }
 
@@ -42,9 +42,9 @@ namespace Konata.Core.Entity
             foreach (var type in Reflection
                 .GetClassesByAttribute(typeof(TAttribute)))
             {
-                if (filter.Invoke((TAttribute) type.GetCustomAttribute(typeof(TAttribute))))
+                if (filter.Invoke((TAttribute)type.GetCustomAttribute(typeof(TAttribute))))
                 {
-                    AddComponent((BaseComponent) Activator.CreateInstance(type));
+                    AddComponent((BaseComponent)Activator.CreateInstance(type));
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace Konata.Core.Entity
                 return default(T);
             }
 
-            return (T) component;
+            return (T)component;
         }
 
         /// <summary>
@@ -176,5 +176,17 @@ namespace Konata.Core.Entity
             EventPayload = e;
             CompletionSource = new TaskCompletionSource<BaseEvent>();
         }
+
+        internal void Finish(BaseEvent e)
+            => CompletionSource.SetResult(e);
+
+        internal void Finish()
+            => CompletionSource.SetResult(null);
+
+        internal void Exception(Exception e)
+            => CompletionSource.SetException(e);
+
+        internal void Cancel()
+            => CompletionSource.SetCanceled();
     }
 }

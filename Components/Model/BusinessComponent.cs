@@ -33,7 +33,7 @@ namespace Konata.Core.Components.Model
 
                 // Logic instance
                 var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-                var instance = (BaseLogic) constructor[0].Invoke(new object[] {this});
+                var instance = (BaseLogic)constructor[0].Invoke(new object[] { this });
 
                 // Bind logic withevents
                 foreach (var i in events)
@@ -97,6 +97,8 @@ namespace Konata.Core.Components.Model
                             LogE(TAG, e);
                         }
                     }
+
+                    task.Finish();
                 }
 
                 // No handler
@@ -105,6 +107,8 @@ namespace Konata.Core.Components.Model
                     LogW(TAG, "The event has no logic to handle.");
                 }
             }
+
+            else task.Cancel();
         }
 
         #region Business Logics

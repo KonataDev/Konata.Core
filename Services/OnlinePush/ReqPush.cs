@@ -1,6 +1,4 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
@@ -76,13 +74,8 @@ namespace Konata.Core.Services.OnlinePush
                         }
 
                         // Construct event
-                        pushEvent = new GroupMessageRecallEvent
-                        {
-                            GroupUin = fromGroup,
-                            MemberUin = affectedUin,
-                            OperatorUin = operatorUin,
-                            RecallSuffix = recallSuffix
-                        };
+                        pushEvent = GroupMessageRecallEvent.Push
+                            (fromGroup, affectedUin, operatorUin, recallSuffix);
 
                         return true;
 
@@ -98,13 +91,8 @@ namespace Konata.Core.Services.OnlinePush
                         buffer.TakeUintBE(out var timeSeconds);
 
                         // Construct event
-                        pushEvent = new GroupMuteMemberEvent
-                        {
-                            GroupUin = fromGroup,
-                            MemberUin = affectedUin,
-                            OperatorUin = operatorUin,
-                            TimeSeconds = timeSeconds
-                        };
+                        pushEvent = GroupMuteMemberEvent.Push
+                            (fromGroup, affectedUin, operatorUin, timeSeconds);
 
                         return true;
 
@@ -122,12 +110,8 @@ namespace Konata.Core.Services.OnlinePush
                         }
 
                         // Construct event
-                        pushEvent = new GroupSettingsAnonymousEvent
-                        {
-                            GroupUin = fromGroup,
-                            OperatorUin = operatorUin,
-                            ToggleType = timeSeconds == 0 ? true : false
-                        };
+                        pushEvent = GroupSettingsAnonymousEvent.Push
+                            (fromGroup, operatorUin, timeSeconds == 0);
 
                         return true;
 
@@ -186,14 +170,8 @@ namespace Konata.Core.Services.OnlinePush
                         }
 
                         // Construct event
-                        pushEvent = new GroupPokeEvent()
-                        {
-                            GroupUin = fromGroup,
-                            MemberUin = affectedUin,
-                            OperatorUin = operatorUin,
-                            ActionPrefix = actionPrefix,
-                            ActionSuffix = actionSuffix
-                        };
+                        pushEvent = GroupPokeEvent.Push(fromGroup,
+                            affectedUin, operatorUin, actionPrefix, actionSuffix);
 
                         return true;
 

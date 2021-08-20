@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace Konata.Core.Events.Model
+﻿namespace Konata.Core.Events.Model
 {
     public class OnlineStatusEvent : ProtocolEvent
     {
@@ -41,31 +38,72 @@ namespace Konata.Core.Events.Model
 
         /// <summary>
         /// <b>[In]</b>          <br/>
-        ///   Online main type.  <br/>
+        ///   Online main type   <br/>
         /// </summary>
-        public Type EventType { get; set; }
+        public Type EventType { get; }
 
         /// <summary>
         /// <b>[Opt] [In]</b>   <br/>
-        ///   Online sub type.  <br/>
-        ///     - Only valid in <b>OnlineType.Online</b>
+        /// Online sub type   <br/>
+        ///  - Only valid in <b>OnlineType.Online</b>
         /// </summary>
-        public SubType EventSubType { get; set; }
+        public SubType EventSubType { get; }
 
         /// <summary>
         /// <b>[Opt] [In]</b>   <br/>
-        ///   Battery percent.  <br/>
-        ///     - Only valid in OnlineType.Online with SubType.BatteryPercent
+        /// Battery percent.  <br/>
+        ///   - Only valid in OnlineType.Online with SubType.BatteryPercent
         /// </summary>
-        public byte BatteryPercent { get; set; }
+        public byte BatteryPercent { get; }
 
         /// <summary>
-        /// <b>[Opt] [In]</b>   <br/>
-        ///   Kick PC while login.
+        /// <b>[Opt] [In]</b> <br/>
+        /// Kick PC while login <br/>
         /// </summary>
-        public bool IsKickPC { get; set; }
+        public bool IsKickPC { get; }
 
-        public OnlineStatusEvent()
-            => WaitForResponse = true;
+        private OnlineStatusEvent(Type eventType, SubType subType)
+            : base(2000, true)
+        {
+        }
+
+        private OnlineStatusEvent(Type eventType) : base(0)
+        {
+            EventType = eventType;
+        }
+
+        /// <summary>
+        /// Construct event request
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="subType"></param>
+        /// <returns></returns>
+        internal static OnlineStatusEvent Create(Type eventType,
+            SubType subType) => new(eventType, subType);
+
+        /// <summary>
+        /// Construct event request
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        internal static OnlineStatusEvent Create(Type eventType)
+            => new(eventType) {WaitForResponse = true, Timeout = 2000};
+
+        /// <summary>
+        /// Construct event result
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        internal static OnlineStatusEvent Result(Type eventType)
+            => new(eventType);
+
+        /// <summary>
+        /// Construct event push
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="reasonStr"></param>
+        /// <returns></returns>
+        internal static OnlineStatusEvent Push(Type eventType, string reasonStr)
+            => new(eventType) {EventMessage = reasonStr};
     }
 }

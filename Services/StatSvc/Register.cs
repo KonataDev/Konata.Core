@@ -1,11 +1,11 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
 using Konata.Core.Attributes;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.StatSvc
 {
@@ -17,11 +17,9 @@ namespace Konata.Core.Services.StatSvc
         {
             var svcResponse = new SvcRspRegister(input.Payload.GetBytes());
 
-            output = new OnlineStatusEvent
-            {
-                EventType = svcResponse.status ?
-                    OnlineStatusEvent.Type.Online : OnlineStatusEvent.Type.Offline,
-            };
+            output = OnlineStatusEvent.Result(svcResponse.status
+                ? OnlineStatusEvent.Type.Online
+                : OnlineStatusEvent.Type.Offline);
 
             return true;
         }
@@ -38,7 +36,7 @@ namespace Konata.Core.Services.StatSvc
                 bid = 7,
                 connType = 0,
                 other = "",
-                status = (int)input.EventType,
+                status = (int) input.EventType,
                 onlinePush = 0,
                 isOnline = 0,
                 isShowOnline = 0,
@@ -76,7 +74,7 @@ namespace Konata.Core.Services.StatSvc
             });
 
             if (SSOFrame.Create("StatSvc.register", PacketType.TypeA, newSequence,
-                 signinfo.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
+                signinfo.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
                     signinfo.Account.Uin, signinfo.Session.D2Token, signinfo.Session.D2Key, out var toService))
@@ -90,6 +88,6 @@ namespace Konata.Core.Services.StatSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signinfo, BotDevice device, out int outsequence, out byte[] output)
-            => Build(sequence, (OnlineStatusEvent)input, signinfo, device, out outsequence, out output);
+            => Build(sequence, (OnlineStatusEvent) input, signinfo, device, out outsequence, out output);
     }
 }

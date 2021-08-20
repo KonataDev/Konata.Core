@@ -314,13 +314,11 @@ namespace Konata.Core.Components.Model
             _socket.Close();
             _recvStatus = ReceiveStatus.Stop;
 
-            PostEvent<BusinessComponent>(new OnlineStatusEvent
-            {
-                EventType = OnlineStatusEvent.Type.Offline,
-                EventMessage = reason
-            });
+            // Push offline
+            PostEvent<BusinessComponent>(OnlineStatusEvent
+                .Push(OnlineStatusEvent.Type.Offline, reason));
 
-            return false;
+            return true;
         }
 
         internal override void EventHandler(KonataTask task)
@@ -328,10 +326,12 @@ namespace Konata.Core.Components.Model
             if (task.EventPayload is PacketEvent packetEvent)
             {
                 SendData(packetEvent.Buffer);
+                task.Finish();
             }
             else
             {
                 LogW(TAG, "Unsupported event received.");
+                task.Cancel();
             }
         }
     }

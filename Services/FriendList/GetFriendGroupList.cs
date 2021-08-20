@@ -18,13 +18,8 @@ namespace Konata.Core.Services.Friendlist
         {
             var response = new SvcRspGetFriendListResp(input.Payload.GetBytes());
 
-            output = new PullFriendListEvent
-            {
-                ResultCode = response.Result,
-                ErrorCode = response.ErrorCode,
-                FriendInfo = response.Friends,
-                TotalFriendCount = response.TotalFriendCount
-            };
+            output = PullFriendListEvent.Result(response.Result,
+                response.ErrorCode, response.Friends, response.TotalFriendCount);
 
             return true;
         }

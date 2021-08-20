@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message;
@@ -12,6 +10,8 @@ using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.Protobuf.ProtoModel;
 using Konata.Core.Attributes;
 
+// ReSharper disable UnusedType.Global
+
 namespace Konata.Core.Services.MessageSvc
 {
     [Service("MessageSvc.PbGetMsg", "Get message")]
@@ -21,34 +21,36 @@ namespace Konata.Core.Services.MessageSvc
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
-            var message = new PrivateMessageEvent();
+            var message = PrivateMessageEvent.Push();
             {
                 var root = ProtoTreeRoot.Deserialize(input.Payload, true);
                 {
                     // Get sync cookie 
-                    message.SyncCookie = ((ProtoLengthDelimited)(ProtoTreeRoot)root.PathTo("1A")).Value;
+                    message.SetSyncCookie(((ProtoLengthDelimited)
+                        (ProtoTreeRoot) root.PathTo("1A")).Value);
 
-                    var sourceRoot = (ProtoTreeRoot)root.PathTo("2A.22.0A");
+                    var sourceRoot = (ProtoTreeRoot) root.PathTo("2A.22.0A");
                     {
-                        message.FriendUin = (uint)sourceRoot.GetLeafVar("08");
+                        message.SetFriendUin((uint) sourceRoot.GetLeafVar("08"));
                     }
 
-                    var sliceInfoRoot = (ProtoTreeRoot)root.PathTo("2A.22.12");
+                    var sliceInfoRoot = (ProtoTreeRoot) root.PathTo("2A.22.12");
                     {
-                        message.SliceTotal = (uint)sliceInfoRoot.GetLeafVar("08");
-                        message.SliceIndex = (uint)sliceInfoRoot.GetLeafVar("10");
-                        message.SliceFlags = (uint)sliceInfoRoot.GetLeafVar("18");
+                        var total = (uint) sliceInfoRoot.GetLeafVar("08");
+                        var index = (uint) sliceInfoRoot.GetLeafVar("10");
+                        var flags = (uint) sliceInfoRoot.GetLeafVar("18");
+                        message.SetSliceInfo(total, index, flags);
                     }
 
-                    var contentRoot = (ProtoTreeRoot)root.PathTo("2A.22.1A.0A");
+                    var contentRoot = (ProtoTreeRoot) root.PathTo("2A.22.1A.0A");
                     {
-                        var list = new MessageChain();
+                        var builder = new MessageBuilder();
 
                         contentRoot.ForEach((_, __) =>
                         {
                             if (_ == "12")
                             {
-                                ((ProtoTreeRoot)__).ForEach((key, value) =>
+                                ((ProtoTreeRoot) __).ForEach((key, value) =>
                                 {
                                     BaseChain chain = null;
                                     try
@@ -56,15 +58,15 @@ namespace Konata.Core.Services.MessageSvc
                                         switch (key)
                                         {
                                             case "0A":
-                                                chain = ParsePlainText((ProtoTreeRoot)value);
+                                                chain = ParsePlainText((ProtoTreeRoot) value);
                                                 break;
 
                                             case "12":
-                                                chain = ParseQFace((ProtoTreeRoot)value);
+                                                chain = ParseQFace((ProtoTreeRoot) value);
                                                 break;
 
                                             case "22":
-                                                chain = ParsePicture((ProtoTreeRoot)value);
+                                                chain = ParsePicture((ProtoTreeRoot) value);
                                                 break;
                                         }
                                     }
@@ -75,14 +77,14 @@ namespace Konata.Core.Services.MessageSvc
 
                                     if (chain != null)
                                     {
-                                        list.Add(chain);
+                                        builder.Add(chain);
                                     }
                                 });
                             }
                         });
 
-                        message.Message = list;
-                        message.SessionSequence = input.Sequence;
+                        message.SetMessage(builder.Build());
+                        message.SetSessionSequence(input.Sequence);
                     }
                 }
             }
@@ -119,7 +121,7 @@ namespace Konata.Core.Services.MessageSvc
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParseQFace(ProtoTreeRoot tree)
-            => QFaceChain.Create((uint)tree.GetLeafVar("08"));
+            => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
         public bool Build(Sequence sequence, PrivateMessagePullEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
@@ -144,6 +146,6 @@ namespace Konata.Core.Services.MessageSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (PrivateMessagePullEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (PrivateMessagePullEvent) input, signInfo, device, out newSequence, out output);
     }
 }

@@ -9,18 +9,23 @@ namespace Konata.Core.Message
     {
         public enum ChainType
         {
-            At, // At
-            Text, // Ttext
-            Image, // Image
-            Record, // Record
-            Video, // Video
-            QFace, // QQ Face
+            At,
+            Reply,
+            Text,
+            Image,
+            Record,
+            Video,
+            QFace,
+            BFace,
+            Xml,
+            Json,
         }
 
         public enum ChainMode
         {
             Multiple,
-            Singleton
+            Singleton,
+            Singletag
         }
 
         public ChainType Type { get; }

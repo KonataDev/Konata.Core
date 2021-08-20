@@ -67,7 +67,7 @@ namespace Konata.Core.Logics.Model
 
             // Send the message
             return (await SendPrivateMessage
-                (Context, message, friendUin)).ResultCode;
+                (Context, friendUin, message)).ResultCode;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Konata.Core.Logics.Model
 
             // Send the message
             return (await SendGroupMessage
-                (Context, message, groupUin)).ResultCode;
+                (Context, groupUin, message)).ResultCode;
         }
 
         /// <summary>
@@ -233,22 +233,22 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
-            => context.PostEvent<PacketComponent>(new GroupMessageReadEvent {GroupUin = e.GroupUin, RequestId = e.MessageId, SessionSequence = e.SessionSequence});
+            => context.PostEvent<PacketComponent>(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
 
         private static void PullPrivateMessage(BusinessComponent context, byte[] syncCookie)
-            => context.PostEvent<PacketComponent>(new PrivateMessagePullEvent {SyncCookie = syncCookie});
+            => context.PostEvent<PacketComponent>(PrivateMessagePullEvent.Create(syncCookie));
 
-        private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, MessageChain message, uint groupUin)
-            => context.PostEvent<PacketComponent, GroupMessageEvent>(new GroupMessageEvent {Message = message, MemberUin = context.Bot.Uin, GroupUin = groupUin});
+        private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
+            => context.PostEvent<PacketComponent, GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
 
-        private static Task<PrivateMessageEvent> SendPrivateMessage(BusinessComponent context, MessageChain message, uint friendUin)
-            => context.PostEvent<PacketComponent, PrivateMessageEvent>(new PrivateMessageEvent {Message = message, FriendUin = friendUin});
+        private static Task<PrivateMessageEvent> SendPrivateMessage(BusinessComponent context, uint friendUin, MessageChain message)
+            => context.PostEvent<PacketComponent, PrivateMessageEvent>(PrivateMessageEvent.Create(friendUin, context.Bot.Uin, message));
 
         private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
-            => context.PostEvent<PacketComponent, GroupPicUpEvent>(new GroupPicUpEvent {Images = images, SelfUin = context.Bot.Uin, GroupUin = groupUin});
+            => context.PostEvent<PacketComponent, GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));
 
-        private static Task<PrivateOffPicUpEvent> PrivateOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
-            => context.PostEvent<PacketComponent, PrivateOffPicUpEvent>(new PrivateOffPicUpEvent {Images = images});
+        private static Task<LongConnOffPicUpEvent> PrivateOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
+            => context.PostEvent<PacketComponent, LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));
 
         #endregion
     }

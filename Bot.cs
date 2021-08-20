@@ -129,19 +129,19 @@ namespace Konata.Core
         /// Send the message to a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin.</param>
-        /// <param name="message"><b>[In]</b> Message chain to be send.</param>
+        /// <param name="builder"><b>[In]</b> Message chain builder.</param>
         /// <returns></returns>
-        public Task<int> SendGroupMessage(uint groupUin, MessageChain message)
-            => BusinessComponent.SendGroupMessage(groupUin, message);
+        public Task<int> SendGroupMessage(uint groupUin, MessageBuilder builder)
+            => BusinessComponent.SendGroupMessage(groupUin, builder.Build());
 
         /// <summary>
         /// Send the message to a given frinend
         /// </summary>
         /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
-        /// <param name="message"><b>[In]</b> Message chain to be send.</param>
+        /// <param name="builder"><b>[In]</b> Message chain builder.</param>
         /// <returns></returns>
-        public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
-            => BusinessComponent.SendPrivateMessage(friendUin, message);
+        public Task<int> SendPrivateMessage(uint friendUin, MessageBuilder builder)
+            => BusinessComponent.SendPrivateMessage(friendUin, builder.Build());
 
         /// <summary>
         /// Get group list

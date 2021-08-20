@@ -4,6 +4,7 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Logics.Model
@@ -33,7 +34,7 @@ namespace Konata.Core.Logics.Model
         {
             // TODO:
             // Check the permission
-            
+
             var result = await GroupPromoteAdmin
                 (Context, groupUin, memberUin, toggleAdmin);
 
@@ -48,7 +49,7 @@ namespace Konata.Core.Logics.Model
         {
             // TODO:
             // Check the permission
-            
+
             var result = await GroupMuteMember
                 (Context, groupUin, memberUin, timeSeconds);
 
@@ -63,7 +64,7 @@ namespace Konata.Core.Logics.Model
         {
             // TODO:
             // Check the permission
-            
+
             var result = await GroupKickMember
                 (Context, groupUin, memberUin, preventRequest);
 
@@ -76,13 +77,13 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
-            => context.PostEvent<PacketComponent, GroupPromoteAdminEvent>(new GroupPromoteAdminEvent {GroupUin = groupUin, MemberUin = memberUin, ToggleType = toggleAdmin});
+            => context.PostEvent<PacketComponent, GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
 
         private static Task<GroupMuteMemberEvent> GroupMuteMember(BusinessComponent context, uint groupUin, uint memberUin, uint timeSeconds)
-            => context.PostEvent<PacketComponent, GroupMuteMemberEvent>(new GroupMuteMemberEvent {GroupUin = groupUin, MemberUin = memberUin, TimeSeconds = timeSeconds});
+            => context.PostEvent<PacketComponent, GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
 
         private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
-            => context.PostEvent<PacketComponent, GroupKickMemberEvent>(new GroupKickMemberEvent {GroupUin = groupUin, MemberUin = memberUin, ToggleType = preventRequest});
+            => context.PostEvent<PacketComponent, GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
 
         #endregion
     }

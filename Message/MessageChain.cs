@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Konata.Core.Message.Model;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Konata.Core.Message
 {
@@ -10,34 +13,94 @@ namespace Konata.Core.Message
         internal List<BaseChain> Chains
             => _chains;
 
-        internal int Count
-            => _chains.Count;
-
         private readonly List<BaseChain> _chains;
 
         internal MessageChain()
+            => _chains = new();
+
+        internal MessageChain(params BaseChain[] chain)
+            => _chains = new(chain);
+
+        internal void Add(BaseChain chain)
+            => _chains.Add(chain);
+
+        internal void AddRange(IEnumerable<BaseChain> chains)
+            => _chains.AddRange(chains);
+
+        /// <summary>
+        /// Convert chain to code string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+            => Chains.Aggregate("", (current, element) => current + element);
+
+        public static IEnumerable<BaseChain> operator |(MessageChain x, BaseChain.ChainType type)
+            => x.Chains.Where(c => c.Type != type);
+
+        public static IEnumerable<BaseChain> operator &(MessageChain x, BaseChain.ChainType type)
+            => x.Chains.Where(c => c.Type == type);
+
+        public static IEnumerable<BaseChain> operator |(MessageChain x, BaseChain.ChainMode mode)
+            => x.Chains.Where(c => c.Mode != mode);
+
+        public static IEnumerable<BaseChain> operator &(MessageChain x, BaseChain.ChainMode mode)
+            => x.Chains.Where(c => c.Mode == mode);
+
+        public BaseChain this[int index]
+            => _chains[index];
+
+        public List<BaseChain> this[Type type]
+            => Chains.Where(c => c.GetType() == type).ToList();
+
+        public List<BaseChain> this[BaseChain.ChainMode mode]
+            => Chains.Where(c => c.Mode == mode).ToList();
+
+        public List<BaseChain> this[BaseChain.ChainType type]
+            => Chains.Where(c => c.Type == type).ToList();
+    }
+
+    public class MessageBuilder
+    {
+        private readonly MessageChain _chain;
+
+        public MessageBuilder()
         {
-            _chains = new();
+            _chain = new();
         }
 
         /// <summary>
-        /// Add a new chain
+        /// Build a message chain
         /// </summary>
-        /// <param name="chain"></param>
-        internal void Add(BaseChain chain)
-            => _chains.Add(chain);
+        /// <returns></returns>
+        public MessageChain Build()
+        {
+            // Scan chains
+            foreach (var i in _chain.Chains)
+            {
+                // If found a singleton chain
+                if (i.Mode == BaseChain.ChainMode.Singleton)
+                {
+                    // Then drop other chains
+                    return new MessageChain(_chain[BaseChain
+                        .ChainMode.Singletag].FirstOrDefault(), i);
+                }
+            }
+
+            // Return multiple chain
+            return _chain;
+        }
 
         /// <summary>
         /// Convert a text message to chain
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static MessageChain Eval(string message)
+        public static MessageBuilder Eval(string message)
         {
             var builder = new MessageBuilder();
             {
                 var regexp = new Regex
-                    (@"\[KQ:(at|image|record|qface).*?\]");
+                    (@"\[KQ:(at|image|qface|record|video|reply|json|xml).*?\]");
 
                 // Match pattern
                 var matches = regexp.Matches(message);
@@ -55,13 +118,16 @@ namespace Konata.Core.Message
                         }
 
                         // Convert the code to chain
-                        var chain = i.Groups[1].Value switch
+                        BaseChain chain = i.Groups[1].Value switch
                         {
                             "at" => AtChain.Parse(i.Value),
                             "image" => ImageChain.Parse(i.Value),
                             "qface" => QFaceChain.Parse(i.Value),
                             "record" => RecordChain.Parse(i.Value),
                             "video" => VideoChain.Parse(i.Value),
+                            "reply" => ReplyChain.Parse(i.Value),
+                            "json" => JsonChain.Parse(i.Value),
+                            "xml" => XmlChain.Parse(i.Value),
                             _ => null,
                         };
 
@@ -89,59 +155,7 @@ namespace Konata.Core.Message
                 }
             }
 
-            return builder.Build();
-        }
-
-        /// <summary>
-        /// Convert chain to code string
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            var content = "";
-            foreach (var element in Chains)
-            {
-                content += element.ToString();
-            }
-
-            return content;
-        }
-    }
-
-    public class MessageBuilder : IEnumerable<BaseChain>
-    {
-        private readonly MessageChain _chain;
-
-        public MessageBuilder()
-        {
-            _chain = new();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-            => GetEnumerator();
-
-        public IEnumerator<BaseChain> GetEnumerator()
-            => _chain.Chains.GetEnumerator();
-
-        /// <summary>
-        /// Build a message chain
-        /// </summary>
-        /// <returns></returns>
-        public MessageChain Build()
-        {
-            // Scan chains
-            foreach (var i in _chain.Chains)
-            {
-                // If found a singleton chain
-                if (i.Mode == BaseChain.ChainMode.Singleton)
-                {
-                    // Then drop other chains
-                    return new MessageBuilder {i}.Build();
-                }
-            }
-
-            // Return multiple chain
-            return _chain;
+            return builder;
         }
 
         /// <summary>
@@ -206,7 +220,7 @@ namespace Konata.Core.Message
         /// <returns></returns>
         public MessageBuilder Image(string filePath)
         {
-            _chain.Add(ImageChain.CreateFromFile(filePath));
+            _chain.Chains.Add(ImageChain.CreateFromFile(filePath));
             return this;
         }
 
@@ -236,8 +250,17 @@ namespace Konata.Core.Message
             //{
             //    _chain.Add(chain);
             //}
-
             return this;
+        }
+
+        public static MessageBuilder operator +(MessageBuilder x, MessageBuilder y)
+        {
+            var z = new MessageBuilder();
+            {
+                z._chain.AddRange(x._chain.Chains);
+                z._chain.AddRange(y._chain.Chains);
+            }
+            return z;
         }
     }
 }

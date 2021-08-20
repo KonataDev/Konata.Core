@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Konata.Core.Utils;
@@ -22,16 +21,16 @@ namespace Konata.Core.Components.Model
         private readonly Dictionary<string, IService> _services;
         private readonly Dictionary<Type, IService> _servicesType;
         private readonly Dictionary<Type, List<IService>> _servicesEventType;
-        private readonly ConcurrentDictionary<int, TaskCompletionSource<BaseEvent>> _pendingRequests;
+        private readonly ConcurrentDictionary<int, KonataTask> _pendingRequests;
         private readonly Sequence _serviceSequence;
 
         public PacketComponent()
         {
-            _serviceSequence = new Sequence();
-            _services = new Dictionary<string, IService>();
-            _servicesType = new Dictionary<Type, IService>();
-            _servicesEventType = new Dictionary<Type, List<IService>>();
-            _pendingRequests = new ConcurrentDictionary<int, TaskCompletionSource<BaseEvent>>();
+            _serviceSequence = new();
+            _services = new();
+            _servicesType = new();
+            _servicesEventType = new();
+            _pendingRequests = new();
 
             LoadService();
         }
@@ -98,7 +97,7 @@ namespace Konata.Core.Components.Model
                                         if (_pendingRequests.TryRemove(ssoFrame.Sequence, out var request))
                                         {
                                             // Set result
-                                            request.SetResult(outEvent);
+                                            request.Finish(outEvent);
                                         }
                                         else
                                         {
@@ -111,6 +110,7 @@ namespace Konata.Core.Components.Model
                             }
                             catch (Exception e)
                             {
+                                task.Exception(e);
                                 LogW(TAG, $"Thrown an exception while processing a message. {ssoFrame.Command}");
                                 LogE(TAG, e);
                             }
@@ -129,7 +129,7 @@ namespace Konata.Core.Components.Model
                 if (!_servicesEventType.TryGetValue(protocolEvent.GetType(), out var serviceList))
                 {
                     // Drop it
-                    task.CompletionSource.SetResult(null);
+                    task.Cancel();
                     return;
                 }
 
@@ -150,9 +150,9 @@ namespace Konata.Core.Components.Model
                         if (protocolEvent.WaitForResponse)
                         {
                             AddPending:
-                            if (!_pendingRequests.TryAdd(sequence, task.CompletionSource))
+                            if (!_pendingRequests.TryAdd(sequence, task))
                             {
-                                _pendingRequests[sequence].SetCanceled();
+                                _pendingRequests[sequence].Cancel();
                                 _pendingRequests.TryRemove(sequence, out _);
 
                                 // Try it again
@@ -166,6 +166,7 @@ namespace Konata.Core.Components.Model
             // Unsupported event
             else
             {
+                task.Cancel();
                 LogW(TAG, "Unsupported Event received?");
             }
         }

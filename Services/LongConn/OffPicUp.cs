@@ -7,7 +7,7 @@ using Konata.Core.Attributes;
 
 namespace Konata.Core.Services.LongConn
 {
-    [EventSubscribe(typeof(PrivateOffPicUpEvent))]
+    [EventSubscribe(typeof(LongConnOffPicUpEvent))]
 
     [Service("LongConn.OffPicUp", "Image upload")]
     public class OffPicUp : IService

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Konata.Core.Events;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
@@ -13,7 +12,6 @@ using Konata.Core.Utils.Protobuf;
 namespace Konata.Core.Services.ImgStore
 {
     [EventSubscribe(typeof(GroupPicUpEvent))]
-
     [Service("ImgStore.GroupPicUp", "Image upload")]
     public class GroupPicUp : IService
     {
@@ -23,7 +21,7 @@ namespace Konata.Core.Services.ImgStore
             output = null;
             newSequence = input.SessionSequence;
 
-            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.Images);
+            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.UploadImages);
 
             if (SSOFrame.Create("ImgStore.GroupPicUp", PacketType.TypeB,
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(picupRequest), out var ssoFrame))
@@ -63,10 +61,10 @@ namespace Konata.Core.Services.ImgStore
                     // We can do not upload the image again
                     if (cached)
                     {
-                        info.Ip = (uint)i.GetLeafVar("30");
-                        info.Host = Network.UintToIPBE((uint)i.GetLeafVar("30"));
-                        info.Port = (int)i.GetLeafVar("38");
-                        info.ImageId = (uint)i.GetLeafVar("48");
+                        info.Ip = (uint) i.GetLeafVar("30");
+                        info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
+                        info.Port = (int) i.GetLeafVar("38");
+                        info.ImageId = (uint) i.GetLeafVar("48");
                         info.UseCached = true;
 
                         // Cached info
@@ -75,10 +73,10 @@ namespace Konata.Core.Services.ImgStore
                             info.CachedInfo = new CachedPicInfo
                             {
                                 Hash = imginfo.GetLeafBytes("0A"),
-                                Type = (ImageType)imginfo.GetLeafVar("10"),
-                                Length = (uint)imginfo.GetLeafVar("18"),
-                                Width = (uint)imginfo.GetLeafVar("20"),
-                                Height = (uint)imginfo.GetLeafVar("28"),
+                                Type = (ImageType) imginfo.GetLeafVar("10"),
+                                Length = (uint) imginfo.GetLeafVar("18"),
+                                Width = (uint) imginfo.GetLeafVar("20"),
+                                Height = (uint) imginfo.GetLeafVar("28"),
                             };
                         }
                     }
@@ -87,10 +85,10 @@ namespace Konata.Core.Services.ImgStore
                     // upload the iamge
                     else
                     {
-                        info.Ip = (uint)i.GetLeafVar("30");
-                        info.Host = Network.UintToIPBE((uint)i.GetLeafVar("30"));
-                        info.Port = (int)i.GetLeafVar("38");
-                        info.ImageId = (uint)i.GetLeafVar("48");
+                        info.Ip = (uint) i.GetLeafVar("30");
+                        info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
+                        info.Port = (int) i.GetLeafVar("38");
+                        info.ImageId = (uint) i.GetLeafVar("48");
                         info.ServiceTicket = i.GetLeafBytes("42");
                         info.UseCached = false;
                     }
@@ -99,17 +97,13 @@ namespace Konata.Core.Services.ImgStore
                 }
 
                 // Construct event
-                output = new GroupPicUpEvent
-                {
-                    UploadInfo = uploadInfo
-                };
-
+                output = GroupPicUpEvent.Result(0, uploadInfo);
                 return true;
             }
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-              => Build(sequence, (GroupPicUpEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (GroupPicUpEvent) input, signInfo, device, out newSequence, out output);
     }
 }

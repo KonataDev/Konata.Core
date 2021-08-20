@@ -20,26 +20,26 @@ namespace Konata.Core.Services.OnlinePush
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
-            var message = new GroupMessageEvent();
+            var message = GroupMessageEvent.Result(0);
             {
                 var root = ProtoTreeRoot.Deserialize(input.Payload, true);
                 {
                     // Parse message source information
                     var sourceRoot = (ProtoTreeRoot) root.PathTo("0A.0A");
                     {
-                        message.MemberUin = (uint) sourceRoot.GetLeafVar("08");
-                        message.MessageId = (uint) sourceRoot.GetLeafVar("28");
-                        message.MessageTime = (uint) sourceRoot.GetLeafVar("30");
+                        message.SetMemberUin((uint) sourceRoot.GetLeafVar("08"));
+                        message.SetMessageId((uint) sourceRoot.GetLeafVar("28"));
+                        message.SetMessageTime((uint) sourceRoot.GetLeafVar("30"));
 
                         sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("4A");
                         {
-                            message.GroupUin = (uint) sourceRoot.GetLeafVar("08");
-                            message.GroupName = sourceRoot.GetLeafString("42");
+                            message.SetGroupUin((uint) sourceRoot.GetLeafVar("08"));
+                            message.SetGroupName(sourceRoot.GetLeafString("42"));
 
                             // Try get member card
                             if (sourceRoot.TryGetLeafString("22", out var cardText))
                             {
-                                message.MemberCard = cardText;
+                                message.SetMemberCard(cardText);
                             }
                             else
                             {
@@ -48,7 +48,8 @@ namespace Konata.Core.Services.OnlinePush
                                 sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("22");
                                 if (sourceRoot.GetLeaves("0A").Count == 2)
                                 {
-                                    message.MemberCard = ((ProtoLengthDelimited) sourceRoot.PathTo("0A[1].12")).ToString();
+                                    message.SetMemberCard(((ProtoLengthDelimited)
+                                        sourceRoot.PathTo("0A[1].12")).ToString());
                                 }
                             }
                         }
@@ -57,9 +58,10 @@ namespace Konata.Core.Services.OnlinePush
                     // Parse message slice information
                     var sliceInfoRoot = (ProtoTreeRoot) root.PathTo("0A.12");
                     {
-                        message.SliceTotal = (uint) sliceInfoRoot.GetLeafVar("08");
-                        message.SliceIndex = (uint) sliceInfoRoot.GetLeafVar("10");
-                        message.SliceFlags = (uint) sliceInfoRoot.GetLeafVar("18");
+                        var total = (uint) sliceInfoRoot.GetLeafVar("08");
+                        var index = (uint) sliceInfoRoot.GetLeafVar("10");
+                        var flags = (uint) sliceInfoRoot.GetLeafVar("18");
+                        message.SetSliceInfo(total, index, flags);
                     }
 
                     // Parse message content
@@ -83,7 +85,10 @@ namespace Konata.Core.Services.OnlinePush
                                             "0A" => ParsePlainText((ProtoTreeRoot) value),
                                             "12" => ParseQFace((ProtoTreeRoot) value),
                                             "42" => ParsePicture((ProtoTreeRoot) value),
+                                            "62" => ParseXML((ProtoTreeRoot) value),
                                             "9A01" => ParseShortVideo((ProtoTreeRoot) value),
+                                            "9A03" => ParseJSON((ProtoTreeRoot) value),
+                                            "EA02" => ParseReply((ProtoTreeRoot) value),
                                             _ => null
                                         };
                                     }
@@ -118,14 +123,46 @@ namespace Konata.Core.Services.OnlinePush
                             }
                         });
 
-                        message.Message = builder.Build();
-                        message.SessionSequence = input.Sequence;
+                        message.SetMessage(builder.Build());
+                        message.SetSessionSequence(input.Sequence);
                     }
                 }
             }
 
             output = message;
             return true;
+        }
+
+        /// <summary>
+        /// Process json chain
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        private static BaseChain ParseJSON(ProtoTreeRoot tree)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Process xml chain
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        private static BaseChain ParseXML(ProtoTreeRoot tree)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Process reply chain
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        private static BaseChain ParseReply(ProtoTreeRoot tree)
+        {
+            // var source = tree.GetLeafVar("");
+            // return ReplyChain.Create(source);
+            return null;
         }
 
         /// <summary>
@@ -226,8 +263,9 @@ namespace Konata.Core.Services.OnlinePush
             }
 
             // Plain text chain
-            return tree.TryGetLeafString("0A", out var content) 
-                ? PlainTextChain.Create(content) : null;
+            return tree.TryGetLeafString("0A", out var content)
+                ? PlainTextChain.Create(content)
+                : null;
         }
 
         /// <summary>

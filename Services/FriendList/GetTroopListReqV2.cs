@@ -16,12 +16,7 @@ namespace Konata.Core.Services.Friendlist
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
             var response = new SvcRspGetTroopListRespV2(input.Payload.GetBytes());
-
-            output = new PullGroupListEvent
-            {
-                ResultCode = 0,
-                GroupInfo = response.Groups
-            };
+            output = PullGroupListEvent.Result(0, response.Groups);
 
             return true;
         }

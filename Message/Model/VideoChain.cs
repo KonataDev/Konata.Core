@@ -61,7 +61,7 @@ namespace Konata.Core.Message.Model
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public static VideoChain Parse(string code)
+        internal static VideoChain Parse(string code)
         {
             return null;
         }

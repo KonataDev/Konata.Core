@@ -1,10 +1,11 @@
 ﻿using System;
-
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.OidbSvc
 {
@@ -23,8 +24,8 @@ namespace Konata.Core.Services.OidbSvc
             output = null;
             newSequence = sequence.NewSequence;
 
-            var oidbRequest = new OidbCmd0x8fc_2(input.GroupUin, input.MemberUin, input.SpecialTitle,
-                input.TimeSeconds ?? uint.MaxValue);
+            var oidbRequest = new OidbCmd0x8fc_2(input.GroupUin,
+                input.MemberUin, input.SpecialTitle, input.ExpiredTime);
 
             if (SSOFrame.Create("OidbSvc.0x8fc_2", PacketType.TypeB,
                 newSequence, sequence.Session, oidbRequest, out var ssoFrame))
@@ -41,6 +42,6 @@ namespace Konata.Core.Services.OidbSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupSpecialTitleEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (GroupSpecialTitleEvent) input, signInfo, device, out newSequence, out output);
     }
 }

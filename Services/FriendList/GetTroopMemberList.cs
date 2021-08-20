@@ -17,16 +17,9 @@ namespace Konata.Core.Services.Friendlist
         {
             var response = new SvcRspGetTroopMemberListResp(input.Payload.GetBytes());
 
-            output = new PullGroupMemberListEvent
-            {
-                ErrorCode = response.ErrorCode,
-                ResultCode = response.Result,
-                GroupUin = response.GroupUin,
-                GroupCode = response.GroupCode,
-                MemberInfo = response.Members,
-                NextUin = response.NextUin,
-            };
-
+            output = PullGroupMemberListEvent.Result(response.Result, response.ErrorCode,
+                response.GroupUin, response.GroupCode, response.Members, response.NextUin);
+            
             return true;
         }
 

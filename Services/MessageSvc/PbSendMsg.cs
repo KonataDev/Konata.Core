@@ -18,10 +18,8 @@ namespace Konata.Core.Services.MessageSvc
             var tree = new ProtoTreeRoot
                 (input.Payload.GetBytes(), true);
             {
-                output = new GroupMessageEvent
-                {
-                    ResultCode = (int) tree.GetLeafVar("08")
-                };
+                output = GroupMessageEvent
+                    .Result(((int) tree.GetLeafVar("08")));
             }
 
             return true;

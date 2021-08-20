@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
@@ -23,7 +22,8 @@ namespace Konata.Core.Services.OidbSvc
             output = null;
             newSequence = sequence.NewSequence;
 
-            var oidbRequest = new OidbCmd0x570_8(input.GroupUin, input.MemberUin, input.TimeSeconds ?? uint.MaxValue);
+            var oidbRequest = new OidbCmd0x570_8(input.GroupUin,
+                input.MemberUin, input.TimeSeconds);
 
             if (SSOFrame.Create("OidbSvc.0x570_8", PacketType.TypeB,
                 newSequence, sequence.Session, oidbRequest, out var ssoFrame))
@@ -40,6 +40,6 @@ namespace Konata.Core.Services.OidbSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupMuteMemberEvent)input, signInfo, device, out newSequence, out output);
+            => Build(sequence, (GroupMuteMemberEvent) input, signInfo, device, out newSequence, out output);
     }
 }
