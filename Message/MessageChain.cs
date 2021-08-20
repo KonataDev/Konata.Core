@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Konata.Core.Message.Model;
 
@@ -6,15 +7,15 @@ namespace Konata.Core.Message
 {
     public class MessageChain
     {
-        public List<BaseChain> Chains
+        internal List<BaseChain> Chains
             => _chains;
 
-        public int Count
+        internal int Count
             => _chains.Count;
 
         private readonly List<BaseChain> _chains;
 
-        public MessageChain()
+        internal MessageChain()
         {
             _chains = new();
         }
@@ -23,7 +24,7 @@ namespace Konata.Core.Message
         /// Add a new chain
         /// </summary>
         /// <param name="chain"></param>
-        public void Add(BaseChain chain)
+        internal void Add(BaseChain chain)
             => _chains.Add(chain);
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace Konata.Core.Message
                             "image" => ImageChain.Parse(i.Value),
                             "qface" => QFaceChain.Parse(i.Value),
                             "record" => RecordChain.Parse(i.Value),
+                            "video" => VideoChain.Parse(i.Value),
                             _ => null,
                         };
 
@@ -106,7 +108,7 @@ namespace Konata.Core.Message
         }
     }
 
-    public class MessageBuilder
+    public class MessageBuilder : IEnumerable<BaseChain>
     {
         private readonly MessageChain _chain;
 
@@ -115,8 +117,32 @@ namespace Konata.Core.Message
             _chain = new();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
+
+        public IEnumerator<BaseChain> GetEnumerator()
+            => _chain.Chains.GetEnumerator();
+
+        /// <summary>
+        /// Build a message chain
+        /// </summary>
+        /// <returns></returns>
         public MessageChain Build()
-            => _chain;
+        {
+            // Scan chains
+            foreach (var i in _chain.Chains)
+            {
+                // If found a singleton chain
+                if (i.Mode == BaseChain.ChainMode.Singleton)
+                {
+                    // Then drop other chains
+                    return new MessageBuilder {i}.Build();
+                }
+            }
+
+            // Return multiple chain
+            return _chain;
+        }
 
         /// <summary>
         /// Add a chain
@@ -190,6 +216,21 @@ namespace Konata.Core.Message
         /// <param name="filePath"></param>
         /// <returns></returns>
         public MessageBuilder Record(string filePath)
+        {
+            //if (RecordChain.Create(filePath, out var chain))
+            //{
+            //    _chain.Add(chain);
+            //}
+
+            return this;
+        }
+
+        /// <summary>
+        /// Video chain
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public MessageBuilder Video(string filePath)
         {
             //if (RecordChain.Create(filePath, out var chain))
             //{

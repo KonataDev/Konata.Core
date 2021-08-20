@@ -1,5 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Konata.Core.Message
 {
@@ -7,18 +9,29 @@ namespace Konata.Core.Message
     {
         public enum ChainType
         {
-            At,         // At
-            Text,       // Ttext
-            Image,      // Image
-            Record,     // Record
-            //Emoji,      // QQ Emoji
-            QFace,      // QQ Face
+            At, // At
+            Text, // Ttext
+            Image, // Image
+            Record, // Record
+            Video, // Video
+            QFace, // QQ Face
         }
 
-        public ChainType Type { get; set; }
+        public enum ChainMode
+        {
+            Multiple,
+            Singleton
+        }
 
-        protected BaseChain(ChainType type)
-            => Type = type;
+        public ChainType Type { get; }
+
+        public ChainMode Mode { get; }
+
+        protected BaseChain(ChainType type, ChainMode mode)
+        {
+            Type = type;
+            Mode = mode;
+        }
 
         /// <summary>
         /// Get arguments of a code string
@@ -32,7 +45,7 @@ namespace Konata.Core.Message
             // Split with a comma
             // [KQ:x,x=1,y=2] will becomes
             // "KQ:x" "x=1" "y=2"
-            var split = code[0..(code.Length - 1)].Split(',');
+            var split = code[..^1].Split(',');
             {
                 // Split every kvpair with an equal
                 // "KQ:x" ignored
