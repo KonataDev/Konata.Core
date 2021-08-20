@@ -5,21 +5,21 @@ namespace Konata.Core
 {
     public class BotConfig
     {
-        public bool UseIPv6Connection { get; private set; }
+        public bool UseIPv6Connection { get; set; }
 
-        public bool ReConnectWhileLinkDown { get; private set; }
+        public bool ReConnectWhileLinkDown { get; set; }
 
-        public uint ReConnectTryCount { get; private set; }
+        public uint ReConnectTryCount { get; set; }
 
         #region Custom Server IP
 
-        public string CustomHost { get; private set; }
+        public string CustomHost { get; set; }
 
         #endregion
 
         #region Image upload
 
-        public int ImageChunkSize { get; private set; }
+        public int ImageChunkSize { get; set; }
 
         #endregion
 

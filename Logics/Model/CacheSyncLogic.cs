@@ -182,13 +182,13 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static Task<PullGroupListEvent> PullGroupList(BusinessComponent context)
-            => context.PostEvent<PacketComponent, PullGroupListEvent>(PullGroupListEvent.Create(context.Bot.Uin));
+            => context.PostPacket<PullGroupListEvent>(PullGroupListEvent.Create(context.Bot.Uin));
 
         private static Task<PullFriendListEvent> PullFriendList(BusinessComponent context, uint startIndex, uint limitNum)
-            => context.PostEvent<PacketComponent, PullFriendListEvent>(PullFriendListEvent.Create(context.Bot.Uin, startIndex, limitNum));
+            => context.PostPacket<PullFriendListEvent>(PullFriendListEvent.Create(context.Bot.Uin, startIndex, limitNum));
 
         private static Task<PullGroupMemberListEvent> PullGroupMemberList(BusinessComponent context, uint groupUin, ulong groupCode, uint nextUin)
-            => context.PostEvent<PacketComponent, PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
+            => context.PostPacket<PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
 
         #endregion
     }

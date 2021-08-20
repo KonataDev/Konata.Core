@@ -125,9 +125,24 @@ namespace Konata.Core.Entity
             where TComponent : BaseComponent
         {
             var task = new KonataTask(anyEvent);
-            {
-                GetComponent<TComponent>().EventPipeline.SendAsync(task);
-            }
+            GetComponent<TComponent>().EventPipeline.SendAsync(task);
+
+            return task.CompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Post an event to any component
+        /// attached under this entity with timeout
+        /// </summary>
+        /// <param name="anyEvent"></param>
+        /// <param name="timeout"></param>
+        /// <typeparam name="TComponent"></typeparam>
+        /// <returns></returns>
+        public Task<BaseEvent> PostEvent<TComponent>(BaseEvent anyEvent, int timeout)
+            where TComponent : BaseComponent
+        {
+            var task = new KonataTask(anyEvent, timeout);
+            GetComponent<TComponent>().EventPipeline.SendAsync(task);
 
             return task.CompletionSource.Task;
         }
@@ -171,22 +186,55 @@ namespace Konata.Core.Entity
 
         public TaskCompletionSource<BaseEvent> CompletionSource { get; }
 
+        private CancellationTokenSource CancellationToken { get; }
+
         public KonataTask(BaseEvent e)
         {
             EventPayload = e;
             CompletionSource = new TaskCompletionSource<BaseEvent>();
         }
 
+        public KonataTask(BaseEvent e, int timeout)
+        {
+            EventPayload = e;
+            CompletionSource = new TaskCompletionSource<BaseEvent>();
+            CancellationToken = new(timeout);
+            CancellationToken.Token.Register(() =>
+                Cancel(new TimeoutException("Don't be a pigeon. =(:3)z)_")));
+        }
+
+        ~KonataTask()
+        {
+            CancellationToken?.Dispose();
+        }
+
         internal void Finish(BaseEvent e)
             => CompletionSource.SetResult(e);
 
         internal void Finish()
-            => CompletionSource.SetResult(null);
+        {
+            CompletionSource.SetResult(null);
+            CancellationToken?.Cancel();
+        }
 
         internal void Exception(Exception e)
-            => CompletionSource.SetException(e);
+        {
+            CompletionSource.SetException(e);
+            CancellationToken?.Cancel();
+        }
 
         internal void Cancel()
-            => CompletionSource.SetCanceled();
+        {
+            CompletionSource.SetCanceled();
+            CancellationToken?.Cancel();
+        }
+
+        internal void Cancel(TimeoutException e)
+        {
+            if (!CompletionSource.Task.IsCompleted)
+            {
+                Exception(e);
+            }
+        }
     }
 }

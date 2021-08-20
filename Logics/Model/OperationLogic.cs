@@ -77,13 +77,13 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
-            => context.PostEvent<PacketComponent, GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
+            => context.PostPacket<GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
 
         private static Task<GroupMuteMemberEvent> GroupMuteMember(BusinessComponent context, uint groupUin, uint memberUin, uint timeSeconds)
-            => context.PostEvent<PacketComponent, GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
+            => context.PostPacket<GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
 
         private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
-            => context.PostEvent<PacketComponent, GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
+            => context.PostPacket<GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
 
         #endregion
     }

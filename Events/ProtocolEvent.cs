@@ -11,9 +11,9 @@ namespace Konata.Core.Events
 
         public int ResultCode { get; protected set; }
 
-        public uint Timeout { get; protected set; }
+        public int Timeout { get; protected set; }
 
-        internal ProtocolEvent(uint timeout, bool wait)
+        internal ProtocolEvent(int timeout, bool wait)
         {
             Timeout = timeout;
             WaitForResponse = wait;

@@ -88,13 +88,13 @@
         public string CaptchaResult { get; }
 
         private WtLoginEvent(Type eventType)
-            : base(2000, true)
+            : base(6000, true)
         {
             EventType = eventType;
         }
 
         private WtLoginEvent(Type eventType, string captcha)
-            : base(2000, true)
+            : base(6000, true)
         {
             EventType = eventType;
             CaptchaResult = captcha;
