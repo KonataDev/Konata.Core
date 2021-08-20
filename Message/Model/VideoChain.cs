@@ -57,7 +57,7 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
-        /// Parse the code to a video
+        /// Parse the code
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace Konata.Core.Message.Model
 
         public override string ToString()
             => $"[KQ:video," +
-               $"file={FileName}" +
+               $"file={FileName}," +
                $"width={Width}," +
                $"height={Height}]";
     }

@@ -190,7 +190,7 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
-        /// Parse the code to a chain
+        /// Parse the code
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
