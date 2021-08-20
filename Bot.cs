@@ -33,6 +33,9 @@ namespace Konata.Core
                 component.LoadDeviceInfo(device);
                 component.LoadKeyStore(keystore, device.Model.IMEI);
             }
+
+            // Setup event handlers
+            InitializeHandlers();
         }
 
         #region Bot Information
