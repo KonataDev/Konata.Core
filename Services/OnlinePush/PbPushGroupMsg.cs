@@ -65,7 +65,7 @@ namespace Konata.Core.Services.OnlinePush
                     // Parse message content
                     var contentRoot = (ProtoTreeRoot) root.PathTo("0A.1A.0A");
                     {
-                        var list = new MessageChain();
+                        var builder = new MessageBuilder();
 
                         contentRoot.ForEach((_, __) =>
                         {
@@ -94,7 +94,7 @@ namespace Konata.Core.Services.OnlinePush
 
                                     if (chain != null)
                                     {
-                                        list.Add(chain);
+                                        builder.Add(chain);
                                     }
                                 });
                             }
@@ -113,12 +113,12 @@ namespace Konata.Core.Services.OnlinePush
 
                                 if (chain != null)
                                 {
-                                    list.Add(chain);
+                                    builder.Add(chain);
                                 }
                             }
                         });
 
-                        message.Message = list;
+                        message.Message = builder.Build();
                         message.SessionSequence = input.Sequence;
                     }
                 }
@@ -226,12 +226,8 @@ namespace Konata.Core.Services.OnlinePush
             }
 
             // Plain text chain
-            if (tree.TryGetLeafString("0A", out var content))
-            {
-                return PlainTextChain.Create(content);
-            }
-
-            return null;
+            return tree.TryGetLeafString("0A", out var content) 
+                ? PlainTextChain.Create(content) : null;
         }
 
         /// <summary>
