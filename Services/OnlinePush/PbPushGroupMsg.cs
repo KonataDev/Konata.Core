@@ -83,6 +83,7 @@ namespace Konata.Core.Services.OnlinePush
                                             "0A" => ParsePlainText((ProtoTreeRoot) value),
                                             "12" => ParseQFace((ProtoTreeRoot) value),
                                             "42" => ParsePicture((ProtoTreeRoot) value),
+                                            "9A01" => ParseShortVideo((ProtoTreeRoot) value),
                                             _ => null
                                         };
                                     }
@@ -125,6 +126,23 @@ namespace Konata.Core.Services.OnlinePush
 
             output = message;
             return true;
+        }
+
+        /// <summary>
+        /// Process short video chain
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        private static BaseChain ParseShortVideo(ProtoTreeRoot tree)
+        {
+            var width = (uint) tree.GetLeafVar("38");
+            var height = (uint) tree.GetLeafVar("40");
+            var hashstr = ByteConverter.Hex(tree.GetLeafBytes("12"));
+            var storage = tree.GetLeafString("1A");
+            var duration = (uint) tree.GetLeafVar("28");
+
+            return VideoChain.Create(hashstr, hashstr,
+                storage, width, height, duration);
         }
 
         /// <summary>
