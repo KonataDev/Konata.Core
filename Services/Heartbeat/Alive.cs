@@ -1,23 +1,40 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
+using Konata.Core.Events.Model;
+using Konata.Core.Utils.IO;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.Heartbeat
 {
+    [EventSubscribe(typeof(CheckHeartbeatEvent))]
     [Service("Heartbeat.Alive", "Heartbeat for client")]
     public class Alive : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
         {
-            throw new NotImplementedException();
+            output = CheckHeartbeatEvent.Result(0);
+            return true;
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
         {
-            throw new NotImplementedException();
+            output = null;
+            newSequence = sequence.NewSequence;
+
+            if (SSOFrame.Create("Heartbeat.Alive", PacketType.TypeA,
+                newSequence, sequence.Session, new ByteBuffer(), out var ssoFrame))
+            {
+                if (ServiceMessage.Create(ssoFrame, AuthFlag.DefaultlyNo,
+                    0x00, null, null, out var toService))
+                {
+                    return ServiceMessage.Build(toService, device, out output);
+                }
+            }
+
+            return false;
         }
     }
 }

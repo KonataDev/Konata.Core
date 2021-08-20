@@ -2,7 +2,6 @@
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-
 using Konata.Core.Events;
 using Konata.Core.Entity;
 
@@ -17,7 +16,9 @@ namespace Konata.Core.Components
         public BaseComponent()
             => EventPipeline = new ActionBlock<KonataTask>(EventHandler);
 
-        internal virtual void EventHandler(KonataTask task) { }
+        internal virtual void EventHandler(KonataTask task)
+        {
+        }
 
         public void PostEventToEntity(BaseEvent anyEvent)
             => Entity.PostEventToEntity(anyEvent);
@@ -29,7 +30,7 @@ namespace Konata.Core.Components
             where TEvent : BaseEvent where TEntity : BaseComponent
         {
             var task = Entity.PostEvent<TEntity>(anyEvent);
-            return (TEvent)await task;
+            return (TEvent) await task;
         }
 
         public void BroadcastEvent(BaseEvent anyEvent)
@@ -65,6 +66,7 @@ namespace Konata.Core.Components
 
         public void LogF(string tag, string content)
             => Log(LogLevel.Fatal, tag, content);
+
         #endregion
     }
 }

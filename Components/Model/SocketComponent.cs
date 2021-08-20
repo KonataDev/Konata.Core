@@ -72,7 +72,7 @@ namespace Konata.Core.Components.Model
             if (_socket != null && _socket.Connected)
             {
                 LogW(TAG, "Calling Connect method after socket connected.");
-                return Task.FromResult(false);
+                return Task.FromResult(true);
             }
 
             var lowestTime = long.MaxValue;
@@ -227,7 +227,7 @@ namespace Konata.Core.Components.Model
             catch (Exception e)
             {
                 LogE(TAG, e);
-                DisConnect("Socket error while receiving data. ");
+                Disconnect("Socket error while receiving data. ");
             }
             finally
             {
@@ -248,7 +248,7 @@ namespace Konata.Core.Components.Model
             catch (Exception e)
             {
                 LogE(TAG, e);
-                DisConnect($"Socket error while sending data.");
+                Disconnect($"Socket error while sending data.");
             }
         }
 
@@ -303,7 +303,7 @@ namespace Konata.Core.Components.Model
         /// Disconnect from server
         /// </summary>
         /// <param name="reason"></param>
-        public bool DisConnect(string reason)
+        public bool Disconnect(string reason)
         {
             if (_socket is not {Connected: true})
             {

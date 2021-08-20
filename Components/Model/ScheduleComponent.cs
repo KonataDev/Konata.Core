@@ -127,7 +127,7 @@ namespace Konata.Core.Components.Model
 
                             // Join the queue
                             taskTable.Add(value);
-                            LogV(TAG, $"Join the task => {key}");
+                            LogI(TAG, $"Join the task => {key}");
                         }
                     }
 
@@ -250,7 +250,7 @@ namespace Konata.Core.Components.Model
             // Check duplicate
             if (_taskDict.ContainsKey(name))
             {
-                LogW(TAG, $"Conlict schedule found. '{name}', override.");
+                LogW(TAG, $"Conflict schedule found. '{name}', override.");
                 _taskDict[name] = task;
             }
 
