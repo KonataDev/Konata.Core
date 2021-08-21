@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace Konata.Core.Packets.Tlv
@@ -54,6 +55,9 @@ namespace Konata.Core.Packets.Tlv
         {
             return map.ContainsKey(tlvCommand) ? map[tlvCommand] : null;
         }
+
+        public bool TryGetTlv(ushort tlvCommand, out Tlv tlv)
+            => map.TryGetValue(tlvCommand, out tlv);
 
         public int Count
         {
