@@ -13,7 +13,7 @@ namespace Konata.Core.Services.StatSvc
     [EventSubscribe(typeof(OnlineStatusEvent))]
     public class Register : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signinfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             var svcResponse = new SvcRspRegister(input.Payload.GetBytes());
 
@@ -25,14 +25,14 @@ namespace Konata.Core.Services.StatSvc
         }
 
         public bool Build(Sequence sequence, OnlineStatusEvent input,
-            BotKeyStore signinfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
 
             var svcRequest = new SvcReqRegister(new RegisterInfo
             {
-                uin = signinfo.Account.Uin,
+                uin = keystore.Account.Uin,
                 bid = 7,
                 connType = 0,
                 other = "",
@@ -74,10 +74,10 @@ namespace Konata.Core.Services.StatSvc
             });
 
             if (SSOFrame.Create("StatSvc.register", PacketType.TypeA, newSequence,
-                signinfo.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
+                keystore.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signinfo.Account.Uin, signinfo.Session.D2Token, signinfo.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -87,7 +87,7 @@ namespace Konata.Core.Services.StatSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signinfo, BotDevice device, out int outsequence, out byte[] output)
-            => Build(sequence, (OnlineStatusEvent) input, signinfo, device, out outsequence, out output);
+            BotKeyStore keystore, BotDevice device, out int outsequence, out byte[] output)
+            => Build(sequence, (OnlineStatusEvent) input, keystore, device, out outsequence, out output);
     }
 }

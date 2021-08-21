@@ -31,6 +31,12 @@ namespace Konata.Core.Events.Model
             Tgtgt,
 
             /// <summary>
+            /// <b>[In]</b> <br/>
+            /// Wtlogin xchg
+            /// </summary>
+            Xchg,
+
+            /// <summary>
             /// <b>[In] [Out]</b> <br/>
             /// Wtlogin do/submit SMS captcha
             /// </summary>
@@ -83,6 +89,12 @@ namespace Konata.Core.Events.Model
             /// Wtlogin failed about invalid SMS code
             /// </summary>
             InvalidSmsCode,
+
+            /// <summary>
+            /// <b>[Out]</b> <br/>
+            /// token expired [xchg only]
+            /// </summary>
+            TokenExpired,
         }
 
         public Type EventType { get; }
@@ -136,6 +148,13 @@ namespace Konata.Core.Events.Model
         /// <returns></returns>
         internal static WtLoginEvent CreateTgtgt()
             => new(Type.Tgtgt);
+
+        /// <summary>
+        /// Construct xchg request
+        /// </summary>
+        /// <returns></returns>
+        internal static WtLoginEvent CreateXchg()
+            => new(Type.Xchg);
 
         /// <summary>
         /// Construct refresh sms request
@@ -221,6 +240,9 @@ namespace Konata.Core.Events.Model
 
         internal static WtLoginEvent ResultLoginDenied(int resultCode, string reason)
             => new(resultCode, Type.LoginDenied, reason);
+
+        internal static WtLoginEvent ResultTokenExpired(int resultCode)
+            => new(resultCode, Type.TokenExpired, "Token expired.");
 
         internal static WtLoginEvent ResultUnknown(int resultCode, string reason)
             => new(resultCode, Type.LoginDenied, reason);

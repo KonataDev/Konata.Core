@@ -17,15 +17,15 @@ using Konata.Core.Utils.Crypto;
 
 namespace Konata.Core.Services.WtLogin
 {
-    [Service("wtlogin.login", "WtLogin exchange")]
     [EventSubscribe(typeof(WtLoginEvent))]
+    [Service("wtlogin.login", "WtLogin exchange")]
     public class Login : IService
     {
-        public bool Parse(SSOFrame ssoFrame, BotKeyStore keystore, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             // Parse oicq response
             var oicqResponse = new OicqResponse
-                (ssoFrame.Payload.GetBytes(), keystore.KeyStub.ShareKey);
+                (input.Payload.GetBytes(), keystore.KeyStub.ShareKey);
 
             // Select status
             output = oicqResponse.Status switch
@@ -330,10 +330,10 @@ namespace Konata.Core.Services.WtLogin
         #endregion
 
         public bool Build(Sequence sequence, WtLoginEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequece, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
-            newSequece = sequence.GetSessionSequence("wtlogin.login");
+            newSequence = sequence.GetSessionSequence("wtlogin.login");
 
             OicqRequest oicqRequest;
 
@@ -341,7 +341,7 @@ namespace Konata.Core.Services.WtLogin
             switch (input.EventType)
             {
                 case WtLoginEvent.Type.Tgtgt:
-                    oicqRequest = new OicqRequestTgtgt(newSequece, keystore, device);
+                    oicqRequest = new OicqRequestTgtgt(newSequence, keystore, device);
                     break;
 
                 case WtLoginEvent.Type.CheckSms:
@@ -366,7 +366,7 @@ namespace Konata.Core.Services.WtLogin
 
             // Build to service
             if (SSOFrame.Create("wtlogin.login", PacketType.TypeA,
-                newSequece, sequence.Session, oicqRequest, out var ssoFrame))
+                newSequence, sequence.Session, oicqRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
                     keystore.Account.Uin, out var toService))

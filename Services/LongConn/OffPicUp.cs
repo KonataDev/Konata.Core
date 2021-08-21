@@ -13,12 +13,12 @@ namespace Konata.Core.Services.LongConn
     public class OffPicUp : IService
     {
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             throw new NotImplementedException();
         }
 
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             throw new NotImplementedException();
         }

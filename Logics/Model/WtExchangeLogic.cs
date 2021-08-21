@@ -69,90 +69,118 @@ namespace Konata.Core.Logics.Model
 
             try
             {
-                // Login
-                Context.LogI(TAG, "Do Wtlogin");
-                var wtStatus = await WtLogin(Context);
+                WtLoginEvent wtStatus;
+
+                // Can I fast login?
+                if (ConfigComponent.KeyStore.Session.D2Key.Length != 0
+                    && ConfigComponent.KeyStore.Session.D2Token.Length != 0)
                 {
-                    while (true)
+                    // Okay, We can try it
+                    Context.LogI(TAG, "Do WtXchg");
+
+                    try
                     {
-                        Context.LogI(TAG, $"Status => {wtStatus.EventType}");
-                        switch (wtStatus.EventType)
+                        wtStatus = await WtXchg(Context);
+
+                        // Success
+                        if (wtStatus.EventType == WtLoginEvent.Type.OK)
                         {
-                            case WtLoginEvent.Type.OK:
-
-                                // Dump keys
-                                Context.LogV(TAG, "Keystore Dump");
-                                Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
-                                Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
-                                Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
-                                Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
-
-                                // Set online
-                                Context.LogI(TAG, "Registering client");
-                                var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
-
-                                // Update online status
-                                if (online.EventType == OnlineStatusEvent.Type.Online)
-                                {
-                                    // Bot online
-                                    Context.PostEventToEntity(online);
-                                    await Context.PostEvent<BusinessComponent>(online);
-
-                                    Context.LogI(TAG, "Bot online.");
-                                    return true;
-                                }
-
-                                // Oops...
-                                SocketComponent.Disconnect("Wtlogin failed.");
-                                return false;
-
-                            case WtLoginEvent.Type.CheckSms:
-                            case WtLoginEvent.Type.CheckSlider:
-
-                                // Check handler
-                                if (!Context.Bot.HandlerRegistered<CaptchaEvent>())
-                                {
-                                    Context.SocketComponent.Disconnect("Need handler.");
-                                    Context.LogW(TAG, "No captcha event handler registered, " +
-                                                      "Please note, Konata cannot process captcha automatically.");
-                                    return false;
-                                }
-
-                                // Wait for user operation
-                                Context.PostEventToEntity(CaptchaEvent.Create(wtStatus));
-                                wtStatus = await WtCheckUserOperation(Context, await WaitForUserOperation());
-                                break;
-
-                            case WtLoginEvent.Type.RefreshSms:
-                                wtStatus = await WtRefreshSmsCode(Context);
-                                break;
-
-                            case WtLoginEvent.Type.RefreshSmsFailed:
-                                Context.LogW(TAG, "Send sms failed, Konata " +
-                                                  "will resend the sms after 60 sec.");
-                                Thread.Sleep(60 * 1000);
-                                wtStatus = await WtRefreshSmsCode(Context);
-                                break;
-
-                            case WtLoginEvent.Type.VerifyDeviceLock:
-                                wtStatus = await WtVerifyDeviceLock(Context);
-                                break;
-
-                            case WtLoginEvent.Type.LoginDenied:
-                            case WtLoginEvent.Type.InvalidSmsCode:
-                            case WtLoginEvent.Type.InvalidLoginEnvironment:
-                            case WtLoginEvent.Type.InvalidUinOrPassword:
-                                Context.PostEventToEntity(wtStatus);
-                                Context.SocketComponent.Disconnect("Wtlogin failed.");
-                                return false;
-
-                            default:
-                            case WtLoginEvent.Type.Unknown:
-                            case WtLoginEvent.Type.NotImplemented:
-                                Context.SocketComponent.Disconnect("Wtlogin failed.");
-                                Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
-                                return false;
+                            goto GirlBlessingQwQ;
                         }
+
+                    }
+                    catch (Exception e)
+                    {
+                        // Do nothing
+                    }
+                    
+                    Context.LogI(TAG, "Fast login failed.");
+                }
+
+                // Wtlogin
+                Context.LogI(TAG, "Do Wtlogin");
+                wtStatus = await WtLogin(Context);
+
+            GirlBlessingQwQ:
+                while (true)
+                {
+                    Context.LogI(TAG, $"Status => {wtStatus.EventType}");
+                    switch (wtStatus.EventType)
+                    {
+                        case WtLoginEvent.Type.OK:
+
+                            // Dump keys
+                            Context.LogV(TAG, "Keystore Dump");
+                            Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
+                            Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
+                            Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
+                            Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
+
+                            // Set online
+                            Context.LogI(TAG, "Registering client");
+                            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
+
+                            // Update online status
+                            if (online.EventType == OnlineStatusEvent.Type.Online)
+                            {
+                                // Bot online
+                                Context.PostEventToEntity(online);
+                                await Context.PostEvent<BusinessComponent>(online);
+
+                                Context.LogI(TAG, "Bot online.");
+                                return true;
+                            }
+
+                            // Oops...
+                            SocketComponent.Disconnect("Wtlogin failed.");
+                            return false;
+
+                        case WtLoginEvent.Type.CheckSms:
+                        case WtLoginEvent.Type.CheckSlider:
+
+                            // Check handler
+                            if (!Context.Bot.HandlerRegistered<CaptchaEvent>())
+                            {
+                                Context.SocketComponent.Disconnect("Need handler.");
+                                Context.LogW(TAG, "No captcha event handler registered, " +
+                                                  "Please note, Konata cannot process captcha automatically.");
+                                return false;
+                            }
+
+                            // Wait for user operation
+                            Context.PostEventToEntity(CaptchaEvent.Create(wtStatus));
+                            wtStatus = await WtCheckUserOperation(Context, await WaitForUserOperation());
+                            break;
+
+                        case WtLoginEvent.Type.RefreshSms:
+                            wtStatus = await WtRefreshSmsCode(Context);
+                            break;
+
+                        case WtLoginEvent.Type.RefreshSmsFailed:
+                            Context.LogW(TAG, "Send sms failed, Konata " +
+                                              "will resend the sms after 60 sec.");
+                            Thread.Sleep(60 * 1000);
+                            wtStatus = await WtRefreshSmsCode(Context);
+                            break;
+
+                        case WtLoginEvent.Type.VerifyDeviceLock:
+                            wtStatus = await WtVerifyDeviceLock(Context);
+                            break;
+
+                        case WtLoginEvent.Type.LoginDenied:
+                        case WtLoginEvent.Type.InvalidSmsCode:
+                        case WtLoginEvent.Type.InvalidLoginEnvironment:
+                        case WtLoginEvent.Type.InvalidUinOrPassword:
+                            Context.PostEventToEntity(wtStatus);
+                            Context.SocketComponent.Disconnect("Wtlogin failed.");
+                            return false;
+
+                        default:
+                        case WtLoginEvent.Type.Unknown:
+                        case WtLoginEvent.Type.NotImplemented:
+                            Context.SocketComponent.Disconnect("Wtlogin failed.");
+                            Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
+                            return false;
                     }
                 }
             }
@@ -290,6 +318,9 @@ namespace Konata.Core.Logics.Model
 
         private static Task<WtLoginEvent> WtLogin(BusinessComponent context)
             => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateTgtgt());
+
+        private static Task<WtLoginEvent> WtXchg(BusinessComponent context)
+            => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateXchg());
 
         private static Task<WtLoginEvent> WtRefreshSmsCode(BusinessComponent context)
             => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateRefreshSms());

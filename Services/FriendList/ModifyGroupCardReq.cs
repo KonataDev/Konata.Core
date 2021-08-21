@@ -12,13 +12,13 @@ namespace Konata.Core.Services.Friendlist
     [EventSubscribe(typeof(GroupModifyMemberCardEvent))]
     public class ModifyGroupCardReq : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             throw new NotImplementedException();
         }
 
         public bool Build(Sequence sequence, GroupModifyMemberCardEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -29,7 +29,7 @@ namespace Konata.Core.Services.Friendlist
                newSequence, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signInfo.Account.Uin, signInfo.Session.D2Token, signInfo.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -39,7 +39,7 @@ namespace Konata.Core.Services.Friendlist
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupModifyMemberCardEvent)input, signInfo, device, out newSequence, out output);
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+            => Build(sequence, (GroupModifyMemberCardEvent)input, keystore, device, out newSequence, out output);
     }
 }

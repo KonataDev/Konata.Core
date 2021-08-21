@@ -12,7 +12,8 @@ namespace Konata.Core.Packets.Tlv.Model
         public readonly uint _subAppId;
         public readonly uint _appClientVersion;
 
-        public T100Body(uint appId, uint subAppId, uint appClientVersion)
+        public T100Body(uint appId, uint subAppId,
+            uint appClientVersion, uint sigMap)
         : base()
         {
             _appId = appId;
@@ -21,7 +22,7 @@ namespace Konata.Core.Packets.Tlv.Model
 
             _ssoVer = 6;
             _dbBufVer = 1;
-            _sigmap = 34869472;
+            _sigmap = sigMap;
 
             PutUshortBE(_dbBufVer);
             PutUintBE(_ssoVer);

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Konata.Core.Utils.IO;
+// ReSharper disable UseArrayEmptyMethod
 
-using Konata.Core.Utils.IO;
+// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 
 namespace Konata.Core.Packets
 {
@@ -19,19 +20,35 @@ namespace Konata.Core.Packets
         private PacketType _packetType;
         private byte[] _tgtoken;
 
-        public uint Session { get => _session; }
+        public uint Session
+        {
+            get => _session;
+        }
 
-        public string Command { get => _command; }
+        public string Command
+        {
+            get => _command;
+        }
 
-        public int Sequence { get => _sequence; }
+        public int Sequence
+        {
+            get => _sequence;
+        }
 
-        public byte[] Tgtoken { get => _tgtoken; }
+        public byte[] Tgtoken
+        {
+            get => _tgtoken;
+        }
 
-        public ByteBuffer Payload { get => _payload; }
+        public ByteBuffer Payload
+        {
+            get => _payload;
+        }
 
-        public PacketType PacketType { get => _packetType; }
-
-        public bool IsServerResponse { get; private set; }
+        public PacketType PacketType
+        {
+            get => _packetType;
+        }
 
         public static bool Parse(ServiceMessage fromService, out SSOFrame output)
         {
@@ -57,7 +74,7 @@ namespace Konata.Core.Packets
                 }
 
                 read.TakeBytes(out var unknownBytes,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                 read.TakeString(out output._command,
                     ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
@@ -82,9 +99,6 @@ namespace Konata.Core.Packets
                 }
             }
 
-            //TODO:
-            //IsServerResponse?
-            //output.IsServerResponse = true;
             return true;
         }
 
@@ -106,40 +120,40 @@ namespace Konata.Core.Packets
                     head.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
 
                     head.PutBytes(ssoFrame._tgtoken ?? new byte[0],
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(ssoFrame._command,
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(sessionBytes,
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(device.Model.IMEI,
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes0,
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutString(unknownString,
-                            ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes1,
-                            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 }
                 else if (ssoFrame.PacketType == PacketType.TypeB)
                 {
                     head.PutString(ssoFrame._command,
-                           ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(sessionBytes,
-                           ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes0,
-                           ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                 }
             }
             write.PutByteBuffer(head,
-                    ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+                ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
 
             write.PutByteBuffer(ssoFrame.Payload,
                 ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
@@ -165,6 +179,6 @@ namespace Konata.Core.Packets
 
         public static bool Create(string command, PacketType pktType, int sequence,
             uint session, ByteBuffer payload, out SSOFrame ssoFrame)
-          => Create(command, pktType, sequence, null, session, payload, out ssoFrame);
+            => Create(command, pktType, sequence, null, session, payload, out ssoFrame);
     }
 }

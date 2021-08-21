@@ -11,14 +11,14 @@ namespace Konata.Core.Services.OnlinePush
     [Service("OnlinePush.ReqPush", "Push messages from server")]
     public class ReqPush : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             // Parse push event
             var pushMsg = new SvcReqPushMsg(input.Payload.GetBytes());
 
             // Convert push event to konata event
             return pushMsg.EventType == PushType.Group ?
-                 HandlePushGroupEvent(pushMsg.PushPayload, signInfo, out output) :
+                 HandlePushGroupEvent(pushMsg.PushPayload, keystore, out output) :
                  HandlePushPrivateEvent(pushMsg.PushPayload, out output);
         }
 
@@ -203,7 +203,7 @@ namespace Konata.Core.Services.OnlinePush
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null; newSequence = 0;
             return false;

@@ -31,18 +31,21 @@ namespace Konata.Core.Packets.Oicq.Model
                     // Pack tlv
                     TlvPacker tlvs = new TlvPacker();
                     {
-                        tlvs.PutTlv(new Tlv(0x0018, new T18Body(AppInfo.AppId, AppInfo.AppClientVersion, signinfo.Account.Uin)));
-                        tlvs.PutTlv(new Tlv(0x0001, new T1Body(signinfo.Account.Uin, device.Network.NetIpAddress)));
-
-                        tlvs.PutTlv(new Tlv(0x0106, new T106Body(AppInfo.AppId, AppInfo.SubAppId, AppInfo.AppClientVersion,
-                            signinfo.Account.Uin, new byte[4], true, signinfo.Account.PasswordMd5, 0, true, device.System.Guid, LoginType.Password,
+                        tlvs.PutTlv(new Tlv(0x0018, new T18Body(AppInfo.AppId, 
+                            AppInfo.AppClientVersion, signinfo.Account.Uin)));
+                        tlvs.PutTlv(new Tlv(0x0001, new T1Body(signinfo.Account.Uin,
+                            device.Network.NetIpAddress)));
+                        
+                        tlvs.PutTlv(new Tlv(0x0106, new T106Body(AppInfo.AppId, 
+                            AppInfo.SubAppId, AppInfo.AppClientVersion,
+                            signinfo.Account.Uin, new byte[4], true, signinfo.Account.PasswordMd5,
+                            0, true, device.System.Guid, LoginType.Password,
                             signinfo.KeyStub.TgtgKey), signinfo.Session.Tlv106Key));
 
                         tlvs.PutTlv(new Tlv(0x0116, new T116Body(AppInfo.WtLoginSdk.MiscBitmap | (uint) WtLoginSigType.WLOGIN_DA2,
                             AppInfo.WtLoginSdk.SubSigBitmap, AppInfo.WtLoginSdk.SubAppIdList)));
-
-                        tlvs.PutTlv(new Tlv(0x0100, new T100Body(AppInfo.AppId, AppInfo.SubAppId, AppInfo.AppClientVersion)));
-
+                        tlvs.PutTlv(new Tlv(0x0100, new T100Body(AppInfo.AppId, 
+                            AppInfo.SubAppId, AppInfo.AppClientVersion, 34869472)));
                         tlvs.PutTlv(new Tlv(0x0107, new T107Body()));
                         tlvs.PutTlv(new Tlv(0x0142, new T142Body(AppInfo.ApkPackageName)));
 
@@ -58,17 +61,13 @@ namespace Konata.Core.Packets.Oicq.Model
                             285212672,
                             device.Model.Name,
                             device.Model.Manufacturer), signinfo.KeyStub.TgtgKey));
-
                         tlvs.PutTlv(new Tlv(0x0145, new T145Body(device.System.Guid)));
-
-                        tlvs.PutTlv(new Tlv(0x0147, new T147Body(AppInfo.AppId, AppInfo.ApkVersionName, AppInfo.ApkSignatureMd5)));
+                        tlvs.PutTlv(new Tlv(0x0147, new T147Body(AppInfo.AppId, 
+                            AppInfo.ApkVersionName, AppInfo.ApkSignatureMd5)));
                         // tlvs.PushTlv(new 166());
-
                         tlvs.PutTlv(new Tlv(0x0154, new T154Body(sequence)));
-
                         tlvs.PutTlv(new Tlv(0x0141, new T141Body(device.Network.NetOperator,
                             device.Network.NetType, device.Network.NetApn)));
-
                         tlvs.PutTlv(new Tlv(0x0008, new T8Body()));
                         tlvs.PutTlv(new Tlv(0x0511, new T511Body(new[]
                         {
@@ -87,24 +86,18 @@ namespace Konata.Core.Packets.Oicq.Model
                             "openmobile.qq.com",
                             "connect.qq.com",
                         })));
-
                         tlvs.PutTlv(new Tlv(0x0187, new T187Body(device.Network.WifiMacAddress, 0)));
                         tlvs.PutTlv(new Tlv(0x0188, new T188Body(device.System.AndroidId)));
                         tlvs.PutTlv(new Tlv(0x0194, new T194Body(device.Model.IMSI)));
                         tlvs.PutTlv(new Tlv(0x0191, new T191Body()));
-
                         tlvs.PutTlv(new Tlv(0x0202, new T202Body(device.Network.WifiBssid,
                             device.Network.WifiSsid)));
-
-                        tlvs.PutTlv(new Tlv(0x0177, new T177Body(AppInfo.WtLoginSdk.SdkBuildTime, AppInfo.WtLoginSdk.SdkVersion)));
-
+                        tlvs.PutTlv(new Tlv(0x0177, new T177Body(AppInfo
+                            .WtLoginSdk.SdkBuildTime, AppInfo.WtLoginSdk.SdkVersion)));
                         tlvs.PutTlv(new Tlv(0x0516, new T516Body()));
                         tlvs.PutTlv(new Tlv(0x0521, new T521Body()));
-
                         tlvs.PutTlv(new Tlv(0x0525, new T525Body(new Tlv(0x0536,
                             new T536Body(new byte[] {0x01, 0x00})))));
-                        // tlvs.PushTlv(new T544());
-                        // tlvs.PushTlv(new T545());
                     }
 
                     w.PutUshortBE(OicqSubCommand);

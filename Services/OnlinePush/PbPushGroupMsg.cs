@@ -18,7 +18,7 @@ namespace Konata.Core.Services.OnlinePush
     [EventSubscribe(typeof(GroupMessageEvent))]
     public class PbPushGroupMsg : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             var message = GroupMessageEvent.Result(0);
             {
@@ -277,7 +277,7 @@ namespace Konata.Core.Services.OnlinePush
             => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = 0;

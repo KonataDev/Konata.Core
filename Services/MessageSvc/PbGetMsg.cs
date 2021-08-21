@@ -19,7 +19,7 @@ namespace Konata.Core.Services.MessageSvc
     [EventSubscribe(typeof(PrivateMessagePullEvent))]
     internal class PbGetMsg : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             var message = PrivateMessageEvent.Push();
             {
@@ -124,7 +124,7 @@ namespace Konata.Core.Services.MessageSvc
             => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
         public bool Build(Sequence sequence, PrivateMessagePullEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -135,7 +135,7 @@ namespace Konata.Core.Services.MessageSvc
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(pullRequest), out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signInfo.Account.Uin, signInfo.Session.D2Token, signInfo.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -145,7 +145,7 @@ namespace Konata.Core.Services.MessageSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (PrivateMessagePullEvent) input, signInfo, device, out newSequence, out output);
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+            => Build(sequence, (PrivateMessagePullEvent) input, keystore, device, out newSequence, out output);
     }
 }

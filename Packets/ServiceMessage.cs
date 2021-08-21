@@ -1,8 +1,9 @@
-﻿using System;
-
-using Konata.Core.Utils.IO;
+﻿using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
-using Konata.Core.Services;
+
+// ReSharper disable UseArrayEmptyMethod
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 
 namespace Konata.Core.Packets
 {
@@ -25,18 +26,20 @@ namespace Konata.Core.Packets
         private byte[] _payloadData;
         private SSOFrame _payloadFrame;
 
-        public string HeadUin { get => _headUin; }
+        public string HeadUin
+            => _headUin;
 
-        public SSOFrame Frame { get => _payloadFrame; }
+        public SSOFrame Frame
+            => _payloadFrame;
 
-        public byte[] FrameBytes { get => _payloadData; }
+        public byte[] FrameBytes
+            => _payloadData;
 
-        public AuthFlag AuthFlag { get => _authFlag; }
+        public AuthFlag AuthFlag
+            => _authFlag;
 
-        public PacketType MessagePktType { get => _packetType; }
-
-        public bool IsServerResponse { get; private set; } = false;
-
+        public PacketType MessagePktType
+            => _packetType;
 
         public static bool Build(ServiceMessage toService, BotDevice device,
             out byte[] output)
@@ -44,12 +47,12 @@ namespace Konata.Core.Packets
             var body = new PacketBase();
             var write = new PacketBase();
             {
-                body.PutUintBE((uint)toService.Frame.PacketType);
-                body.PutByte((byte)toService._authFlag);
+                body.PutUintBE((uint) toService.Frame.PacketType);
+                body.PutByte((byte) toService._authFlag);
 
-                body.PutBytes(toService._headExtra,
-                   toService.Frame.PacketType == PacketType.TypeA ?
-                   ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix : ByteBuffer.Prefix.None);
+                body.PutBytes(toService._headExtra, toService.Frame.PacketType == PacketType.TypeA
+                    ? ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix
+                    : ByteBuffer.Prefix.None);
 
                 body.PutByte(0x00);
 
@@ -60,7 +63,7 @@ namespace Konata.Core.Packets
                     body.PutByteBuffer(SSOFrame.Build(toService._payloadFrame, device));
                 else
                     body.PutEncryptedBytes(SSOFrame.Build(toService._payloadFrame, device).GetBytes(),
-                    TeaCryptor.Instance, toService._keyData);
+                        TeaCryptor.Instance, toService._keyData);
             }
             write.PutByteBuffer(body,
                 ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
@@ -87,7 +90,7 @@ namespace Konata.Core.Packets
                     if (pktType != 0x0A && pktType != 0x0B)
                         return false;
 
-                    output._packetType = (PacketType)pktType;
+                    output._packetType = (PacketType) pktType;
                 }
 
                 // Auth Flag
@@ -95,7 +98,8 @@ namespace Konata.Core.Packets
                 {
                     if (reqFlag != 0x00 && reqFlag != 0x01 && reqFlag != 0x02)
                         return false;
-                    output._authFlag = (AuthFlag)reqFlag;
+
+                    output._authFlag = (AuthFlag) reqFlag;
                 }
 
                 // Fixed zero
@@ -122,11 +126,6 @@ namespace Konata.Core.Packets
                     read.TakeDecryptedBytes(out output._payloadData, TeaCryptor.Instance, zeroKey);
                     break;
             }
-
-
-            //TODO:
-            //IsServerResponse?
-            //output.IsServerResponse = true;
 
             return output._payloadData != null;
         }

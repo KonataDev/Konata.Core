@@ -54,7 +54,7 @@ namespace Konata.Core.Components.Model
 
                 if (serviceAttr != null)
                 {
-                    var service = (IService) Activator.CreateInstance(type);
+                    var service = (IService)Activator.CreateInstance(type);
 
                     // Bind service name with service
                     _services.Add(serviceAttr.ServiceName, service);
@@ -86,6 +86,10 @@ namespace Konata.Core.Components.Model
                         // Get SSO service by sso command
                         if (_services.TryGetValue(ssoFrame.Command, out var service))
                         {
+                            // Take pending request
+                            var isPending = _pendingRequests
+                                .TryRemove(ssoFrame.Sequence, out var request);
+
                             try
                             {
                                 // Translate bytes to ProtocolEvent 
@@ -93,8 +97,7 @@ namespace Konata.Core.Components.Model
                                 {
                                     if (outEvent != null)
                                     {
-                                        // Get pending request
-                                        if (_pendingRequests.TryRemove(ssoFrame.Sequence, out var request))
+                                        if (isPending)
                                         {
                                             // Set result
                                             request.Finish(outEvent);
@@ -106,10 +109,19 @@ namespace Konata.Core.Components.Model
                                         }
                                     }
                                 }
-                                else LogW(TAG, $"This message cannot be processed. {ssoFrame.Command}");
+                                else
+                                {
+                                    request.Exception(new Exception("Cannot be processed."));
+                                    LogW(TAG, $"This message cannot be processed. {ssoFrame.Command}");
+                                }
                             }
                             catch (Exception e)
                             {
+                                if (isPending)
+                                {
+                                    request.Exception(e);
+                                }
+
                                 task.Exception(e);
                                 LogW(TAG, $"Thrown an exception while processing a message. {ssoFrame.Command}");
                                 LogE(TAG, e);
@@ -149,7 +161,7 @@ namespace Konata.Core.Components.Model
                         // Is need response from server
                         if (protocolEvent.WaitForResponse)
                         {
-                            AddPending:
+                        AddPending:
                             if (!_pendingRequests.TryAdd(sequence, task))
                             {
                                 _pendingRequests[sequence].Cancel();

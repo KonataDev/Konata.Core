@@ -6,6 +6,7 @@ using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Packets.Protobuf;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Konata.Core

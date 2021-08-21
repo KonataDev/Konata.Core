@@ -13,7 +13,7 @@ namespace Konata.Core.Services.Friendlist
     [Service("friendlist.GetTroopListReqV2", "Pull group list")]
     public class GetTroopListReqV2 : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             var response = new SvcRspGetTroopListRespV2(input.Payload.GetBytes());
             output = PullGroupListEvent.Result(0, response.Groups);
@@ -22,7 +22,7 @@ namespace Konata.Core.Services.Friendlist
         }
 
         private bool Build(Sequence sequence, PullGroupListEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -33,7 +33,7 @@ namespace Konata.Core.Services.Friendlist
                 newSequence, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signInfo.Account.Uin, signInfo.Session.D2Token, signInfo.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -43,7 +43,7 @@ namespace Konata.Core.Services.Friendlist
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (PullGroupListEvent) input, signInfo, device, out newSequence, out output);
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+            => Build(sequence, (PullGroupListEvent) input, keystore, device, out newSequence, out output);
     }
 }

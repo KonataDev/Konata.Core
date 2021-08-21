@@ -13,11 +13,11 @@ namespace Konata.Core.Services.PbMessageSvc
     [EventSubscribe(typeof(GroupMessageReadEvent))]
     internal class PbMsgReadReport : IService
     {
-        public bool Parse(SSOFrame input, BotKeyStore signInfo, out ProtocolEvent output)
+        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
             => (output = null) == null;
 
         public bool Build(Sequence sequence, GroupMessageReadEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = input.SessionSequence;
@@ -28,7 +28,7 @@ namespace Konata.Core.Services.PbMessageSvc
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(readReport), out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    signInfo.Account.Uin, signInfo.Session.D2Token, signInfo.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -38,7 +38,7 @@ namespace Konata.Core.Services.PbMessageSvc
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore signInfo, BotDevice device, out int newSequence, out byte[] output)
-              => Build(sequence, (GroupMessageReadEvent)input, signInfo, device, out newSequence, out output);
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+              => Build(sequence, (GroupMessageReadEvent)input, keystore, device, out newSequence, out output);
     }
 }
