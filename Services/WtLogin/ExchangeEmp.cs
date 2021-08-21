@@ -56,40 +56,24 @@ namespace Konata.Core.Services.WtLogin
                 if (tlv119 != null)
                 {
                     var decrypted = tlv119._tlvBody.TakeDecryptedBytes(out var _,
-                        TeaCryptor.Instance, keystore.KeyStub.TgtgKey);
+                        TeaCryptor.Instance, keystore.Session.TgtKey);
 
                     var tlv119Unpacker = new TlvUnpacker(decrypted, true);
-
-                    Tlv tlv16a = tlv119Unpacker.TryGetTlv(0x16a); // no pic sig
-                    Tlv tlv10c = tlv119Unpacker.TryGetTlv(0x10c); // gt key
                     Tlv tlv10a = tlv119Unpacker.TryGetTlv(0x10a); // tgt
                     Tlv tlv10d = tlv119Unpacker.TryGetTlv(0x10d); // tgt key
-                    Tlv tlv114 = tlv119Unpacker.TryGetTlv(0x114); // st
-                    Tlv tlv10e = tlv119Unpacker.TryGetTlv(0x10e); // st key
-                    Tlv tlv103 = tlv119Unpacker.TryGetTlv(0x103); // stwx_web
-                    Tlv tlv133 = tlv119Unpacker.TryGetTlv(0x133);
-                    Tlv tlv134 = tlv119Unpacker.TryGetTlv(0x134); // ticket key
-                    Tlv tlv322 = tlv119Unpacker.TryGetTlv(0x322); // device token
-                    Tlv tlv11d = tlv119Unpacker.TryGetTlv(0x11d); // st, st key
                     Tlv tlv11a = tlv119Unpacker.TryGetTlv(0x11a); // age, sex, nickname
-                    Tlv tlv120 = tlv119Unpacker.TryGetTlv(0x120); // skey
-                    Tlv tlv512 = tlv119Unpacker.TryGetTlv(0x512); // Map<domain, p_skey>
                     Tlv tlv305 = tlv119Unpacker.TryGetTlv(0x305); // d2key
                     Tlv tlv143 = tlv119Unpacker.TryGetTlv(0x143); // d2
-
-                    var noPicSig = ((T16aBody) tlv16a._tlvBody)._noPicSig;
-
+                    // Tlv tlv120 = tlv119Unpacker.TryGetTlv(0x120); // skey
+                    // Tlv tlv114 = tlv119Unpacker.TryGetTlv(0x114); // st
+                    // Tlv tlv10e = tlv119Unpacker.TryGetTlv(0x10e); // st key
+                    // Tlv tlv103 = tlv119Unpacker.TryGetTlv(0x103); // stwx_web
+                    
                     var tgtKey = ((T10dBody) tlv10d._tlvBody)._tgtKey;
                     var tgtToken = ((T10aBody) tlv10a._tlvBody)._tgtToken;
 
                     var d2Key = ((T305Body) tlv305._tlvBody)._d2Key;
                     var d2Token = ((T143Body) tlv143._tlvBody)._d2Token;
-
-                    var wtSessionTicketSig = ((T133Body) tlv133._tlvBody)._wtSessionTicketSig;
-                    var wtSessionTicketKey = ((T134Body) tlv134._tlvBody)._wtSessionTicketKey;
-
-                    var gtKey = ((T10cBody) tlv10c._tlvBody)._gtKey;
-                    var stKey = ((T10eBody) tlv10e._tlvBody)._stKey;
 
                     var userAge = ((T11aBody) tlv11a._tlvBody)._age;
                     var userFace = ((T11aBody) tlv11a._tlvBody)._face;
@@ -100,10 +84,10 @@ namespace Konata.Core.Services.WtLogin
                     keystore.Session.TgtToken = tgtToken;
                     keystore.Session.D2Key = d2Key;
                     keystore.Session.D2Token = d2Token;
-                    keystore.Session.WtSessionTicketSig = wtSessionTicketSig;
-                    keystore.Session.WtSessionTicketKey = wtSessionTicketKey;
-                    keystore.Session.GtKey = gtKey;
-                    keystore.Session.StKey = stKey;
+                    keystore.Account.Age = userAge;
+                    keystore.Account.Face = userFace;
+                    keystore.Account.Name = userNickname;
+                    keystore.Account.Age = userAge;
 
                     return WtLoginEvent.ResultOk((int) response.Status);
                 }
