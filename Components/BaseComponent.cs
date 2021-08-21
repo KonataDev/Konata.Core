@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Konata.Core.Events;
 using Konata.Core.Entity;
+
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace Konata.Core.Components
 {
@@ -42,12 +43,7 @@ namespace Konata.Core.Components
         #region Log Methods
 
         private void Log(LogLevel logLevel, string tag, string content)
-            => PostEventToEntity(new LogEvent
-            {
-                Tag = tag,
-                Level = logLevel,
-                EventMessage = content
-            });
+            => PostEventToEntity(LogEvent.Create(tag, logLevel, content));
 
         public void LogV(string tag, string content)
             => Log(LogLevel.Verbose, tag, content);

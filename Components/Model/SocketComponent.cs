@@ -115,6 +115,10 @@ namespace Konata.Core.Components.Model
                                 selectHost = item;
                             }
                         }
+
+                        LogI(TAG, "Probing latency " +
+                                  $"{selectHost.Host}:{selectHost.Port} " +
+                                  $"=> {time}ms.");
                     }
                 }
             }
@@ -128,8 +132,10 @@ namespace Konata.Core.Components.Model
         /// <param name="hostIp"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public Task<bool> Connect(string hostIp, int port)
+        private Task<bool> Connect(string hostIp, int port)
         {
+            LogI(TAG, $"Select server => {hostIp}:{port}");
+
             try
             {
                 _socket?.Dispose();
@@ -307,7 +313,7 @@ namespace Konata.Core.Components.Model
         {
             if (_socket is not {Connected: true})
             {
-                LogW(TAG, "Calling DisConnect method after socket disconnected.");
+                LogW(TAG, "Calling Disconnect method after socket disconnected.");
                 return true;
             }
 

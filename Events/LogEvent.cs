@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace Konata.Core.Events
 {
@@ -14,8 +13,26 @@ namespace Konata.Core.Events
 
     public class LogEvent : BaseEvent
     {
-        public LogLevel Level { get; set; }
+        public string Tag { get; }
 
-        public string Tag { get; set; }
+        public LogLevel Level { get; }
+
+        private LogEvent(string tag,
+            LogLevel level, string content)
+        {
+            Tag = tag;
+            Level = level;
+            EventMessage = content;
+        }
+
+        /// <summary>
+        /// Construct event
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="level"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        internal static LogEvent Create(string tag,
+            LogLevel level, string content) => new(tag, level, content);
     }
 }

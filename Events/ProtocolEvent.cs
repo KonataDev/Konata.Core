@@ -5,13 +5,13 @@ namespace Konata.Core.Events
 {
     public class ProtocolEvent : BaseEvent
     {
-        public bool WaitForResponse { get; protected set; }
-
-        public int SessionSequence { get; protected set; }
+        public int Timeout { get; protected set; }
 
         public int ResultCode { get; protected set; }
 
-        public int Timeout { get; protected set; }
+        public int SessionSequence { get; protected set; }
+
+        public bool WaitForResponse { get; protected set; }
 
         internal ProtocolEvent(int timeout, bool wait)
         {
