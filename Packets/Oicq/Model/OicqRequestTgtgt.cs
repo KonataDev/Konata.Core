@@ -1,5 +1,5 @@
 ﻿using Konata.Core.Packets.Tlv;
-using Konata.Core.Packets.Tlv.TlvModel;
+using Konata.Core.Packets.Tlv.Model;
 using Konata.Core.Packets.Protobuf;
 
 namespace Konata.Core.Packets.Oicq.Model

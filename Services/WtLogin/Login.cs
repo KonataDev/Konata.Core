@@ -2,7 +2,7 @@
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Tlv;
-using Konata.Core.Packets.Tlv.TlvModel;
+using Konata.Core.Packets.Tlv.Model;
 using Konata.Core.Packets.Oicq.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Packets.Oicq;

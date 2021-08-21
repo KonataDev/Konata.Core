@@ -1,6 +1,6 @@
 ﻿using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
-using Konata.Core.Packets.Tlv.TlvModel;
+using Konata.Core.Packets.Tlv.Model;
 
 namespace Konata.Core.Packets.Tlv
 {
