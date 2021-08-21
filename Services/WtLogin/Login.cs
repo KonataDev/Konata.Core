@@ -144,6 +144,27 @@ namespace Konata.Core.Services.WtLogin
             // TODO:
             // Device lock
 
+            var tlvs = response.BodyData.TakeAllBytes(out var _);
+            var unpacker = new TlvUnpacker(tlvs, true);
+
+            if (unpacker.Count == 3)
+            {
+                Tlv tlv104 = unpacker.TryGetTlv(0x104);
+                Tlv tlv402 = unpacker.TryGetTlv(0x402);
+                Tlv tlv403 = unpacker.TryGetTlv(0x403);
+
+                if (tlv104 != null && tlv402 != null && tlv403 != null)
+                {
+                    var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
+                    keystore.Session.WtLoginSession = sigSession;
+
+                    return WtLoginEvent.ResultVerifyDeviceLock((int) response.Status);
+                }
+
+                return OnRecvUnknown(response);
+            }
+
+
             return WtLoginEvent.ResultVerifyDeviceLock((int) response.Status);
         }
 
