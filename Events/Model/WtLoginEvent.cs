@@ -46,13 +46,19 @@ namespace Konata.Core.Events.Model
             /// <b>[In] [Out]</b> <br/>
             /// Wtlogin do/submit devlock
             /// </summary>
-            CheckDevLock,
+            VerifyDeviceLock,
 
             /// <summary>
             /// <b>[In]</b> <br/>
-            /// Wtlogin request refresh SMS
+            /// Wtlogin request refresh sms
             /// </summary>
-            RefreshSMS,
+            RefreshSms,
+
+            /// <summary>
+            /// <b>[Out]</b> <br/>
+            /// Refresh sms failed
+            /// </summary>
+            RefreshSmsFailed,
 
             /// <summary>
             /// <b>[Out]</b> <br/>
@@ -136,7 +142,7 @@ namespace Konata.Core.Events.Model
         /// </summary>
         /// <returns></returns>
         internal static WtLoginEvent CreateRefreshSms()
-            => new(Type.RefreshSMS);
+            => new(Type.RefreshSms);
 
         /// <summary>
         /// Construct submit ticket request
@@ -159,7 +165,7 @@ namespace Konata.Core.Events.Model
         /// </summary>
         /// <returns></returns>
         internal static WtLoginEvent CreateCheckDevLock()
-            => new(Type.CheckDevLock);
+            => new(Type.VerifyDeviceLock);
 
         /// <summary>
         /// Construct wtlogin ok result
@@ -168,6 +174,14 @@ namespace Konata.Core.Events.Model
         /// <returns></returns>
         internal static WtLoginEvent ResultOk(int resultCode)
             => new(resultCode, Type.OK, "wtLogin ok");
+
+        /// <summary>
+        /// Construct wtlogin device lock result
+        /// </summary>
+        /// <param name="resultCode"></param>
+        /// <returns></returns>
+        internal static WtLoginEvent ResultVerifyDeviceLock(int resultCode)
+            => new(resultCode, Type.VerifyDeviceLock, "wtLogin verify device lock");
 
         /// <summary>
         /// Construct check slider result
@@ -194,7 +208,7 @@ namespace Konata.Core.Events.Model
         /// <param name="resultCode"></param>
         /// <returns></returns>
         internal static WtLoginEvent ResultRefreshSms(int resultCode)
-            => new(resultCode, Type.RefreshSMS, "Do refresh sms");
+            => new(resultCode, Type.RefreshSms, "Do refresh sms");
 
         internal static WtLoginEvent ResultInvalidUsrPwd(int resultCode)
             => new(resultCode, Type.InvalidUinOrPassword, "Incorrect account or password.");

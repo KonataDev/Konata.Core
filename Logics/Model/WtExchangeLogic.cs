@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Components.Model;
+using Konata.Core.Utils.IO;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable RedundantCaseLabel
@@ -73,10 +75,17 @@ namespace Konata.Core.Logics.Model
                 {
                     while (true)
                     {
-                        Context.LogI(TAG, $"wtStatus => {wtStatus.EventType}");
+                        Context.LogI(TAG, $"Status => {wtStatus.EventType}");
                         switch (wtStatus.EventType)
                         {
                             case WtLoginEvent.Type.OK:
+
+                                // Dump keys
+                                Context.LogV(TAG, "Keystore Dump");
+                                Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
+                                Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
+                                Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
+                                Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
 
                                 // Set online
                                 Context.LogI(TAG, "Registering client");
@@ -88,8 +97,8 @@ namespace Konata.Core.Logics.Model
                                     // Bot online
                                     Context.PostEventToEntity(online);
                                     await Context.PostEvent<BusinessComponent>(online);
-                                    Context.LogI(TAG, "Bot online.");
 
+                                    Context.LogI(TAG, "Bot online.");
                                     return true;
                                 }
 
@@ -114,13 +123,20 @@ namespace Konata.Core.Logics.Model
                                 wtStatus = await WtCheckUserOperation(Context, await WaitForUserOperation());
                                 break;
 
-                            case WtLoginEvent.Type.RefreshSMS:
+                            case WtLoginEvent.Type.RefreshSms:
                                 wtStatus = await WtRefreshSmsCode(Context);
                                 break;
 
-                            case WtLoginEvent.Type.CheckDevLock:
-                            //wtStatus = await WtValidateDeviceLock();
-                            //break;
+                            case WtLoginEvent.Type.RefreshSmsFailed:
+                                Context.LogW(TAG, "Send sms failed, Konata " +
+                                                  "will resend the sms after 60 sec.");
+                                Thread.Sleep(60 * 1000);
+                                wtStatus = await WtRefreshSmsCode(Context);
+                                break;
+
+                            case WtLoginEvent.Type.VerifyDeviceLock:
+                                wtStatus = await WtVerifyDeviceLock(Context);
+                                break;
 
                             case WtLoginEvent.Type.LoginDenied:
                             case WtLoginEvent.Type.InvalidSmsCode:
@@ -255,7 +271,7 @@ namespace Konata.Core.Logics.Model
                 // Go offline
                 else
                 {
-                    SocketComponent.Disconnect("Heart broken");
+                    SocketComponent.Disconnect("Heart broken.");
                 }
             }
         }
@@ -278,7 +294,7 @@ namespace Konata.Core.Logics.Model
         private static Task<WtLoginEvent> WtRefreshSmsCode(BusinessComponent context)
             => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateRefreshSms());
 
-        private static Task<WtLoginEvent> WtValidateDeviceLock(BusinessComponent context)
+        private static Task<WtLoginEvent> WtVerifyDeviceLock(BusinessComponent context)
             => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateCheckDevLock());
 
         private static Task<WtLoginEvent> WtCheckUserOperation(BusinessComponent context, WtLoginEvent userOperation)
