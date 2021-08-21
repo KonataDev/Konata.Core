@@ -46,5 +46,13 @@ namespace Konata.Core
         /// <param name="anyEvent"></param>
         public override void PostEventToEntity(BaseEvent anyEvent)
             => _dict[anyEvent.GetType()].Invoke(anyEvent);
+
+        /// <summary>
+        /// Retrieve the handler is registered
+        /// </summary>
+        /// <typeparam name="TEvent"></typeparam>
+        /// <returns></returns>
+        internal bool HandlerRegistered<TEvent>()
+            where TEvent : BaseEvent => _dict[typeof(TEvent)] != null;
     }
 }

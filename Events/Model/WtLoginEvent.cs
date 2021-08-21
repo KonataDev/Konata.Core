@@ -1,4 +1,6 @@
-﻿namespace Konata.Core.Events.Model
+﻿// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+
+namespace Konata.Core.Events.Model
 {
     public class WtLoginEvent : ProtocolEvent
     {
@@ -222,38 +224,37 @@
             Slider
         }
 
-        public CaptchaType Type
-            => _captchaType;
+        public CaptchaType Type { get; }
 
-        public string SliderUrl
-            => _sliderUrl;
+        public string SliderUrl { get; }
 
-        public string Phone
-            => _smsPhone;
+        public string Phone { get; }
 
-        public string Country
-            => _smsCountry;
+        public string Country { get; }
 
-        private CaptchaType _captchaType;
-        private string _sliderUrl;
-        private string _smsPhone;
-        private string _smsCountry;
-
-        public CaptchaEvent(WtLoginEvent wtEvent)
+        private CaptchaEvent(WtLoginEvent wtEvent)
         {
             switch (wtEvent.EventType)
             {
                 case WtLoginEvent.Type.CheckSms:
-                    _smsPhone = wtEvent.SmsPhone;
-                    _smsCountry = wtEvent.SmsCountry;
-                    _captchaType = CaptchaType.SMS;
+                    Type = CaptchaType.SMS;
+                    Phone = wtEvent.SmsPhone;
+                    Country = wtEvent.SmsCountry;
                     break;
 
                 case WtLoginEvent.Type.CheckSlider:
-                    _sliderUrl = wtEvent.SliderUrl;
-                    _captchaType = CaptchaType.Slider;
+                    Type = CaptchaType.Slider;
+                    SliderUrl = wtEvent.SliderUrl;
                     break;
             }
         }
+
+        /// <summary>
+        /// Construct event request
+        /// </summary>
+        /// <param name="wtEvent"></param>
+        /// <returns></returns>
+        internal static CaptchaEvent Create(WtLoginEvent wtEvent)
+            => new(wtEvent);
     }
 }

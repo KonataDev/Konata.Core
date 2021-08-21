@@ -55,6 +55,7 @@ namespace Konata.Core.Logics.Model
             }
 
             // Connect to the server
+            Context.LogI(TAG, "Connecting server...");
             if (!await SocketComponent.Connect(true))
             {
                 return false;
@@ -63,15 +64,18 @@ namespace Konata.Core.Logics.Model
             try
             {
                 // Login
+                Context.LogI(TAG, "Do Wtlogin");
                 var wtStatus = await WtLogin(Context);
                 {
                     while (true)
                     {
+                        Context.LogI(TAG, $"wtStatus => {wtStatus.EventType}");
                         switch (wtStatus.EventType)
                         {
                             case WtLoginEvent.Type.OK:
 
                                 // Set online
+                                Context.LogI(TAG, "Registering client");
                                 var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
 
                                 // Update online status
@@ -80,7 +84,7 @@ namespace Konata.Core.Logics.Model
                                     // Bot online
                                     Context.PostEventToEntity(online);
                                     await Context.PostEvent<BusinessComponent>(online);
-
+                                    Context.LogI(TAG, "Bot online.");
 
                                     return true;
                                 }
@@ -91,7 +95,18 @@ namespace Konata.Core.Logics.Model
 
                             case WtLoginEvent.Type.CheckSms:
                             case WtLoginEvent.Type.CheckSlider:
-                                Context.PostEventToEntity(wtStatus);
+
+                                // Check handler
+                                if (!Context.Bot.HandlerRegistered<CaptchaEvent>())
+                                {
+                                    Context.SocketComponent.Disconnect("Need handler.");
+                                    Context.LogW(TAG, "No captcha event handler registered, " +
+                                                      "Please note, Konata cannot process captcha automatically.");
+                                    return false;
+                                }
+
+                                // Wait for user operation
+                                Context.PostEventToEntity(CaptchaEvent.Create(wtStatus));
                                 wtStatus = await WtCheckUserOperation(Context, await WaitForUserOperation());
                                 break;
 
@@ -115,7 +130,7 @@ namespace Konata.Core.Logics.Model
                             case WtLoginEvent.Type.Unknown:
                             case WtLoginEvent.Type.NotImplemented:
                                 Context.SocketComponent.Disconnect("Wtlogin failed.");
-                                Context.LogW(TAG, "Login fail. Unsupported wtlogin event type received.");
+                                Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
                                 return false;
                         }
                     }
@@ -195,9 +210,6 @@ namespace Konata.Core.Logics.Model
                     // Cancel schedules
                     Context.ScheduleComponent.Cancel(ScheduleKeepOnline);
                     Context.ScheduleComponent.Cancel(ScheduleCheckConnection);
-
-                    // Disconnect
-                    Logout();
                     break;
             }
         }
@@ -231,9 +243,7 @@ namespace Konata.Core.Logics.Model
                 // Go offline
                 else
                 {
-                    _onlineType = OnlineStatusEvent.Type.Offline;
-                    await Context.PostEvent<BusinessComponent>
-                        (OnlineStatusEvent.Push(_onlineType, "Heart broken"));
+                    SocketComponent.Disconnect("Heart broken");
                 }
             }
         }
