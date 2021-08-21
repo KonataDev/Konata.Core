@@ -11,7 +11,7 @@ using Konata.Core.Components.Model;
 
 namespace Konata.Core.Logics.Model
 {
-    [EventSubscribe(typeof(WtLoginEvent))]
+    [EventSubscribe(typeof(ProtocolEvent))]
     [EventSubscribe(typeof(OnlineStatusEvent))]
     [BusinessLogic("Wtlogin Exchange Logic", "Responsible for the online tasks.")]
     public class WtExchangeLogic : BaseLogic
@@ -22,6 +22,7 @@ namespace Konata.Core.Logics.Model
 
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;
+        private uint _heartbeatCounter;
 
         public OnlineStatusEvent.Type OnlineType
             => _onlineType;
@@ -30,6 +31,7 @@ namespace Konata.Core.Logics.Model
             : base(context)
         {
             _onlineType = OnlineStatusEvent.Type.Offline;
+            _heartbeatCounter = 0;
         }
 
         public override void Incoming(ProtocolEvent e)
@@ -39,6 +41,8 @@ namespace Konata.Core.Logics.Model
             {
                 OnStatusChanged(status);
             }
+
+            _heartbeatCounter++;
         }
 
         /// <summary>
@@ -202,7 +206,7 @@ namespace Konata.Core.Logics.Model
                 case OnlineStatusEvent.Type.Online:
                     // Register schedules
                     Context.ScheduleComponent.Interval(ScheduleKeepOnline, 600 * 1000, OnKeepOnline);
-                    Context.ScheduleComponent.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
+                    Context.ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
                     break;
 
                 // Bot offline
@@ -219,12 +223,20 @@ namespace Konata.Core.Logics.Model
         /// </summary>
         private async void OnCheckConnection()
         {
-            // TODO:
             // Check connection
             Context.LogI(TAG, "OnCheckConnection");
 
+            // Client alive
+            // So reset the counter
+            if (_heartbeatCounter > 0)
+            {
+                _heartbeatCounter = 0;
+                return;
+            }
+
             try
             {
+                // Check heartbeat
                 await CheckHeartbeat(Context);
             }
             catch (TimeoutException e)

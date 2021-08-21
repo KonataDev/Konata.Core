@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace Konata.Core.Components.Model
 
                 // Logic instance
                 var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-                var instance = (BaseLogic)constructor[0].Invoke(new object[] { this });
+                var instance = (BaseLogic) constructor[0].Invoke(new object[] {this});
 
                 // Bind logic withevents
                 foreach (var i in events)
@@ -79,10 +80,21 @@ namespace Konata.Core.Components.Model
         {
             if (task.EventPayload is ProtocolEvent protocolEvent)
             {
+                _businessLogics.TryGetValue
+                    (typeof(ProtocolEvent), out var baseLogics);
+
                 // Handle event
                 if (_businessLogics.TryGetValue
                     (protocolEvent.GetType(), out var logics))
                 {
+                    // Append base logics and
+                    // select distinct to avoid multiple executes
+                    if (baseLogics != null)
+                    {
+                        logics.AddRange(baseLogics);
+                        logics = logics.Distinct().ToList();
+                    }
+
                     foreach (var i in logics)
                     {
                         try
@@ -154,7 +166,7 @@ namespace Konata.Core.Components.Model
         public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
             => Messaging.SendPrivateMessage(friendUin, message);
 
-        internal void SyncGroupList()
+        internal Task<bool> SyncGroupList()
             => CacheSync.SyncGroupList();
 
         internal Task<bool> SyncGroupMemberList(uint groupUin)

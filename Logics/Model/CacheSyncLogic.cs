@@ -49,7 +49,7 @@ namespace Konata.Core.Logics.Model
         /// <summary>
         /// Sync group list
         /// </summary>
-        internal async void SyncGroupList()
+        internal async Task<bool> SyncGroupList()
         {
             var result = await PullGroupList(Context);
             {
@@ -64,8 +64,9 @@ namespace Konata.Core.Logics.Model
                 }
             }
 
-            Context.LogI(TAG, $"Group list sync finished with code {result.ResultCode}, " +
+            Context.LogI(TAG, $"Group list sync finished, " +
                               $"Total {result.GroupInfo.Count} groups.");
+            return true;
         }
 
         /// <summary>
@@ -80,8 +81,8 @@ namespace Konata.Core.Logics.Model
             if (!ConfigComponent.TryGetGroupInfo
                 (groupUin, out var groupInfo) || groupInfo.Code == 0)
             {
-                Context.LogE(TAG, $"Sync group member " +
-                                  $"failed, no such group {groupUin}");
+                Context.LogE(TAG, $"Sync group member failed, " +
+                                  $"no such group {groupUin}");
                 return false;
             }
 
@@ -114,7 +115,7 @@ namespace Konata.Core.Logics.Model
                 // Continue
             } while (nextUin != 0);
 
-            Context.LogI(TAG, $"Group [{groupUin}] syncing finished, " +
+            Context.LogI(TAG, $"Group [{groupUin}] sync finished, " +
                               $"Total {memberCount} members.");
 
             return true;
@@ -161,7 +162,7 @@ namespace Konata.Core.Logics.Model
                 // Continue
             } while (nextIndex != 0);
 
-            Context.LogI(TAG, $"Friend syncing finished, " +
+            Context.LogI(TAG, $"Friend list sync finished, " +
                               $"Total {friendCount} friends.");
 
             return true;
