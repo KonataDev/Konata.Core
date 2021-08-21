@@ -117,7 +117,7 @@ namespace Konata.Core.Components.Model
                         }
 
                         LogI(TAG, "Probing latency " +
-                                  $"{selectHost.Host}:{selectHost.Port} " +
+                                  $"{item.Host}:{item.Port} " +
                                   $"=> {time}ms.");
                     }
                 }
