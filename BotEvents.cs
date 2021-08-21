@@ -27,7 +27,8 @@ namespace Konata.Core
         /// Handlers initialization
         /// </summary>
         private void InitializeHandlers()
-            => _dict = new()
+        {
+            _dict = new()
             {
                 {typeof(LogEvent), e => OnLog?.Invoke(this, (LogEvent) e)},
                 {typeof(CaptchaEvent), e => OnCaptcha?.Invoke(this, (CaptchaEvent) e)},
@@ -39,6 +40,50 @@ namespace Konata.Core
                 {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
                 {typeof(GroupSettingsAnonymousEvent), e => OnGroupSettingsAnonymous?.Invoke(this, (GroupSettingsAnonymousEvent) e)},
             };
+
+            // Default group message handler
+            OnGroupMessage += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Group]{e.GroupUin} " +
+                                      $"[Member]{e.MemberUin} {e.Message}"));
+            };
+
+            // Default private message handler
+            OnPrivateMessage += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Message}"));
+            };
+
+            // Default group mute handler
+            OnGroupMute += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Mute]{e.GroupUin} " +
+                                      $"[Operator]{e.OperatorUin} " +
+                                      $"[Member]{e.MemberUin} " +
+                                      $"[Time]{e.TimeSeconds} sec."));
+            };
+
+            // Default group poke handler
+            OnGroupPoke += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Poke]{e.GroupUin} " +
+                                      $"[Operator]{e.OperatorUin} " +
+                                      $"[Member]{e.MemberUin}"));
+            };
+
+            // Default group recall handler
+            OnGroupMessageRecall += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Recall]{e.GroupUin} " +
+                                      $"[Messageid]{e.MessageId} " +
+                                      $"[Member]{e.MemberUin}"));
+            };
+        }
 
         /// <summary>
         /// Post event to userend
