@@ -19,7 +19,7 @@ namespace Konata.Core.Logics.Model
     public class WtExchangeLogic : BaseLogic
     {
         private const string TAG = "WtXchg Logic";
-        private const string ScheduleKeepOnline = "Logic.WtXchg.KeepOnline";
+        private const string SchedulePullMessage = "Logic.WtXchg.PullMessage";
         private const string ScheduleCheckConnection = "Logic.WtXchg.CheckConnection";
 
         private OnlineStatusEvent.Type _onlineType;
@@ -248,14 +248,14 @@ namespace Konata.Core.Logics.Model
                 // Bot come online
                 case OnlineStatusEvent.Type.Online:
                     // Register schedules
-                    Context.ScheduleComponent.Interval(ScheduleKeepOnline, 600 * 1000, OnKeepOnline);
+                    Context.ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
                     Context.ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
                     break;
 
                 // Bot offline
                 case OnlineStatusEvent.Type.Offline:
                     // Cancel schedules
-                    Context.ScheduleComponent.Cancel(ScheduleKeepOnline);
+                    Context.ScheduleComponent.Cancel(SchedulePullMessage);
                     Context.ScheduleComponent.Cancel(ScheduleCheckConnection);
                     break;
             }
@@ -304,13 +304,27 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Keep online
+        /// Pull new message
         /// </summary>
-        private void OnKeepOnline()
+        private async void OnPullMessage()
         {
-            // TODO:
-            // Keep online
-            Context.LogI(TAG, "OnKeepOnline");
+            // Pull message
+            Context.LogI(TAG, "OnPullMessage");
+
+            try
+            {
+                // Get new message
+                await PullMessage(Context);
+            }
+            catch (TimeoutException e)
+            {
+                Context.LogW(TAG, "Connection lost? " +
+                                  "Let me check the connection.");
+
+                // Check the connection
+                _heartbeatCounter = 0;
+                ScheduleComponent.Trigger(ScheduleCheckConnection);
+            }
         }
 
         #region Stub methods
@@ -335,6 +349,9 @@ namespace Konata.Core.Logics.Model
 
         private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context)
             => context.PostPacket<CheckHeartbeatEvent>(CheckHeartbeatEvent.Create());
+
+        private static Task<PullMessageEvent> PullMessage(BusinessComponent context)
+            => context.PostPacket<PullMessageEvent>(PullMessageEvent.Create(context.ConfigComponent.SyncCookie));
 
         #endregion
     }

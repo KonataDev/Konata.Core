@@ -1,6 +1,6 @@
 ﻿namespace Konata.Core.Events.Model
 {
-    internal class PrivateMessagePullEvent : ProtocolEvent
+    internal class PullMessageEvent : ProtocolEvent
     {
         /// <summary>
         /// <b>[In]</b> <br/>
@@ -8,7 +8,7 @@
         /// </summary>
         public byte[] SyncCookie { get; }
 
-        private PrivateMessagePullEvent(byte[] syncCookie)
+        private PullMessageEvent(byte[] syncCookie)
             : base(0, false)
         {
             SyncCookie = syncCookie;
@@ -19,7 +19,7 @@
         /// </summary>
         /// <param name="syncCookie"></param>
         /// <returns></returns>
-        internal static PrivateMessagePullEvent Create(byte[] syncCookie)
+        internal static PullMessageEvent Create(byte[] syncCookie)
             => new(syncCookie);
     }
 }

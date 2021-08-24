@@ -1,11 +1,10 @@
-﻿using System;
-using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf
 {
-    public class PrivateMsgPullRequest : ProtoTreeRoot
+    public class GetMessageRequest : ProtoTreeRoot
     {
-        public PrivateMsgPullRequest(byte[] syncCookie)
+        public GetMessageRequest(byte[] syncCookie)
         {
             AddLeafVar("08", 0);                          // sync_flag
             AddLeafBytes("12", syncCookie);               // sync_cookie

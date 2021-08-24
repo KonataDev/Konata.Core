@@ -15,8 +15,7 @@ using Konata.Core.Attributes;
 namespace Konata.Core.Services.MessageSvc
 {
     [Service("MessageSvc.PbGetMsg", "Get message")]
-    [EventSubscribe(typeof(PrivateMessageEvent))]
-    [EventSubscribe(typeof(PrivateMessagePullEvent))]
+    [EventSubscribe(typeof(PullMessageEvent))]
     internal class PbGetMsg : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
@@ -123,13 +122,13 @@ namespace Konata.Core.Services.MessageSvc
         private BaseChain ParseQFace(ProtoTreeRoot tree)
             => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
-        public bool Build(Sequence sequence, PrivateMessagePullEvent input,
+        public bool Build(Sequence sequence, PullMessageEvent input,
             BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
 
-            var pullRequest = new PrivateMsgPullRequest(input.SyncCookie);
+            var pullRequest = new GetMessageRequest(input.SyncCookie);
 
             if (SSOFrame.Create("MessageSvc.PbGetMsg", PacketType.TypeB,
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(pullRequest), out var ssoFrame))
@@ -146,6 +145,6 @@ namespace Konata.Core.Services.MessageSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (PrivateMessagePullEvent) input, keystore, device, out newSequence, out output);
+            => Build(sequence, (PullMessageEvent) input, keystore, device, out newSequence, out output);
     }
 }

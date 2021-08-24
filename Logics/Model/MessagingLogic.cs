@@ -251,7 +251,7 @@ namespace Konata.Core.Logics.Model
             => context.PostPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
 
         private static void PullPrivateMessage(BusinessComponent context, byte[] syncCookie)
-            => context.PostPacket(PrivateMessagePullEvent.Create(syncCookie));
+            => context.PostPacket(PullMessageEvent.Create(syncCookie));
 
         private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
             => context.PostPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
