@@ -87,13 +87,12 @@ namespace Konata.Core.Logics.Model
                         {
                             goto GirlBlessingQwQ;
                         }
-
                     }
                     catch (Exception e)
                     {
                         // Do nothing
                     }
-                    
+
                     Context.LogI(TAG, "Fast login failed.");
                 }
 
@@ -101,7 +100,7 @@ namespace Konata.Core.Logics.Model
                 Context.LogI(TAG, "Do Wtlogin");
                 wtStatus = await WtLogin(Context);
 
-            GirlBlessingQwQ:
+                GirlBlessingQwQ:
                 while (true)
                 {
                     Context.LogI(TAG, $"Status => {wtStatus.EventType}");
@@ -169,7 +168,7 @@ namespace Konata.Core.Logics.Model
 
                         case WtLoginEvent.Type.LoginDenied:
                         case WtLoginEvent.Type.InvalidSmsCode:
-                        case WtLoginEvent.Type.InvalidLoginEnvironment:
+                        case WtLoginEvent.Type.HighRiskEnvironment:
                         case WtLoginEvent.Type.InvalidUinOrPassword:
                             Context.PostEventToEntity(wtStatus);
                             Context.SocketComponent.Disconnect("Wtlogin failed.");

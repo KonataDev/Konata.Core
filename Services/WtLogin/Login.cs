@@ -288,7 +288,7 @@ namespace Konata.Core.Services.WtLogin
                 var errorTitle = ((T146Body) tlv146._tlvBody)._title;
                 var errorMessage = ((T146Body) tlv146._tlvBody)._message;
 
-                return WtLoginEvent.ResultInvalidLoginEnv
+                return WtLoginEvent.ResultHighRiskEnvironment
                     ((int) response.Status, $"{errorTitle} {errorMessage}");
             }
 

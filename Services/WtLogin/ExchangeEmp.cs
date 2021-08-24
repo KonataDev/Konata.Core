@@ -105,7 +105,6 @@ namespace Konata.Core.Services.WtLogin
         private WtLoginEvent OnRecvTokenExpired(OicqResponse response, BotKeyStore keystore)
             => WtLoginEvent.ResultTokenExpired((int) response.Status);
 
-
         /// <summary>
         /// Unknown code
         /// </summary>
