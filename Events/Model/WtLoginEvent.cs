@@ -82,7 +82,7 @@ namespace Konata.Core.Events.Model
             /// <b>[Out]</b> <br/>
             /// Wtlogin failed about login environment
             /// </summary>
-            InvalidLoginEnvironment,
+            HighRiskEnvironment,
 
             /// <summary>
             /// <b>[Out]</b> <br/>
@@ -235,8 +235,8 @@ namespace Konata.Core.Events.Model
         internal static WtLoginEvent ResultInvalidSmsCode(int resultCode)
             => new(resultCode, Type.InvalidSmsCode, "Incorrect sms code.");
 
-        internal static WtLoginEvent ResultInvalidLoginEnv(int resultCode, string reason)
-            => new(resultCode, Type.InvalidLoginEnvironment, reason);
+        internal static WtLoginEvent ResultHighRiskEnvironment(int resultCode, string reason)
+            => new(resultCode, Type.HighRiskEnvironment, reason);
 
         internal static WtLoginEvent ResultLoginDenied(int resultCode, string reason)
             => new(resultCode, Type.LoginDenied, reason);
