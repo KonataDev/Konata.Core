@@ -7,20 +7,29 @@
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
     <Copyright>(C) 2021 Konata Project</Copyright>
-    <PackageLicenseExpression>AGPL-3.0 License</PackageLicenseExpression>
-    
+    <PackageLicenseExpression></PackageLicenseExpression>
+
     <Version>0.0.1</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Konata.Codec" Version="1.0.1" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Exceptions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Konata.Core\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <!-- Get Build Stamp -->

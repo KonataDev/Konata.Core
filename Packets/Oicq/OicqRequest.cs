@@ -19,6 +19,7 @@ namespace Konata.Core.Packets.Oicq
         PreventByReceiveIssue = 3,
         PreventByTokenExpired = 15,
         PreventByAccountBanned = 40,
+        PreventByOperationTimeout = 155,
         PreventBySmsSentFailed = 162,
         PreventByIncorrectSmsCode = 163,
         PreventByLoginDenied = 167,
