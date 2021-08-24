@@ -34,6 +34,14 @@ namespace Konata.Core.Message
         public override string ToString()
             => Chains.Aggregate("", (current, element) => current + element);
 
+        /// <summary>
+        /// Find chain
+        /// </summary>
+        /// <typeparam name="TChain"></typeparam>
+        /// <returns></returns>
+        public List<TChain> FindChain<TChain>()
+            => Chains.Where(i => i is TChain).Cast<TChain>().ToList();
+
         public static IEnumerable<BaseChain> operator |(MessageChain x, BaseChain.ChainType type)
             => x.Chains.Where(c => c.Type != type);
 
