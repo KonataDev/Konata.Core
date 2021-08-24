@@ -132,11 +132,11 @@ namespace Konata.Core.Message.Model
                 // Image type
                 var imageType = type switch
                 {
-                    0 => ImageType.JPG,
-                    1 => ImageType.PNG,
-                    2 => ImageType.GIF,
-                    3 => ImageType.BMP,
-                    4 => ImageType.WEBP,
+                    FileFormat.ImageFormat.JPG => ImageType.JPG,
+                    FileFormat.ImageFormat.PNG => ImageType.PNG,
+                    FileFormat.ImageFormat.GIF => ImageType.GIF,
+                    FileFormat.ImageFormat.BMP => ImageType.BMP,
+                    FileFormat.ImageFormat.WEBP => ImageType.WEBP,
                     _ => throw new NotImplementedException(),
                 };
 

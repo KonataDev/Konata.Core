@@ -4,11 +4,15 @@ namespace Konata.Core.Utils.FileFormat
 {
     public static partial class FileFormat
     {
-        //0 => ImageType.JPG,
-        //1 => ImageType.PNG,
-        //2 => ImageType.GIF,
-        //3 => ImageType.BMP,
-        //4 => ImageType.WEBP,
+        public enum ImageFormat
+        {
+            UNKNOWN,
+            JPG,
+            PNG,
+            GIF,
+            BMP,
+            WEBP,
+        }
 
         /// <summary>
         /// Dectet image type
@@ -19,7 +23,7 @@ namespace Konata.Core.Utils.FileFormat
         /// <param name="height"></param>
         /// <returns></returns>
         public static bool DetectImage(byte[] data,
-            out int type, out uint width, out uint height)
+            out ImageFormat type, out uint width, out uint height)
         {
             var buffer = new ByteBuffer(data);
             {
@@ -28,28 +32,28 @@ namespace Konata.Core.Utils.FileFormat
                 // ÿØ JFIF
                 if (value >> 16 == 0xFFD8)
                 {
-                    type = 0;
+                    type = ImageFormat.JPG;
                     return DetectJPG(buffer, out width, out height);
                 }
 
                 // ‰PNG
                 if (value == 0x89504E47)
                 {
-                    type = 1;
+                    type = ImageFormat.PNG;
                     return DetectPNG(buffer, out width, out height);
                 }
 
                 // GIF
                 if (value >> 8 == 0x474946)
                 {
-                    type = 2;
+                    type = ImageFormat.GIF;
                     return DetectGIF(buffer, out width, out height);
                 }
 
                 // BM
                 if (value >> 16 == 0x424D)
                 {
-                    type = 3;
+                    type = ImageFormat.BMP;
                     return DetectBMP(buffer, out width, out height);
                 }
 
@@ -60,15 +64,14 @@ namespace Konata.Core.Utils.FileFormat
                     buffer.PeekUintBE(8, out value);
                     if (value == 0x57454250)
                     {
-                        type = 4;
+                        type = ImageFormat.WEBP;
                         return DetectWEBP(buffer, out width, out height);
                     }
                 }
             }
 
-            type = 0;
-            width = 0;
-            height = 0;
+            width = height = 0;
+            type = ImageFormat.UNKNOWN;
             return false;
         }
 
