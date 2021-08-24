@@ -58,11 +58,18 @@ namespace Konata.Core.Logics.Model
         /// <returns></returns>
         public async Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
         {
-            // Upload the images
-            if (!await CheckImageAndUpload(friendUin, message, false))
+            // Check and process some resources
+            var uploadImage = SearchImageAndUpload(friendUin, message, false);
+
+            // Wait for tasks done
+            var results = await Task.WhenAll(uploadImage);
             {
-                // Templorary return
-                return -1;
+                // Check results
+                if (!results[0])
+                {
+                    // Some tasks failed
+                    return -1;
+                }
             }
 
             // Send the message
@@ -78,16 +85,21 @@ namespace Konata.Core.Logics.Model
         /// <returns></returns>
         public async Task<int> SendGroupMessage(uint groupUin, MessageChain message)
         {
-            // Upload the images
-            if (!await CheckImageAndUpload(groupUin, message, true))
-            {
-                return -1;
-            }
+            // Check and process some resources
+            var uploadImage = SearchImageAndUpload(groupUin, message, true);
+            var uploadRecord = SearchRecordAndUpload(groupUin, message);
+            var checkAtChain = SearchAt(groupUin, message);
 
-            // Check the at chain
-            if (!await CheckAt(groupUin, message))
+            // Wait for tasks done
+            var results = await Task.WhenAll
+                (uploadImage, uploadRecord, checkAtChain);
             {
-                return -2;
+                // Check results
+                if (!(results[0] && results[1] && results[2]))
+                {
+                    // Some tasks failed
+                    return -1;
+                }
             }
 
             // Send the message
@@ -96,12 +108,12 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Check at
+        /// Cearch at
         /// </summary>
         /// <param name="uin"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        private async Task<bool> CheckAt(uint uin, MessageChain message)
+        private async Task<bool> SearchAt(uint uin, MessageChain message)
         {
             // Find the at chains
             foreach (var i in message.Chains)
@@ -167,23 +179,15 @@ namespace Konata.Core.Logics.Model
         /// <param name="uin"><b>[In]</b> Uin</param>
         /// <param name="message"><b>[In]</b> The message chain</param>
         /// <param name="c2c"><b>[In]</b> Group or Private </param>
-        private async Task<bool> CheckImageAndUpload
+        private async Task<bool> SearchImageAndUpload
             (uint uin, MessageChain message, bool c2c)
         {
-            List<ImageChain> upload = new();
-
             // Find the image chain
-            foreach (var i in message.Chains)
+            var upload = message.FindChain<ImageChain>();
             {
-                if (i.Type == BaseChain.ChainType.Image)
-                {
-                    upload.Add((ImageChain) i);
-                }
-            }
+                // No images
+                if (upload.Count <= 0) return true;
 
-            // Do upload the image
-            if (upload.Count > 0)
-            {
                 // 1. Request ImageStore.GroupPicUp
                 // 2. Upload the image via highway
                 // 3. Return false while failed to upload
@@ -215,9 +219,20 @@ namespace Konata.Core.Logics.Model
                     return await Context.HighwayComponent.UploadPrivateImages();
                 }
             }
+        }
 
-            // No images
-            return true;
+        /// <summary>
+        /// Upload the records
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> SearchRecordAndUpload(uint uin, MessageChain message)
+        {
+            // Return false if audio configuration not enabled
+            if (!ConfigComponent.GlobalConfig.EnableAudio) return false;
+
+            
+
+            return false;
         }
 
         /// <summary>
