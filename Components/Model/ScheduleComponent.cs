@@ -197,7 +197,7 @@ namespace Konata.Core.Components.Model
                     if (taskTable[i].RemainTimes <= 0)
                     {
                         LogI(TAG, $"Destroy the task => '{taskTable[i].Name}'");
-                        
+
                         _taskDict.TryRemove(taskTable[i].Name, out _);
                         taskTable.RemoveAt(i);
                     }
@@ -293,5 +293,25 @@ namespace Konata.Core.Components.Model
         /// <exception cref="ObjectDisposedException"></exception>
         public void RunOnce(string name, DateTime date, Action action)
             => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds * 1000), action);
+
+        /// <summary>
+        /// Execute a task immediately
+        /// </summary>
+        /// <param name="name"></param>
+        public void Trigger(string name)
+        {
+            // Check the task
+            if (!_taskDict.TryGetValue(name, out var task))
+            {
+                LogW(TAG, $"Schedule '{name}' not exist.");
+                return;
+            }
+
+            // Set interval to 0
+            task.RemainInterval = 0;
+
+            // Wakeup the scheduler thread
+            _taskNotify.Set();
+        }
     }
 }
