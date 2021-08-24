@@ -23,6 +23,12 @@ namespace Konata.Core
 
         #endregion
 
+        #region Audio
+
+        public bool EnableAudio { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Get a default config
         /// </summary>
@@ -36,6 +42,7 @@ namespace Konata.Core
                 ReConnectTryCount = 3,
                 CustomHost = null,
                 ImageChunkSize = 4096,
+                EnableAudio = false
             };
         }
     }
