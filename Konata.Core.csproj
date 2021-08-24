@@ -6,14 +6,21 @@
 
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
-    <Copyright>(C) 2021 Konata Project</Copyright>
+    <Copyright>Konata Project (C) 2021</Copyright>
     <PackageLicenseExpression></PackageLicenseExpression>
 
-    <Version>0.0.1</Version>
+    <Version>1.0.3-alpha.1</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Core implementation for Konata.</Description>
+    <PackageIcon>konata_icon_512_round64.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +34,10 @@
 
   <ItemGroup>
     <None Include="..\..\Konata.Core\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="Resources\konata_icon_512_round64.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

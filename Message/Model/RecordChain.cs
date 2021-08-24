@@ -137,6 +137,9 @@ namespace Konata.Core.Message.Model
                         // TODO:
                         // Resample the pcm to
                         // signed 16bit mono 24kHz format 
+                        // if (channel != 1 || sampleRate != 24000)
+                        // {
+                        // }
 
                         // Convert pcm data to silkv3
                         if (pcmData.Length != 0 && SilkCodec
