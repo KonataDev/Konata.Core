@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Checkout
+    steps:
+    - uses: actions/checkout@v2
+    
+    # Setup
+    - name: Setup Build
+      uses: actions/setup-dotnet@v1
+    
+    # Restore packages
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    # Build
+    - name: Build
+      run: dotnet build --no-restore
