@@ -9,7 +9,7 @@
     <Copyright>Konata Project (C) 2021</Copyright>
     <PackageLicenseExpression></PackageLicenseExpression>
 
-    <Version>1.0.3-alpha.2</Version>
+    <Version>1.0.3-alpha.3</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -23,8 +23,8 @@
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>Konata.Core.xml</DocumentationFile>
+  <PropertyGroup>
+    <DocumentationFile>$(OutDir)/Konata.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
