@@ -40,9 +40,15 @@ namespace Konata.Core
 
         #region Bot Information
 
+        /// <summary>
+        /// Uin
+        /// </summary>
         public uint Uin
             => KeyStore.Account.Uin;
 
+        /// <summary>
+        /// Name
+        /// </summary>
         public string Name
             => KeyStore.Account.Name;
 
@@ -64,6 +70,9 @@ namespace Konata.Core
         internal HighwayComponent HighwayComponent
             => GetComponent<HighwayComponent>();
 
+        /// <summary>
+        /// Keystore
+        /// </summary>
         public BotKeyStore KeyStore
             => ConfigComponent.KeyStore;
 

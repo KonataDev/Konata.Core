@@ -23,6 +23,10 @@
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DocumentationFile>$(OutDir)/Konata.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Konata.Codec" Version="1.0.1" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
