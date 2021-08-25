@@ -11,19 +11,39 @@ using Konata.Core.Packets.Protobuf;
 
 namespace Konata.Core
 {
+    /// <summary>
+    /// Keystore
+    /// </summary>
     public class BotKeyStore
     {
+        /// <summary>
+        /// Account
+        /// </summary>
         public Account Account { get; set; }
 
+        /// <summary>
+        /// Session keys
+        /// </summary>
         public WtLogin Session { get; set; }
 
+        /// <summary>
+        /// Fixed keys
+        /// </summary>
         internal KeyStub KeyStub { get; }
 
+        /// <summary>
+        /// Create a key store
+        /// </summary>
         public BotKeyStore()
         {
             KeyStub = new KeyStub();
         }
 
+        /// <summary>
+        /// Create a key store
+        /// </summary>
+        /// <param name="uin"><b>[In]</b> Uin</param>
+        /// <param name="password"><b>[In]</b> Password</param>
         public BotKeyStore(string uin, string password)
         {
             var uinNum = uint.Parse(uin);
@@ -94,10 +114,9 @@ namespace Konata.Core
                     return random.Next(0, 1) == 1;
                 }
 
-                using (RNGCryptoServiceProvider SecurityRandom =
-                    new RNGCryptoServiceProvider())
+                using (var securityRandom = new RNGCryptoServiceProvider())
                 {
-                    SecurityRandom.GetBytes(seedTable);
+                    securityRandom.GetBytes(seedTable);
                 }
 
                 for (int i = 0; i < seedTable.Length; ++i)
@@ -120,50 +139,101 @@ namespace Konata.Core
         }
     }
 
+    /// <summary>
+    /// Account
+    /// </summary>
     public class Account
     {
+        /// <summary>
+        /// Account uin
+        /// </summary>
         public uint Uin { get; set; }
 
+        /// <summary>
+        /// Account name
+        /// </summary>
         public string Name { get; set; }
             = "";
 
+        /// <summary>
+        /// Account age
+        /// </summary>
         internal int Age { get; set; }
 
+        /// <summary>
+        /// Account face id
+        /// </summary>
         public int Face { get; set; }
 
+        /// <summary>
+        /// Account password md5
+        /// </summary>
         public byte[] PasswordMd5 { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// Account sync cookie
+        /// </summary>
         public byte[] SyncCookie { get; set; }
             = new byte[] { };
     }
 
+    /// <summary>
+    /// WtLogin
+    /// </summary>
     public class WtLogin
     {
+        /// <summary>
+        /// GSecret
+        /// </summary>
         public byte[] GSecret { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// DSecret
+        /// </summary>
         public string DSecret { get; set; }
             = "";
 
+        /// <summary>
+        /// TgtKey
+        /// </summary>
         public byte[] TgtKey { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// TgtToken
+        /// </summary>
         public byte[] TgtToken { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// D2Key
+        /// </summary>
         public byte[] D2Key { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// D2Token
+        /// </summary>
         public byte[] D2Token { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// GtKey
+        /// </summary>
         public byte[] GtKey { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// StKey
+        /// </summary>
         public byte[] StKey { get; set; }
             = new byte[] { };
 
+        /// <summary>
+        /// Tlv106Key
+        /// </summary>
         public byte[] Tlv106Key { get; set; }
             = new byte[] { };
 

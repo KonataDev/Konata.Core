@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+
 namespace Konata.Core
 {
+    /// <summary>
+    /// Bot group definitions
+    /// </summary>
     public class BotGroup
     {
         /// <summary>
@@ -60,7 +65,7 @@ namespace Konata.Core
         /// </summary>
         public Dictionary<uint, BotMember> Members { get; }
 
-        public BotGroup()
+        internal BotGroup()
         {
             Name = "";
             Members = new();

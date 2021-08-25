@@ -1,33 +1,39 @@
-﻿namespace Konata.Core
+﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+namespace Konata.Core
 {
+    /// <summary>
+    /// Bot friend definitions
+    /// </summary>
     public class BotFriend
     {
         /// <summary>
         /// Friend uin
         /// </summary>
-        public uint Uin { get; set; }
+        public uint Uin { get; internal set; }
 
         /// <summary>
         /// Friend name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         /// Friend remark
         /// </summary>
-        public string Remark { get; set; }
+        public string Remark { get; internal set; }
 
         /// <summary>
-        /// Friend faceid
+        /// Friend face id
         /// </summary>
-        public byte FaceId { get; set; }
+        public byte FaceId { get; internal set; }
 
         /// <summary>
         /// Friend gender
         /// </summary>
-        public byte Gender { get; set; }
+        public byte Gender { get; internal set; }
 
-        public BotFriend()
+        internal BotFriend()
         {
             Name = "";
             Remark = "";

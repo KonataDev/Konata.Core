@@ -128,7 +128,7 @@ namespace Konata.Core.Packets
                     head.PutBytes(sessionBytes,
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-                    head.PutString(device.Model.IMEI,
+                    head.PutString(device.Model.Imei,
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
                     head.PutBytes(unknownBytes0,

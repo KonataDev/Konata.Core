@@ -88,7 +88,7 @@ namespace Konata.Core.Packets.Oicq.Model
                         })));
                         tlvs.PutTlv(new Tlv(0x0187, new T187Body(device.Network.WifiMacAddress, 0)));
                         tlvs.PutTlv(new Tlv(0x0188, new T188Body(device.System.AndroidId)));
-                        tlvs.PutTlv(new Tlv(0x0194, new T194Body(device.Model.IMSI)));
+                        tlvs.PutTlv(new Tlv(0x0194, new T194Body(device.Model.Imsi)));
                         tlvs.PutTlv(new Tlv(0x0191, new T191Body()));
                         tlvs.PutTlv(new Tlv(0x0202, new T202Body(device.Network.WifiBssid,
                             device.Network.WifiSsid)));
