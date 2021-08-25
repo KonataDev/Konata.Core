@@ -7,9 +7,8 @@
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
     <Copyright>Konata Project (C) 2021</Copyright>
-    <PackageLicenseExpression></PackageLicenseExpression>
 
-    <Version>1.0.3-alpha.3</Version>
+    <Version>1.0.3-alpha.4</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
