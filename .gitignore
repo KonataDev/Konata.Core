@@ -44,7 +44,8 @@ x64/
 *.vspscc  
 *.vssscc  
 .builds  
-  
+/Konata.Core.xml  
+
 # Visual C++ cache files  
 ipch/  
 *.aps  

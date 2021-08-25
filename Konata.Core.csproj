@@ -23,8 +23,8 @@
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>$(OutDir)/Konata.Core.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>Konata.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\Konata.Core\LICENSE">
+    <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
