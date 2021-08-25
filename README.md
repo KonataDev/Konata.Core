@@ -1,8 +1,9 @@
 ## Konata.Core
 [![Core](https://img.shields.io/badge/Konata-Core-blue)](#)
 [![C#](https://img.shields.io/badge/C%23-9.0-green)](#)
+[![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)  
 [![NuGet](https://img.shields.io/badge/NuGet-1.0.3alpha.1-orange)](https://www.nuget.org/packages/Konata.Core/)
-[![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)
+[![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
 
 QQ(Android) protocol core implementation in C# 9   
 based on **.net standard 2.1**, event driven.
