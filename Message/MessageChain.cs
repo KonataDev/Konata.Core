@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Konata.Core.Message.Model;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Konata.Core.Message
@@ -41,6 +42,14 @@ namespace Konata.Core.Message
         /// <returns></returns>
         public List<TChain> FindChain<TChain>()
             => Chains.Where(i => i is TChain).Cast<TChain>().ToList();
+
+        /// <summary>
+        /// Get a chain
+        /// </summary>
+        /// <typeparam name="TChain"></typeparam>
+        /// <returns></returns>
+        public TChain GetChain<TChain>()
+            => FindChain<TChain>().FirstOrDefault();
 
         public static IEnumerable<BaseChain> operator |(MessageChain x, BaseChain.ChainType type)
             => x.Chains.Where(c => c.Type != type);
