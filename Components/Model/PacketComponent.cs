@@ -9,6 +9,7 @@ using Konata.Core.Services;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Components.Model

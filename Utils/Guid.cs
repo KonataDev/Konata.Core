@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace Konata.Core.Utils
+﻿namespace Konata.Core.Utils
 {
     /// <summary>
-    /// GUID生成器
+    /// GUID Generator
     /// </summary>
     public static class Guid
     {
