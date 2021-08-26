@@ -1,6 +1,4 @@
-﻿using System;
-
-using Konata.Core.Utils.IO;
+﻿using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf.Highway
@@ -15,11 +13,10 @@ namespace Konata.Core.Packets.Protobuf.Highway
                 buffer.PutByte(0x28);
                 {
                     // PBhead length
-                    buffer.PutUintBE((uint)pbhead.Length);
+                    buffer.PutUintBE((uint) pbhead.Length);
 
                     // Payload length
-                    buffer.PutUintBE((uint)
-                        (payload != null ? payload.Length : 0));
+                    buffer.PutUintBE((uint) (payload?.Length ?? 0));
 
                     // PBhead data
                     buffer.PutBytes(pbhead, ByteBuffer.Prefix.None);

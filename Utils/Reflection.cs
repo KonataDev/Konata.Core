@@ -93,6 +93,7 @@ namespace Konata.Core.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="t"></param>
         /// <returns></returns>
+        [Obsolete]
         public static T Clone<T>(T t)
         {
             if (t is string || t.GetType().IsValueType)

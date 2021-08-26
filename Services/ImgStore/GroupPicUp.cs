@@ -9,33 +9,15 @@ using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Konata.Core.Services.ImgStore
 {
     [EventSubscribe(typeof(GroupPicUpEvent))]
     [Service("ImgStore.GroupPicUp", "Image upload")]
     public class GroupPicUp : IService
     {
-        public bool Build(Sequence sequence, GroupPicUpEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        {
-            output = null;
-            newSequence = input.SessionSequence;
-
-            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.UploadImages);
-
-            if (SSOFrame.Create("ImgStore.GroupPicUp", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(picupRequest), out var ssoFrame))
-            {
-                if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-                {
-                    return ServiceMessage.Build(toService, device, out output);
-                }
-            }
-
-            return false;
-        }
-
         public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
             var tree = new ProtoTreeRoot
@@ -100,6 +82,27 @@ namespace Konata.Core.Services.ImgStore
                 output = GroupPicUpEvent.Result(0, uploadInfo);
                 return true;
             }
+        }
+
+        public bool Build(Sequence sequence, GroupPicUpEvent input,
+            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+        {
+            output = null;
+            newSequence = input.SessionSequence;
+
+            var picupRequest = new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.UploadImages);
+
+            if (SSOFrame.Create("ImgStore.GroupPicUp", PacketType.TypeB,
+                newSequence, sequence.Session, ProtoTreeRoot.Serialize(picupRequest), out var ssoFrame))
+            {
+                if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
+                {
+                    return ServiceMessage.Build(toService, device, out output);
+                }
+            }
+
+            return false;
         }
 
         public bool Build(Sequence sequence, ProtocolEvent input,

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Konata.AvCodec;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.FileFormat;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable RedundantAssignment
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable NotAccessedVariable
@@ -15,19 +17,52 @@ namespace Konata.Core.Message.Model
 {
     public class RecordChain : BaseChain
     {
-        public string RecordUrl { get; }
+        [Obsolete] public string RecordUrl { get; }
 
+        /// <summary>
+        /// Self uin
+        /// </summary>
+        public uint SelfUin { get; internal set; }
+
+        /// <summary>
+        /// File name
+        /// </summary>
         public string FileName { get; }
 
+        /// <summary>
+        /// File hash
+        /// </summary>
         public string FileHash { get; }
 
+        /// <summary>
+        /// File hash data
+        /// </summary>
         public byte[] HashData { get; }
 
+        /// <summary>
+        /// File data
+        /// </summary>
         public byte[] FileData { get; }
 
+        /// <summary>
+        /// File length
+        /// </summary>
         public uint FileLength { get; }
 
+        /// <summary>
+        /// Record duration
+        /// </summary>
         public uint TimeSeconds { get; }
+
+        /// <summary>
+        /// Upload id
+        /// </summary>
+        internal uint UploadId { get; set; }
+
+        /// <summary>
+        /// Upload token
+        /// </summary>
+        internal string UploadToken { get; set; }
 
         public RecordType RecordType { get; }
 
@@ -49,7 +84,20 @@ namespace Konata.Core.Message.Model
             HashData = md5;
             FileHash = md5str;
             RecordType = type;
-            FileName = md5str;
+            FileName = $"{md5str}.amr";
+        }
+
+        /// <summary>
+        /// Set Upload id
+        /// </summary>
+        /// <param name="selfUin"></param>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        internal void SetPttUpInfo(uint selfUin, uint id, string token)
+        {
+            SelfUin = selfUin;
+            UploadId = id;
+            UploadToken = token;
         }
 
         /// <summary>
@@ -66,7 +114,7 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
-        /// Create an audio chain
+        /// Create a record chain
         /// </summary>
         /// <param name="audio"></param>
         /// <returns></returns>
@@ -166,7 +214,23 @@ namespace Konata.Core.Message.Model
         }
 
         /// <summary>
-        /// Create an record chain from plain base64 <br />
+        /// Create a record chain
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        public static RecordChain CreateFromFile(string filepath)
+        {
+            if (!File.Exists(filepath))
+            {
+                throw new FileNotFoundException(filepath);
+            }
+
+            return Create(File.ReadAllBytes(filepath));
+        }
+
+        /// <summary>
+        /// Create a record chain from plain base64 <br />
         /// Not incuding the header 'base64://'
         /// </summary>
         /// <param name="base64"></param>
@@ -183,17 +247,35 @@ namespace Konata.Core.Message.Model
         /// <returns></returns>
         public static RecordChain Parse(string code)
         {
+            var args = GetArgs(code);
+            {
+                var file = args["file"];
+
+                // Create from base64
+                if (file.StartsWith("base64://"))
+                {
+                    return CreateFromBase64(file[9..file.Length]);
+                }
+
+                // Create from local file
+                if (File.Exists(file))
+                {
+                    return CreateFromFile(file);
+                }
+            }
+
+            // Ignore
             return null;
         }
 
         public override string ToString()
-            => $"[KQ:record," +
+            => "[KQ:record," +
                $"file={FileName}]";
     }
 
     public enum RecordType
     {
-        AMR = 1005,
-        SILK = 1002,
+        AMR = 0,
+        SILK = 1,
     }
 }

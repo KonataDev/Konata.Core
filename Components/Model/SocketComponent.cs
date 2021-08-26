@@ -32,16 +32,16 @@ namespace Konata.Core.Components.Model
 
         private static ServerInfo[] DefaultServers { get; } =
         {
-            new ServerInfo {Host = "msfwifi.3g.qq.com", Port = 8080},
-            new ServerInfo {Host = "14.215.138.110", Port = 8080},
-            new ServerInfo {Host = "113.96.12.224", Port = 8080},
-            new ServerInfo {Host = "157.255.13.77", Port = 14000},
-            new ServerInfo {Host = "120.232.18.27", Port = 443},
-            new ServerInfo {Host = "183.3.235.162", Port = 14000},
-            new ServerInfo {Host = "163.177.89.195", Port = 443},
-            new ServerInfo {Host = "183.232.94.44", Port = 80},
-            new ServerInfo {Host = "203.205.255.224", Port = 8080},
-            new ServerInfo {Host = "203.205.255.221", Port = 8080},
+            new() {Host = "msfwifi.3g.qq.com", Port = 8080},
+            new() {Host = "14.215.138.110", Port = 8080},
+            new() {Host = "113.96.12.224", Port = 8080},
+            new() {Host = "157.255.13.77", Port = 14000},
+            new() {Host = "120.232.18.27", Port = 443},
+            new() {Host = "183.3.235.162", Port = 14000},
+            new() {Host = "163.177.89.195", Port = 443},
+            new() {Host = "183.232.94.44", Port = 80},
+            new() {Host = "203.205.255.224", Port = 8080},
+            new() {Host = "203.205.255.221", Port = 8080},
         };
 
         private const string TAG = "SocketComponent";
@@ -161,6 +161,10 @@ namespace Konata.Core.Components.Model
         {
             try
             {
+                _recvLength = 0;
+                _packetLength = 0;
+                _recvStatus = ReceiveStatus.Idle;
+
                 _socket.EndConnect(result);
                 _socket.BeginReceive(_recvBuffer, 0,
                     _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
@@ -283,7 +287,7 @@ namespace Konata.Core.Components.Model
         /// </summary>
         /// <param name="buffer"><b>[In] </b>Data buffer to send</param>
         /// <returns></returns>
-        public Task<bool> SendData(byte[] buffer)
+        private Task<bool> SendData(byte[] buffer)
         {
             if (_socket is not {Connected: true})
             {
@@ -319,6 +323,8 @@ namespace Konata.Core.Components.Model
 
             _socket.Close();
             _recvStatus = ReceiveStatus.Stop;
+            _recvLength = 0;
+            _packetLength = 0;
 
             // Push offline
             PostEvent<BusinessComponent>(OnlineStatusEvent

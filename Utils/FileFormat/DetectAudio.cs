@@ -102,7 +102,7 @@ namespace Konata.Core.Utils.FileFormat
 
             // Fake (?
             timesec = (int) Math.Ceiling
-                (buffer.RemainLength / 2886.923);
+                (buffer.RemainLength / 2500.0);
             return true;
         }
 

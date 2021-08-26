@@ -6,12 +6,16 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
 
 namespace Konata.Core
 {
+    /// <summary>
+    /// Bot instance
+    /// </summary>
     public partial class Bot : BaseEntity
     {
         /// <summary>
@@ -31,7 +35,7 @@ namespace Konata.Core
             {
                 component.LoadConfig(config);
                 component.LoadDeviceInfo(device);
-                component.LoadKeyStore(keystore, device.Model.IMEI);
+                component.LoadKeyStore(keystore, device.Model.Imei);
             }
 
             // Setup event handlers

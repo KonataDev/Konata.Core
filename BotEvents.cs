@@ -3,24 +3,54 @@ using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable EventNeverSubscribedTo.Global
 
 namespace Konata.Core
 {
     public partial class Bot
     {
+        /// <summary>
+        /// Handle log event
+        /// </summary>
         public event EventHandler<LogEvent> OnLog;
+        
+        /// <summary>
+        /// Handle captcha event
+        /// </summary>
         public event EventHandler<CaptchaEvent> OnCaptcha;
+        
+        /// <summary>
+        /// On online status changed event
+        /// </summary>
         public event EventHandler<OnlineStatusEvent> OnOnlineStatusChanged;
+        
+        /// <summary>
+        /// On group message event
+        /// </summary>
         public event EventHandler<GroupMessageEvent> OnGroupMessage;
-        public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
+        
+        /// <summary>
+        /// On private message event
+        /// </summary>
         public event EventHandler<PrivateMessageEvent> OnPrivateMessage;
+        
+        /// <summary>
+        /// On group mute event
+        /// </summary>
+        public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
+        
+        /// <summary>
+        /// On group recall message event
+        /// </summary>
         public event EventHandler<GroupMessageRecallEvent> OnGroupMessageRecall;
+        
+        /// <summary>
+        /// On group poke event
+        /// </summary>
         public event EventHandler<GroupPokeEvent> OnGroupPoke;
-        public event EventHandler<GroupSettingsAnonymousEvent> OnGroupSettingsAnonymous;
-
-        //public event EventHandler<PrivatePokenEvent> OnPrivatePoke;
-
+        
         private Dictionary<Type, Action<BaseEvent>> _dict;
 
         /// <summary>
@@ -38,7 +68,6 @@ namespace Konata.Core
                 {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
                 {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
                 {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
-                {typeof(GroupSettingsAnonymousEvent), e => OnGroupSettingsAnonymous?.Invoke(this, (GroupSettingsAnonymousEvent) e)},
             };
 
             // Default group message handler
@@ -86,7 +115,7 @@ namespace Konata.Core
         }
 
         /// <summary>
-        /// Post event to userend
+        /// Post event to user end
         /// </summary>
         /// <param name="anyEvent"></param>
         public override void PostEventToEntity(BaseEvent anyEvent)

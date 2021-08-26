@@ -1,6 +1,7 @@
 ﻿using System;
 using Konata.Core.Utils;
 using Guid = System.Guid;
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
@@ -9,31 +10,70 @@ using Guid = System.Guid;
 
 namespace Konata.Core
 {
+    /// <summary>
+    /// Bot device definitions
+    /// </summary>
     public class BotDevice
     {
+        /// <summary>
+        /// Device model information
+        /// </summary>
         public ModelInfo Model { get; set; }
 
+        /// <summary>
+        /// Display information
+        /// </summary>
         public DisplayInfo Display { get; set; }
 
+        /// <summary>
+        /// System information
+        /// </summary>
         public SystemInfo System { get; set; }
 
+        /// <summary>
+        /// Network information
+        /// </summary>
         public NetworkInfo Network { get; set; }
 
+        /// <summary>
+        /// Model
+        /// </summary>
         public class ModelInfo
         {
+            /// <summary>
+            /// Device name
+            /// </summary>
             public string Name { get; set; }
 
+            /// <summary>
+            /// Device manufacturer
+            /// </summary>
             public string Manufacturer { get; set; }
 
-            public string IMEI { get; set; }
+            /// <summary>
+            /// Device Imei
+            /// </summary>
+            public string Imei { get; set; }
 
-            public string IMSI { get; set; }
+            /// <summary>
+            /// Device Imsi
+            /// </summary>
+            public string Imsi { get; set; }
 
+            /// <summary>
+            /// Device baseband
+            /// </summary>
             public string BaseBand { get; set; }
 
+            /// <summary>
+            /// Device codename
+            /// </summary>
             public string CodeName { get; set; }
         }
 
+        /// <summary>
+        /// System info
+        /// </summary>
         public class SystemInfo
         {
             public string Name { get; set; }
@@ -128,8 +168,8 @@ namespace Konata.Core
                     CodeName = "REL",
                     Manufacturer = "Konata Project",
                     BaseBand = randBaseBand,
-                    IMEI = randImei,
-                    IMSI = randImsi
+                    Imei = randImei,
+                    Imsi = randImsi
                 },
 
                 System = new()

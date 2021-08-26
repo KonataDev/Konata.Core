@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
 
 namespace Konata.Core.Packets.Protobuf
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class GroupPicUpRequest : ProtoTreeRoot
     {
         /// <summary>
@@ -16,11 +11,10 @@ namespace Konata.Core.Packets.Protobuf
         /// </summary>
         private class PicInfo : ProtoTreeRoot
         {
-            public PicInfo(uint groupUin, uint memberUin, ImageChain chain)
-                : base()
+            public PicInfo(uint groupUin, uint selfUin, ImageChain chain)
             {
                 AddLeafVar("08", groupUin);
-                AddLeafVar("10", memberUin);
+                AddLeafVar("10", selfUin);
                 AddLeafVar("18", 0);
 
                 // MD5 Byte
@@ -44,7 +38,7 @@ namespace Konata.Core.Packets.Protobuf
                 AddLeafVar("58", chain.Height);
 
                 // Image type
-                AddLeafVar("60", (long)chain.ImageType);
+                AddLeafVar("60", (long) chain.ImageType);
 
                 // Version
                 AddLeafString("6A", AppInfo.AppBuildVer);
@@ -57,14 +51,14 @@ namespace Konata.Core.Packets.Protobuf
         }
 
         public GroupPicUpRequest(uint groupUin,
-            uint memberUin, List<ImageChain> chains) : base()
+            uint selfUin, List<ImageChain> chains)
         {
             AddLeafVar("08", 3);
             AddLeafVar("10", 1);
 
             foreach (var i in chains)
             {
-                AddTree("1A", new PicInfo(groupUin, memberUin, i));
+                AddTree("1A", new PicInfo(groupUin, selfUin, i));
             }
         }
     }

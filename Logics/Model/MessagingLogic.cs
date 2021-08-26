@@ -7,6 +7,8 @@ using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Utils.IO;
+using Konata.Core.Utils;
+using Konata.Core.Packets;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
@@ -98,6 +100,8 @@ namespace Konata.Core.Logics.Model
                 if (!(results[0] && results[1] && results[2]))
                 {
                     // Some tasks failed
+                    Context.LogW(TAG, $"Some task failed." +
+                                      $"{results[0]} {results[1]} {results[2]}");
                     return -1;
                 }
             }
@@ -108,7 +112,7 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Cearch at
+        /// Search at
         /// </summary>
         /// <param name="uin"></param>
         /// <param name="message"></param>
@@ -120,52 +124,50 @@ namespace Konata.Core.Logics.Model
             {
                 // Process the relationship
                 // between group and member
-                if (i.Type == BaseChain.ChainType.At)
-                {
-                    var chain = (AtChain) i;
+                if (i.Type != BaseChain.ChainType.At) continue;
+                var chain = (AtChain) i;
 
-                    // If uin is zero
-                    // meant to ping all members
-                    if (chain.AtUin == 0)
+                // If uin is zero
+                // meant to ping all the members
+                if (chain.AtUin == 0)
+                {
+                    chain.DisplayString = "@全体成员";
+                }
+
+                // None zero,
+                // Then check the relationship
+                else
+                {
+                    // Okay we've got it
+                    if (ConfigComponent.TryGetMemberInfo
+                        (uin, chain.AtUin, out var member))
                     {
-                        chain.DisplayString = "@全体成员";
+                        chain.DisplayString = $"@{member.NickName}";
                     }
 
-                    // None zero,
-                    // Then check the relationship
+                    // F! We might have to pull
+                    // more member data from server
                     else
                     {
-                        // Okay we've got it
-                        if (ConfigComponent.TryGetMemberInfo
-                            (uin, chain.AtUin, out var member))
+                        // Check if lacks the member cache
+                        if (ConfigComponent.IsLackMemberCacheForGroup(uin))
                         {
-                            chain.DisplayString = $"@{member.NickName}";
-                        }
-
-                        // F! We might have to pull
-                        // more member data from server
-                        else
-                        {
-                            // Check if lacks the member cache
-                            if (ConfigComponent.IsLackMemberCacheForGroup(uin))
+                            // Pull the cache and try again
+                            if (await Context.SyncGroupMemberList(uin))
                             {
-                                // Pull the cache and try again
-                                if (await Context.SyncGroupMemberList(uin))
-                                {
-                                    // Okay try again
-                                    chain.DisplayString = ConfigComponent.TryGetMemberInfo
-                                        (uin, chain.AtUin, out member)
-                                        ? $"@{member.NickName}"
-                                        : $"@{chain.AtUin}";
-                                }
-
-                                // F? Sync failed
-                                else chain.DisplayString = $"@{chain.AtUin}";
+                                // Okay try again
+                                chain.DisplayString = ConfigComponent.TryGetMemberInfo
+                                    (uin, chain.AtUin, out member)
+                                    ? $"@{member.NickName}"
+                                    : $"@{chain.AtUin}";
                             }
 
-                            // F? The wrong user
+                            // F? Sync failed
                             else chain.DisplayString = $"@{chain.AtUin}";
                         }
+
+                        // F? The wrong user
+                        else chain.DisplayString = $"@{chain.AtUin}";
                     }
                 }
             }
@@ -227,12 +229,53 @@ namespace Konata.Core.Logics.Model
         /// <returns></returns>
         private async Task<bool> SearchRecordAndUpload(uint uin, MessageChain message)
         {
-            // Return false if audio configuration not enabled
-            if (!ConfigComponent.GlobalConfig.EnableAudio) return false;
+            // TODO:
+            // Use highway instead
 
-            
+            // Find the record chain
+            var upload = message.GetChain<RecordChain>();
+            {
+                // No records
+                if (upload == null) return true;
 
-            return false;
+                // Return false if audio configuration not enabled
+                if (!ConfigComponent.GlobalConfig.EnableAudio) return false;
+
+                // Request record upload
+                Context.LogV(TAG, "Uploading record file.");
+                var result = await GroupPttUp(Context, uin, upload);
+                {
+                    var post = await Network.Post($"http://{result.UploadInfo.Host}" +
+                                                  $":{result.UploadInfo.Port}/", upload.FileData,
+                        // Request header
+                        new Dictionary<string, string>
+                        {
+                            {"User-Agent", $"QQ/{AppInfo.AppBuildVer} CFNetwork/1126"},
+                            {"Net-Type", "Wifi"}
+                        },
+
+                        // Search params
+                        new Dictionary<string, string>
+                        {
+                            {"ver", "4679"},
+                            {"ukey", ByteConverter.Hex(result.UploadInfo.Ukey)},
+                            {"filekey", result.UploadInfo.UploadToken},
+                            {"filesize", upload.FileLength.ToString()},
+                            {"bmd5", upload.FileHash},
+                            {"mType", "pttDu"},
+                            {"voice_encodec", "1"}
+                        });
+
+                    // Set upload info
+                    upload.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo
+                        .UploadId, result.UploadInfo.UploadToken);
+
+                    Context.LogV(TAG, "Recored uploaded.");
+                    Context.LogV(TAG, ByteConverter.Hex(post));
+                }
+
+                return true;
+            }
         }
 
         /// <summary>
@@ -261,6 +304,9 @@ namespace Konata.Core.Logics.Model
 
         private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
             => context.PostPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));
+
+        private static Task<GroupPttUpEvent> GroupPttUp(BusinessComponent context, uint groupUin, RecordChain record)
+            => context.PostPacket<GroupPttUpEvent>(GroupPttUpEvent.Create(groupUin, context.Bot.Uin, record));
 
         private static Task<LongConnOffPicUpEvent> PrivateOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
             => context.PostPacket<LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));

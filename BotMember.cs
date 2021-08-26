@@ -2,6 +2,9 @@
 
 namespace Konata.Core
 {
+    /// <summary>
+    /// Bot member definitions
+    /// </summary>
     public class BotMember
     {
         /// <summary>
@@ -69,7 +72,7 @@ namespace Konata.Core
         /// </summary>
         public uint MuteTimestamp { get; set; }
 
-        public BotMember()
+        internal BotMember()
         {
             Name = "";
             NickName = "";

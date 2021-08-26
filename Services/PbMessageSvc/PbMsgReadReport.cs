@@ -1,6 +1,4 @@
-﻿using System;
-
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
@@ -22,7 +20,7 @@ namespace Konata.Core.Services.PbMessageSvc
             output = null;
             newSequence = input.SessionSequence;
 
-            var readReport = new GroupMsgReadedReport(input.GroupUin, input.RequestId);
+            var readReport = new GroupMsgReadReport(input.GroupUin, input.RequestId);
 
             if (SSOFrame.Create("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB,
                 newSequence, sequence.Session, ProtoTreeRoot.Serialize(readReport), out var ssoFrame))
@@ -39,6 +37,6 @@ namespace Konata.Core.Services.PbMessageSvc
 
         public bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-              => Build(sequence, (GroupMessageReadEvent)input, keystore, device, out newSequence, out output);
+            => Build(sequence, (GroupMessageReadEvent) input, keystore, device, out newSequence, out output);
     }
 }

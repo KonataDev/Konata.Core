@@ -44,7 +44,6 @@ x64/
 *.vspscc  
 *.vssscc  
 .builds  
-/Konata.Core.xml  
 
 # Visual C++ cache files  
 ipch/  
@@ -75,6 +74,8 @@ _ReSharper*
 DocProject/buildhelp/  
 DocProject/Help  
 UpgradeLog*.XML  
+*.user
+*.DotSettings
   
 # Lightswitch  
 _Pvt_Extensions  

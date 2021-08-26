@@ -5,9 +5,9 @@ using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf
 {
-    public class GroupMsgReadedReport : ProtoTreeRoot
+    public class GroupMsgReadReport : ProtoTreeRoot
     {
-        public GroupMsgReadedReport(uint groupUin, uint requestId)
+        public GroupMsgReadReport(uint groupUin, uint requestId)
         {
             AddTree("0A", (root) =>
             {

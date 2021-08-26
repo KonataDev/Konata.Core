@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace Konata.Core.Utils
 {
-    public class Network
+    /// <summary>
+    /// Networking tools
+    /// </summary>
+    public static class Network
     {
         /// <summary>
         /// Pinging IP
@@ -43,6 +48,54 @@ namespace Konata.Core.Utils
             {
                 request.Timeout = timeout;
                 request.ReadWriteTimeout = timeout;
+            }
+
+            var response = await request.GetResponseAsync();
+            {
+                using (var stream = new MemoryStream())
+                {
+                    response.GetResponseStream().CopyTo(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Post
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        /// <param name="header"></param>
+        /// <param name="param"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        public static async Task<byte[]> Post(string url, byte[] data,
+            Dictionary<string, string> header, Dictionary<string, string> param,
+            int timeout = 8000)
+        {
+            var args = param.Aggregate("", (current, i)
+                => current + $"&{i.Key}={i.Value}");
+
+            url += $"?{args[1..]}";
+            var request = WebRequest.CreateHttp(url);
+            {
+                request.Method = "POST";
+                request.Timeout = timeout;
+                request.ReadWriteTimeout = timeout;
+                request.ContentLength = data.Length;
+
+                // Append request header
+                foreach (var i in header)
+                {
+                    request.Headers.Add(i.Key, i.Value);
+                }
+
+                // Write the post body
+                var stream = request.GetRequestStream();
+                {
+                    stream.Write(data);
+                    stream.Close();
+                }
             }
 
             var response = await request.GetResponseAsync();
