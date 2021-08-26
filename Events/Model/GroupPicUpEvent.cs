@@ -30,7 +30,7 @@ namespace Konata.Core.Events.Model
         public List<PicUpInfo> UploadInfo { get; }
 
         private GroupPicUpEvent(uint groupUin, uint selfUin,
-            List<ImageChain> uploadImages) : base(2000, true)
+            List<ImageChain> uploadImages) : base(6000, true)
         {
             GroupUin = groupUin;
             SelfUin = selfUin;
