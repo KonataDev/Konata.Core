@@ -53,8 +53,8 @@ namespace Konata.Core.Services.MessageSvc
                             ConstructImageChain(root, imageChain);
                             break;
 
-                        // Not supported yet.
                         case RecordChain recordChain:
+                            ConstructRecordChain(root, recordChain);
                             break;
                     }
                 }
@@ -107,6 +107,29 @@ namespace Konata.Core.Services.MessageSvc
                 {
                     _.AddLeafString("0A", chain.DisplayString);
                     _.AddLeafBytes("1A", data.GetBytes());
+                });
+            });
+        }
+
+        private static void ConstructRecordChain(ProtoTreeRoot root, RecordChain chain)
+        {
+            root.AddTree("22", (_) =>
+            {
+                _.AddLeafVar("08", 4);
+                _.AddLeafVar("10", chain.SelfUin);
+                _.AddLeafBytes("22", chain.HashData);
+                _.AddLeafString("2A", chain.FileName);
+                _.AddLeafVar("30", chain.FileLength);
+                _.AddLeafVar("40", chain.UploadId);
+                _.AddLeafVar("58", 1);
+                _.AddLeafString("9201", chain.UploadToken);
+                _.AddLeafVar("9801", 1);
+                _.AddLeafVar("E801", 1);
+                _.AddTree("F201", __ =>
+                {
+                    __.AddLeafVar("08", 0);
+                    __.AddLeafVar("28", 0);
+                    __.AddLeafVar("38", 0);
                 });
             });
         }
