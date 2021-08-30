@@ -153,11 +153,7 @@ namespace Konata.Core.Components.Model
                         config.KeyStore, config.DeviceInfo, out var sequence, out var buffer))
                     {
                         // Pass messages to socket
-                        PostEvent<SocketComponent>(new PacketEvent
-                        {
-                            Buffer = buffer,
-                            EventType = PacketEvent.Type.Send
-                        });
+                        PostEvent<SocketComponent>(PacketEvent.Create(buffer));
 
                         // Is need response from server
                         if (protocolEvent.WaitForResponse)

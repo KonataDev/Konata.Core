@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Konata.Core.Attributes;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable CollectionNeverUpdated.Local
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -13,11 +14,25 @@ namespace Konata.Core.Components.Model
     [Component("ConfigComponent", "Konata Config Management Component")]
     internal class ConfigComponent : InternalComponent
     {
+        /// <summary>
+        /// Keystore
+        /// </summary>
         public BotKeyStore KeyStore { get; private set; }
 
+        /// <summary>
+        /// Device info
+        /// </summary>
         public BotDevice DeviceInfo { get; private set; }
 
+        /// <summary>
+        /// Global config
+        /// </summary>
         public BotConfig GlobalConfig { get; private set; }
+
+        /// <summary>
+        /// Highway host
+        /// </summary>
+        public Tuple<string, int, byte[]> HighwayConfig { get; internal set; }
 
         /// <summary>
         /// Sync cookie
