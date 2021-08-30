@@ -239,7 +239,12 @@ namespace Konata.Core.Logics.Model
                 if (upload == null) return true;
 
                 // Return false if audio configuration not enabled
-                if (!ConfigComponent.GlobalConfig.EnableAudio) return false;
+                if (!ConfigComponent.GlobalConfig.EnableAudio)
+                {
+                    Context.LogW(TAG, "The audio function is currently disabled. " +
+                                      "Lack of codec library.");
+                    return false;
+                }
 
                 // Request record upload
                 Context.LogV(TAG, "Uploading record file.");

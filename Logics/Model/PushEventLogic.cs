@@ -3,6 +3,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Local
 
@@ -12,6 +13,7 @@ namespace Konata.Core.Logics.Model
     [EventSubscribe(typeof(GroupMessageRecallEvent))]
     [EventSubscribe(typeof(GroupMuteMemberEvent))]
     [EventSubscribe(typeof(GroupSettingsAnonymousEvent))]
+    [EventSubscribe(typeof(PushConfigEvent))]
     [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
     public class PushEventLogic : BaseLogic
     {
@@ -26,9 +28,33 @@ namespace Konata.Core.Logics.Model
         {
             // TODO:
             // Confirm the push events with server
-            
-            // Just forward messages to userend
-            Context.PostEventToEntity(e);
+
+            switch (e)
+            {
+                // Handle push config
+                case PushConfigEvent push:
+                    OnPushConfig(push);
+                    break;
+
+                // Just forward messages to userend
+                default:
+                    Context.PostEventToEntity(e);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Push config
+        /// </summary>
+        /// <param name="e"></param>
+        private void OnPushConfig(PushConfigEvent e)
+        {
+            // Update the config
+            ConfigComponent.HighwayConfig =
+                new(e.HighwayHost, e.HighwayPort, e.HighwayToken);
+
+            Context.LogI(TAG, "Highway server has changed" +
+                              $" to {e.HighwayHost}:{e.HighwayPort}");
         }
     }
 }

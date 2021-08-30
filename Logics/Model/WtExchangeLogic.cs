@@ -41,7 +41,8 @@ namespace Konata.Core.Logics.Model
             // Receive online status from server
             if (e is OnlineStatusEvent status)
             {
-                OnStatusChanged(status);
+                // Online status changed
+                _onlineType = status.EventType;
             }
 
             _heartbeatCounter++;
@@ -88,7 +89,7 @@ namespace Konata.Core.Logics.Model
                             goto GirlBlessingQwQ;
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
                         // Do nothing
                     }
@@ -107,32 +108,7 @@ namespace Konata.Core.Logics.Model
                     switch (wtStatus.EventType)
                     {
                         case WtLoginEvent.Type.OK:
-
-                            // Dump keys
-                            Context.LogV(TAG, "Keystore Dump");
-                            Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
-                            Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
-                            Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
-                            Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
-
-                            // Set online
-                            Context.LogI(TAG, "Registering client");
-                            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
-
-                            // Update online status
-                            if (online.EventType == OnlineStatusEvent.Type.Online)
-                            {
-                                // Bot online
-                                Context.PostEventToEntity(online);
-                                await Context.PostEvent<BusinessComponent>(online);
-
-                                Context.LogI(TAG, "Bot online.");
-                                return true;
-                            }
-
-                            // Oops...
-                            SocketComponent.Disconnect("Wtlogin failed.");
-                            return false;
+                            return await OnBotOnline();
 
                         case WtLoginEvent.Type.CheckSms:
                         case WtLoginEvent.Type.CheckSlider:
@@ -140,7 +116,7 @@ namespace Konata.Core.Logics.Model
                             // Check handler
                             if (!Context.Bot.HandlerRegistered<CaptchaEvent>())
                             {
-                                Context.SocketComponent.Disconnect("Need handler.");
+                                await Context.SocketComponent.Disconnect("Need handler.");
                                 Context.LogW(TAG, "No captcha event handler registered, " +
                                                   "Please note, Konata cannot process captcha automatically.");
                                 return false;
@@ -171,13 +147,13 @@ namespace Konata.Core.Logics.Model
                         case WtLoginEvent.Type.HighRiskEnvironment:
                         case WtLoginEvent.Type.InvalidUinOrPassword:
                             Context.PostEventToEntity(wtStatus);
-                            Context.SocketComponent.Disconnect("Wtlogin failed.");
+                            await Context.SocketComponent.Disconnect("Wtlogin failed.");
                             return false;
 
                         default:
                         case WtLoginEvent.Type.Unknown:
                         case WtLoginEvent.Type.NotImplemented:
-                            Context.SocketComponent.Disconnect("Wtlogin failed.");
+                            await Context.SocketComponent.Disconnect("Wtlogin failed.");
                             Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
                             return false;
                     }
@@ -185,7 +161,7 @@ namespace Konata.Core.Logics.Model
             }
             catch (Exception e)
             {
-                SocketComponent.Disconnect("Timed out");
+                await SocketComponent.Disconnect("Timed out");
 
                 Context.LogE(TAG, "Request timed out.");
                 Context.LogE(TAG, e);
@@ -194,8 +170,18 @@ namespace Konata.Core.Logics.Model
             }
         }
 
+        /// <summary>
+        /// Logout
+        /// </summary>
+        /// <returns></returns>
         public Task<bool> Logout()
-            => Task.FromResult(SocketComponent.Disconnect("user logout"));
+        {
+            // Cancel schedules
+            ScheduleComponent.Cancel(SchedulePullMessage);
+            ScheduleComponent.Cancel(ScheduleCheckConnection);
+
+            return SocketComponent.Disconnect("user logout");
+        }
 
         public void SubmitSmsCode(string code)
             => _userOperation.SetResult(WtLoginEvent.CreateSubmitSmsCode(code));
@@ -236,29 +222,40 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Online status changed
+        /// On bot online
         /// </summary>
-        /// <param name="status"></param>
-        private void OnStatusChanged(OnlineStatusEvent status)
+        /// <returns></returns>
+        private async Task<bool> OnBotOnline()
         {
-            _onlineType = status.EventType;
+            // Dump keys
+            Context.LogV(TAG, "Keystore Dump");
+            Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
+            Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
+            Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
+            Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
 
-            switch (status.EventType)
+            // Set online
+            Context.LogI(TAG, "Registering client");
+            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
+
+            // Update online status
+            if (online.EventType == OnlineStatusEvent.Type.Online)
             {
-                // Bot come online
-                case OnlineStatusEvent.Type.Online:
-                    // Register schedules
-                    Context.ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
-                    Context.ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
-                    break;
+                // Bot online
+                Context.PostEventToEntity(online);
+                await Context.PostEvent<BusinessComponent>(online);
 
-                // Bot offline
-                case OnlineStatusEvent.Type.Offline:
-                    // Cancel schedules
-                    Context.ScheduleComponent.Cancel(SchedulePullMessage);
-                    Context.ScheduleComponent.Cancel(ScheduleCheckConnection);
-                    break;
+                // Register schedules
+                ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
+                ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
+
+                Context.LogI(TAG, "Bot online.");
+                return true;
             }
+
+            // Oops...
+            await SocketComponent.Disconnect("Online failed.");
+            return false;
         }
 
         /// <summary>
@@ -288,18 +285,31 @@ namespace Konata.Core.Logics.Model
                 Context.LogE(TAG, e);
 
                 // Check if reconnect
-                if (ConfigComponent.GlobalConfig.ReConnectWhileLinkDown)
+                if (ConfigComponent.GlobalConfig.TryReconnect)
                 {
-                    // TODO: 
+                    Context.LogW(TAG, "Reconnect.");
+
                     // Reconnect
-                    Context.LogW(TAG, "TODO: Reconnect.");
+                    if (await SocketComponent.Reconnect())
+                    {
+                        // Bot reonline
+                        if (await OnBotOnline())
+                        {
+                            Context.LogI(TAG, "Network reset.");
+                            return;
+                        }
+
+                        Context.LogW(TAG, "Reconnect failed! " +
+                                          "Might need to relogin?");
+                    }
                 }
 
                 // Go offline
-                else
-                {
-                    SocketComponent.Disconnect("Heart broken.");
-                }
+                await SocketComponent.Disconnect("Heart broken.");
+
+                // Cancel schedules
+                ScheduleComponent.Cancel(SchedulePullMessage);
+                ScheduleComponent.Cancel(ScheduleCheckConnection);
             }
         }
 
