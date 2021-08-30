@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Utils;
 using Konata.Core.Utils.IO;
@@ -9,70 +7,57 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.TcpSocket;
 
+// ReSharper disable InvertIf
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ParameterTypeCanBeEnumerable.Global
 
 namespace Konata.Core.Components.Model
 {
     [Component("SocketComponent", "Konata Socket Client Component")]
-    internal class SocketComponent : InternalComponent
+    internal class SocketComponent
+        : InternalComponent, IClientListener
     {
-        private enum ReceiveStatus
+        private static (string Host, int Port)[] DefaultServers { get; } =
         {
-            Idle,
-            RecvBody,
-            Stop
-        }
-
-        private struct ServerInfo
-        {
-            public string Host;
-            public int Port;
-        }
-
-        private static ServerInfo[] DefaultServers { get; } =
-        {
-            new() {Host = "msfwifi.3g.qq.com", Port = 8080},
-            new() {Host = "14.215.138.110", Port = 8080},
-            new() {Host = "113.96.12.224", Port = 8080},
-            new() {Host = "157.255.13.77", Port = 14000},
-            new() {Host = "120.232.18.27", Port = 443},
-            new() {Host = "183.3.235.162", Port = 14000},
-            new() {Host = "163.177.89.195", Port = 443},
-            new() {Host = "183.232.94.44", Port = 80},
-            new() {Host = "203.205.255.224", Port = 8080},
-            new() {Host = "203.205.255.221", Port = 8080},
+            new("msfwifi.3g.qq.com", 8080),
+            new("14.215.138.110", 8080),
+            new("113.96.12.224", 8080),
+            new("157.255.13.77", 14000),
+            new("120.232.18.27", 443),
+            new("183.3.235.162", 14000),
+            new("163.177.89.195", 443),
+            new("183.232.94.44", 80),
+            new("203.205.255.224", 8080),
+            new("203.205.255.221", 8080),
         };
 
+        public bool Connected
+            => _tcpClient.Connected;
+
         private const string TAG = "SocketComponent";
-
-        private Socket _socket;
-        private int _packetLength;
-        private int _recvLength;
-        private byte[] _recvBuffer;
-        private ReceiveStatus _recvStatus;
-
-        ~SocketComponent()
-            => _socket?.Dispose();
+        private readonly AsyncClient _tcpClient;
 
         public SocketComponent()
         {
-            _recvBuffer = new byte[2048];
-            _recvStatus = ReceiveStatus.Idle;
+            _tcpClient = new(this);
         }
 
         /// <summary>
         /// Connect to server
         /// </summary>
-        /// <param name="useLowLatency"><b>[Opt] </b>Auto select low letency server to connect.</param>
+        /// <param name="useLowLatency"><b>[Opt] </b>Auto select the fastest server to connect.</param>
         /// <returns></returns>
-        public Task<bool> Connect(bool useLowLatency = false)
+        public async Task<bool> Connect(bool useLowLatency = false)
         {
             // Check socket
-            if (_socket != null && _socket.Connected)
+            if (_tcpClient.Connected)
             {
                 LogW(TAG, "Calling Connect method after socket connected.");
-                return Task.FromResult(true);
+                return true;
             }
 
             var lowestTime = long.MaxValue;
@@ -84,260 +69,126 @@ namespace Konata.Core.Components.Model
                 var customHost = ConfigComponent
                     .GlobalConfig.CustomHost.Split(':');
 
-                // Parse config
+                // Parse the config
                 if (customHost.Length == 2)
                 {
-                    selectHost = new ServerInfo
-                    {
-                        Host = customHost[0],
-                        Port = customHost.Length == 2
-                            ? ushort.Parse(customHost[1])
-                            : 8080
-                    };
+                    selectHost = new(customHost[0],
+                        customHost.Length == 2 ? ushort.Parse(customHost[1]) : 8080);
                 }
 
-                // Parse config failed
+                // Failed to parse the config
                 else LogW(TAG, "Invalid custom host config passed in.");
             }
 
-            // Find server
-            else
+            // Find the fastest server
+            else if (useLowLatency)
             {
-                if (useLowLatency)
+                foreach (var item in DefaultServers)
                 {
-                    foreach (var item in DefaultServers)
+                    var time = Network.PingTest(item.Host, 2000);
                     {
-                        var time = Network.PingTest(item.Host, 2000);
+                        if (time < lowestTime)
                         {
-                            if (time < lowestTime)
-                            {
-                                lowestTime = time;
-                                selectHost = item;
-                            }
-                        }
-
-                        LogI(TAG, "Probing latency " +
-                                  $"{item.Host}:{item.Port} " +
-                                  $"=> {time}ms.");
-                    }
-                }
-            }
-
-            return Connect(selectHost.Host, selectHost.Port);
-        }
-
-        /// <summary>
-        /// Connect to server
-        /// </summary>
-        /// <param name="hostIp"></param>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        private Task<bool> Connect(string hostIp, int port)
-        {
-            LogI(TAG, $"Select server => {hostIp}:{port}");
-
-            try
-            {
-                _socket?.Dispose();
-                _socket = new Socket(AddressFamily.InterNetwork,
-                    SocketType.Stream, ProtocolType.Tcp);
-                _socket.BeginConnect(hostIp, port, BeginConnect, null)
-                    .AsyncWaitHandle.WaitOne();
-            }
-            catch (Exception e)
-            {
-                LogE(TAG, "Connect failed.");
-                LogE(TAG, e);
-            }
-
-            return Task.FromResult(_socket.Connected);
-        }
-
-        /// <summary>
-        /// Begin connect
-        /// </summary>
-        /// <param name="result"></param>
-        private void BeginConnect(IAsyncResult result)
-        {
-            try
-            {
-                _recvLength = 0;
-                _packetLength = 0;
-                _recvStatus = ReceiveStatus.Idle;
-
-                _socket.EndConnect(result);
-                _socket.BeginReceive(_recvBuffer, 0,
-                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
-            }
-            catch (Exception e)
-            {
-                LogE(TAG, "BeginConnect failed.");
-                LogE(TAG, e);
-            }
-        }
-
-        /// <summary>
-        /// Begin receive data
-        /// </summary>
-        /// <param name="result"></param>
-        private void BeginReceive(IAsyncResult result)
-        {
-            try
-            {
-                _recvLength += _socket.EndReceive(result);
-                // Console.WriteLine(ByteConverter.Hex(_recvBuffer));
-
-                ReceiveNext:
-
-                // If receive status is Idle
-                if (_recvStatus == ReceiveStatus.Idle)
-                {
-                    // If receive length too short
-                    if (_recvLength < 4)
-                    {
-                        Thread.Sleep(10);
-                        return;
-                    }
-
-                    // Take out first 4 bytes as this packet length
-                    _packetLength = BitConverter.ToInt32(_recvBuffer.Take(4).Reverse().ToArray(), 0);
-                    if (_packetLength > _recvBuffer.Length)
-                        Array.Resize(ref _recvBuffer, _packetLength);
-
-                    // Prepare for receive packet body
-                    _recvStatus = ReceiveStatus.RecvBody;
-                }
-
-                // If ready for receive packet body
-                if (_recvStatus == ReceiveStatus.RecvBody)
-                {
-                    // If receive length bigger than packet langth
-                    // Means we have received at least 1 packet
-                    if (_recvLength >= _packetLength)
-                    {
-                        // Process this packet
-                        OnReceivePacket(_recvBuffer, _packetLength);
-
-                        // Calculate remain length
-                        _recvStatus = ReceiveStatus.Idle;
-                        _recvLength = _recvLength - _packetLength;
-
-                        // If next packet existed
-                        if (_recvLength > 0)
-                        {
-                            // Move remain data to ahead
-                            Array.Copy(_recvBuffer, _packetLength, _recvBuffer, 0, _recvLength);
-
-                            // Process it again!
-                            goto ReceiveNext;
+                            lowestTime = time;
+                            selectHost = item;
                         }
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                LogE(TAG, e);
-                Disconnect("Socket error while receiving data. ");
-            }
-            finally
-            {
-                if (_recvStatus != ReceiveStatus.Stop)
-                {
-                    _socket.BeginReceive(_recvBuffer, _recvLength, _recvBuffer.Length - _recvLength,
-                        SocketFlags.None, BeginReceive, null);
-                }
-            }
-        }
 
-        private void BeginSendData(IAsyncResult result)
-        {
-            try
-            {
-                _socket.EndSend(result);
+                    LogI(TAG, "Probing latency " +
+                              $"{item.Host}:{item.Port} " +
+                              $"=> {time}ms.");
+                }
             }
-            catch (Exception e)
-            {
-                LogE(TAG, e);
-                Disconnect($"Socket error while sending data.");
-            }
+
+            // Connect
+            return await _tcpClient
+                .Connect(selectHost.Host, selectHost.Port);
         }
 
         /// <summary>
-        /// On Received a packet 
+        /// Reconnect
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="length"></param>
-        private void OnReceivePacket(byte[] buffer, int length)
-        {
-            var packet = new byte[length];
-            {
-                Array.Copy(buffer, 0, packet, 0, length);
-                PostEvent<PacketComponent>(new PacketEvent
-                {
-                    Buffer = packet,
-                    EventType = PacketEvent.Type.Receive
-                });
-
-                LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
-            }
-        }
-
-        /// <summary>
-        /// Send packet to server
-        /// </summary>
-        /// <param name="buffer"><b>[In] </b>Data buffer to send</param>
         /// <returns></returns>
-        private Task<bool> SendData(byte[] buffer)
-        {
-            if (_socket is not {Connected: true})
-            {
-                LogW(TAG, "Calling SendData method after socket disconnected.");
-                return Task.FromResult(false);
-            }
-
-            try
-            {
-                LogV(TAG, $"Send data => \n  {ByteConverter.Hex(buffer, true)}");
-                _socket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, BeginSendData, null);
-            }
-            catch (Exception e)
-            {
-                LogE(TAG, e);
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
-        }
+        public Task<bool> Reconnect()
+            => _tcpClient.Reconnect();
 
         /// <summary>
         /// Disconnect from server
         /// </summary>
         /// <param name="reason"></param>
-        public bool Disconnect(string reason)
+        public async Task<bool> Disconnect(string reason)
         {
-            if (_socket is not {Connected: true})
+            // Not connected
+            if (_tcpClient is not {Connected: true})
             {
-                LogW(TAG, "Calling Disconnect method after socket disconnected.");
+                LogW(TAG, "Calling Disconnect " +
+                          "method after socket disconnected.");
                 return true;
             }
 
-            _socket.Close();
-            _recvStatus = ReceiveStatus.Stop;
-            _recvLength = 0;
-            _packetLength = 0;
-
-            // Push offline
-            PostEvent<BusinessComponent>(OnlineStatusEvent
-                .Push(OnlineStatusEvent.Type.Offline, reason));
-
-            return true;
+            // Disconnect
+            LogI(TAG, $"Disconnect, Reason => {reason}");
+            return await _tcpClient.Disconnect();
         }
 
+        /// <summary>
+        /// On dissecting a packet
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public uint OnStreamDissect(byte[] data, uint length)
+        {
+            // Lack more data
+            if (length < 4) return 0;
+
+            // Teardown the packet length
+            return BitConverter.ToUInt32
+                (data.Take(4).Reverse().ToArray(), 0);
+        }
+
+        /// <summary>
+        /// On Received a packet 
+        /// </summary>
+        /// <param name="data"></param>
+        public void OnRecvPacket(byte[] data)
+        {
+            var packet = new byte[data.Length];
+            Array.Copy(data, 0, packet, 0, data.Length);
+            {
+                PushNewPacket(this, packet);
+                LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
+            }
+        }
+
+        /// <summary>
+        /// On disconnect
+        /// </summary>
+        public void OnDisconnect()
+        {
+            // Push offline
+            PushOffline(this, "Client disconnected.");
+        }
+
+        /// <summary>
+        /// Event handler
+        /// </summary>
+        /// <param name="task"></param>
         internal override void EventHandler(KonataTask task)
         {
             if (task.EventPayload is PacketEvent packetEvent)
             {
-                SendData(packetEvent.Buffer);
+                // Not connected
+                if (_tcpClient is not {Connected: true})
+                {
+                    LogW(TAG, "Calling SendData method after socket disconnected.");
+                    return;
+                }
+
+                // Send data
+                _tcpClient.Send(packetEvent.Buffer).Wait();
+                LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
+
                 task.Finish();
             }
             else
@@ -346,5 +197,15 @@ namespace Konata.Core.Components.Model
                 task.Cancel();
             }
         }
+
+        #region Stub methods
+
+        private static void PushOffline(SocketComponent context, string reason)
+            => context.PostEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
+
+        private static void PushNewPacket(SocketComponent context, byte[] data)
+            => context.PostEvent<PacketComponent>(PacketEvent.Push(data));
+
+        #endregion
     }
 }
