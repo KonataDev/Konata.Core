@@ -1,18 +1,37 @@
-﻿using System;
-
-namespace Konata.Core.Events
+﻿namespace Konata.Core.Events
 {
-    public class PacketEvent : BaseEvent
+    internal class PacketEvent : BaseEvent
     {
         public enum Type
         {
             Send,
             Receive,
-            //SendAction
         }
 
-        public Type EventType { get; set; }
+        public Type EventType { get; }
 
-        public byte[] Buffer { get; set; }
+        public byte[] Buffer { get; }
+
+        private PacketEvent(Type eventType, byte[] buffer)
+        {
+            EventType = eventType;
+            Buffer = buffer;
+        }
+
+        /// <summary>
+        /// Construct packet event
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        internal static PacketEvent Create(byte[] buffer)
+            => new(Type.Send, buffer);
+
+        /// <summary>
+        /// Construct packet push event
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        internal static PacketEvent Push(byte[] buffer)
+            => new(Type.Receive, buffer);
     }
 }

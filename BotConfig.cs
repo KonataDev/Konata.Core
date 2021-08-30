@@ -1,6 +1,8 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
+using System;
+
 namespace Konata.Core
 {
     /// <summary>
@@ -15,14 +17,9 @@ namespace Konata.Core
         public bool UseIPv6Connection { get; set; }
 
         /// <summary>
-        /// Reconnect while link down
+        /// Reconnect while link down.
         /// </summary>
-        public bool ReConnectWhileLinkDown { get; set; }
-
-        /// <summary>
-        /// How many retry times while link down 
-        /// </summary>
-        public uint ReConnectTryCount { get; set; }
+        public bool TryReconnect { get; set; }
 
         #region Custom Server IP
 
@@ -60,8 +57,7 @@ namespace Konata.Core
             return new BotConfig
             {
                 UseIPv6Connection = false,
-                ReConnectWhileLinkDown = true,
-                ReConnectTryCount = 3,
+                TryReconnect = true,
                 CustomHost = null,
                 ImageChunkSize = 4096,
                 EnableAudio = false
