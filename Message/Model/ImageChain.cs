@@ -49,6 +49,9 @@ namespace Konata.Core.Message.Model
         /// </summary>
         internal ImageType ImageType { get; private set; }
 
+        /// <summary>
+        /// Picup information
+        /// </summary>
         internal PicUpInfo PicUpInfo { get; private set; }
 
         private ImageChain(string url, string fileName,

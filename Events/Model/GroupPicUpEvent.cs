@@ -71,9 +71,9 @@ namespace Konata.Core.Events.Model
 
         public int Port { get; set; }
 
-        public uint ImageId { get; set; }
+        public uint UploadId { get; set; }
 
-        public byte[] ServiceTicket { get; set; }
+        public byte[] UploadTicket { get; set; }
 
         public bool UseCached { get; set; }
 

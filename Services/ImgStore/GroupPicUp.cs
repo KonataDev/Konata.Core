@@ -46,7 +46,7 @@ namespace Konata.Core.Services.ImgStore
                         info.Ip = (uint) i.GetLeafVar("30");
                         info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
                         info.Port = (int) i.GetLeafVar("38");
-                        info.ImageId = (uint) i.GetLeafVar("48");
+                        info.UploadId = (uint) i.GetLeafVar("48");
                         info.UseCached = true;
 
                         // Cached info
@@ -70,8 +70,8 @@ namespace Konata.Core.Services.ImgStore
                         info.Ip = (uint) i.GetLeafVar("30");
                         info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
                         info.Port = (int) i.GetLeafVar("38");
-                        info.ImageId = (uint) i.GetLeafVar("48");
-                        info.ServiceTicket = i.GetLeafBytes("42");
+                        info.UploadId = (uint) i.GetLeafVar("48");
+                        info.UploadTicket = i.GetLeafBytes("42");
                         info.UseCached = false;
                     }
 

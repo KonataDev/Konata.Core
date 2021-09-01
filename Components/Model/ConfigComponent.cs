@@ -32,7 +32,7 @@ namespace Konata.Core.Components.Model
         /// <summary>
         /// Highway host
         /// </summary>
-        public Tuple<string, int, byte[]> HighwayConfig { get; internal set; }
+        public (string Host, int Port, byte[] Ticket) HighwayConfig { get; internal set; }
 
         /// <summary>
         /// Sync cookie

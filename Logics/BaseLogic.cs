@@ -23,6 +23,9 @@ namespace Konata.Core.Logics
         internal SocketComponent SocketComponent
             => Context.GetComponent<SocketComponent>();
 
+        internal HighwayComponent HighwayComponent
+            => Context.GetComponent<HighwayComponent>();
+        
         internal BaseLogic(BusinessComponent context)
         {
             Context = context;
