@@ -25,6 +25,7 @@ namespace Konata.Core.Logics.Model
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;
         private uint _heartbeatCounter;
+        private bool _useFastLogin;
 
         public OnlineStatusEvent.Type OnlineType
             => _onlineType;
@@ -34,6 +35,7 @@ namespace Konata.Core.Logics.Model
         {
             _onlineType = OnlineStatusEvent.Type.Offline;
             _heartbeatCounter = 0;
+            _useFastLogin = false;
         }
 
         public override void Incoming(ProtocolEvent e)
@@ -81,6 +83,7 @@ namespace Konata.Core.Logics.Model
 
                     try
                     {
+                        _useFastLogin = true;
                         wtStatus = await WtXchg(Context);
 
                         // Success
@@ -99,6 +102,8 @@ namespace Konata.Core.Logics.Model
 
                 // Wtlogin
                 Context.LogI(TAG, "Do Wtlogin");
+
+                _useFastLogin = false;
                 wtStatus = await WtLogin(Context);
 
                 GirlBlessingQwQ:
@@ -251,6 +256,19 @@ namespace Konata.Core.Logics.Model
 
                 Context.LogI(TAG, "Bot online.");
                 return true;
+            }
+
+            if (_useFastLogin)
+            {
+                Context.LogI(TAG, "Fast login failed, " +
+                                  "Relogin with password.");
+
+                // Clear the old key
+                ConfigComponent.KeyStore.Session.D2Key = Array.Empty<byte>();
+                ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
+
+                // Do login again
+                return await Login();
             }
 
             // Oops...
