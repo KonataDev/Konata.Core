@@ -29,7 +29,7 @@ namespace Konata.Core.Events.Model
         /// <b>[In] [Out]</b> <br/>
         /// Record upload info <br/>
         /// </summary>
-        public RecordUpInfo UploadInfo { get; }
+        public PttUpInfo UploadInfo { get; }
 
         private GroupPttUpEvent(uint groupUin, uint selfUin,
             RecordChain uploadRecord) : base(6000, true)
@@ -40,7 +40,7 @@ namespace Konata.Core.Events.Model
         }
 
         private GroupPttUpEvent(int resultCode,
-            RecordUpInfo uploadInfo) : base(resultCode)
+            PttUpInfo uploadInfo) : base(resultCode)
         {
             UploadInfo = uploadInfo;
         }
@@ -56,10 +56,10 @@ namespace Konata.Core.Events.Model
             RecordChain uploadRecord) => new(groupUin, selfUin, uploadRecord);
 
         internal static GroupPttUpEvent Result(int resultCode,
-            RecordUpInfo uploadInfo) => new(resultCode, uploadInfo);
+            PttUpInfo uploadInfo) => new(resultCode, uploadInfo);
     }
 
-    public class RecordUpInfo
+    public class PttUpInfo
     {
         public uint Ip { get; set; }
 
@@ -69,9 +69,10 @@ namespace Konata.Core.Events.Model
 
         public byte[] Ukey { get; set; }
         
-        
-        public uint UploadId { get; set; }
+        public string FileKey { get; set; }
 
-        public string UploadToken { get; set; }
+        public uint UploadId { get; set; }
+        
+        public byte[] UploadTicket { get; set; }
     }
 }

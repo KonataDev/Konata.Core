@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Konata.AvCodec;
+using Konata.Core.Events.Model;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.FileFormat;
@@ -54,17 +55,10 @@ namespace Konata.Core.Message.Model
         /// </summary>
         public uint TimeSeconds { get; }
 
-        /// <summary>
-        /// Upload id
-        /// </summary>
-        internal uint UploadId { get; set; }
-
-        /// <summary>
-        /// Upload token
-        /// </summary>
-        internal string UploadToken { get; set; }
-
         public RecordType RecordType { get; }
+
+        
+        internal PttUpInfo PttUpInfo { get; private set; }
 
         private RecordChain(string url, string fileName, string fileHash)
             : base(ChainType.Record, ChainMode.Singleton)
@@ -91,13 +85,11 @@ namespace Konata.Core.Message.Model
         /// Set Upload id
         /// </summary>
         /// <param name="selfUin"></param>
-        /// <param name="id"></param>
-        /// <param name="token"></param>
-        internal void SetPttUpInfo(uint selfUin, uint id, string token)
+        /// <param name="info"></param>
+        internal void SetPttUpInfo(uint selfUin, PttUpInfo info)
         {
             SelfUin = selfUin;
-            UploadId = id;
-            UploadToken = token;
+            PttUpInfo = info;
         }
 
         /// <summary>

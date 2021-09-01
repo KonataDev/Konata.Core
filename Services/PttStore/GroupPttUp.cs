@@ -21,7 +21,7 @@ namespace Konata.Core.Services.PttStore
             var tree = new ProtoTreeRoot
                 (input.Payload.GetBytes(), true);
             {
-                var uploadInfo = new RecordUpInfo();
+                var uploadInfo = new PttUpInfo();
                 var leaf = (ProtoTreeRoot) tree.GetLeaf("2A");
                 {
                     uploadInfo.Ip = (uint) leaf.GetLeafVar("28");
@@ -29,7 +29,7 @@ namespace Konata.Core.Services.PttStore
                     uploadInfo.Port = (int) leaf.GetLeafVar("30");
                     uploadInfo.Ukey = (ProtoLengthDelimited)(ProtoTreeRoot)leaf.GetLeaf("3A");
                     uploadInfo.UploadId = (uint) leaf.GetLeafVar("40");
-                    uploadInfo.UploadToken = leaf.GetLeafString("5A");
+                    uploadInfo.FileKey = leaf.GetLeafString("5A");
                 }
 
                 // Construct event

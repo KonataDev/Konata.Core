@@ -120,10 +120,10 @@ namespace Konata.Core.Services.MessageSvc
                 _.AddLeafBytes("22", chain.HashData);
                 _.AddLeafString("2A", chain.FileName);
                 _.AddLeafVar("30", chain.FileLength);
-                _.AddLeafVar("40", chain.UploadId);
+                _.AddLeafVar("40", chain.PttUpInfo.UploadId);
                 _.AddLeafVar("58", 1);
-                _.AddLeafString("9201", chain.UploadToken);
-                _.AddLeafVar("9801", 1);
+                _.AddLeafString("9201", chain.PttUpInfo.FileKey);
+                _.AddLeafVar("9801", 4);
                 _.AddLeafVar("E801", 1);
                 _.AddTree("F201", __ =>
                 {
@@ -142,7 +142,7 @@ namespace Konata.Core.Services.MessageSvc
                 {
                     _.AddLeafString("12", chain.FileName);
                     _.AddLeafVar("38", chain.PicUpInfo.Ip);
-                    _.AddLeafVar("40", chain.PicUpInfo.ImageId);
+                    _.AddLeafVar("40", chain.PicUpInfo.UploadId);
                     _.AddLeafVar("48", chain.PicUpInfo.Port);
                     _.AddLeafVar("50", 66);
                     //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown

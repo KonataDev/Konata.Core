@@ -2,43 +2,49 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Sockets;
 using System.Collections.Generic;
-
+using System.Text;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
+using Konata.Core.Packets.Protobuf;
 using Konata.Core.Packets.Protobuf.Highway;
+using Konata.Core.Utils.Protobuf;
+using Konata.Core.Utils.TcpSocket;
+
+// ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable MergeIntoPattern
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Konata.Core.Components.Model
 {
     [Component("HighwayComponent", "Konata Highway Component")]
     internal class HighwayComponent : InternalComponent
     {
-        private static string TAG = "HighwayComponent";
+        private const string TAG = "HighwayComponent";
 
         public HighwayComponent()
         {
-
         }
 
         /// <summary>
         /// Upload group images
         /// </summary>
-        /// <param name="memberUin"></param>
+        /// <param name="selfUin"></param>
         /// <param name="upload"></param>
         /// <param name="infos"></param>
         /// <returns></returns>
-        public async Task<bool> UploadGroupImages
-            (uint memberUin, ImageChain[] upload, PicUpInfo[] infos)
+        public async Task<bool> GroupPicUp
+            (uint selfUin, ImageChain[] upload, PicUpInfo[] infos)
         {
             // Check quantities
             if (upload.Length != infos.Length)
             {
                 LogV(TAG, $"Wtf? The quantity does not equal " +
-                    $"upload [{upload.Length}], infos [{infos.Length}]");
+                          $"upload [{upload.Length}], infos [{infos.Length}]");
                 return false;
             }
 
@@ -46,166 +52,265 @@ namespace Konata.Core.Components.Model
             var chunksize = ConfigComponent.GlobalConfig.ImageChunkSize;
             {
                 // Length limit
-                if (chunksize <= 1024 || chunksize > 1048576)
+                if (chunksize is <= 1024 or > 1048576)
                 {
                     chunksize = 8192;
                 }
             }
 
             // Queue all tasks
-            var tasks = new List<Task<bool>>();
-            for (int i = 0; i < upload.Length; ++i)
+            var tasks = new List<Task<HwResponse>>();
+            for (var i = 0; i < upload.Length; ++i)
             {
                 if (!infos[i].UseCached)
                 {
-                    tasks.Add(TaskUploadGroup(memberUin, upload[i], infos[i], chunksize));
+                    tasks.Add(HighwayClient.Upload(
+                        infos[i].Host,
+                        infos[i].Port,
+                        chunksize,
+                        selfUin,
+                        infos[i].UploadTicket,
+                        upload[i].FileData,
+                        upload[i].HashData
+                    ));
                 }
             }
 
-            // Wait for tasks
-            LogV(TAG, "All tasks are queued, waiting for upload finished.");
-            Task.WaitAll(tasks.ToArray());
+            LogV(TAG, "All tasks are queued, " +
+                      "waiting for upload finished.");
 
-            return true;
+            // Wait for tasks
+            var results = await Task.WhenAll(tasks);
+            return results.Count(i => i != null) == results.Length;
         }
 
         /// <summary>
         /// Upload private images
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> UploadPrivateImages()
+        public async Task<bool> OffPicUp()
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Image upload task
+        /// Upload group record
         /// </summary>
+        /// <param name="selfUin"></param>
         /// <param name="upload"></param>
-        /// <param name="info"></param>
-        private async Task<bool> TaskUploadGroup(uint memberUin,
-            ImageChain upload, PicUpInfo info, int chunksize)
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task<bool> GroupPttUp(uint selfUin,
+            RecordChain upload, GroupPttUpRequest request)
         {
-            // Okay lets do upload
-            var client = new PicUpClient(memberUin, info.ServiceTicket);
+            var task = HighwayClient.Upload(
+                upload.PttUpInfo.Host,
+                upload.PttUpInfo.Port,
+                4096, selfUin,
+                Encoding.UTF8.GetBytes(upload.PttUpInfo.FileKey),
+                upload.FileData,
+                upload.HashData,
+                request
+            );
+
+            LogV(TAG, "Task queued, " +
+                      "waiting for upload finished.");
+
+            // Wait for tasks
+            var results = await task;
             {
-                // Connect to server
-                if (!client.Connect(info.Host, info.Port))
+                // Get ptt id and token
+                var uploadInfo = (ProtoTreeRoot) results.PathTo("3A.2A");
                 {
-                    return false;
+                    upload.PttUpInfo.FileKey = uploadInfo.GetLeafString("5A");
+                    upload.PttUpInfo.UploadId = (uint) uploadInfo.GetLeafVar("40");
                 }
 
-                // Heartbreak
-                if (!client.Echo())
-                {
-                    return false;
-                }
-
-                // Send the dataup
-                var i = 0;
-                while (i < upload.FileLength)
-                {
-                    // The remain
-                    if (upload.FileLength - i < chunksize)
-                    {
-                        chunksize = (int)upload.FileLength - i;
-                    }
-
-                    // DataUp
-                    client.DataUp(upload.FileData,
-                        upload.HashData, i, chunksize);
-
-                    i += chunksize;
-                }
-
+                return true;
             }
-            client.Close();
-
-            return true;
         }
     }
 
-    [Obsolete]
-    internal class PicUpClient
+    internal class HighwayClient
+        : AsyncClient, IClientListener
     {
-        private uint _peer;
-        private byte[] _ticket;
+        private readonly uint _peer;
+        private readonly byte[] _ticket;
         private int _sequence;
-        private Socket _socket;
-        private byte[] _recvBuffer;
+        private readonly Md5Cryptor _md5Cryptor;
 
-        public PicUpClient(uint peer, byte[] ticket)
+        // We no need to use a dict to storage
+        // the pending requests, cuz there's only
+        // one request pending in the same time
+        private HwResponse _hwResponse;
+        private readonly ManualResetEvent _requestAwaiter;
+
+        private HighwayClient(uint peer, byte[] ticket)
         {
             _peer = peer;
             _ticket = ticket;
-
             _sequence = new Random().Next(0x2333, 0x7090);
-            _recvBuffer = new byte[1048576];
-            _socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-            _socket.ReceiveBufferSize = 1048576;
-        }
-
-        public bool Connect(string host, int port)
-        {
-            _socket.ConnectAsync(host, port).Wait();
-            return _socket.Connected;
-        }
-
-        public void Close()
-        {
-            _socket.Close();
-            _socket.Dispose();
+            _hwResponse = default;
+            _requestAwaiter = new(false);
+            _md5Cryptor = new();
         }
 
         /// <summary>
-        /// Send echo
+        /// Upload data
         /// </summary>
-        /// <returns></returns>
-        public bool Echo()
-        {
-            var echo = new PicUpEcho(_peer, ++_sequence);
-
-            // Send and recv
-            // TODO: fix receive
-            _socket.Send(HwRequest.Create(echo));
-            Thread.Sleep(2000);
-
-            var len = _socket.Receive(_recvBuffer);
-            Console.WriteLine($"DataUp ret => {ByteConverter.Hex(_recvBuffer.Take(len).ToArray())}");
-
-            return true;
-        }
-
-        /// <summary>
-        /// Send DataUp
-        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="chunk"></param>
+        /// <param name="peer"></param>
+        /// <param name="ticket"></param>
         /// <param name="data"></param>
-        /// <param name="dataMD5"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
+        /// <param name="datamd5"></param>
+        /// <param name="extend"></param>
         /// <returns></returns>
-        public bool DataUp(byte[] data, byte[] dataMD5,
-            int offset, int length)
+        public static async Task<HwResponse> Upload(string host, int port, int chunk,
+            uint peer, byte[] ticket, byte[] data, byte[] datamd5, GroupPttUpRequest extend = null)
+        {
+            HwResponse lastResponse = null;
+            var client = new HighwayClient(peer, ticket);
+            {
+                // Connect to server
+                if (!await client.Connect(host, port)) return null;
+
+                // Hello Im coming
+                if (!await client.Echo()) return null;
+
+                // Send the dataup
+                var i = 0;
+                while (i < data.Length)
+                {
+                    // The remain
+                    if (data.Length - i < chunk)
+                    {
+                        chunk = data.Length - i;
+                    }
+
+                    // DataUp
+                    lastResponse = await client
+                        .DataUp(data, datamd5, i, chunk, extend);
+                    {
+                        if (lastResponse == null) return null;
+                    }
+
+                    i += chunk;
+                }
+            }
+
+            return lastResponse;
+        }
+
+        /// <summary>
+        /// Send Im coming
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> Echo()
+        {
+            // Send request
+            var result = await SendRequest
+                (new PicUpEcho(_peer, _sequence));
+            {
+                // No response
+                if (result == null) return false;
+
+                // Assert checks
+                if (result.Command != PicUpEcho.Command) return false;
+                if (result.PeerUin != _peer) return false;
+
+                return true;
+            }
+        }
+
+        private async Task<HwResponse> DataUp(byte[] fileData, byte[] dataMd5,
+            int offset, int length, GroupPttUpRequest extend = null)
         {
             // Calculate chunk
-            var chunk = data[offset..(offset + length)];
-            var chunkMD5 = new Md5Cryptor().Encrypt(chunk);
+            var chunk = fileData[offset..(offset + length)];
+            var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
-            // Build PicUp
-            var dataup = new PicUpDataUp(_peer,
-                ++_sequence, _ticket,
-                data.Length, dataMD5,
-                offset, length, chunkMD5);
+            // Send request
+            var result = await SendRequest(extend == null
 
-            // Send and recv
-            // TODO: fix receive
-            _socket.Send(HwRequest.Create(dataup, chunk));
-            Thread.Sleep(2000);
+                // Group Image upload
+                ? new PicUpDataUp(_peer, _sequence, _ticket,
+                    fileData.Length, dataMd5, offset, length, chunkMD5)
 
-            var len = _socket.Receive(_recvBuffer);
-            Console.WriteLine($"DataUp ret => {ByteConverter.Hex(_recvBuffer.Take(len).ToArray())}");
+                // Group Ptt Upload
+                : new PicUpDataUp(_peer, _sequence, _ticket,
+                    fileData.Length, dataMd5, offset, length, chunkMD5, extend));
+            {
+                // No response
+                if (result == null) return null;
 
-            return true;
+                // Assert checks
+                if (result.Command != PicUpDataUp.Command) return null;
+                if (result.PeerUin != _peer) return null;
+
+                return result;
+            }
+        }
+
+        private Task<HwResponse> SendRequest
+            (PicUp request, byte[] body = null)
+        {
+            // Send HwRequest
+            Send(HwRequest.Create(request, body));
+            {
+                // Wait for the response
+                _requestAwaiter.Reset();
+                _requestAwaiter.WaitOne();
+            }
+
+            _sequence++;
+            return Task.FromResult(_hwResponse);
+        }
+
+        /// <summary>
+        /// Dissect a packet
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public uint OnStreamDissect(byte[] data, uint length)
+        {
+            // 28
+            // 00 00 00 10
+            // 00 00 00 E9
+            if (length < 9) return 0;
+
+            // Get the header
+            var header = ByteConverter
+                .BytesToUInt32(data, 1, Endian.Little);
+            var databody = ByteConverter
+                .BytesToUInt32(data, 1 + 4, Endian.Little);
+
+            // Calculate the length
+            // 0x28 + 8 + h + b + 0x29
+            return 1 + 4 + 4 + header + databody + 1;
+        }
+
+        public void OnRecvPacket(byte[] data)
+        {
+            try
+            {
+                // Parse the data to HwResponse
+                _hwResponse = HwResponse.Parse(data);
+                _requestAwaiter.Set();
+            }
+            catch
+            {
+                // Cleanup
+                _hwResponse = null;
+                _requestAwaiter.Set();
+            }
+        }
+
+        public void OnDisconnect()
+        {
+            throw new NotImplementedException();
         }
     }
 }
