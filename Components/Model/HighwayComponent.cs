@@ -106,8 +106,8 @@ namespace Konata.Core.Components.Model
             var task = HighwayClient.Upload(
                 upload.PttUpInfo.Host,
                 upload.PttUpInfo.Port,
-                4096, selfUin,
-                Encoding.UTF8.GetBytes(upload.PttUpInfo.FileKey),
+                8192, selfUin,
+                upload.PttUpInfo.UploadTicket,
                 upload.FileData,
                 upload.HashData,
                 request
@@ -171,7 +171,9 @@ namespace Konata.Core.Components.Model
             uint peer, byte[] ticket, byte[] data, byte[] datamd5, GroupPttUpRequest extend = null)
         {
             HwResponse lastResponse = null;
+
             var client = new HighwayClient(peer, ticket);
+            client.SetListener(client);
             {
                 // Connect to server
                 if (!await client.Connect(host, port)) return null;
@@ -253,19 +255,19 @@ namespace Konata.Core.Components.Model
             }
         }
 
-        private Task<HwResponse> SendRequest
+        private async Task<HwResponse> SendRequest
             (PicUp request, byte[] body = null)
         {
             // Send HwRequest
-            Send(HwRequest.Create(request, body));
+            await Send(HwRequest.Create(request, body));
             {
                 // Wait for the response
                 _requestAwaiter.Reset();
-                _requestAwaiter.WaitOne();
+                await Task.Run(() => _requestAwaiter.WaitOne());
             }
 
             _sequence++;
-            return Task.FromResult(_hwResponse);
+            return _hwResponse;
         }
 
         /// <summary>
@@ -283,9 +285,9 @@ namespace Konata.Core.Components.Model
 
             // Get the header
             var header = ByteConverter
-                .BytesToUInt32(data, 1, Endian.Little);
+                .BytesToUInt32(data, 1, Endian.Big);
             var databody = ByteConverter
-                .BytesToUInt32(data, 1 + 4, Endian.Little);
+                .BytesToUInt32(data, 1 + 4, Endian.Big);
 
             // Calculate the length
             // 0x28 + 8 + h + b + 0x29
