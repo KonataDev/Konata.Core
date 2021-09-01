@@ -24,7 +24,7 @@ namespace Konata.Core.Utils.TcpSocket
         private string _socketHost;
         private readonly Socket _socketInstance;
 
-        private readonly IClientListener _listener;
+        private IClientListener _listener;
         private readonly MemoryStream _recvStream;
         private readonly byte[] _recvBuffer;
 
@@ -52,6 +52,13 @@ namespace Konata.Core.Utils.TcpSocket
         {
             _listener = listener;
         }
+
+        /// <summary>
+        /// Set client listener
+        /// </summary>
+        /// <param name="listener"></param>
+        public void SetListener(IClientListener listener)
+            => _listener = listener;
 
         /// <summary>
         /// Connect to the server
@@ -200,7 +207,8 @@ namespace Konata.Core.Utils.TcpSocket
             // Catch exceptions
             catch (Exception e)
             {
-                _socketInstance.Disconnect(false);
+                if (_socketInstance.Connected)
+                    _socketInstance.Disconnect(false);
             }
         }
     }
