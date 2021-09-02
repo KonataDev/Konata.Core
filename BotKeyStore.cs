@@ -235,13 +235,10 @@ namespace Konata.Core
         /// Tlv106Key
         /// </summary>
         public byte[] Tlv106Key { get; set; }
-            = new byte[] { };
 
         internal byte[] WtSessionTicketSig { get; set; }
-            = new byte[] { };
 
         internal byte[] WtSessionTicketKey { get; set; }
-            = new byte[] { };
 
         internal string WtLoginSmsToken { get; set; }
 
@@ -250,17 +247,21 @@ namespace Konata.Core
         internal string WtLoginSmsCountry { get; set; }
 
         internal string WtLoginSession { get; set; }
+
+        internal string HighwayKey { get; set; }
+
+        internal string HighwayToken { get; set; }
     }
 
     internal class KeyStub
     {
-        public byte[] TgtgKey { get; private set; } =
+        public byte[] TgtgKey { get; } =
         {
             0x2E, 0x39, 0x9A, 0x9C, 0xF2, 0x57, 0x12, 0xF8,
             0x1E, 0x5B, 0x63, 0x2E, 0xB3, 0xB3, 0xF7, 0x9F
         };
 
-        public byte[] RandKey { get; private set; } =
+        public byte[] RandKey { get; } =
         {
             0xE2, 0xED, 0x53, 0x77, 0xAD, 0xFD, 0x99, 0x83,
             0x56, 0xEB, 0x8B, 0x4C, 0x62, 0x7C, 0x22, 0xC4

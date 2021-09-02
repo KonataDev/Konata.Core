@@ -101,7 +101,7 @@ namespace Konata.Core.Utils.FileFormat
             samplerate = 24000;
 
             // Fake (?
-            timesec = (int) Math.Ceiling
+            timesec = (int) Math.Floor
                 (buffer.RemainLength / 2500.0);
             return true;
         }

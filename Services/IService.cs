@@ -30,7 +30,5 @@ namespace Konata.Core.Services
         bool Build(Sequence sequence, ProtocolEvent input,
             BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output);
 
-        // TODO:
-        // bool Build(WupBuffer buffer, ProtocolEvent input, BotKeyStore keystore, BotDevice device);
     }
 }

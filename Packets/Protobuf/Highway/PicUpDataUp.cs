@@ -4,9 +4,11 @@ namespace Konata.Core.Packets.Protobuf.Highway
 {
     public class PicUpDataUp : PicUp
     {
+        public const string Command = "PicUp.DataUp";
+
         public PicUpDataUp(uint peerUin, int sequence, byte[] ticket,
             int fileSize, byte[] fileMD5, int chunkOffset, int chunkSize, byte[] chunkMD5)
-            : base("PicUp.DataUp", 2, peerUin, sequence)
+            : base(Command, 2, peerUin, sequence)
         {
             AddTree("12", w =>
             {

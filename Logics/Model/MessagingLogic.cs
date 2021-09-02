@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Message;
@@ -9,6 +10,7 @@ using Konata.Core.Components.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils;
 using Konata.Core.Packets;
+using Konata.Core.Packets.Protobuf;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
@@ -92,18 +94,27 @@ namespace Konata.Core.Logics.Model
             var uploadRecord = SearchRecordAndUpload(groupUin, message);
             var checkAtChain = SearchAt(groupUin, message);
 
-            // Wait for tasks done
-            var results = await Task.WhenAll
-                (uploadImage, uploadRecord, checkAtChain);
+            try
             {
-                // Check results
-                if (!(results[0] && results[1] && results[2]))
+                // Wait for tasks done
+                var results = await Task.WhenAll
+                    (uploadImage, uploadRecord, checkAtChain);
                 {
-                    // Some tasks failed
-                    Context.LogW(TAG, $"Some task failed." +
-                                      $"{results[0]} {results[1]} {results[2]}");
-                    return -1;
+                    // Check results
+                    if (!(results[0] && results[1] && results[2]))
+                    {
+                        // Some tasks failed
+                        Context.LogW(TAG, $"Some task failed." +
+                                          $"{results[0]} {results[1]} {results[2]}");
+                        return -1;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Context.LogW(TAG, "Thrown an exception " +
+                                  "while sending the message.");
+                Context.LogE(TAG, e);
             }
 
             // Send the message
@@ -207,8 +218,8 @@ namespace Konata.Core.Logics.Model
                     }
 
                     // Highway image upload
-                    return await Context.HighwayComponent.UploadGroupImages
-                        (Context.Bot.Uin, upload.ToArray(), result.UploadInfo.ToArray());
+                    return await HighwayComponent.GroupPicUp(Context.Bot.Uin,
+                        upload.ToArray(), result.UploadInfo.ToArray());
                 }
                 else
                 {
@@ -218,7 +229,7 @@ namespace Konata.Core.Logics.Model
                     // var result = await PrivateOffPicUp(Context, uin, upload);
 
                     // Image upload for private messages
-                    return await Context.HighwayComponent.UploadPrivateImages();
+                    return await HighwayComponent.OffPicUp();
                 }
             }
         }
@@ -229,9 +240,6 @@ namespace Konata.Core.Logics.Model
         /// <returns></returns>
         private async Task<bool> SearchRecordAndUpload(uint uin, MessageChain message)
         {
-            // TODO:
-            // Use highway instead
-
             // Find the record chain
             var upload = message.GetChain<RecordChain>();
             {
@@ -239,41 +247,63 @@ namespace Konata.Core.Logics.Model
                 if (upload == null) return true;
 
                 // Return false if audio configuration not enabled
-                if (!ConfigComponent.GlobalConfig.EnableAudio) return false;
-
-                // Request record upload
-                Context.LogV(TAG, "Uploading record file.");
-                var result = await GroupPttUp(Context, uin, upload);
+                if (!ConfigComponent.GlobalConfig.EnableAudio)
                 {
-                    var post = await Network.Post($"http://{result.UploadInfo.Host}" +
-                                                  $":{result.UploadInfo.Port}/", upload.FileData,
-                        // Request header
-                        new Dictionary<string, string>
-                        {
-                            {"User-Agent", $"QQ/{AppInfo.AppBuildVer} CFNetwork/1126"},
-                            {"Net-Type", "Wifi"}
-                        },
-
-                        // Search params
-                        new Dictionary<string, string>
-                        {
-                            {"ver", "4679"},
-                            {"ukey", ByteConverter.Hex(result.UploadInfo.Ukey)},
-                            {"filekey", result.UploadInfo.UploadToken},
-                            {"filesize", upload.FileLength.ToString()},
-                            {"bmd5", upload.FileHash},
-                            {"mType", "pttDu"},
-                            {"voice_encodec", "1"}
-                        });
-
-                    // Set upload info
-                    upload.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo
-                        .UploadId, result.UploadInfo.UploadToken);
-
-                    Context.LogV(TAG, "Recored uploaded.");
-                    Context.LogV(TAG, ByteConverter.Hex(post));
+                    Context.LogW(TAG, "The audio function is currently disabled. " +
+                                      "Lack of codec library.");
+                    return false;
                 }
 
+                // Upload record via highway
+                if (ConfigComponent.HighwayConfig.Host != null)
+                {
+                    // Setup the highway server
+                    Context.LogV(TAG, "Uploading record file via highway.");
+                    upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo()
+                    {
+                        Host = ConfigComponent.HighwayConfig.Host,
+                        Port = ConfigComponent.HighwayConfig.Port,
+                        UploadTicket = ConfigComponent.HighwayConfig.Ticket,
+                    });
+
+                    // Request record upload
+                    var request = new GroupPttUpRequest(uin, Context.Bot.Uin, upload);
+                    {
+                        // Upload the record
+                        return await HighwayComponent
+                            .GroupPttUp(Context.Bot.Uin, upload, request);
+                    }
+                }
+
+                // Upload record via http
+                Context.LogV(TAG, "Uploading record file via http.");
+                var result = await GroupPttUp(Context, uin, upload);
+                var retdata = await Network.Post($"http://{result.UploadInfo.Host}" +
+                                                 $":{result.UploadInfo.Port}/", upload.FileData,
+                    // Request header
+                    new Dictionary<string, string>
+                    {
+                        {"User-Agent", $"QQ/{AppInfo.AppBuildVer} CFNetwork/1126"},
+                        {"Net-Type", "Wifi"}
+                    },
+
+                    // Search params
+                    new Dictionary<string, string>
+                    {
+                        {"ver", "4679"},
+                        {"ukey", ByteConverter.Hex(result.UploadInfo.Ukey)},
+                        {"filekey", result.UploadInfo.FileKey},
+                        {"filesize", upload.FileLength.ToString()},
+                        {"bmd5", upload.FileHash},
+                        {"mType", "pttDu"},
+                        {"voice_encodec", "1"}
+                    });
+
+                // Set upload info
+                upload.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo);
+
+                Context.LogV(TAG, "Recored uploaded.");
+                Context.LogV(TAG, ByteConverter.Hex(retdata));
                 return true;
             }
         }
