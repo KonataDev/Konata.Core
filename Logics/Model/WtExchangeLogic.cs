@@ -106,7 +106,7 @@ namespace Konata.Core.Logics.Model
                 _useFastLogin = false;
                 wtStatus = await WtLogin(Context);
 
-                GirlBlessingQwQ:
+            GirlBlessingQwQ:
                 while (true)
                 {
                     Context.LogI(TAG, $"Status => {wtStatus.EventType}");
@@ -185,6 +185,10 @@ namespace Konata.Core.Logics.Model
             ScheduleComponent.Cancel(SchedulePullMessage);
             ScheduleComponent.Cancel(ScheduleCheckConnection);
 
+            // Push offline
+            Context.PostEvent<BusinessComponent>
+               (OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, "user logout"));
+
             return SocketComponent.Disconnect("user logout");
         }
 
@@ -241,21 +245,31 @@ namespace Konata.Core.Logics.Model
 
             // Set online
             Context.LogI(TAG, "Registering client");
-            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
 
-            // Update online status
-            if (online.EventType == OnlineStatusEvent.Type.Online)
+            try
             {
-                // Bot online
-                Context.PostEventToEntity(online);
-                await Context.PostEvent<BusinessComponent>(online);
+                var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
 
-                // Register schedules
-                ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
-                ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
+                // Update online status
+                if (online.EventType == OnlineStatusEvent.Type.Online)
+                {
+                    // Bot online
+                    Context.PostEventToEntity(online);
+                    await Context.PostEvent<BusinessComponent>(online);
 
-                Context.LogI(TAG, "Bot online.");
-                return true;
+                    // Register schedules
+                    ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
+                    ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
+
+                    Context.LogI(TAG, "Bot online.");
+                    return true;
+                }
+            }
+
+            catch (Exception e)
+            {
+                Context.LogE(TAG, e);
+                return false;
             }
 
             if (_useFastLogin)

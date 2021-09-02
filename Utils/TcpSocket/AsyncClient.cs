@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
+// ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
@@ -18,11 +19,11 @@ namespace Konata.Core.Utils.TcpSocket
         /// Socket connected
         /// </summary>
         public bool Connected
-            => _socketInstance.Connected;
+            => _socketInstance?.Connected ?? false;
 
         private int _socketIp;
         private string _socketHost;
-        private readonly Socket _socketInstance;
+        private Socket _socketInstance;
 
         private IClientListener _listener;
         private readonly MemoryStream _recvStream;
@@ -35,12 +36,6 @@ namespace Konata.Core.Utils.TcpSocket
         {
             _recvStream = new(2048);
             _recvBuffer = new byte [2048];
-
-            _socketInstance = new Socket(AddressFamily.InterNetwork,
-                SocketType.Stream, ProtocolType.Tcp);
-            {
-                _socketInstance.ReceiveTimeout = 100;
-            }
         }
 
         /// <summary>
@@ -69,7 +64,8 @@ namespace Konata.Core.Utils.TcpSocket
         public async Task<bool> Connect(string host, int ip)
         {
             // The client has been connected
-            if (_socketInstance.Connected) return true;
+            if (_socketInstance != null) return false;
+            if (_socketInstance?.Connected ?? false) return true;
             {
                 _socketIp = ip;
                 _socketHost = host;
@@ -83,26 +79,32 @@ namespace Konata.Core.Utils.TcpSocket
         /// Reconnect to the server
         /// </summary>
         /// <returns></returns>
-        public Task<bool> Reconnect()
+        public async Task<bool> Reconnect()
         {
-            // The client has been connected
-            if (_socketInstance.Connected) return Task.FromResult(true);
+            // Cleanup
+            await Disconnect();
+
+            // Create socket
+            _socketInstance = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream, ProtocolType.Tcp);
             {
-                // Connect to the server
-                _socketInstance.BeginConnect(_socketHost, _socketIp,
-                    r => ((Socket) r.AsyncState).EndConnect(r), _socketInstance).AsyncWaitHandle.WaitOne();
-
-                // Connected
-                if (_socketInstance.Connected)
-                {
-                    _socketInstance.BeginReceive(_recvBuffer, 0,
-                        _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
-
-                    return Task.FromResult(true);
-                }
+                _socketInstance.ReceiveTimeout = 100;
             }
 
-            return Task.FromResult(false);
+            // Connect to the server
+            _socketInstance.BeginConnect(_socketHost, _socketIp,
+                r => ((Socket) r.AsyncState).EndConnect(r), _socketInstance).AsyncWaitHandle.WaitOne();
+
+            // Connected
+            if (_socketInstance.Connected)
+            {
+                _socketInstance.BeginReceive(_recvBuffer, 0,
+                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -112,13 +114,18 @@ namespace Konata.Core.Utils.TcpSocket
         public Task<bool> Disconnect()
         {
             // Not connected
-            if (!_socketInstance.Connected)
-            {
-                return Task.FromResult(false);
-            }
+            if (_socketInstance == null) return Task.FromResult(true);
 
             // Disconnect
-            _socketInstance.Disconnect(true);
+            if (_socketInstance.Connected)
+                _socketInstance.Disconnect(false);
+            {
+                // And clanup
+                _recvStream.SetLength(0);
+                _socketInstance.Dispose();
+                _socketInstance = null;
+            }
+
             return Task.FromResult(true);
         }
 
@@ -130,7 +137,8 @@ namespace Konata.Core.Utils.TcpSocket
         public Task<bool> Send(ReadOnlyMemory<byte> buffer)
         {
             // Not connected
-            if (!_socketInstance.Connected) return Task.FromResult(true);
+            if (_socketInstance == null) return Task.FromResult(false);
+            if (!_socketInstance.Connected) return Task.FromResult(false);
 
             // Send the data
             _socketInstance.BeginSend(buffer.ToArray(), 0, buffer.Length, SocketFlags.None,
@@ -148,7 +156,11 @@ namespace Konata.Core.Utils.TcpSocket
             var packetLen = 0U;
 
             // Not connected
-            if (!_socketInstance.Connected) return;
+            if (!_socketInstance.Connected)
+            {
+                Disconnect();
+                return;
+            }
 
             try
             {
@@ -207,8 +219,7 @@ namespace Konata.Core.Utils.TcpSocket
             // Catch exceptions
             catch (Exception e)
             {
-                if (_socketInstance.Connected)
-                    _socketInstance.Disconnect(false);
+                Disconnect();
             }
         }
     }
