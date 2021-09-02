@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Message;
@@ -93,18 +94,27 @@ namespace Konata.Core.Logics.Model
             var uploadRecord = SearchRecordAndUpload(groupUin, message);
             var checkAtChain = SearchAt(groupUin, message);
 
-            // Wait for tasks done
-            var results = await Task.WhenAll
-                (uploadImage, uploadRecord, checkAtChain);
+            try
             {
-                // Check results
-                if (!(results[0] && results[1] && results[2]))
+                // Wait for tasks done
+                var results = await Task.WhenAll
+                    (uploadImage, uploadRecord, checkAtChain);
                 {
-                    // Some tasks failed
-                    Context.LogW(TAG, $"Some task failed." +
-                                      $"{results[0]} {results[1]} {results[2]}");
-                    return -1;
+                    // Check results
+                    if (!(results[0] && results[1] && results[2]))
+                    {
+                        // Some tasks failed
+                        Context.LogW(TAG, $"Some task failed." +
+                                          $"{results[0]} {results[1]} {results[2]}");
+                        return -1;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Context.LogW(TAG, "Thrown an exception " +
+                                  "while sending the message.");
+                Context.LogE(TAG, e);
             }
 
             // Send the message

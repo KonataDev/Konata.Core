@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
@@ -201,7 +200,7 @@ namespace Konata.Core.Components.Model
                     i += chunk;
                 }
             }
-
+            await client.Disconnect();
             return lastResponse;
         }
 
@@ -242,7 +241,7 @@ namespace Konata.Core.Components.Model
 
                 // Group Ptt Upload
                 : new PicUpDataUp(_peer, _sequence, _ticket,
-                    fileData.Length, dataMd5, offset, length, chunkMD5, extend));
+                    fileData.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
             {
                 // No response
                 if (result == null) return null;

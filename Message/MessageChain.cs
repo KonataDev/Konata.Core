@@ -20,7 +20,7 @@ namespace Konata.Core.Message
             => _chains = new();
 
         internal MessageChain(params BaseChain[] chain)
-            => _chains = new(chain);
+            => _chains = new(chain.Where(i => i != null));
 
         internal void Add(BaseChain chain)
             => _chains.Add(chain);

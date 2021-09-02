@@ -123,7 +123,7 @@ namespace Konata.Core.Services.MessageSvc
                 _.AddLeafVar("40", chain.PttUpInfo.UploadId);
                 _.AddLeafVar("58", 1);
                 _.AddLeafString("9201", chain.PttUpInfo.FileKey);
-                _.AddLeafVar("9801", 4);
+                _.AddLeafVar("9801", chain.TimeSeconds);
                 _.AddLeafVar("E801", 1);
                 _.AddTree("F201", __ =>
                 {
