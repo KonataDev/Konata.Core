@@ -76,51 +76,50 @@ namespace Konata.Core.Components.Model
         /// Business logics
         /// </summary>
         /// <param name="task"></param>
-        internal override void EventHandler(KonataTask task)
+        internal override bool OnHandleEvent(KonataTask task)
         {
-            if (task.EventPayload is ProtocolEvent protocolEvent)
+            // Pass if not a protocol event
+            if (task.EventPayload is not ProtocolEvent protocolEvent) return false;
+            
+            // Get logics
+            _businessLogics.TryGetValue
+                (typeof(ProtocolEvent), out var baseLogics);
+
+            // Handle event
+            if (_businessLogics.TryGetValue
+                (protocolEvent.GetType(), out var logics))
             {
-                _businessLogics.TryGetValue
-                    (typeof(ProtocolEvent), out var baseLogics);
-
-                // Handle event
-                if (_businessLogics.TryGetValue
-                    (protocolEvent.GetType(), out var logics))
+                // Append base logics and
+                // select distinct to avoid multiple executes
+                if (baseLogics != null)
                 {
-                    // Append base logics and
-                    // select distinct to avoid multiple executes
-                    if (baseLogics != null)
-                    {
-                        logics.AddRange(baseLogics);
-                        logics = logics.Distinct().ToList();
-                    }
-
-                    foreach (var i in logics)
-                    {
-                        try
-                        {
-                            // Execute a business logic
-                            i.Incoming(protocolEvent);
-                        }
-                        catch (Exception e)
-                        {
-                            LogE(TAG, $"The logic '{i.GetType()}'" +
-                                      " was thrown an exception:");
-                            LogE(TAG, e);
-                        }
-                    }
-
-                    task.Finish();
+                    logics.AddRange(baseLogics);
+                    logics = logics.Distinct().ToList();
                 }
 
-                // No handler
-                else
+                foreach (var i in logics)
                 {
-                    LogW(TAG, "The event has no logic to handle.");
+                    try
+                    {
+                        // Execute a business logic
+                        i.Incoming(protocolEvent);
+                    }
+                    catch (Exception e)
+                    {
+                        LogE(TAG, $"The logic '{i.GetType()}'" +
+                                  " was thrown an exception:");
+                        LogE(TAG, e);
+                    }
                 }
             }
 
-            else task.Cancel();
+            // No handler
+            else
+            {
+                LogW(TAG, "The event has no logic to handle.");
+            }
+
+            return false;
         }
 
         #region Business Logics

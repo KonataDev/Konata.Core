@@ -174,7 +174,7 @@ namespace Konata.Core.Components.Model
         /// Event handler
         /// </summary>
         /// <param name="task"></param>
-        internal override void EventHandler(KonataTask task)
+        internal override bool OnHandleEvent(KonataTask task)
         {
             if (task.EventPayload is PacketEvent packetEvent)
             {
@@ -182,20 +182,15 @@ namespace Konata.Core.Components.Model
                 if (_tcpClient is not {Connected: true})
                 {
                     LogW(TAG, "Calling SendData method after socket disconnected.");
-                    return;
                 }
 
                 // Send data
                 _tcpClient.Send(packetEvent.Buffer).Wait();
                 LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
+            }
+            else LogW(TAG, "Unsupported event received.");
 
-                task.Finish();
-            }
-            else
-            {
-                LogW(TAG, "Unsupported event received.");
-                task.Cancel();
-            }
+            return false;
         }
 
         #region Stub methods
