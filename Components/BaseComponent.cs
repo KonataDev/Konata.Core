@@ -12,13 +12,29 @@ namespace Konata.Core.Components
     {
         public BaseEntity Entity { get; set; }
 
-        public ActionBlock<KonataTask> EventPipeline { get; set; }
+        public ActionBlock<KonataTask> EventPipeline { get; }
 
         public BaseComponent()
-            => EventPipeline = new ActionBlock<KonataTask>(EventHandler);
-
-        internal virtual void EventHandler(KonataTask task)
         {
+            EventPipeline = new ActionBlock<KonataTask>(t =>
+            {
+                try
+                {
+                    // Force finish the tasks if the
+                    // handler does not save the event by itself.
+                    if (!OnHandleEvent(t) && !t.Complected) t.Finish();
+
+                }
+                catch (Exception e)
+                {
+                    if (!t.Complected) t.Exception(e);
+                }
+            });
+        }
+
+        internal virtual bool OnHandleEvent(KonataTask task)
+        {
+            return false;
         }
 
         public void PostEventToEntity(BaseEvent anyEvent)
@@ -31,7 +47,7 @@ namespace Konata.Core.Components
             where TEvent : BaseEvent where TEntity : BaseComponent
         {
             var task = Entity.PostEvent<TEntity>(anyEvent);
-            return (TEvent) await task;
+            return (TEvent)await task;
         }
 
         public void BroadcastEvent(BaseEvent anyEvent)

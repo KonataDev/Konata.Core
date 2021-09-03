@@ -184,6 +184,9 @@ namespace Konata.Core.Entity
     {
         public BaseEvent EventPayload { get; }
 
+        public bool Complected
+            => CompletionSource.Task.IsCompleted;
+
         public TaskCompletionSource<BaseEvent> CompletionSource { get; }
 
         private CancellationTokenSource CancellationToken { get; }
