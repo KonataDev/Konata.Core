@@ -151,7 +151,6 @@ namespace Konata.Core.Logics.Model
                         case WtLoginEvent.Type.InvalidSmsCode:
                         case WtLoginEvent.Type.HighRiskEnvironment:
                         case WtLoginEvent.Type.InvalidUinOrPassword:
-                            Context.PostEventToEntity(wtStatus);
                             await Context.SocketComponent.Disconnect("Wtlogin failed.");
                             return false;
 
