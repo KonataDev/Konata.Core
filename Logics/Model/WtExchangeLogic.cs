@@ -165,9 +165,7 @@ namespace Konata.Core.Logics.Model
             }
             catch (Exception e)
             {
-                await SocketComponent.Disconnect("Timed out");
-
-                Context.LogE(TAG, "Request timed out.");
+                await SocketComponent.Disconnect(e.Message);
                 Context.LogE(TAG, e);
 
                 return false;

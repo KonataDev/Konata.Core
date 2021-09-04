@@ -1,24 +1,22 @@
-﻿using System;
-
-namespace Konata.Core.Packets
+﻿namespace Konata.Core.Packets
 {
     internal static class AppInfo
     {
-        public static uint AppId { get; } = 16;
+        public const uint AppId = 16;
 
-        public static uint SubAppId { get; } = 537063202;
+        public const uint SubAppId = 537063202;
 
-        public static uint AppClientVersion { get; } = 0;
+        public const uint AppClientVersion = 0;
 
-        public static string ApkPackageName { get; } = "com.tencent.mobileqq";
+        public const string ApkPackageName = "com.tencent.mobileqq";
 
-        public static string ApkVersionName { get; } = "8.2.7";
+        public const string ApkVersionName = "8.2.7";
 
-        public static string AppBuildVer { get; } = "8.2.7.4395";
+        public const string AppBuildVer = "8.2.7.4395";
 
-        public static string AppRevision { get; } = "7288ad61";
+        public const string AppRevision = "7288ad61";
 
-        public static byte[] ApkSignatureMd5 { get; } = new byte[]
+        public static byte[] ApkSignatureMd5 { get; } =
         {
             0xA6, 0xB7, 0x45, 0xBF,
             0x24, 0xA2, 0xC2, 0x77,
@@ -26,7 +24,7 @@ namespace Konata.Core.Packets
             0xF3, 0x6E, 0xB6, 0x8D
         };
 
-        public static byte[] ApkSignatureSha1 { get; } = new byte[]
+        public static byte[] ApkSignatureSha1 { get; } =
         {
             0x5A, 0xC2, 0xD1, 0x00,
             0x2F, 0x2B, 0xBA, 0xC8,
@@ -37,17 +35,17 @@ namespace Konata.Core.Packets
 
         public static class WtLoginSdk
         {
-            public static uint SdkBuildTime { get; } = 1577331209;
+            public const uint SdkBuildTime = 1577331209;
 
-            public static string SdkVersion { get; } = "6.0.0.2425";
+            public const string SdkVersion = "6.0.0.2425";
 
-            public static uint MainSigBitmap { get; } = 16724722;
+            public const uint MainSigBitmap = 16724722;
 
-            public static uint MiscBitmap { get; } = 150470524;
+            public const uint MiscBitmap = 150470524;
 
-            public static uint SubSigBitmap { get; } = 66560;
+            public const uint SubSigBitmap = 66560;
 
-            public static uint[] SubAppIdList { get; } = { 1600000226 };
+            public static readonly uint[] SubAppIdList = {1600000226};
         }
     }
 }

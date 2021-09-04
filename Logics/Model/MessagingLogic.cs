@@ -259,7 +259,7 @@ namespace Konata.Core.Logics.Model
                 {
                     // Setup the highway server
                     Context.LogV(TAG, "Uploading record file via highway.");
-                    upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo()
+                    upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
                     {
                         Host = ConfigComponent.HighwayConfig.Host,
                         Port = ConfigComponent.HighwayConfig.Port,

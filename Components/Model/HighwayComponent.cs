@@ -311,7 +311,7 @@ namespace Konata.Core.Components.Model
 
         public void OnDisconnect()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Konata.Core.Components.Model
             //  Parse sso frame
             if (!SSOFrame.Parse(serviceMsg, out var ssoFrame))
             {
-                LogW(TAG, $"Unsupported sso frame received. {ssoFrame.Command}");
+                LogW(TAG, $"pars sso frame failed. {ssoFrame.Command}");
                 return false;
             }
 

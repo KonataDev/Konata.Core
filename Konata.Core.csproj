@@ -8,13 +8,13 @@
     <Authors>Konata Project</Authors>
     <Copyright>Konata Project (C) 2021</Copyright>
 
-    <Version>1.0.4-alpha.1</Version>
+    <Version>1.0.4-alpha.2</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Core implementation for Konata.</Description>
     <PackageIcon>konata_icon_512_round64.png</PackageIcon>
     <PackageIconUrl />
