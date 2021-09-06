@@ -1,16 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Konata.AvCodec;
+using Konata.Codec;
+using Konata.Codec.Audio;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.FileFormat;
 
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
-// ReSharper disable RedundantAssignment
+// ReSharper disable InvertIf
 // ReSharper disable RedundantCaseLabel
-// ReSharper disable NotAccessedVariable
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -55,9 +54,14 @@ namespace Konata.Core.Message.Model
         /// </summary>
         public uint TimeSeconds { get; }
 
+        /// <summary>
+        /// Record type
+        /// </summary>
         public RecordType RecordType { get; }
 
-        
+        /// <summary>
+        /// Ptt upload information
+        /// </summary>
         internal PttUpInfo PttUpInfo { get; private set; }
 
         private RecordChain(string url, string fileName, string fileHash)
@@ -78,7 +82,7 @@ namespace Konata.Core.Message.Model
             HashData = md5;
             FileHash = md5str;
             RecordType = type;
-            FileName = $"{md5str}.amr";
+            FileName = md5str;
         }
 
         /// <summary>
@@ -117,8 +121,8 @@ namespace Konata.Core.Message.Model
             if (FileFormat.DetectAudio(audio, out var type,
                 out var timeSec, out var sampleRate, out var channel))
             {
-                byte[] audioData = null;
-                RecordType audioType = RecordType.SILK;
+                var audioType = RecordType.SILK;
+                var audioData = Array.Empty<byte>();
 
                 // Process
                 switch (type)
@@ -147,39 +151,49 @@ namespace Konata.Core.Message.Model
                         break;
                     }
 
+                    // Cannot convert unknown type
+                    case FileFormat.AudioFormat.UNKNOWN:
+                        return null;
+
                     // Need to convert
                     default:
                     case FileFormat.AudioFormat.MP3:
                     case FileFormat.AudioFormat.WAV:
-                    case FileFormat.AudioFormat.UNKNOWN:
                     {
                         var pcmData = Array.Empty<byte>();
                         var silkData = Array.Empty<byte>();
 
                         // TODO:
-                        // Convert audio format to silk
+                        // Convert audio format to pcm
 
                         switch (type)
                         {
                             // Decode Mp3 to pcm
                             case FileFormat.AudioFormat.MP3:
-                                throw new NotImplementedException();
+
+                                // Try decode the mp3
+                                if (!Mp3Codec.Decode(audio,
+                                    out pcmData).Result) return null;
+
+                                break;
 
                             // Decode Wav to pcm
                             case FileFormat.AudioFormat.WAV:
                                 throw new NotImplementedException();
-
-                            // Cannot convert unknown type
-                            case FileFormat.AudioFormat.UNKNOWN:
-                                return null;
                         }
 
                         // TODO:
                         // Resample the pcm to
                         // signed 16bit mono 24kHz format 
-                        // if (channel != 1 || sampleRate != 24000)
-                        // {
-                        // }
+                        var resampler = new AudioResampler(pcmData);
+                        {
+                            // TODO: Detect audio format
+                            resampler.SetOrigin(sampleRate, channel, Format.Signed16Bit);
+                            resampler.SetTarget(24000, 1, Format.Signed16Bit);
+
+                            // Resample pcmdata
+                            if (!resampler.Resample(out pcmData).Result) return null;
+                        }
 
                         // Convert pcm data to silkv3
                         if (pcmData.Length != 0 && SilkCodec
@@ -213,10 +227,9 @@ namespace Konata.Core.Message.Model
         /// <exception cref="FileNotFoundException"></exception>
         public static RecordChain CreateFromFile(string filepath)
         {
+            // File not exist
             if (!File.Exists(filepath))
-            {
                 throw new FileNotFoundException(filepath);
-            }
 
             return Create(File.ReadAllBytes(filepath));
         }
@@ -228,9 +241,7 @@ namespace Konata.Core.Message.Model
         /// <param name="base64"></param>
         /// <returns></returns>
         public static RecordChain CreateFromBase64(string base64)
-        {
-            return Create(ByteConverter.UnBase64(base64));
-        }
+            => Create(ByteConverter.UnBase64(base64));
 
         /// <summary>
         /// Parse the code
