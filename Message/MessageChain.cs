@@ -75,6 +75,9 @@ namespace Konata.Core.Message
         public static IEnumerable<BaseChain> operator &(MessageChain x, BaseChain.ChainMode mode)
             => x.Chains.Where(c => c.Mode == mode);
 
+        public List<BaseChain> this[Range r]
+            => Chains.GetRange(r.Start.Value, r.End.Value - r.Start.Value);
+
         public BaseChain this[int index]
             => Chains[index];
 
@@ -104,6 +107,26 @@ namespace Konata.Core.Message
         /// <param name="chains"></param>
         public MessageBuilder(params BaseChain[] chains)
             => _chain = new(chains);
+
+        /// <summary>
+        /// Create builder with chains
+        /// </summary>
+        /// <param name="chains"></param>
+        public MessageBuilder(IEnumerable<BaseChain> chains)
+        {
+            _chain = new();
+            _chain.AddRange(chains);
+        }
+
+        /// <summary>
+        /// Create builder with an initial string
+        /// </summary>
+        /// <param name="text"></param>
+        public MessageBuilder(string text)
+        {
+            _chain = new();
+            PlainText(text);
+        }
 
         /// <summary>
         /// Build a message chain
@@ -204,6 +227,17 @@ namespace Konata.Core.Message
         }
 
         /// <summary>
+        /// Add chains
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <returns></returns>
+        public MessageBuilder Add(IEnumerable<BaseChain> chain)
+        {
+            _chain.AddRange(chain);
+            return this;
+        }
+
+        /// <summary>
         /// Plain text
         /// </summary>
         /// <param name="message"></param>
@@ -269,11 +303,11 @@ namespace Konata.Core.Message
             return this;
         }
 
-        /// <summary>
-        /// Video chain
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        // /// <summary>
+        // /// Video chain
+        // /// </summary>
+        // /// <param name="filePath"></param>
+        // /// <returns></returns>
         //public MessageBuilder Video(string filePath)
         //{
         //    //if (RecordChain.Create(filePath, out var chain))
