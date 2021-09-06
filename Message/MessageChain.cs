@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -9,24 +10,35 @@ using Konata.Core.Message.Model;
 
 namespace Konata.Core.Message
 {
-    public class MessageChain
+    public class MessageChain : IEnumerable<BaseChain>
     {
-        internal List<BaseChain> Chains
-            => _chains;
-
-        private readonly List<BaseChain> _chains;
+        internal List<BaseChain> Chains { get; }
 
         internal MessageChain()
-            => _chains = new();
+            => Chains = new();
 
         internal MessageChain(params BaseChain[] chain)
-            => _chains = new(chain.Where(i => i != null));
+            => Chains = new(chain.Where(i => i != null));
 
+        /// <summary>
+        /// Add chain
+        /// </summary>
+        /// <param name="chain"></param>
         internal void Add(BaseChain chain)
-            => _chains.Add(chain);
+            => Chains.Add(chain);
 
+        /// <summary>
+        /// Add chains
+        /// </summary>
+        /// <param name="chains"></param>
         internal void AddRange(IEnumerable<BaseChain> chains)
-            => _chains.AddRange(chains);
+            => Chains.AddRange(chains);
+
+        public IEnumerator<BaseChain> GetEnumerator()
+            => Chains.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
 
         /// <summary>
         /// Convert chain to code string
@@ -63,8 +75,17 @@ namespace Konata.Core.Message
         public static IEnumerable<BaseChain> operator &(MessageChain x, BaseChain.ChainMode mode)
             => x.Chains.Where(c => c.Mode == mode);
 
+        public List<BaseChain> this[Range r]
+        {
+            get
+            {
+                var (offset, length) = r.GetOffsetAndLength(Chains.Count);
+                return Chains.GetRange(offset, length);
+            }
+        }
+
         public BaseChain this[int index]
-            => _chains[index];
+            => Chains[index];
 
         public List<BaseChain> this[Type type]
             => Chains.Where(c => c.GetType() == type).ToList();
@@ -80,9 +101,37 @@ namespace Konata.Core.Message
     {
         private readonly MessageChain _chain;
 
+        /// <summary>
+        /// Create builder
+        /// </summary>
         public MessageBuilder()
+            => _chain = new();
+
+        /// <summary>
+        /// Create builder with chains
+        /// </summary>
+        /// <param name="chains"></param>
+        public MessageBuilder(params BaseChain[] chains)
+            => _chain = new(chains);
+
+        /// <summary>
+        /// Create builder with chains
+        /// </summary>
+        /// <param name="chains"></param>
+        public MessageBuilder(IEnumerable<BaseChain> chains)
         {
             _chain = new();
+            _chain.AddRange(chains);
+        }
+
+        /// <summary>
+        /// Create builder with an initial string
+        /// </summary>
+        /// <param name="text"></param>
+        public MessageBuilder(string text)
+        {
+            _chain = new();
+            PlainText(text);
         }
 
         /// <summary>
@@ -124,9 +173,9 @@ namespace Konata.Core.Message
 
                 if (matches.Count != 0)
                 {
-                    int textIndex = 0;
+                    var textIndex = 0;
 
-                    // Process every code
+                    // Process each code
                     foreach (Match i in matches)
                     {
                         if (i.Index != textIndex)
@@ -134,7 +183,7 @@ namespace Konata.Core.Message
                             builder.PlainText(message[textIndex..i.Index]);
                         }
 
-                        // Convert the code to chain
+                        // Convert the code to a chain
                         BaseChain chain = i.Groups[1].Value switch
                         {
                             "at" => AtChain.Parse(i.Value),
@@ -166,10 +215,7 @@ namespace Konata.Core.Message
                 }
 
                 // No code included
-                else
-                {
-                    builder.PlainText(message);
-                }
+                else builder.PlainText(message);
             }
 
             return builder;
@@ -183,6 +229,17 @@ namespace Konata.Core.Message
         public MessageBuilder Add(BaseChain chain)
         {
             _chain.Add(chain);
+            return this;
+        }
+
+        /// <summary>
+        /// Add chains
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <returns></returns>
+        public MessageBuilder Add(IEnumerable<BaseChain> chain)
+        {
+            _chain.AddRange(chain);
             return this;
         }
 
@@ -248,27 +305,23 @@ namespace Konata.Core.Message
         /// <returns></returns>
         public MessageBuilder Record(string filePath)
         {
-            //if (RecordChain.Create(filePath, out var chain))
-            //{
-            //    _chain.Add(chain);
-            //}
-
+            _chain.Add(RecordChain.CreateFromFile(filePath));
             return this;
         }
 
-        /// <summary>
-        /// Video chain
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        public MessageBuilder Video(string filePath)
-        {
-            //if (RecordChain.Create(filePath, out var chain))
-            //{
-            //    _chain.Add(chain);
-            //}
-            return this;
-        }
+        // /// <summary>
+        // /// Video chain
+        // /// </summary>
+        // /// <param name="filePath"></param>
+        // /// <returns></returns>
+        //public MessageBuilder Video(string filePath)
+        //{
+        //    //if (RecordChain.Create(filePath, out var chain))
+        //    //{
+        //    //    _chain.Add(chain);
+        //    //}
+        //    return this;
+        //}
 
         public static MessageBuilder operator +(MessageBuilder x, MessageBuilder y)
         {

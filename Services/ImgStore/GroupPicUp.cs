@@ -6,7 +6,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf;
-using Konata.Core.Utils;
+using Konata.Core.Utils.Network;
 using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -44,7 +44,7 @@ namespace Konata.Core.Services.ImgStore
                     if (cached)
                     {
                         info.Ip = (uint) i.GetLeafVar("30");
-                        info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
+                        info.Host = NetTool.UintToIPBE((uint) i.GetLeafVar("30"));
                         info.Port = (int) i.GetLeafVar("38");
                         info.UploadId = (uint) i.GetLeafVar("48");
                         info.UseCached = true;
@@ -68,7 +68,7 @@ namespace Konata.Core.Services.ImgStore
                     else
                     {
                         info.Ip = (uint) i.GetLeafVar("30");
-                        info.Host = Network.UintToIPBE((uint) i.GetLeafVar("30"));
+                        info.Host = NetTool.UintToIPBE((uint) i.GetLeafVar("30"));
                         info.Port = (int) i.GetLeafVar("38");
                         info.UploadId = (uint) i.GetLeafVar("48");
                         info.UploadTicket = i.GetLeafBytes("42");

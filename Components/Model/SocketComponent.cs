@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Konata.Core.Utils;
-using Konata.Core.Utils.IO;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
 
 // ReSharper disable InvertIf
@@ -85,7 +85,7 @@ namespace Konata.Core.Components.Model
             {
                 foreach (var item in DefaultServers)
                 {
-                    var time = Network.PingTest(item.Host, 2000);
+                    var time = Icmp.Ping(item.Host, 2000);
                     {
                         if (time < lowestTime)
                         {
@@ -174,7 +174,7 @@ namespace Konata.Core.Components.Model
         /// Event handler
         /// </summary>
         /// <param name="task"></param>
-        internal override void EventHandler(KonataTask task)
+        internal override bool OnHandleEvent(KonataTask task)
         {
             if (task.EventPayload is PacketEvent packetEvent)
             {
@@ -182,20 +182,15 @@ namespace Konata.Core.Components.Model
                 if (_tcpClient is not {Connected: true})
                 {
                     LogW(TAG, "Calling SendData method after socket disconnected.");
-                    return;
                 }
 
                 // Send data
                 _tcpClient.Send(packetEvent.Buffer).Wait();
                 LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
+            }
+            else LogW(TAG, "Unsupported event received.");
 
-                task.Finish();
-            }
-            else
-            {
-                LogW(TAG, "Unsupported event received.");
-                task.Cancel();
-            }
+            return false;
         }
 
         #region Stub methods

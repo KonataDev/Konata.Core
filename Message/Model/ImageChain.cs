@@ -2,10 +2,12 @@
 using System.IO;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
-using Konata.Core.Utils;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.FileFormat;
 
+// ReSharper disable InvertIf
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -13,10 +15,19 @@ namespace Konata.Core.Message.Model
 {
     public class ImageChain : BaseChain
     {
+        /// <summary>
+        /// Image Url
+        /// </summary>
         public string ImageUrl { get; }
 
+        /// <summary>
+        /// File name
+        /// </summary>
         public string FileName { get; }
 
+        /// <summary>
+        /// File hash
+        /// </summary>
         public string FileHash { get; }
 
         /// <summary>
@@ -128,6 +139,9 @@ namespace Konata.Core.Message.Model
         /// <returns></returns>
         public static ImageChain Create(byte[] image)
         {
+            // Image size limitation
+            if (image.Length > 1048576 * 30) return null;
+
             // Detect image type
             if (FileFormat.DetectImage(image, out var type,
                 out var width, out var height))
@@ -163,22 +177,11 @@ namespace Konata.Core.Message.Model
         /// <exception cref="FileNotFoundException"></exception>
         public static ImageChain CreateFromFile(string filepath)
         {
+            // File not exist
             if (!File.Exists(filepath))
-            {
                 throw new FileNotFoundException(filepath);
-            }
 
             return Create(File.ReadAllBytes(filepath));
-        }
-
-        /// <summary>
-        /// Create an image chain
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static ImageChain CreateFromURL(string url)
-        {
-            return Create(Network.Download(url).Result);
         }
 
         /// <summary>
@@ -188,9 +191,7 @@ namespace Konata.Core.Message.Model
         /// <param name="base64"></param>
         /// <returns></returns>
         public static ImageChain CreateFromBase64(string base64)
-        {
-            return Create(ByteConverter.UnBase64(base64));
-        }
+            => Create(ByteConverter.UnBase64(base64));
 
         /// <summary>
         /// Parse the code
@@ -202,13 +203,6 @@ namespace Konata.Core.Message.Model
             var args = GetArgs(code);
             {
                 var file = args["file"];
-
-                // Create from url
-                if (file.StartsWith("http://")
-                    || file.StartsWith("https://"))
-                {
-                    return CreateFromURL(file);
-                }
 
                 // Create from base64
                 if (file.StartsWith("base64://"))

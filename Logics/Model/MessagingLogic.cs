@@ -8,7 +8,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Utils.IO;
-using Konata.Core.Utils;
+using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 
@@ -259,7 +259,7 @@ namespace Konata.Core.Logics.Model
                 {
                     // Setup the highway server
                     Context.LogV(TAG, "Uploading record file via highway.");
-                    upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo()
+                    upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
                     {
                         Host = ConfigComponent.HighwayConfig.Host,
                         Port = ConfigComponent.HighwayConfig.Port,
@@ -278,7 +278,7 @@ namespace Konata.Core.Logics.Model
                 // Upload record via http
                 Context.LogV(TAG, "Uploading record file via http.");
                 var result = await GroupPttUp(Context, uin, upload);
-                var retdata = await Network.Post($"http://{result.UploadInfo.Host}" +
+                var retdata = await Http.Post($"http://{result.UploadInfo.Host}" +
                                                  $":{result.UploadInfo.Port}/", upload.FileData,
                     // Request header
                     new Dictionary<string, string>

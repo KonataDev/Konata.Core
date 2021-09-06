@@ -132,8 +132,10 @@ namespace Konata.Core.Utils.FileFormat
             out int timesec, out int samplerate, out int channel)
         {
             // TODO:
-            timesec = samplerate = channel = 0;
-            return false;
+            timesec = 0;
+            channel = 2;
+            samplerate = 44100;
+            return true;
         }
     }
 }

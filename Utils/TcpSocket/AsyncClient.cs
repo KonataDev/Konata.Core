@@ -126,6 +126,7 @@ namespace Konata.Core.Utils.TcpSocket
                 _socketInstance = null;
             }
 
+            _listener?.OnDisconnect();
             return Task.FromResult(true);
         }
 

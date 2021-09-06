@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Konata.Core.Packets
+﻿namespace Konata.Core.Packets
 {
     public enum LoginType
     {

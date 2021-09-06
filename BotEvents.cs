@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 
@@ -15,42 +16,42 @@ namespace Konata.Core
         /// Handle log event
         /// </summary>
         public event EventHandler<LogEvent> OnLog;
-        
+
         /// <summary>
         /// Handle captcha event
         /// </summary>
         public event EventHandler<CaptchaEvent> OnCaptcha;
-        
+
         /// <summary>
         /// On online status changed event
         /// </summary>
         public event EventHandler<OnlineStatusEvent> OnOnlineStatusChanged;
-        
+
         /// <summary>
         /// On group message event
         /// </summary>
         public event EventHandler<GroupMessageEvent> OnGroupMessage;
-        
+
         /// <summary>
         /// On private message event
         /// </summary>
         public event EventHandler<PrivateMessageEvent> OnPrivateMessage;
-        
+
         /// <summary>
         /// On group mute event
         /// </summary>
         public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
-        
+
         /// <summary>
         /// On group recall message event
         /// </summary>
         public event EventHandler<GroupMessageRecallEvent> OnGroupMessageRecall;
-        
+
         /// <summary>
         /// On group poke event
         /// </summary>
         public event EventHandler<GroupPokeEvent> OnGroupPoke;
-        
+
         private Dictionary<Type, Action<BaseEvent>> _dict;
 
         /// <summary>
@@ -119,7 +120,22 @@ namespace Konata.Core
         /// </summary>
         /// <param name="anyEvent"></param>
         public override void PostEventToEntity(BaseEvent anyEvent)
-            => _dict[anyEvent.GetType()].Invoke(anyEvent);
+        {
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    // Call user event
+                    _dict[anyEvent.GetType()].Invoke(anyEvent);
+                }
+                catch (Exception e)
+                {
+                    // Suppress exceptions
+                    OnLog?.Invoke(this, LogEvent.Create("Bot",
+                        LogLevel.Exception, $"{e.StackTrace}\n{e.Message}"));
+                }
+            });
+        }
 
         /// <summary>
         /// Retrieve the handler is registered

@@ -8,13 +8,13 @@
     <Authors>Konata Project</Authors>
     <Copyright>Konata Project (C) 2021</Copyright>
 
-    <Version>1.0.4-alpha.1</Version>
+    <Version>1.0.5-alpha.4</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Core implementation for Konata.</Description>
     <PackageIcon>konata_icon_512_round64.png</PackageIcon>
     <PackageIconUrl />
@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Konata.Codec" Version="1.0.1" />
+    <PackageReference Include="Konata.Codec" Version="1.1.0-alpha1" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
   </ItemGroup>
 

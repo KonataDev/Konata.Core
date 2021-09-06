@@ -151,7 +151,6 @@ namespace Konata.Core.Logics.Model
                         case WtLoginEvent.Type.InvalidSmsCode:
                         case WtLoginEvent.Type.HighRiskEnvironment:
                         case WtLoginEvent.Type.InvalidUinOrPassword:
-                            Context.PostEventToEntity(wtStatus);
                             await Context.SocketComponent.Disconnect("Wtlogin failed.");
                             return false;
 
@@ -166,9 +165,7 @@ namespace Konata.Core.Logics.Model
             }
             catch (Exception e)
             {
-                await SocketComponent.Disconnect("Timed out");
-
-                Context.LogE(TAG, "Request timed out.");
+                await SocketComponent.Disconnect(e.Message);
                 Context.LogE(TAG, e);
 
                 return false;
