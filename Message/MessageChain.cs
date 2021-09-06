@@ -76,7 +76,13 @@ namespace Konata.Core.Message
             => x.Chains.Where(c => c.Mode == mode);
 
         public List<BaseChain> this[Range r]
-            => Chains.GetRange(r.Start.Value, r.End.Value - r.Start.Value);
+        {
+            get
+            {
+                var (offset, length) = r.GetOffsetAndLength(Chains.Count);
+                return Chains.GetRange(offset, length);
+            }
+        }
 
         public BaseChain this[int index]
             => Chains[index];
