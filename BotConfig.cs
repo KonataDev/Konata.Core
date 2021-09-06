@@ -1,7 +1,6 @@
-﻿// ReSharper disable MemberCanBePrivate.Global
+﻿// ReSharper disable PossibleNullReferenceException
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-
-using System;
 
 namespace Konata.Core
 {
@@ -10,6 +9,8 @@ namespace Konata.Core
     /// </summary>
     public class BotConfig
     {
+        #region Networking
+
         /// <summary>
         /// <b>[not used]</b> <br/>
         /// Use ipv6 connection.
@@ -17,25 +18,19 @@ namespace Konata.Core
         public bool UseIPv6Connection { get; set; }
 
         /// <summary>
-        /// Reconnect while link down.
+        /// Try reconnect while offline.
         /// </summary>
         public bool TryReconnect { get; set; }
-
-        #region Custom Server IP
 
         /// <summary>
         /// Custom the server
         /// </summary>
         public string CustomHost { get; set; }
 
-        #endregion
-
-        #region Image upload
-
         /// <summary>
-        /// Image chunk size while uploading
+        /// Highway chunk size
         /// </summary>
-        public int ImageChunkSize { get; set; }
+        public int HighwayChunkSize { get; set; }
 
         #endregion
 
@@ -59,7 +54,7 @@ namespace Konata.Core
                 UseIPv6Connection = false,
                 TryReconnect = true,
                 CustomHost = null,
-                ImageChunkSize = 4096,
+                HighwayChunkSize = 4096,
                 EnableAudio = false
             };
         }

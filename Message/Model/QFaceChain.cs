@@ -1,4 +1,4 @@
-﻿using System;
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core.Message.Model
 {

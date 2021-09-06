@@ -3,7 +3,7 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
-using Konata.Core.Utils;
+using Konata.Core.Utils.Network;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.Protobuf.ProtoModel;
 
@@ -25,7 +25,7 @@ namespace Konata.Core.Services.PttStore
                 var leaf = (ProtoTreeRoot) tree.GetLeaf("2A");
                 {
                     uploadInfo.Ip = (uint) leaf.GetLeafVar("28");
-                    uploadInfo.Host = Network.UintToIPBE(uploadInfo.Ip);
+                    uploadInfo.Host = NetTool.UintToIPBE(uploadInfo.Ip);
                     uploadInfo.Port = (int) leaf.GetLeafVar("30");
                     uploadInfo.Ukey = (ProtoLengthDelimited)(ProtoTreeRoot)leaf.GetLeaf("3A");
                     uploadInfo.UploadId = (uint) leaf.GetLeafVar("40");

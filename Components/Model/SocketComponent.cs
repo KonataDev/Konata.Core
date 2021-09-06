@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Konata.Core.Utils;
-using Konata.Core.Utils.IO;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
 
 // ReSharper disable InvertIf
@@ -85,7 +85,7 @@ namespace Konata.Core.Components.Model
             {
                 foreach (var item in DefaultServers)
                 {
-                    var time = Network.PingTest(item.Host, 2000);
+                    var time = Icmp.Ping(item.Host, 2000);
                     {
                         if (time < lowestTime)
                         {

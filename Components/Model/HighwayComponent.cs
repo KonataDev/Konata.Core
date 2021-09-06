@@ -48,7 +48,7 @@ namespace Konata.Core.Components.Model
             }
 
             // Get upload config
-            var chunksize = ConfigComponent.GlobalConfig.ImageChunkSize;
+            var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
             {
                 // Length limit
                 if (chunksize is <= 1024 or > 1048576)
