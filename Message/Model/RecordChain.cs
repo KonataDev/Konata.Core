@@ -82,7 +82,7 @@ namespace Konata.Core.Message.Model
             HashData = md5;
             FileHash = md5str;
             RecordType = type;
-            FileName = md5str;
+            FileName = $"{md5str}.amr";
         }
 
         /// <summary>
@@ -174,7 +174,6 @@ namespace Konata.Core.Message.Model
                                 // Try decode the mp3
                                 if (!Mp3Codec.Decode(audio,
                                     out pcmData).Result) return null;
-
                                 break;
 
                             // Decode Wav to pcm
@@ -196,8 +195,8 @@ namespace Konata.Core.Message.Model
                         }
 
                         // Convert pcm data to silkv3
-                        if (pcmData.Length != 0 && SilkCodec
-                            .Encode(pcmData, 24000, out silkData).Result)
+                        if (pcmData.Length == 0 || !SilkCodec.Encode(pcmData,
+                            24000, out silkData).Result) return null;
                         {
                             // Set audio information
                             audioData = silkData;
