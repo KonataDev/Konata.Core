@@ -51,7 +51,7 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// WtExchange login
+        /// Bot login
         /// </summary>
         /// <returns></returns>
         public async Task<bool> Login()
@@ -106,7 +106,7 @@ namespace Konata.Core.Logics.Model
                 _useFastLogin = false;
                 wtStatus = await WtLogin(Context);
 
-            GirlBlessingQwQ:
+                GirlBlessingQwQ:
                 while (true)
                 {
                     Context.LogI(TAG, $"Status => {wtStatus.EventType}");
@@ -173,7 +173,7 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Logout
+        /// Disconnect the socket and logout
         /// </summary>
         /// <returns></returns>
         public Task<bool> Logout()
@@ -184,23 +184,52 @@ namespace Konata.Core.Logics.Model
 
             // Push offline
             Context.PostEvent<BusinessComponent>
-               (OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, "user logout"));
+                (OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, "user logout"));
 
             return SocketComponent.Disconnect("user logout");
         }
 
-        public void SubmitSmsCode(string code)
-            => _userOperation.SetResult(WtLoginEvent.CreateSubmitSmsCode(code));
+        /// <summary>
+        /// Submit Slider ticket while login
+        /// </summary>
+        /// <param name="ticket"><b>[In]</b> Slider ticket</param>
+        public bool SubmitSliderTicket(string ticket)
+        {
+            if (_userOperation == null) return false;
+            if (_userOperation.Task.IsCompleted) return false;
 
-        public void SubmitSliderTicket(string ticket)
-            => _userOperation.SetResult(WtLoginEvent.CreateSubmitTicket(ticket));
+            _userOperation.SetResult(WtLoginEvent.CreateSubmitTicket(ticket));
+            return true;
+        }
 
+        /// <summary>
+        /// Submit Sms code while login
+        /// </summary>
+        /// <param name="code"><b>[In]</b> Sms code</param>
+        public bool SubmitSmsCode(string code)
+        {
+            if (_userOperation == null) return false;
+            if (_userOperation.Task.IsCompleted) return false;
+
+            _userOperation.SetResult(WtLoginEvent.CreateSubmitSmsCode(code));
+            return true;
+        }
+
+        /// <summary>
+        /// Wait for user operation
+        /// </summary>
+        /// <returns></returns>
         private Task<WtLoginEvent> WaitForUserOperation()
         {
             _userOperation = new TaskCompletionSource<WtLoginEvent>();
             return _userOperation.Task;
         }
 
+        /// <summary>
+        /// Set online status
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
         {
             if (_onlineType == status)

@@ -3,7 +3,10 @@ using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
+using Konata.Core.Exceptions;
+using Konata.Core.Exceptions.Model;
 
+// ReSharper disable UnusedMember.Local
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -29,49 +32,109 @@ namespace Konata.Core.Logics.Model
         {
         }
 
-        public async Task<int> GroupPromoteAdmin
+        /// <summary>
+        /// Promote member to admin
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="toggleAdmin"></param>
+        /// <returns></returns>
+        /// <exception cref="OperationFailedException"></exception>
+        public async Task<bool> GroupPromoteAdmin
             (uint groupUin, uint memberUin, bool toggleAdmin)
         {
-            // TODO:
-            // Check the permission
+            var groupInfo = ConfigComponent
+                .GetGroupInfo(groupUin);
+            {
+                // Check owner
+                if (groupInfo.OwnerUin != memberUin)
+                {
+                    throw new OperationFailedException(-1,
+                        "Failed to promote admin: You're not the owner of this group.");
+                }
+            }
 
+            // Promote member to admin
             var result = await GroupPromoteAdmin
                 (Context, groupUin, memberUin, toggleAdmin);
+            {
+                if (result.ResultCode != 0)
+                {
+                    throw new OperationFailedException(-2,
+                        $"Failed to promote admin: Assert failed. Ret => {result.ResultCode}");
+                }
 
-            // TODO:
-            // The operation result
-
-            return 0;
+                return true;
+            }
         }
 
-        public async Task<int> GroupMuteMember
+        /// <summary>
+        /// Mute the member in a given group
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
+        /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
+        /// <param name="timeSeconds"><b>[In]</b> Mute time. </param>
+        /// <exception cref="OperationFailedException"></exception>
+        public async Task<bool> GroupMuteMember
             (uint groupUin, uint memberUin, uint timeSeconds)
         {
-            // TODO:
-            // Check the permission
+            var memberInfo = ConfigComponent
+                .GetMemberInfo(groupUin, memberUin);
+            {
+                // Check permission
+                if (!memberInfo.IsAdmin)
+                {
+                    throw new OperationFailedException(-1,
+                        "Failed to mute a member: You're not the admin of this group.");
+                }
+            }
 
+            // Mute a member
             var result = await GroupMuteMember
                 (Context, groupUin, memberUin, timeSeconds);
+            {
+                if (result.ResultCode != 0)
+                {
+                    throw new OperationFailedException(-2,
+                        $"Failed to mute a member: Assert failed. Ret => {result.ResultCode}");
+                }
 
-            // TODO:
-            // The operation result
-
-            return 0;
+                return true;
+            }
         }
 
-        public async Task<int> GroupKickMember
+        /// <summary>
+        /// Kick the member in a given group
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
+        /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
+        /// <param name="preventRequest"><b>[In]</b> Flag to prevent member request or no. </param>
+        public async Task<bool> GroupKickMember
             (uint groupUin, uint memberUin, bool preventRequest)
         {
-            // TODO:
-            // Check the permission
+            var memberInfo = ConfigComponent
+                .GetMemberInfo(groupUin, memberUin);
+            {
+                // Check permission
+                if (!memberInfo.IsAdmin)
+                {
+                    throw new OperationFailedException(-1,
+                        "Failed to kick a member: You're not the admin of this group.");
+                }
+            }
 
+            // Kick a member
             var result = await GroupKickMember
                 (Context, groupUin, memberUin, preventRequest);
+            {
+                if (result.ResultCode != 0)
+                {
+                    throw new OperationFailedException(-2,
+                        $"Failed to kick a member: Assert failed. Ret => {result.ResultCode}");
+                }
 
-            // TODO:
-            // The operation result
-
-            return 0;
+                return true;
+            }
         }
 
         #region Stub methods

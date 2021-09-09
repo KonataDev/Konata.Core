@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core
@@ -63,7 +65,7 @@ namespace Konata.Core
         /// <summary>
         /// Group members
         /// </summary>
-        public Dictionary<uint, BotMember> Members { get; }
+        internal Dictionary<uint, BotMember> Members { get; }
 
         internal BotGroup()
         {
