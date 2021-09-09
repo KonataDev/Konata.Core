@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Konata.Codec;
 using Konata.Codec.Audio;
+using Konata.Codec.Audio.Codecs;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.FileFormat;
 
+// ReSharper disable RedundantAssignment
 // ReSharper disable InvertIf
 // ReSharper disable RedundantCaseLabel
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -118,12 +119,12 @@ namespace Konata.Core.Message.Model
         public static RecordChain Create(byte[] audio)
         {
             // Detect image type
-            if (FileFormat.DetectAudio(audio, out var type,
-                out var timeSec, out var sampleRate, out var channel))
+            if (FileFormat.DetectAudio(audio, out var type))
             {
                 var audioType = RecordType.SILK;
                 var audioData = Array.Empty<byte>();
-
+                var audioTime = 0U;
+                
                 // Process
                 switch (type)
                 {
@@ -160,47 +161,38 @@ namespace Konata.Core.Message.Model
                     case FileFormat.AudioFormat.MP3:
                     case FileFormat.AudioFormat.WAV:
                     {
-                        var pcmData = Array.Empty<byte>();
-                        var silkData = Array.Empty<byte>();
-
-                        // TODO:
-                        // Convert audio format to pcm
-
-                        switch (type)
+                        using var inputStream = new MemoryStream(audio);
+                        using var outputStream = new MemoryStream();
+                        using var audioPipeline = new AudioPipeline
                         {
-                            // Decode Mp3 to pcm
-                            case FileFormat.AudioFormat.MP3:
+                            type switch
+                            {
+                                // Decode Mp3 to pcm
+                                FileFormat.AudioFormat.MP3 =>
+                                    new Mp3Codec.Decoder(inputStream),
 
-                                // Try decode the mp3
-                                if (!Mp3Codec.Decode(audio,
-                                    out pcmData).Result) return null;
-                                break;
+                                // Decode Wav to pcm
+                                FileFormat.AudioFormat.WAV =>
+                                    throw new NotImplementedException()
+                            },
 
-                            // Decode Wav to pcm
-                            case FileFormat.AudioFormat.WAV:
-                                throw new NotImplementedException();
-                        }
+                            // Resample audio to silkv3
+                            new AudioResampler(AudioInfo.SilkV3()),
 
-                        // TODO:
-                        // Resample the pcm to
-                        // signed 16bit mono 24kHz format 
-                        var resampler = new AudioResampler(pcmData);
-                        {
-                            // TODO: Detect audio format
-                            resampler.SetOrigin(sampleRate, channel, Format.Signed16Bit);
-                            resampler.SetTarget(24000, 1, Format.Signed16Bit);
+                            // Encode pcm to silkv3
+                            new SilkV3Codec.Encoder(),
 
-                            // Resample pcmdata
-                            if (!resampler.Resample(out pcmData).Result) return null;
-                        }
+                            // Output stream
+                            outputStream
+                        };
 
-                        // Convert pcm data to silkv3
-                        if (pcmData.Length == 0 || !SilkCodec.Encode(pcmData,
-                            24000, out silkData).Result) return null;
+                        // Start pipeline
+                        if (!audioPipeline.Start().Result) return null;
                         {
                             // Set audio information
-                            audioData = silkData;
                             audioType = RecordType.SILK;
+                            audioData = outputStream.ToArray();
+                            audioTime = (uint)audioPipeline.GetAudioTime();
                         }
 
                         break;
@@ -211,7 +203,7 @@ namespace Konata.Core.Message.Model
                 var audioMD5 = new Md5Cryptor().Encrypt(audioData);
                 var audioMD5Str = ByteConverter.Hex(audioMD5).ToUpper();
 
-                return new RecordChain(audioData, (uint) timeSec,
+                return new RecordChain(audioData, audioTime,
                     audioMD5, audioMD5Str, audioType);
             }
 
