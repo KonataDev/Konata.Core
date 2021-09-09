@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Utils;
 using Konata.Core.Entity;
-using Konata.Core.Message;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
-using Konata.Core.Events.Model;
 using Konata.Core.Logics;
 using Konata.Core.Logics.Model;
 
@@ -80,7 +77,7 @@ namespace Konata.Core.Components.Model
         {
             // Pass if not a protocol event
             if (task.EventPayload is not ProtocolEvent protocolEvent) return false;
-            
+
             // Get logics
             _businessLogics.TryGetValue
                 (typeof(ProtocolEvent), out var baseLogics);
@@ -124,55 +121,13 @@ namespace Konata.Core.Components.Model
 
         #region Business Logics
 
-        private WtExchangeLogic WtExchange { get; set; }
+        internal WtExchangeLogic WtExchange { get; private set; }
 
-        private OperationLogic Operation { get; set; }
+        internal OperationLogic Operation { get; private set; }
 
-        private MessagingLogic Messaging { get; set; }
+        internal MessagingLogic Messaging { get; private set; }
 
-        private CacheSyncLogic CacheSync { get; set; }
-
-        public Task<bool> Login()
-            => WtExchange.Login();
-
-        public Task<bool> Logout()
-            => WtExchange.Logout();
-
-        public void SubmitSmsCode(string code)
-            => WtExchange.SubmitSmsCode(code);
-
-        public void SubmitSliderTicket(string ticket)
-            => WtExchange.SubmitSliderTicket(ticket);
-
-        public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
-            => WtExchange.SetOnlineStatus(status);
-
-        public OnlineStatusEvent.Type GetOnlineStatus()
-            => WtExchange.OnlineType;
-
-        public Task<int> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
-            => Operation.GroupKickMember(groupUin, memberUin, preventRequest);
-
-        public Task<int> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
-            => Operation.GroupMuteMember(groupUin, memberUin, timeSeconds);
-
-        public Task<int> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
-            => Operation.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
-
-        public Task<int> SendGroupMessage(uint groupUin, MessageChain message)
-            => Messaging.SendGroupMessage(groupUin, message);
-
-        public Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
-            => Messaging.SendPrivateMessage(friendUin, message);
-
-        internal Task<bool> SyncGroupList()
-            => CacheSync.SyncGroupList();
-
-        internal Task<bool> SyncGroupMemberList(uint groupUin)
-            => CacheSync.SyncGroupMemberList(groupUin);
-
-        internal Task<bool> SyncFriendList()
-            => CacheSync.SyncFriendList();
+        internal CacheSyncLogic CacheSync { get; private set; }
 
         #endregion
     }

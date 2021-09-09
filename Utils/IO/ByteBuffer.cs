@@ -313,6 +313,7 @@ namespace Konata.Core.Utils.IO
         /// 放入 bool 
         /// </summary>
         /// <param name="value">值</param>
+        /// <param name="length">长度</param>
         /// <param name="endian">字节序</param>
         public void PutBool(bool value, byte length, Endian endian)
         {

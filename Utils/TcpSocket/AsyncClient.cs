@@ -156,15 +156,15 @@ namespace Konata.Core.Utils.TcpSocket
             var recvLen = 0;
             var packetLen = 0U;
 
-            // Not connected
-            if (!_socketInstance.Connected)
-            {
-                Disconnect();
-                return;
-            }
-
             try
             {
+                // Not connected
+                if (!_socketInstance.Connected)
+                {
+                    Disconnect();
+                    return;
+                }
+
                 // Receiving the data
                 recvLen = _socketInstance.EndReceive(result);
 

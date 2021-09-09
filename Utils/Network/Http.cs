@@ -88,6 +88,8 @@ namespace Konata.Core.Utils.Network
                 request.Timeout = timeout;
                 request.ReadWriteTimeout = timeout;
                 request.ContentLength = data.Length;
+                request.AutomaticDecompression = 
+                    DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
                 // Append request header
                 foreach (var (k, v) in header)

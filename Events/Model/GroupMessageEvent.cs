@@ -68,7 +68,7 @@ namespace Konata.Core.Events.Model
         public uint SliceFlags { get; private set; }
 
         private GroupMessageEvent(uint groupUin, uint selfUin,
-            MessageChain messageChain) : base(2000, true)
+            MessageChain messageChain) : base(6000, true)
         {
             GroupUin = groupUin;
             MemberUin = selfUin;
