@@ -23,7 +23,7 @@ namespace Konata.Core.Packets.Protobuf
                 AddLeafVar("28", chain.FileLength);
 
                 // Record file name
-                AddLeafString("32", chain.FileHash);
+                AddLeafString("32", chain.FileName);
 
                 // Unknown
                 AddLeafVar("38", 5);
@@ -34,12 +34,9 @@ namespace Konata.Core.Packets.Protobuf
                 // Record time seconds
                 AddLeafVar("60", chain.TimeSeconds);
 
-                // TODO:
-                // Maybe record type
-                // inside it
                 AddLeafVar("68", 1);
-                AddLeafVar("70", 1);
-                AddLeafVar("78", 2);
+                AddLeafVar("70", (int)chain.RecordType);
+                AddLeafVar("78", 1);
             }
         }
 
