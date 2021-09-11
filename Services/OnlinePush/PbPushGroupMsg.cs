@@ -254,10 +254,10 @@ namespace Konata.Core.Services.OnlinePush
         private static BaseChain ParsePlainText(ProtoTreeRoot tree)
         {
             // At chain
-            if (tree.TryGetLeafBytes("1A", out var atBytes))
+            if (tree.TryGetLeafBytes("1A", out var leaf))
             {
-                var at = ByteConverter.BytesToUInt32
-                    (atBytes.Skip(7).Take(4).ToArray(), 0, Endian.Big);
+                var at = ByteConverter.BytesToUInt32(leaf
+                    .Skip(7).Take(4).ToArray(), 0, Endian.Big);
 
                 return AtChain.Create(at);
             }

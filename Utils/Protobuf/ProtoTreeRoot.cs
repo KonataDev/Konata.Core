@@ -134,8 +134,18 @@ namespace Konata.Core.Utils.Protobuf
             }
             catch
             {
-                value = null;
-                return false;
+                try
+                {
+                    value = (ProtoLengthDelimited)
+                        (ProtoTreeRoot) GetLeaf(leafPath);
+                    return value != null;
+                }
+
+                catch
+                {
+                    value = null;
+                    return false;
+                }
             }
         }
 
