@@ -96,7 +96,7 @@ namespace Konata.Core.Logics.Model
             {
                 // Pull group member list
                 var result = await PullGroupMemberList
-                    (Context, nextUin, groupInfo.Code, nextUin);
+                    (Context, groupUin, groupInfo.Code, nextUin);
 
                 // Check if failed 
                 if (result.ResultCode != 0)

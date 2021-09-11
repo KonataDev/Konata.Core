@@ -10,8 +10,8 @@ using Konata.Core.Packets.SvcResponse;
 namespace Konata.Core.Services.Friendlist
 {
     [EventSubscribe(typeof(PullGroupMemberListEvent))]
-    [Service("friendlist.GetTroopMemberList", "Pull group member list")]
-    public class GetTroopMemberList : IService
+    [Service("friendlist.GetTroopMemberListReq", "Pull group member list")]
+    public class GetTroopMemberListReq : IService
     {
         public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
@@ -32,7 +32,7 @@ namespace Konata.Core.Services.Friendlist
             var svcRequest = new SvcReqGetTroopMemberListReq
                 (input.SelfUin, input.GroupUin, input.GroupCode, input.NextUin);
 
-            if (SSOFrame.Create("friendlist.GetTroopMemberList", PacketType.TypeB,
+            if (SSOFrame.Create("friendlist.GetTroopMemberListReq", PacketType.TypeB,
                 newSequence, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
