@@ -63,10 +63,15 @@ namespace Konata.Core
         public uint LastSpeakTime { get; set; }
 
         /// <summary>
-        /// Member is admin
+        /// Member role
         /// </summary>
-        public bool IsAdmin { get; set; }
+        public RoleType Role { get; set; }
 
+        /// <summary>
+        /// Member is admin (except owner)
+        /// </summary>
+        internal bool IsAdmin { get; set; }
+        
         /// <summary>
         /// Mute timestamp
         /// </summary>
@@ -77,5 +82,26 @@ namespace Konata.Core
             Name = "";
             NickName = "";
         }
+    }
+
+    /// <summary>
+    /// Member role
+    /// </summary>
+    public enum RoleType
+    {
+        /// <summary>
+        ///  Normal member
+        /// </summary>
+        Member,
+        
+        /// <summary>
+        /// Administator
+        /// </summary>
+        Admin,
+        
+        /// <summary>
+        /// Owner
+        /// </summary>
+        Owner
     }
 }

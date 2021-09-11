@@ -309,20 +309,6 @@ namespace Konata.Core.Message
             return this;
         }
 
-        // /// <summary>
-        // /// Video chain
-        // /// </summary>
-        // /// <param name="filePath"></param>
-        // /// <returns></returns>
-        //public MessageBuilder Video(string filePath)
-        //{
-        //    //if (RecordChain.Create(filePath, out var chain))
-        //    //{
-        //    //    _chain.Add(chain);
-        //    //}
-        //    return this;
-        //}
-
         public static MessageBuilder operator +(MessageBuilder x, MessageBuilder y)
         {
             var z = new MessageBuilder();

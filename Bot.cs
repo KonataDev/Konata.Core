@@ -5,6 +5,8 @@ using Konata.Core.Message;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
+using Konata.Core.Exceptions;
+using Konata.Core.Exceptions.Model;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
@@ -87,29 +89,30 @@ namespace Konata.Core
         /// <summary>
         /// Bot login
         /// </summary>
+        /// <returns></returns>
         public Task<bool> Login()
-            => BusinessComponent.Login();
+            => BusinessComponent.WtExchange.Login();
 
         /// <summary>
         /// Disconnect the socket and logout
         /// </summary>
         /// <returns></returns>
         public Task<bool> Logout()
-            => BusinessComponent.Logout();
+            => BusinessComponent.WtExchange.Login();
 
         /// <summary>
         /// Submit Slider ticket while login
         /// </summary>
         /// <param name="ticket"><b>[In]</b> Slider ticket</param>
-        public void SubmitSliderTicket(string ticket)
-            => BusinessComponent.SubmitSliderTicket(ticket);
+        public bool SubmitSliderTicket(string ticket)
+            => BusinessComponent.WtExchange.SubmitSliderTicket(ticket);
 
         /// <summary>
-        /// Submit SMS code while login
+        /// Submit Sms code while login
         /// </summary>
-        /// <param name="code"><b>[In]</b> SMS code</param>
-        public void SubmitSmsCode(string code)
-            => BusinessComponent.SubmitSmsCode(code);
+        /// <param name="code"><b>[In]</b> Sms code</param>
+        public bool SubmitSmsCode(string code)
+            => BusinessComponent.WtExchange.SubmitSmsCode(code);
 
         /// <summary>
         /// Kick the member in a given group
@@ -117,8 +120,9 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="preventRequest"><b>[In]</b> Flag to prevent member request or no. </param>
-        public Task<int> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
-            => BusinessComponent.GroupKickMember(groupUin, memberUin, preventRequest);
+        /// <exception cref="OperationFailedException"></exception>
+        public Task<bool> GroupKickMember(uint groupUin, uint memberUin, bool preventRequest)
+            => BusinessComponent.Operation.GroupKickMember(groupUin, memberUin, preventRequest);
 
         /// <summary>
         /// Mute the member in a given group
@@ -126,8 +130,9 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="timeSeconds"><b>[In]</b> Mute time. </param>
-        public Task<int> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
-            => BusinessComponent.GroupMuteMember(groupUin, memberUin, timeSeconds);
+        /// <exception cref="OperationFailedException"></exception>
+        public Task<bool> GroupMuteMember(uint groupUin, uint memberUin, uint timeSeconds)
+            => BusinessComponent.Operation.GroupMuteMember(groupUin, memberUin, timeSeconds);
 
         /// <summary>
         /// Promote the member to admin in a given group
@@ -135,47 +140,65 @@ namespace Konata.Core
         /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
         /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
         /// <param name="toggleAdmin"><b>[In]</b> Flag to toggle set or unset. </param>
-        public Task<int> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
-            => BusinessComponent.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
+        /// <exception cref="OperationFailedException"></exception>
+        public Task<bool> GroupPromoteAdmin(uint groupUin, uint memberUin, bool toggleAdmin)
+            => BusinessComponent.Operation.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
 
         /// <summary>
         /// Send the message to a given group
         /// </summary>
-        /// <param name="groupUin"><b>[In]</b> Group uin.</param>
-        /// <param name="builder"><b>[In]</b> Message chain builder.</param>
+        /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+        /// <param name="builder"><b>[In]</b> Message chain builder. </param>
         /// <returns></returns>
-        public Task<int> SendGroupMessage(uint groupUin, MessageBuilder builder)
-            => BusinessComponent.SendGroupMessage(groupUin, builder.Build());
+        /// <exception cref="MessagingException"></exception>
+        public Task<bool> SendGroupMessage(uint groupUin, MessageBuilder builder)
+            => BusinessComponent.Messaging.SendGroupMessage(groupUin, builder.Build());
 
         /// <summary>
-        /// Send the message to a given frinend
+        /// Send the message to a given friend
         /// </summary>
-        /// <param name="friendUin"><b>[In]</b> Friend uin.</param>
-        /// <param name="builder"><b>[In]</b> Message chain builder.</param>
+        /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
+        /// <param name="builder"><b>[In]</b> Message chain builder. </param>
         /// <returns></returns>
-        public Task<int> SendPrivateMessage(uint friendUin, MessageBuilder builder)
-            => BusinessComponent.SendPrivateMessage(friendUin, builder.Build());
+        /// <exception cref="MessagingException"></exception>
+        public Task<bool> SendPrivateMessage(uint friendUin, MessageBuilder builder)
+            => BusinessComponent.Messaging.SendPrivateMessage(friendUin, builder.Build());
 
         /// <summary>
         /// Get group list
         /// </summary>
+        /// <param name="forceUpdate"><b>[In]</b> Refresh group list. </param>
         /// <returns></returns>
-        public ICollection<BotGroup> GetGroupList()
-            => ConfigComponent.GetGroupList();
+        /// <exception cref="SyncFailedException"></exception>
+        public Task<IReadOnlyList<BotGroup>> GetGroupList(bool forceUpdate = false)
+            => BusinessComponent.CacheSync.GetGroupList(forceUpdate);
 
         /// <summary>
         /// Get friend list
         /// </summary>
+        /// <param name="forceUpdate"><b>[In]</b> Refresh friend list. </param>
         /// <returns></returns>
-        public ICollection<BotFriend> GetFriendList()
-            => ConfigComponent.GetFriendList();
+        /// <exception cref="SyncFailedException"></exception>
+        public Task<IReadOnlyList<BotFriend>> GetFriendList(bool forceUpdate = false)
+            => BusinessComponent.CacheSync.GetFriendList(forceUpdate);
+
+        /// <summary>
+        /// Get member info
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        /// <exception cref="SyncFailedException"></exception>
+        public Task<BotMember> GetGroupMemberInfo(uint groupUin, uint memberUin, bool forceUpdate = false)
+            => BusinessComponent.CacheSync.GetGroupMemberInfo(groupUin, memberUin, forceUpdate);
 
         /// <summary>
         /// Get online status
         /// </summary>
         /// <returns></returns>
         public OnlineStatusEvent.Type GetOnlineStatus()
-            => BusinessComponent.GetOnlineStatus();
+            => BusinessComponent.WtExchange.OnlineType;
 
         /// <summary>
         /// Set online status
@@ -183,7 +206,7 @@ namespace Konata.Core
         /// <param name="status"><b>[In]</b> Online status</param>
         /// <returns></returns>
         public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
-            => BusinessComponent.SetOnlineStatus(status);
+            => BusinessComponent.WtExchange.SetOnlineStatus(status);
 
         /// <summary>
         /// Is Online

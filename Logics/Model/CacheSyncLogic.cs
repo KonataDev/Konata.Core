@@ -1,9 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Exceptions;
+using Konata.Core.Exceptions.Model;
 
+// ReSharper disable InvertIf
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
@@ -90,7 +96,7 @@ namespace Konata.Core.Logics.Model
             {
                 // Pull group member list
                 var result = await PullGroupMemberList
-                    (Context, nextUin, groupInfo.Code, nextUin);
+                    (Context, groupUin, groupInfo.Code, nextUin);
 
                 // Check if failed 
                 if (result.ResultCode != 0)
@@ -126,9 +132,6 @@ namespace Konata.Core.Logics.Model
         /// </summary>
         internal async Task<bool> SyncFriendList()
         {
-            // TODO:
-            // Sync friend list cache
-
             const int limit = 150;
             var nextIndex = 0U;
             var friendCount = 0;
@@ -168,16 +171,95 @@ namespace Konata.Core.Logics.Model
             return true;
         }
 
+        /// <summary>
+        /// Sync member info while the message coming
+        /// </summary>
+        /// <param name="e"></param>
         private void SyncMemberInfo(GroupMessageEvent e)
         {
             ConfigComponent.TouchGroupMemberInfo
                 (e.GroupUin, e.MemberUin, e.MemberCard);
         }
 
+        /// <summary>
+        /// Sync friend info while the message coming
+        /// </summary>
+        /// <param name="e"></param>
         private void SyncFriendInfo(PrivateMessageEvent e)
         {
             // TODO:
             // Sync friend cache
+        }
+
+        /// <summary>
+        /// Get group list
+        /// </summary>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        /// <exception cref="SyncFailedException"></exception>
+        public async Task<IReadOnlyList<BotGroup>> GetGroupList(bool forceUpdate)
+        {
+            try
+            {
+                if (forceUpdate) await SyncGroupList();
+                return ConfigComponent.GetGroupList();
+            }
+
+            catch (Exception e)
+            {
+                throw new SyncFailedException(-1, e,
+                    "Failed to sync the group list");
+            }
+        }
+
+        /// <summary>
+        /// Get group member info
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        /// <exception cref="SyncFailedException"></exception>
+        public async Task<BotMember> GetGroupMemberInfo
+            (uint groupUin, uint memberUin, bool forceUpdate)
+        {
+            try
+            {
+                if (forceUpdate)
+                {
+                    await SyncGroupList();
+                    await SyncGroupMemberList(groupUin);
+                }
+
+                return ConfigComponent.GetMemberInfo(groupUin, memberUin);
+            }
+
+            catch (Exception e)
+            {
+                throw new SyncFailedException(-1, e,
+                    "Failed to sync the group or group member list.");
+            }
+        }
+
+        /// <summary>
+        /// Get friend list
+        /// </summary>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        /// <exception cref="SyncFailedException"></exception>
+        public async Task<IReadOnlyList<BotFriend>> GetFriendList(bool forceUpdate)
+        {
+            try
+            {
+                if (forceUpdate) await SyncFriendList();
+                return ConfigComponent.GetFriendList();
+            }
+
+            catch (Exception e)
+            {
+                throw new SyncFailedException(-1, e,
+                    "Failed to sync the friend list.");
+            }
         }
 
         #region Stub methods

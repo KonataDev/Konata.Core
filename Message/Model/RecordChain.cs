@@ -133,12 +133,19 @@ namespace Konata.Core.Message.Model
                     case FileFormat.AudioFormat.AMR:
                         audioData = audio;
                         audioType = RecordType.AMR;
+
+                        // Estimated time
+                        audioTime = (uint) audio.Length / 1607;
+
                         break;
 
                     // Silk v3 for tx use
                     case FileFormat.AudioFormat.TENSILKV3:
                         audioData = audio;
                         audioType = RecordType.SILK;
+
+                        // Estimated time
+                        audioTime = (uint)audio.Length / 2394;
                         break;
 
                     // Normal silk v3
@@ -149,6 +156,9 @@ namespace Konata.Core.Message.Model
                         audioType = RecordType.SILK;
                         audioData = new byte[] {0x02}
                             .Concat(audio[..^2]).ToArray();
+
+                        // Estimated time
+                        audioTime = (uint)audio.Length / 2394;
                         break;
                     }
 
@@ -173,7 +183,7 @@ namespace Konata.Core.Message.Model
 
                                 // Decode Wav to pcm
                                 FileFormat.AudioFormat.WAV =>
-                                    throw new NotImplementedException()
+                                    throw new NotImplementedException(),
                             },
 
                             // Resample audio to silkv3
@@ -202,6 +212,7 @@ namespace Konata.Core.Message.Model
                 // Audio MD5
                 var audioMD5 = new Md5Cryptor().Encrypt(audioData);
                 var audioMD5Str = ByteConverter.Hex(audioMD5).ToUpper();
+                if (audioTime == 0) audioTime = 1;
 
                 return new RecordChain(audioData, audioTime,
                     audioMD5, audioMD5Str, audioType);

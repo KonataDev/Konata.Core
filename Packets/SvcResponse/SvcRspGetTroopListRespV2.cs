@@ -24,8 +24,8 @@ namespace Konata.Core.Packets.SvcResponse
                     // Parse one group
                     var group = new BotGroup
                     {
-                        Uin = (uint) (JNumber) i["0"],
-                        Code = (ulong) (long) (JNumber) i["1"],
+                        Code = (ulong) (long) (JNumber) i["0"],
+                        Uin = (uint) (JNumber) i["1"],
                         Name = (string) (JString) i["4"],
                         MemberCount = (uint) (JNumber) i["19"],
                         MaxMemberCount = (uint) (JNumber) i["29"],

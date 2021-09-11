@@ -80,6 +80,14 @@ namespace Konata.Core.Components.Model
         }
 
         /// <summary>
+        /// Get member information
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin</param>
+        /// <param name="memberUin"><b>[In]</b> Member uin</param>
+        public BotMember GetMemberInfo(uint groupUin, uint memberUin)
+            => _groupList[groupUin].Members[memberUin];
+
+        /// <summary>
         /// Get group information
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin</param>
@@ -89,6 +97,14 @@ namespace Konata.Core.Components.Model
             => _groupList.TryGetValue(groupUin, out groupInfo);
 
         /// <summary>
+        /// Get group information
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin</param>
+        /// <returns></returns>
+        public BotGroup GetGroupInfo(uint groupUin)
+            => _groupList[groupUin];
+
+        /// <summary>
         /// Get friend information
         /// </summary>
         /// <param name="friendUin"><b>[In]</b> Friend uin</param>
@@ -96,6 +112,14 @@ namespace Konata.Core.Components.Model
         /// <returns></returns>
         public bool TryGetFriendInfo(uint friendUin, out BotFriend friendInfo)
             => _friendList.TryGetValue(friendUin, out friendInfo);
+
+        /// <summary>
+        /// Get friend information
+        /// </summary>
+        /// <param name="friendUin"><b>[In]</b> Friend uin</param>
+        /// <returns></returns>
+        public BotFriend GetFriendInfo(uint friendUin)
+            => _friendList[friendUin];
 
         /// <summary>
         /// Add or update group
@@ -295,14 +319,14 @@ namespace Konata.Core.Components.Model
         /// Get group list
         /// </summary>
         /// <returns></returns>
-        public ICollection<BotGroup> GetGroupList()
-            => _groupList.Values;
+        public IReadOnlyList<BotGroup> GetGroupList()
+            => _groupList.Values.ToList();
 
         /// <summary>
         /// Get friend list
         /// </summary>
         /// <returns></returns>
-        public ICollection<BotFriend> GetFriendList()
-            => _friendList.Values;
+        public IReadOnlyList<BotFriend> GetFriendList()
+            => _friendList.Values.ToList();
     }
 }

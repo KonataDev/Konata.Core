@@ -1,5 +1,4 @@
 ﻿using System.IO;
-
 using Konata.Core.Utils;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
@@ -15,14 +14,13 @@ namespace Konata.Core.Packets
         public PacketBase(byte[] data = null)
             : base(data)
         {
-
         }
 
         public PacketBase(byte[] data, ICryptor cryptor, byte[] cryptKey)
             : base()
         {
             buffer = cryptor.Decrypt(data, cryptKey);
-            bufferLength = (uint)buffer.Length;
+            bufferLength = (uint) buffer.Length;
         }
 
         public void PutEncryptedBytes(byte[] value, ICryptor cryptor, byte[] cryptKey)
@@ -49,6 +47,8 @@ namespace Konata.Core.Packets
         /// 加密 Packet 放入
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="cryptor"></param>
+        /// <param name="cryptKey"></param>
         public void PutPacketEncrypted(PacketBase value, ICryptor cryptor, byte[] cryptKey)
         {
             PutEncryptedBytes(value.GetBytes(), cryptor, cryptKey);
@@ -93,8 +93,10 @@ namespace Konata.Core.Packets
                 {
                     return TakeBytes(out value, len);
                 }
+
                 throw new IOException("Incomplete Tlv context.");
             }
+
             throw new IOException("Incomplete Tlv header.");
         }
 
@@ -122,13 +124,14 @@ namespace Konata.Core.Packets
         /// </summary>
         /// <param name="prefixFlag"></param>
         /// <param name="endian"></param>
+        /// <param name="extend"></param>
         public void EnterBarrier(Prefix prefixFlag, Endian endian, uint extend = 0)
         {
             barExtLen = extend;
             barPos = bufferLength;
             prefix = prefixFlag;
             barLenEndian = endian;
-            PutEmpty((int)prefixFlag);
+            PutEmpty((int) prefixFlag);
         }
 
         public void EnterBarrierEncrypted(Prefix prefixFlag, Endian endian, ICryptor cryptor, byte[] cryptKey, uint extend = 0)
@@ -162,8 +165,9 @@ namespace Konata.Core.Packets
                 barEncCryptor = null;
                 barEncKey = null;
             }
+
             InsertPrefix(buffer, barPos,
-                bufferLength + barExtLen - barPos - (uint)prefix, prefix, barLenEndian);
+                bufferLength + barExtLen - barPos - (uint) prefix, prefix, barLenEndian);
         }
     }
 }

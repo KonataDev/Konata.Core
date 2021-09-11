@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Message;
@@ -7,6 +6,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
+using Konata.Core.Exceptions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
@@ -60,7 +60,8 @@ namespace Konata.Core.Logics.Model
         /// <param name="friendUin"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<int> SendPrivateMessage(uint friendUin, MessageChain message)
+        /// <exception cref="MessagingException"></exception>
+        public async Task<bool> SendPrivateMessage(uint friendUin, MessageChain message)
         {
             // Check and process some resources
             var uploadImage = SearchImageAndUpload(friendUin, message, false);
@@ -71,14 +72,19 @@ namespace Konata.Core.Logics.Model
                 // Check results
                 if (!results[0])
                 {
-                    // Some tasks failed
-                    return -1;
+                    // Task failed
+                    throw new MessagingException($"Send private message failed: Task failed.\n" +
+                                                 $"uploadImage => {results[0]}\n");
                 }
             }
 
             // Send the message
-            return (await SendPrivateMessage
-                (Context, friendUin, message)).ResultCode;
+            var result = await SendPrivateMessage(Context, friendUin, message);
+            if (result.ResultCode == 0) return true;
+            {
+                throw new MessagingException($"Send private message failed: " +
+                                             $"Assert failed. Ret => {result.ResultCode}");
+            }
         }
 
         /// <summary>
@@ -87,39 +93,36 @@ namespace Konata.Core.Logics.Model
         /// <param name="groupUin"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<int> SendGroupMessage(uint groupUin, MessageChain message)
+        /// <exception cref="MessagingException"></exception>
+        public async Task<bool> SendGroupMessage(uint groupUin, MessageChain message)
         {
             // Check and process some resources
             var uploadImage = SearchImageAndUpload(groupUin, message, true);
             var uploadRecord = SearchRecordAndUpload(groupUin, message);
             var checkAtChain = SearchAt(groupUin, message);
 
-            try
+            // Wait for tasks done
+            var results = await Task.WhenAll
+                (uploadImage, uploadRecord, checkAtChain);
             {
-                // Wait for tasks done
-                var results = await Task.WhenAll
-                    (uploadImage, uploadRecord, checkAtChain);
+                // Check results
+                if (!(results[0] && results[1] && results[2]))
                 {
-                    // Check results
-                    if (!(results[0] && results[1] && results[2]))
-                    {
-                        // Some tasks failed
-                        Context.LogW(TAG, $"Some task failed." +
-                                          $"{results[0]} {results[1]} {results[2]}");
-                        return -1;
-                    }
+                    // Some task failed
+                    throw new MessagingException($"Send group message failed: Task failed.\n" +
+                                                 $"uploadImage => {results[0]}, " +
+                                                 $"uploadImage => {results[1]}, " +
+                                                 $"checkAtChain => {results[2]}");
                 }
-            }
-            catch (Exception e)
-            {
-                Context.LogW(TAG, "Thrown an exception " +
-                                  "while sending the message.");
-                Context.LogE(TAG, e);
             }
 
             // Send the message
-            return (await SendGroupMessage
-                (Context, groupUin, message)).ResultCode;
+            var result = await SendGroupMessage(Context, groupUin, message);
+            if (result.ResultCode == 0) return true;
+            {
+                throw new MessagingException($"Send group message failed: " +
+                                             $"Assert failed. Ret => {result.ResultCode}");
+            }
         }
 
         /// <summary>
@@ -164,7 +167,7 @@ namespace Konata.Core.Logics.Model
                         if (ConfigComponent.IsLackMemberCacheForGroup(uin))
                         {
                             // Pull the cache and try again
-                            if (await Context.SyncGroupMemberList(uin))
+                            if (await Context.CacheSync.SyncGroupMemberList(uin))
                             {
                                 // Okay try again
                                 chain.DisplayString = ConfigComponent.TryGetMemberInfo
@@ -279,7 +282,7 @@ namespace Konata.Core.Logics.Model
                 Context.LogV(TAG, "Uploading record file via http.");
                 var result = await GroupPttUp(Context, uin, upload);
                 var retdata = await Http.Post($"http://{result.UploadInfo.Host}" +
-                                                 $":{result.UploadInfo.Port}/", upload.FileData,
+                                              $":{result.UploadInfo.Port}/", upload.FileData,
                     // Request header
                     new Dictionary<string, string>
                     {
@@ -296,7 +299,7 @@ namespace Konata.Core.Logics.Model
                         {"filesize", upload.FileLength.ToString()},
                         {"bmd5", upload.FileHash},
                         {"mType", "pttDu"},
-                        {"voice_encodec", "1"}
+                        {"voice_encodec", $"{(int) upload.RecordType}"}
                     });
 
                 // Set upload info

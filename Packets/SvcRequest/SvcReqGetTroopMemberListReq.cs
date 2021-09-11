@@ -11,13 +11,13 @@ namespace Konata.Core.Packets.SvcRequest
                 (out JStruct w) => w = new JStruct
                 {
                     [0] = (JNumber) selfUin,
-                    [1] = (JNumber) (long) groupCode,
+                    [1] = (JNumber) groupUin ,
                     [2] = (JNumber) nextUin,
-                    [3] = (JNumber) groupUin,
+                    [3] = (JNumber)(long) groupCode,
                     [4] = (JNumber) 2, // Version
-                    [5] = (JNumber) 0, // ReqType
+                    [5] = (JNumber) 2, // ReqType
                     [6] = (JNumber) 0, // GetListAppointTime
-                    [7] = (JNumber) 0, // RichCardNameVer
+                    [7] = (JNumber) 1, // RichCardNameVer
                 })
         {
         }
