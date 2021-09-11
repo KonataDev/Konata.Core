@@ -1,5 +1,4 @@
-﻿using Konata.Core.Events;
-using Konata.Core.Packets;
+﻿using Konata.Core.Packets;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets.SvcPush;
@@ -9,8 +8,8 @@ namespace Konata.Core.Services.ConfigPushSvc
     [Service("ConfigPushSvc.PushReq", "Push req")]
     public class PushReq : BaseService<PushConfigEvent>
     {
-        public override bool Parse(SSOFrame input,
-            BotKeyStore keystore, out ProtocolEvent output)
+        protected override bool Parse(SSOFrame input,
+            BotKeyStore keystore, out PushConfigEvent output)
         {
             output = null;
 

@@ -5,7 +5,6 @@ using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.Protobuf;
-using Konata.Core.Utils.Protobuf.ProtoModel;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
@@ -27,7 +26,7 @@ namespace Konata.Core.Services.PttStore
                     uploadInfo.Ip = (uint) leaf.GetLeafVar("28");
                     uploadInfo.Host = NetTool.UintToIPBE(uploadInfo.Ip);
                     uploadInfo.Port = (int) leaf.GetLeafVar("30");
-                    uploadInfo.Ukey = (ProtoLengthDelimited)(ProtoTreeRoot)leaf.GetLeaf("3A");
+                    uploadInfo.Ukey = leaf.GetLeafBytes("3A");
                     uploadInfo.UploadId = (uint) leaf.GetLeafVar("40");
                     uploadInfo.FileKey = leaf.GetLeafString("5A");
                 }
