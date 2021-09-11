@@ -4,20 +4,28 @@ using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.OidbSvc
 {
     [Service("OidbSvc.0x570_8", "Mute member in the group")]
     [EventSubscribe(typeof(GroupMuteMemberEvent))]
-    public class Oidb0x570_8 : IService
+    public class Oidb0x570_8 : BaseService<GroupMuteMemberEvent>
     {
-        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+        public override bool Parse(SSOFrame input,
+            BotKeyStore keystore, out ProtocolEvent output)
         {
-            throw new NotImplementedException();
+            var tree = ProtoTreeRoot.Deserialize
+                (input.Payload.GetBytes(), true);
+            {
+                output = GroupMuteMemberEvent
+                    .Result((int) tree.GetLeafVar("18"));
+                return true;
+            }
         }
 
-        public bool Build(Sequence sequence, GroupMuteMemberEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+        protected override bool Build(Sequence sequence, GroupMuteMemberEvent input, BotKeyStore
+            keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
             newSequence = sequence.NewSequence;
@@ -37,9 +45,5 @@ namespace Konata.Core.Services.OidbSvc
 
             return false;
         }
-
-        public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupMuteMemberEvent) input, keystore, device, out newSequence, out output);
     }
 }
