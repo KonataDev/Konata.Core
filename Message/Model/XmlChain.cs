@@ -1,7 +1,12 @@
-﻿namespace Konata.Core.Message.Model
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+
+namespace Konata.Core.Message.Model
 {
     public class XmlChain : BaseChain
     {
+        /// <summary>
+        /// Xml content
+        /// </summary>
         private string Content { get; }
 
         private XmlChain(string xml)
@@ -11,10 +16,10 @@
         }
 
         /// <summary>
-        /// 
+        /// Create a xml chain
         /// </summary>
         /// <param name="xml"></param>
-        internal XmlChain Create(string xml)
+        public static XmlChain Create(string xml)
         {
             return new(xml);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message;
@@ -141,7 +142,9 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseJSON(ProtoTreeRoot tree)
         {
-            return null;
+            var bytes = tree.GetLeafBytes("0A");
+            var json = Deflate.Decompress(bytes[1..^1]);
+            return JsonChain.Create(Encoding.UTF8.GetString(json));
         }
 
         /// <summary>
@@ -151,7 +154,9 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseXML(ProtoTreeRoot tree)
         {
-            return null;
+            var bytes = tree.GetLeafBytes("0A");
+            var xml = Deflate.Decompress(bytes[1..^1]);
+            return XmlChain.Create(Encoding.UTF8.GetString(xml));
         }
 
         /// <summary>
