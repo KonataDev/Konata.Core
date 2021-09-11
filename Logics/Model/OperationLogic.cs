@@ -3,7 +3,6 @@ using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
-using Konata.Core.Exceptions;
 using Konata.Core.Exceptions.Model;
 
 // ReSharper disable UnusedMember.Local

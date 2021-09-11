@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Attributes;
-using Konata.Core.Exceptions;
 using Konata.Core.Exceptions.Model;
 
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Logics.Model
 {
@@ -207,8 +204,8 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
-                    "Failed to sync the group list");
+                throw new SyncFailedException(-1,
+                    "Failed to sync the group list.");
             }
         }
 
@@ -236,7 +233,7 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
+                throw new SyncFailedException(-1,
                     "Failed to sync the group or group member list.");
             }
         }
@@ -257,7 +254,7 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
+                throw new SyncFailedException(-1,
                     "Failed to sync the friend list.");
             }
         }
