@@ -204,16 +204,28 @@ namespace Konata.Core.Components.Model
                 // Update member information
                 member.Age = memberInfo.Age;
                 member.Name = memberInfo.Name;
-                member.NickName = member.NickName;
+                member.NickName = memberInfo.NickName;
                 member.Gender = memberInfo.Gender;
-                member.Level = member.Level;
-                member.FaceId = member.FaceId;
-                member.IsAdmin = member.IsAdmin;
-                member.MuteTimestamp = member.MuteTimestamp;
-                member.LastSpeakTime = member.LastSpeakTime;
-                member.SpecialTitle = member.SpecialTitle;
-                member.SpecialTitleExpiredTime = member.SpecialTitleExpiredTime;
+                member.Level = memberInfo.Level;
+                member.FaceId = memberInfo.FaceId;
+                member.IsAdmin = memberInfo.IsAdmin;
+                member.MuteTimestamp = memberInfo.MuteTimestamp;
+                member.LastSpeakTime = memberInfo.LastSpeakTime;
+                member.SpecialTitle = memberInfo.SpecialTitle;
+                member.SpecialTitleExpiredTime = memberInfo.SpecialTitleExpiredTime;
             }
+
+            // Update member role
+            if (_groupList[groupUin].OwnerUin == member.Uin)
+                member.Role = RoleType.Owner;
+
+            // Group admin
+            else if (member.IsAdmin)
+                member.Role = RoleType.Admin;
+
+            // Normal member
+            else
+                member.Role = RoleType.Member;
 
             return member;
         }
