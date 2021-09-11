@@ -196,7 +196,7 @@ namespace Konata.Core.Components.Model
             {
                 // Add the member
                 member = memberInfo;
-                _groupList[groupUin].Members.Add(memberInfo.Uin, memberInfo);
+                _groupList[groupUin].Members.Add(member.Uin, member);
             }
 
             else
@@ -287,9 +287,9 @@ namespace Konata.Core.Components.Model
             else
             {
                 // Update friend information
-                friend.Name = friend.Name;
-                friend.Gender = friend.Gender;
-                friend.FaceId = friend.FaceId;
+                friend.Name = friendInfo.Name;
+                friend.Gender = friendInfo.Gender;
+                friend.FaceId = friendInfo.FaceId;
             }
 
             return friend;

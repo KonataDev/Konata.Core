@@ -53,7 +53,7 @@ namespace Konata.Core.Events.Model
         public List<BotMember> MemberInfo { get; }
 
         private PullGroupMemberListEvent(uint selfUin, uint groupUin,
-            ulong groupCode, uint nextUin) : base(2000, true)
+            ulong groupCode, uint nextUin) : base(6000, true)
         {
             SelfUin = selfUin;
             GroupUin = groupUin;

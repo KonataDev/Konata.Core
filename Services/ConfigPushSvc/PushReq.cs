@@ -7,7 +7,7 @@ using Konata.Core.Packets.SvcPush;
 namespace Konata.Core.Services.ConfigPushSvc
 {
     [Service("ConfigPushSvc.PushReq", "Push req")]
-    public class PushReq : BaseService
+    public class PushReq : BaseService<PushConfigEvent>
     {
         public override bool Parse(SSOFrame input,
             BotKeyStore keystore, out ProtocolEvent output)

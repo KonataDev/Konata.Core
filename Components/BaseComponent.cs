@@ -47,7 +47,7 @@ namespace Konata.Core.Components
             where TEvent : BaseEvent where TEntity : BaseComponent
         {
             var task = Entity.PostEvent<TEntity>(anyEvent);
-            return (TEvent)await task;
+            return (TEvent) await task;
         }
 
         public void BroadcastEvent(BaseEvent anyEvent)

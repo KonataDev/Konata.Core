@@ -156,8 +156,16 @@ namespace Konata.Core.Components.Model
             var packet = new byte[data.Length];
             Array.Copy(data, 0, packet, 0, data.Length);
             {
-                PushNewPacket(this, packet);
                 LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
+
+                try
+                {
+                    PushNewPacket(this, packet);
+                }
+                catch (Exception e)
+                {
+                    LogE(TAG, e);
+                }
             }
         }
 
