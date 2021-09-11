@@ -85,7 +85,7 @@ namespace Konata.Core.Logics.Model
                 (groupUin, out var groupInfo) || groupInfo.Code == 0)
             {
                 Context.LogE(TAG, $"Sync group member failed, " +
-                                  $"no such group {groupUin}");
+                                  $"no such group {groupUin}:{groupInfo.Code}");
                 return false;
             }
 
@@ -222,7 +222,8 @@ namespace Konata.Core.Logics.Model
         {
             try
             {
-                if (forceUpdate)
+                if (forceUpdate || ConfigComponent
+                    .IsLackMemberCacheForGroup(groupUin))
                 {
                     await SyncGroupList();
                     await SyncGroupMemberList(groupUin);
