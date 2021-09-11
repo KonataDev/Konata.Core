@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message;
@@ -140,7 +142,9 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseJSON(ProtoTreeRoot tree)
         {
-            return null;
+            var bytes = tree.GetLeafBytes("0A");
+            var json = Deflate.Decompress(bytes[1..^1]);
+            return JsonChain.Create(Encoding.UTF8.GetString(json));
         }
 
         /// <summary>
@@ -150,7 +154,9 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseXML(ProtoTreeRoot tree)
         {
-            return null;
+            var bytes = tree.GetLeafBytes("0A");
+            var xml = Deflate.Decompress(bytes[1..^1]);
+            return XmlChain.Create(Encoding.UTF8.GetString(xml));
         }
 
         /// <summary>
@@ -160,9 +166,14 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseReply(ProtoTreeRoot tree)
         {
-            // var source = tree.GetLeafVar("");
-            // return ReplyChain.Create(source);
-            return null;
+            var messageId = (uint) tree.GetLeafVar("08");
+            var replyUin = (uint) tree.GetLeafVar("10");
+            var replyTime = (uint) tree.GetLeafVar("18");
+
+            // TODO:
+            // Parse original chain 0x2A
+
+            return ReplyChain.Create(messageId, replyUin, replyTime);
         }
 
         /// <summary>
@@ -254,10 +265,10 @@ namespace Konata.Core.Services.OnlinePush
         private static BaseChain ParsePlainText(ProtoTreeRoot tree)
         {
             // At chain
-            if (tree.TryGetLeafBytes("1A", out var atBytes))
+            if (tree.TryGetLeafBytes("1A", out var leaf))
             {
-                var at = ByteConverter.BytesToUInt32
-                    (atBytes.Skip(7).Take(4).ToArray(), 0, Endian.Big);
+                var at = ByteConverter.BytesToUInt32(leaf
+                    .Skip(7).Take(4).ToArray(), 0, Endian.Big);
 
                 return AtChain.Create(at);
             }

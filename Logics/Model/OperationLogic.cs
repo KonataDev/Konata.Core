@@ -3,7 +3,6 @@ using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
-using Konata.Core.Exceptions;
 using Konata.Core.Exceptions.Model;
 
 // ReSharper disable UnusedMember.Local
@@ -43,6 +42,10 @@ namespace Konata.Core.Logics.Model
         public async Task<bool> GroupPromoteAdmin
             (uint groupUin, uint memberUin, bool toggleAdmin)
         {
+            // Sync the member list
+            if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+                await Context.CacheSync.SyncGroupMemberList(groupUin);
+
             var groupInfo = ConfigComponent
                 .GetGroupInfo(groupUin);
             {
@@ -78,14 +81,19 @@ namespace Konata.Core.Logics.Model
         public async Task<bool> GroupMuteMember
             (uint groupUin, uint memberUin, uint timeSeconds)
         {
-            var memberInfo = ConfigComponent
-                .GetMemberInfo(groupUin, memberUin);
+            // Sync the member list
+            if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+                await Context.CacheSync.SyncGroupMemberList(groupUin);
+
+            var selfInfo = ConfigComponent.GetMemberInfo(groupUin, Context.Bot.Uin);
+            var memberInfo = ConfigComponent.GetMemberInfo(groupUin, memberUin);
             {
-                // Check permission
-                if (!memberInfo.IsAdmin)
+                // No permission
+                if (selfInfo.Role <= memberInfo.Role)
                 {
                     throw new OperationFailedException(-1,
-                        "Failed to mute a member: You're not the admin of this group.");
+                        $"Failed to mute member: No permission. " +
+                        $"{selfInfo.Role} <= {memberInfo.Role}");
                 }
             }
 
@@ -95,8 +103,8 @@ namespace Konata.Core.Logics.Model
             {
                 if (result.ResultCode != 0)
                 {
-                    throw new OperationFailedException(-2,
-                        $"Failed to mute a member: Assert failed. Ret => {result.ResultCode}");
+                    throw new OperationFailedException(-3,
+                        $"Failed to mute member: Assert failed. Ret => {result.ResultCode}");
                 }
 
                 return true;
@@ -112,14 +120,19 @@ namespace Konata.Core.Logics.Model
         public async Task<bool> GroupKickMember
             (uint groupUin, uint memberUin, bool preventRequest)
         {
-            var memberInfo = ConfigComponent
-                .GetMemberInfo(groupUin, memberUin);
+            // Sync the member list
+            if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+                await Context.CacheSync.SyncGroupMemberList(groupUin);
+
+            var selfInfo = ConfigComponent.GetMemberInfo(groupUin, Context.Bot.Uin);
+            var memberInfo = ConfigComponent.GetMemberInfo(groupUin, memberUin);
             {
-                // Check permission
-                if (!memberInfo.IsAdmin)
+                // No permission
+                if (selfInfo.Role <= memberInfo.Role)
                 {
                     throw new OperationFailedException(-1,
-                        "Failed to kick a member: You're not the admin of this group.");
+                        $"Failed to kick member: No permission. " +
+                        $"{selfInfo.Role} <= {memberInfo.Role}");
                 }
             }
 
@@ -129,8 +142,8 @@ namespace Konata.Core.Logics.Model
             {
                 if (result.ResultCode != 0)
                 {
-                    throw new OperationFailedException(-2,
-                        $"Failed to kick a member: Assert failed. Ret => {result.ResultCode}");
+                    throw new OperationFailedException(-3,
+                        $"Failed to kick member: Assert failed. Ret => {result.ResultCode}");
                 }
 
                 return true;

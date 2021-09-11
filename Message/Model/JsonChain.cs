@@ -1,7 +1,12 @@
-﻿namespace Konata.Core.Message.Model
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+
+namespace Konata.Core.Message.Model
 {
     public class JsonChain : BaseChain
     {
+        /// <summary>
+        /// Json content
+        /// </summary>
         private string Content { get; }
 
         private JsonChain(string json)
@@ -11,10 +16,10 @@
         }
 
         /// <summary>
-        /// 
+        /// Create a json chain
         /// </summary>
         /// <param name="json"></param>
-        internal JsonChain Create(string json)
+        public static JsonChain Create(string json)
         {
             return new(json);
         }

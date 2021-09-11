@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Attributes;
-using Konata.Core.Exceptions;
 using Konata.Core.Exceptions.Model;
 
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Logics.Model
 {
@@ -88,7 +85,7 @@ namespace Konata.Core.Logics.Model
                 (groupUin, out var groupInfo) || groupInfo.Code == 0)
             {
                 Context.LogE(TAG, $"Sync group member failed, " +
-                                  $"no such group {groupUin}");
+                                  $"no such group {groupUin}:{groupInfo.Code}");
                 return false;
             }
 
@@ -207,8 +204,8 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
-                    "Failed to sync the group list");
+                throw new SyncFailedException(-1,
+                    "Failed to sync the group list.");
             }
         }
 
@@ -225,7 +222,8 @@ namespace Konata.Core.Logics.Model
         {
             try
             {
-                if (forceUpdate)
+                if (forceUpdate || ConfigComponent
+                    .IsLackMemberCacheForGroup(groupUin))
                 {
                     await SyncGroupList();
                     await SyncGroupMemberList(groupUin);
@@ -236,7 +234,7 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
+                throw new SyncFailedException(-1,
                     "Failed to sync the group or group member list.");
             }
         }
@@ -257,7 +255,7 @@ namespace Konata.Core.Logics.Model
 
             catch (Exception e)
             {
-                throw new SyncFailedException(-1, e,
+                throw new SyncFailedException(-1,
                     "Failed to sync the friend list.");
             }
         }

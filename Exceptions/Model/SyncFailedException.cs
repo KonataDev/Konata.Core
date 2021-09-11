@@ -8,10 +8,5 @@ namespace Konata.Core.Exceptions.Model
             : base(code, message)
         {
         }
-
-        public SyncFailedException(int code, Exception e, string message)
-            : base(code, e, message)
-        {
-        }
     }
 }
