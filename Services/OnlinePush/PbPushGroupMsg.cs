@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.NetworkInformation;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message;
@@ -160,9 +161,14 @@ namespace Konata.Core.Services.OnlinePush
         /// <returns></returns>
         private static BaseChain ParseReply(ProtoTreeRoot tree)
         {
-            // var source = tree.GetLeafVar("");
-            // return ReplyChain.Create(source);
-            return null;
+            var messageId = (uint) tree.GetLeafVar("08");
+            var replyUin = (uint) tree.GetLeafVar("10");
+            var replyTime = (uint) tree.GetLeafVar("18");
+
+            // TODO:
+            // Parse original chain 0x2A
+
+            return ReplyChain.Create(messageId, replyUin, replyTime);
         }
 
         /// <summary>
