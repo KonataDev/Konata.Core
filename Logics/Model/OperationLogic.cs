@@ -150,6 +150,46 @@ namespace Konata.Core.Logics.Model
             }
         }
 
+        /// <summary>
+        /// Set special title
+        /// </summary>
+        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
+        /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
+        /// <param name="specialTitle"><b>[In]</b> Special title. </param>
+        /// <param name="expiredTime"><b>[In]</b> Exipred time. </param>
+        /// <returns>Return true for operation successfully.</returns>
+        /// <exception cref="OperationFailedException"></exception>
+        public async Task<bool> GroupSetSpecialTitle(uint groupUin,
+            uint memberUin, string specialTitle, uint expiredTime)
+        {
+            // Sync the member list
+            if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+                await Context.CacheSync.SyncGroupMemberList(groupUin);
+
+            var groupInfo = ConfigComponent.GetGroupInfo(groupUin);
+            {
+                // No permission
+                if (groupInfo.OwnerUin != Context.Bot.Uin)
+                {
+                    throw new OperationFailedException(-1,
+                        "Failed to set special title: Not the owner.");
+                }
+            }
+
+            // Set special title
+            var result = await GroupSetSpecialTitle
+                (Context, groupUin, memberUin, specialTitle, expiredTime);
+            {
+                if (result.ResultCode != 0)
+                {
+                    throw new OperationFailedException(-2,
+                        $"Failed to set special title: Assert failed. Ret => {result.ResultCode}");
+                }
+
+                return true;
+            }
+        }
+
         #region Stub methods
 
         private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
@@ -160,6 +200,9 @@ namespace Konata.Core.Logics.Model
 
         private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
             => context.PostPacket<GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
+
+        private static Task<GroupSpecialTitleEvent> GroupSetSpecialTitle(BusinessComponent context, uint groupUin, uint memberUin, string specialTitle, uint expiredTime)
+            => context.PostPacket<GroupSpecialTitleEvent>(GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime));
 
         #endregion
     }
