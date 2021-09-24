@@ -200,7 +200,7 @@ namespace Konata.Core.Message.Model
         /// <returns></returns>
         internal static ImageChain Parse(string code)
         {
-            var args = GetArgs(code);
+            var args = GetArgs(UnEscape(code));
             {
                 var file = args["file"];
 
