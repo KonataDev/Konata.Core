@@ -275,7 +275,7 @@ namespace Konata.Core.Logics.Model
                 token += (token << 5) + i;
             }
 
-            // Or 0x7FFFFFFF
+            // And 0x7FFFFFFF
             token &= int.MaxValue;
 
             return Task.FromResult(token.ToString());

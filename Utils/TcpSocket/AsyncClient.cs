@@ -189,7 +189,7 @@ namespace Konata.Core.Utils.TcpSocket
                         var packetBuf = new byte[_packetLen];
                         {
                             _recvStream.Seek(0, SeekOrigin.Begin);
-                            _recvStream.Read(packetBuf, 0, (int)_packetLen);
+                            _recvStream.Read(packetBuf, 0, (int) _packetLen);
 
                             // Move the remaining data ahead
                             var streamBuf = _recvStream.GetBuffer();
