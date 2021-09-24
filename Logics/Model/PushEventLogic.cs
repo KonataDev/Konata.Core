@@ -50,8 +50,9 @@ namespace Konata.Core.Logics.Model
         private void OnPushConfig(PushConfigEvent e)
         {
             // Update the config
-            ConfigComponent.HighwayConfig =
-                new(e.HighwayHost, e.HighwayPort, e.HighwayToken);
+            ConfigComponent.HighwayConfig.Host = e.HighwayHost;
+            ConfigComponent.HighwayConfig.Port = e.HighwayPort;
+            ConfigComponent.HighwayConfig.Ticket = e.HighwayToken;
 
             Context.LogI(TAG, "Highway server has changed" +
                               $" to {e.HighwayHost}:{e.HighwayPort}");
