@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Konata.Core.Utils;
 using Konata.Core.Entity;
 using Konata.Core.Attributes;
@@ -73,7 +74,7 @@ namespace Konata.Core.Components.Model
         /// Business logics
         /// </summary>
         /// <param name="task"></param>
-        internal override bool OnHandleEvent(KonataTask task)
+        internal override async Task<bool> OnHandleEvent(KonataTask task)
         {
             // Pass if not a protocol event
             if (task.EventPayload is not ProtocolEvent protocolEvent) return false;

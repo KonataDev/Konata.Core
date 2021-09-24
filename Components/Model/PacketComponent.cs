@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Konata.Core.Utils;
 using Konata.Core.Events;
 using Konata.Core.Entity;
@@ -77,18 +78,18 @@ namespace Konata.Core.Components.Model
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        internal override bool OnHandleEvent(KonataTask task)
+        internal override async Task<bool> OnHandleEvent(KonataTask task)
         {
             // Incoming and outgoing
             switch (task.EventPayload)
             {
                 // Packet Event
                 case PacketEvent incoming:
-                    return OnIncoming(task, incoming);
+                    return await OnIncoming(task, incoming);
 
                 // Protocol Event
                 case ProtocolEvent outgoing:
-                    return OnOutgoing(task, outgoing);
+                    return await OnOutgoing(task, outgoing);
             }
 
             // Unsupported event
@@ -96,7 +97,7 @@ namespace Konata.Core.Components.Model
             return false;
         }
 
-        private bool OnIncoming(KonataTask task, PacketEvent packetEvent)
+        private async Task<bool> OnIncoming(KonataTask task, PacketEvent packetEvent)
         {
             // Parse service message
             if (!ServiceMessage.Parse(packetEvent.Buffer,
@@ -135,7 +136,7 @@ namespace Konata.Core.Components.Model
                     if (isPending) request.Finish(outEvent);
 
                     // Pass this message to business
-                    else PostEvent<BusinessComponent>(outEvent);
+                    else await PostEvent<BusinessComponent>(outEvent);
                 }
                 else
                 {
@@ -156,7 +157,7 @@ namespace Konata.Core.Components.Model
         }
 
         [Obsolete("Need to refactor")]
-        private bool OnOutgoing(KonataTask task, ProtocolEvent protocolEvent)
+        private async Task<bool> OnOutgoing(KonataTask task, ProtocolEvent protocolEvent)
         {
             // If no service can process this message
             if (!_servicesEventType.TryGetValue
@@ -171,7 +172,7 @@ namespace Konata.Core.Components.Model
                     ConfigComponent.DeviceInfo, out var sequence, out var buffer))
                 {
                     // Pass messages to socket
-                    PostEvent<SocketComponent>(PacketEvent.Create(buffer));
+                    await PostEvent<SocketComponent>(PacketEvent.Create(buffer));
 
                     // This event is no need response
                     if (!protocolEvent.WaitForResponse) continue;
