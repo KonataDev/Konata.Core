@@ -76,7 +76,7 @@ namespace Konata.Core.Components.Model
             }
 
             LogV(TAG, "All tasks are queued, " +
-                      "waiting for upload finished.");
+                      "waiting for upload finish.");
 
             // Wait for tasks
             var results = await Task.WhenAll(tasks);
@@ -113,7 +113,7 @@ namespace Konata.Core.Components.Model
             );
 
             LogV(TAG, "Task queued, " +
-                      "waiting for upload finished.");
+                      "waiting for upload finish.");
 
             // Wait for tasks
             var results = await task;
