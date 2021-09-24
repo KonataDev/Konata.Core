@@ -258,7 +258,7 @@ namespace Konata.Core.Logics.Model
                 }
 
                 // Upload record via highway
-                if (ConfigComponent.HighwayConfig.Host != null)
+                if (!string.IsNullOrEmpty(ConfigComponent.HighwayConfig.Host))
                 {
                     // Setup the highway server
                     Context.LogV(TAG, "Uploading record file via highway.");
