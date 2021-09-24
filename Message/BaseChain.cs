@@ -58,13 +58,40 @@ namespace Konata.Core.Message
                 for (int i = 1; i < split.Length; ++i)
                 {
                     var eqpair = split[i].Split('=');
+                    if (eqpair.Length < 2) continue;
                     {
-                        kvpair.Add(eqpair[0], string.Join("=", eqpair[1..]));
+                        kvpair.Add(eqpair[0],
+                            string.Join("=", eqpair[1..]));
                     }
                 }
 
                 return kvpair;
             }
         }
+
+        /// <summary>
+        /// Escape the string
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="comma"></param>
+        /// <returns></returns>
+        internal static string Escape(string content, bool comma = true)
+        {
+            var str = content.Replace("&", "&amp;")
+                .Replace("[", "&#91;").Replace("]", "&#93;");
+            {
+                if (comma) str = str.Replace(",", "&#44;");
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// UnEscape the string
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        internal static string UnEscape(string content)
+            => content.Replace("&amp;", "&").Replace("&#91;", "[")
+                .Replace("&#93;", "]").Replace("&#44;", ",");
     }
 }
