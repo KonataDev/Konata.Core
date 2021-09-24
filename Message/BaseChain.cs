@@ -59,7 +59,7 @@ namespace Konata.Core.Message
                 {
                     var eqpair = split[i].Split('=');
                     {
-                        kvpair.Add(eqpair[0], eqpair[1]);
+                        kvpair.Add(eqpair[0], string.Join("=", eqpair[1..]));
                     }
                 }
 
