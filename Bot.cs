@@ -185,13 +185,20 @@ namespace Konata.Core
         /// <summary>
         /// Get member info
         /// </summary>
-        /// <param name="groupUin"></param>
-        /// <param name="memberUin"></param>
-        /// <param name="forceUpdate"></param>
+        /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+        /// <param name="memberUin"><b>[In]</b> Member uin. </param>
+        /// <param name="forceUpdate"><b>[In]</b> Force update. </param>
         /// <returns></returns>
         /// <exception cref="SyncFailedException"></exception>
         public Task<BotMember> GetGroupMemberInfo(uint groupUin, uint memberUin, bool forceUpdate = false)
             => BusinessComponent.CacheSync.GetGroupMemberInfo(groupUin, memberUin, forceUpdate);
+
+        /// <summary>
+        /// Get csrf token <br/>
+        /// </summary>
+        /// <returns></returns>
+        public Task<string> GetCsrfToken()
+            => BusinessComponent.CacheSync.GetCsrfToken();
 
         /// <summary>
         /// Get online status
