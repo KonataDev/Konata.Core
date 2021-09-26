@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Exceptions
+namespace Konata.Core.Exceptions.Model
 {
     public class MessagingException : Exception
     {
