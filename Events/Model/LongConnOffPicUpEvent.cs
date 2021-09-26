@@ -21,7 +21,7 @@ namespace Konata.Core.Events.Model
         public List<ImageChain> UploadImages { get; }
 
         private LongConnOffPicUpEvent(uint selfUin,
-            List<ImageChain> uploadImages) : base(2000, true)
+            List<ImageChain> uploadImages) : base(6000, true)
         {
             SelfUin = selfUin;
             UploadImages = uploadImages;
