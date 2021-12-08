@@ -1,4 +1,5 @@
 ﻿using Konata.Core.Utils.IO;
+
 // ReSharper disable UseArrayEmptyMethod
 
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
@@ -89,6 +90,11 @@ namespace Konata.Core.Packets
                 }
 
                 read.TakeBoolBE(out var isCompressed, 4);
+
+                // new unknown data after 12/08/2021
+                read.TakeBytes(out var unknwonData,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
                 {
                     read.TakeBytes(out var bytes,
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
