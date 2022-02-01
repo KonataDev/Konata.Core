@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>$(OutDir)/Konata.Core.xml</DocumentationFile>
+    <DocumentationFile>Konata.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -4,7 +4,7 @@ using Konata.Core.Packets.Wup;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.JceStruct.Model;
 
-namespace Konata.Core.Packets.SvcRequest
+namespace Konata.Core.Packets.SvcPush
 {
     public class SvcReqPushMsg : UniPacket
     {

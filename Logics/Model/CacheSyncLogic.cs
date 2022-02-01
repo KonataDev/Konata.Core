@@ -208,6 +208,34 @@ namespace Konata.Core.Logics.Model
                     "Failed to sync the group list.");
             }
         }
+        
+        /// <summary>
+        /// Get group list
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        /// <exception cref="SyncFailedException"></exception>
+        public async Task<IReadOnlyList<BotMember>> GetGroupMemberList(uint groupUin, bool forceUpdate = false)
+        {
+            try
+            {
+                if (forceUpdate || ConfigComponent
+                        .IsLackMemberCacheForGroup(groupUin))
+                {
+                    await SyncGroupList();
+                    await SyncGroupMemberList(groupUin);
+                }
+
+                return ConfigComponent.GetGroupMemberList(groupUin);
+            }
+
+            catch (Exception e)
+            {
+                throw new SyncFailedException(-1,
+                    "Failed to sync the group list.");
+            }
+        }
 
         /// <summary>
         /// Get group member info
