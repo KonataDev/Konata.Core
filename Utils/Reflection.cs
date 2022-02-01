@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Konata.Core.Utils
 {
@@ -55,21 +56,8 @@ namespace Konata.Core.Utils
             return list;
         }
 
-        public static IEnumerable<Type> GetChildClasses<T>()
-        {
-            var list = new List<Type>();
-            var types = typeof(T).Assembly.GetTypes();
-
-            foreach (var type in types)
-            {
-                if (type.BaseType == typeof(T))
-                {
-                    list.Add(type);
-                }
-            }
-
-            return list;
-        }
+        public static IEnumerable<Type> GetChildClasses<Ttype>()
+            => GetChildClasses(typeof(Ttype));
 
         public static IEnumerable<Type> GetChildClasses(Type t)
         {
@@ -86,6 +74,31 @@ namespace Konata.Core.Utils
 
             return list;
         }
+
+        public static IEnumerable<Type> GetChildClasses<Ttype>(Assembly a)
+            => GetChildClasses(typeof(Ttype), a);
+
+        public static IEnumerable<Type> GetChildClasses(Type t, Assembly a)
+        {
+            var list = new List<Type>();
+            var types = a.GetTypes();
+
+            foreach (var type in types)
+            {
+                if (type.BaseType == t)
+                {
+                    list.Add(type);
+                }
+            }
+
+            return list;
+        }
+
+        public static IEnumerable<Type> GetImplementedClasses<Ttype>(Assembly a)
+            => GetImplementedClasses(typeof(Ttype), a);
+
+        public static IEnumerable<Type> GetImplementedClasses(Type t, Assembly a)
+            => a.GetTypes().Where(t.IsAssignableFrom);
 
         /// <summary>
         /// Deep clone object
