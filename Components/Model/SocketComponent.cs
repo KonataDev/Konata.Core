@@ -79,6 +79,7 @@ namespace Konata.Core.Components.Model
                 {
                     selectHost = new(customHost[0],
                         customHost.Length == 2 ? ushort.Parse(customHost[1]) : 8080);
+                    serverList.Add(((selectHost.Host, selectHost.Port), 0));
                 }
 
                 // Failed to parse the config
