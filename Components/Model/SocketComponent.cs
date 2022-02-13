@@ -1,13 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Konata.Core.Attributes;
+using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
-using Konata.Core.Entity;
-using Konata.Core.Attributes;
+using Konata.Core.Exceptions;
+using Konata.Core.Exceptions.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
 
 // ReSharper disable InvertIf
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
@@ -63,6 +66,8 @@ namespace Konata.Core.Components.Model
             var lowestTime = long.MaxValue;
             var selectHost = DefaultServers[0];
 
+            var serverList = new ((string, int), long)[] { }.ToList();
+
             // Using user config
             if (ConfigComponent.GlobalConfig!.CustomHost != null)
             {
@@ -74,11 +79,14 @@ namespace Konata.Core.Components.Model
                 {
                     selectHost = new(customHost[0],
                         customHost.Length == 2 ? ushort.Parse(customHost[1]) : 8080);
+                    serverList.Add(((selectHost.Host, selectHost.Port), 0));
                 }
 
                 // Failed to parse the config
                 else LogW(TAG, "Invalid custom host config passed in.");
             }
+
+            
 
             // Find the fastest server
             else if (useLowLatency)
@@ -92,6 +100,8 @@ namespace Konata.Core.Components.Model
                             lowestTime = time;
                             selectHost = item;
                         }
+
+                        serverList.Add(((item.Host, item.Port), time));
                     }
 
                     LogI(TAG, "Probing latency " +
@@ -100,9 +110,37 @@ namespace Konata.Core.Components.Model
                 }
             }
 
+            //Sort the list by lantency
+            serverList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+            var queue = new Queue(serverList);
+
             // Connect
-            return await _tcpClient
-                .Connect(selectHost.Host, selectHost.Port);
+            bool connectResult = false;
+
+            while (!connectResult && queue.Count > 0)
+            {
+                var pop = (((string, int), long))queue.Dequeue();
+                var host = pop.Item1;
+
+                LogI(TAG, "Try Connecting " +
+                              $"{host.Item1}:{host.Item2}.");
+
+                connectResult = _tcpClient
+                    .Connect(host.Item1, host.Item2).Result;
+
+                if (connectResult)
+                {
+                    return true;
+                }
+                else    //Try next server
+                {
+                    LogI(TAG, "Failed to connecting to " +
+                          $"{host.Item1}:{host.Item2}.");
+                    _tcpClient.Disconnect().Wait();
+                }
+            }
+            
+            throw new Exception("All server are unavailable.");
         }
 
         /// <summary>
