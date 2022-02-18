@@ -197,7 +197,8 @@ namespace Konata.Core.Components.Model
         public void OnDisconnect()
         {
             // Push offline
-            PushOffline(this, "Client disconnected.");
+            // PushOffline(this, "Client disconnected.");
+            LogI(TAG, "Client disconnected.");
         }
 
         /// <summary>

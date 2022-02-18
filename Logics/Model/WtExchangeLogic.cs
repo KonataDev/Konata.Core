@@ -21,6 +21,7 @@ namespace Konata.Core.Logics.Model
         private const string TAG = "WtXchg Logic";
         private const string SchedulePullMessage = "Logic.WtXchg.PullMessage";
         private const string ScheduleCheckConnection = "Logic.WtXchg.CheckConnection";
+        private const string ScheduleReLogin = "Logic.WtXchg.ReLogin";
 
         private OnlineStatusEvent.Type _onlineType;
         private TaskCompletionSource<WtLoginEvent> _userOperation;
@@ -34,8 +35,8 @@ namespace Konata.Core.Logics.Model
             : base(context)
         {
             _onlineType = OnlineStatusEvent.Type.Offline;
-            _heartbeatCounter = 0;
             _useFastLogin = false;
+            _heartbeatCounter = 0;
         }
 
         public override void Incoming(ProtocolEvent e)
@@ -342,6 +343,13 @@ namespace Konata.Core.Logics.Model
                 Context.LogW(TAG, "The client was offline.");
                 Context.LogE(TAG, e);
 
+                // Disconnect
+                await SocketComponent.Disconnect("Heart broken.");
+
+                // Cancel schedules
+                ScheduleComponent.Cancel(SchedulePullMessage);
+                ScheduleComponent.Cancel(ScheduleCheckConnection);
+
                 // Check if reconnect
                 if (ConfigComponent.GlobalConfig.TryReconnect)
                 {
@@ -360,14 +368,10 @@ namespace Konata.Core.Logics.Model
                         Context.LogW(TAG, "Reconnect failed! " +
                                           "Might need to relogin?");
                     }
+
+                    // Relogin
+                    ScheduleComponent.Interval(ScheduleReLogin, 10 * 1000, 6, OnReConnect);
                 }
-
-                // Go offline
-                await SocketComponent.Disconnect("Heart broken.");
-
-                // Cancel schedules
-                ScheduleComponent.Cancel(SchedulePullMessage);
-                ScheduleComponent.Cancel(ScheduleCheckConnection);
             }
         }
 
@@ -392,6 +396,26 @@ namespace Konata.Core.Logics.Model
                 // Check the connection
                 _heartbeatCounter = 0;
                 ScheduleComponent.Trigger(ScheduleCheckConnection);
+            }
+        }
+
+        /// <summary>
+        /// Reconnect
+        /// </summary>
+        private async void OnReConnect()
+        {
+            try
+            {
+                // Close socket
+                if (SocketComponent.Connected)
+                    await SocketComponent.Disconnect("Try Relogin");
+
+                if (await Login()) ScheduleComponent.Cancel(ScheduleReLogin);
+            }
+            catch (TimeoutException e)
+            {
+                Context.LogW(TAG, "ReLogin failed?");
+                Context.LogE(TAG, e);
             }
         }
 
