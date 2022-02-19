@@ -145,18 +145,6 @@ namespace Konata.Core
             => BusinessComponent.Operation.GroupPromoteAdmin(groupUin, memberUin, toggleAdmin);
 
         /// <summary>
-        /// Set special title
-        /// </summary>
-        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
-        /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
-        /// <param name="specialTitle"><b>[In]</b> Special title. </param>
-        /// <param name="expiredTime"><b>[In]</b> Exipred time. </param>
-        /// <returns>Return true for operation successfully.</returns>
-        /// <exception cref="OperationFailedException"></exception>
-        public Task<bool> GroupSetSpecialTitle(uint groupUin, uint memberUin, string specialTitle, uint expiredTime)
-            => BusinessComponent.Operation.GroupSetSpecialTitle(groupUin, memberUin, specialTitle, expiredTime);
-
-        /// <summary>
         /// Send the message to a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin. </param>
