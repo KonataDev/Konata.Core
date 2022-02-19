@@ -3,6 +3,7 @@ using Konata.Core.Packets.Wup;
 using Konata.Core.Utils.JceStruct.Model;
 
 // ReSharper disable PossibleInvalidCastExceptionInForeachLoop
+
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
