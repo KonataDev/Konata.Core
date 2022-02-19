@@ -28,6 +28,11 @@ namespace Konata.Core.Events.Model
             Dismiss = dismiss;
         }
 
+        private GroupManagementEvent(int resultCode)
+            : base(resultCode)
+        {
+        }
+
         /// <summary>
         /// Construct request event
         /// </summary>
@@ -37,5 +42,13 @@ namespace Konata.Core.Events.Model
         /// <returns></returns>
         public static GroupManagementEvent Create(ulong groupCode,
             uint selfUin, bool dismiss) => new(groupCode, selfUin, dismiss);
+
+        /// <summary>
+        /// Construct event result
+        /// </summary>
+        /// <param name="resultCode"></param>
+        /// <returns></returns>
+        internal static GroupManagementEvent Result(int resultCode)
+            => new(resultCode);
     }
 }
