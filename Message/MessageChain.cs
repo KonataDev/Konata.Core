@@ -188,8 +188,7 @@ namespace Konata.Core.Message
                         {
                             "at" => AtChain.Parse(i.Value),
                             "image" => ImageChain.Parse(i.Value),
-                            "face" => QFaceChain.Parse(i.Value),
-                            "bface" => BFaceChain.Parse(i.Value),
+                            "qface" => QFaceChain.Parse(i.Value),
                             "record" => RecordChain.Parse(i.Value),
                             "video" => VideoChain.Parse(i.Value),
                             "reply" => ReplyChain.Parse(i.Value),
