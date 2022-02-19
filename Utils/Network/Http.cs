@@ -42,11 +42,11 @@ namespace Konata.Core.Utils.Network
                 // length limitation
                 if (limitLen != 0)
                 {
-                    // Get content length
-                    var totalLen = int.Parse
-                        (response.Headers["Content-Length"]!);
-
                     // Decline streaming transport
+                    if (!ContainsHeader(response.Headers, "Content-Length")) return null;
+
+                    // Decline while limit reached
+                    var totalLen = int.Parse(response.Headers["Content-Length"]);
                     if (totalLen > limitLen || totalLen == 0) return null;
                 }
 
@@ -88,7 +88,7 @@ namespace Konata.Core.Utils.Network
                 request.Timeout = timeout;
                 request.ReadWriteTimeout = timeout;
                 request.ContentLength = data.Length;
-                request.AutomaticDecompression = 
+                request.AutomaticDecompression =
                     DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
                 // Append request header
@@ -117,5 +117,8 @@ namespace Konata.Core.Utils.Network
                 return memStream.ToArray();
             }
         }
+
+        private static bool ContainsHeader(WebHeaderCollection header, string find)
+            => header.AllKeys.Any(key => key == find);
     }
 }
