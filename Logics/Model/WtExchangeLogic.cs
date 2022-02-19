@@ -286,7 +286,7 @@ namespace Konata.Core.Logics.Model
 
                     // Register schedules
                     ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
-                    ScheduleComponent.Interval(ScheduleCheckConnection, 600 * 1000, OnCheckConnection);
+                    ScheduleComponent.Interval(ScheduleCheckConnection, 120 * 1000, OnCheckConnection);
 
                     Context.LogI(TAG, "Bot online.");
                     return true;
