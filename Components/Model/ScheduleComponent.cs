@@ -242,7 +242,7 @@ namespace Konata.Core.Components.Model
         /// <param name="action"><b>[In]</b> Callback action</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
-        public void Interval(string name, int interval, int times, Action action)
+        private void Interval(string name, int interval, int times, Action action)
         {
             var task = new Schedule
                 (name, action, interval, times);
