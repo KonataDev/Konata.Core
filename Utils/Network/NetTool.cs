@@ -1,4 +1,12 @@
-﻿namespace Konata.Core.Utils.Network
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Threading.Tasks;
+
+namespace Konata.Core.Utils.Network
 {
     /// <summary>
     /// Networking tools

@@ -119,7 +119,7 @@ namespace Konata.Core.Components.Model
         public async Task<bool> Disconnect(string reason)
         {
             // Not connected
-            if (_tcpClient is not { Connected: true })
+            if (_tcpClient is not {Connected: true})
             {
                 LogW(TAG, "Calling Disconnect " +
                           "method after socket disconnected.");
@@ -151,7 +151,7 @@ namespace Konata.Core.Components.Model
         /// On Received a packet 
         /// </summary>
         /// <param name="data"></param>
-        public async void OnRecvPacket(byte[] data)
+        public void OnRecvPacket(byte[] data)
         {
             var packet = new byte[data.Length];
             Array.Copy(data, 0, packet, 0, data.Length);
@@ -160,7 +160,7 @@ namespace Konata.Core.Components.Model
 
                 try
                 {
-                    await PushNewPacket(this, packet);
+                    PushNewPacket(this, packet);
                 }
                 catch (Exception e)
                 {

@@ -103,7 +103,7 @@ namespace Konata.Core.Logics.Model
             {
                 if (result.ResultCode != 0)
                 {
-                    throw new OperationFailedException(-2,
+                    throw new OperationFailedException(-3,
                         $"Failed to mute member: Assert failed. Ret => {result.ResultCode}");
                 }
 
@@ -142,7 +142,7 @@ namespace Konata.Core.Logics.Model
             {
                 if (result.ResultCode != 0)
                 {
-                    throw new OperationFailedException(-2,
+                    throw new OperationFailedException(-3,
                         $"Failed to kick member: Assert failed. Ret => {result.ResultCode}");
                 }
 
