@@ -1,6 +1,7 @@
 ﻿using Konata.Core.Events;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Events.Model;
 
 namespace Konata.Core.Services.MessageSvc

@@ -1,4 +1,5 @@
-﻿using Konata.Core.Events;
+﻿using Konata.Core.Common;
+using Konata.Core.Events;
 using Konata.Core.Packets;
 
 namespace Konata.Core.Services

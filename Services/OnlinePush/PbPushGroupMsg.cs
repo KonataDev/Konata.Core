@@ -8,6 +8,7 @@ using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.Protobuf.ProtoModel;

@@ -1,4 +1,5 @@
-﻿using Konata.Core.Packets.Tlv;
+﻿using Konata.Core.Common;
+using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
 using Konata.Core.Packets.Protobuf;
 

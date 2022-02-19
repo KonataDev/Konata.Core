@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Konata.Core
+namespace Konata.Core.Common
 {
     /// <summary>
     /// Bot member definitions

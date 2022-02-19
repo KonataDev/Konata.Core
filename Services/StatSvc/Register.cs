@@ -4,6 +4,7 @@ using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
 

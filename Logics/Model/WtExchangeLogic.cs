@@ -388,7 +388,7 @@ namespace Konata.Core.Logics.Model
                 // Get new message
                 await PullMessage(Context);
             }
-            catch (TimeoutException e)
+            catch (TimeoutException)
             {
                 Context.LogW(TAG, "Connection lost? " +
                                   "Let me check the connection.");

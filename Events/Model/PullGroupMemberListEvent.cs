@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Konata.Core.Common;
 
 namespace Konata.Core.Events.Model
 {
