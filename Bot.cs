@@ -160,15 +160,6 @@ namespace Konata.Core
             => BusinessComponent.Operation.GroupSetSpecialTitle(groupUin, memberUin, specialTitle, expiredTime);
 
         /// <summary>
-        /// Leave group
-        /// </summary>
-        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
-        /// <returns>Return true for operation successfully.</returns>
-        /// <exception cref="OperationFailedException"></exception>
-        public Task<bool> GroupLeave(uint groupUin)
-            => BusinessComponent.Operation.GroupLeave(groupUin);
-
-        /// <summary>
         /// Send the message to a given group
         /// </summary>
         /// <param name="groupUin"><b>[In]</b> Group uin. </param>
@@ -196,17 +187,7 @@ namespace Konata.Core
         /// <exception cref="SyncFailedException"></exception>
         public Task<IReadOnlyList<BotGroup>> GetGroupList(bool forceUpdate = false)
             => BusinessComponent.CacheSync.GetGroupList(forceUpdate);
-        
-        /// <summary>
-        /// Get member member list
-        /// </summary>
-        /// <param name="groupUin"><b>[In]</b> Group uin. </param>
-        /// <param name="forceUpdate"><b>[In]</b> Force update. </param>
-        /// <returns></returns>
-        /// <exception cref="SyncFailedException"></exception>
-        public Task<IReadOnlyList<BotMember>> GetGroupMemberList(uint groupUin, bool forceUpdate = false)
-            => BusinessComponent.CacheSync.GetGroupMemberList(groupUin, forceUpdate);
-        
+
         /// <summary>
         /// Get friend list
         /// </summary>

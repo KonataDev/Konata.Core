@@ -3,8 +3,8 @@
 /.vscode/
 
 .idea
+
 .editorconfig
-Konata.Core.xml
 
 # Build and Object Folders  
 bin/  

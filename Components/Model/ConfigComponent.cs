@@ -248,7 +248,7 @@ namespace Konata.Core.Components.Model
 
             // Update cache
             if (!group.Members.TryGetValue
-                    (memberUin, out var member))
+                (memberUin, out var member))
             {
                 member = new BotMember
                 {
@@ -337,14 +337,6 @@ namespace Konata.Core.Components.Model
         /// <returns></returns>
         public IReadOnlyList<BotGroup> GetGroupList()
             => _groupList.Values.ToList();
-
-        /// <summary>
-        /// Get group member list
-        /// </summary>
-        /// <param name="groupUin"></param>
-        /// <returns></returns>
-        public IReadOnlyList<BotMember> GetGroupMemberList(uint groupUin)
-            => _groupList[groupUin].Members.Values.ToList();
 
         /// <summary>
         /// Get friend list

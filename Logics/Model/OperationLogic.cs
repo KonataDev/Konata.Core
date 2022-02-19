@@ -190,31 +190,6 @@ namespace Konata.Core.Logics.Model
             }
         }
 
-        /// <summary>
-        /// Leave group
-        /// </summary>
-        /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
-        /// <returns>Return true for operation successfully.</returns>
-        /// <exception cref="OperationFailedException"></exception>
-        public async Task<bool> GroupLeave(uint groupUin)
-        {
-            // Get group code
-            var groupCode = ConfigComponent.GetGroupCode(groupUin);
-            if (groupCode == 0) throw new OperationFailedException(-1, "Failed to lave group: Lack group code.");
-
-            // Leave group
-            var result = await GroupLeave(Context, groupCode, false);
-            {
-                if (result.ResultCode != 0)
-                {
-                    throw new OperationFailedException(-2,
-                        $"Failed to leave group: Assert failed. Ret => {result.ResultCode}");
-                }
-
-                return true;
-            }
-        }
-
         #region Stub methods
 
         private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
@@ -228,9 +203,6 @@ namespace Konata.Core.Logics.Model
 
         private static Task<GroupSpecialTitleEvent> GroupSetSpecialTitle(BusinessComponent context, uint groupUin, uint memberUin, string specialTitle, uint expiredTime)
             => context.PostPacket<GroupSpecialTitleEvent>(GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime));
-
-        private static Task<GroupManagementEvent> GroupLeave(BusinessComponent context, ulong groupCode, bool dismiss)
-            => context.PostPacket<GroupManagementEvent>(GroupManagementEvent.Create(groupCode, context.Bot.Uin, dismiss));
 
         #endregion
     }
