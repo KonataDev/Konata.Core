@@ -260,27 +260,6 @@ namespace Konata.Core.Logics.Model
             }
         }
 
-        /// <summary>
-        /// Get csrf token
-        /// </summary>
-        /// <returns></returns>
-        public Task<string> GetCsrfToken()
-        {
-            var token = 5381;
-            var stkey = ConfigComponent.KeyStore.Session.StKey;
-
-            // Calculate token
-            foreach (var i in stkey)
-            {
-                token += (token << 5) + i;
-            }
-
-            // Or 0x7FFFFFFF
-            token &= int.MaxValue;
-
-            return Task.FromResult(token.ToString());
-        }
-
         #region Stub methods
 
         private static Task<PullGroupListEvent> PullGroupList(BusinessComponent context)
