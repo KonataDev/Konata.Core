@@ -28,7 +28,6 @@ namespace Konata.Core.Utils.TcpSocket
         private IClientListener _listener;
         private readonly MemoryStream _recvStream;
         private readonly byte[] _recvBuffer;
-        private long _packetLen;
 
         /// <summary>
         /// Construct a tcp client
@@ -155,6 +154,7 @@ namespace Konata.Core.Utils.TcpSocket
         private void BeginReceive(IAsyncResult result)
         {
             var recvLen = 0;
+            var packetLen = 0U;
 
             try
             {
@@ -175,21 +175,21 @@ namespace Konata.Core.Utils.TcpSocket
 
                     // Dissect the packet length
                     DissectNext:
-                    if (_packetLen == 0)
+                    if (packetLen == 0)
                     {
-                        _packetLen = _listener.OnStreamDissect
+                        packetLen = _listener.OnStreamDissect
                             (_recvStream.GetBuffer(), (uint) _recvStream.Length);
                     }
 
                     // Cut down one packet
-                    if (_packetLen > 0 &&
-                        _recvStream.Length >= _packetLen)
+                    if (packetLen > 0 &&
+                        _recvStream.Length >= packetLen)
                     {
                         // Read data from stream
-                        var packetBuf = new byte[_packetLen];
+                        var packetBuf = new byte[packetLen];
                         {
                             _recvStream.Seek(0, SeekOrigin.Begin);
-                            _recvStream.Read(packetBuf, 0, (int)_packetLen);
+                            _recvStream.Read(packetBuf, 0, (int) packetLen);
 
                             // Move the remaining data ahead
                             var streamBuf = _recvStream.GetBuffer();
@@ -197,10 +197,11 @@ namespace Konata.Core.Utils.TcpSocket
                             Array.Copy(streamBuf, _recvStream.Position, streamBuf, 0, streamLen);
                             {
                                 _recvStream.SetLength(streamLen);
+                                _recvStream.Seek(0, SeekOrigin.Begin);
                             }
 
                             // Reset
-                            _packetLen = 0;
+                            packetLen = 0;
                         }
 
                         // Call on recv packet
