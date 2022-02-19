@@ -18,7 +18,7 @@ namespace Konata.Core.Message.Model
         /// <summary>
         /// Image Url
         /// </summary>
-        public string ImageUrl { get; }
+        public string ImageUrl { get; private set; }
 
         /// <summary>
         /// File name
@@ -144,7 +144,7 @@ namespace Konata.Core.Message.Model
 
             // Detect image type
             if (FileFormat.DetectImage(image, out var type,
-                out var width, out var height))
+                    out var width, out var height))
             {
                 // Image type
                 var imageType = type switch
@@ -194,6 +194,21 @@ namespace Konata.Core.Message.Model
             => Create(ByteConverter.UnBase64(base64));
 
         /// <summary>
+        /// Create an image chain from url (limit 10MB)
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static ImageChain CreateFromURL(string url)
+            => Create(Utils.Network.Http.Get(url, limitLen: 1048576 * 10).Result);
+
+        /// <summary>
+        /// Set image url
+        /// </summary>
+        /// <param name="url"></param>
+        internal void SetImageUrl(string url)
+            => ImageUrl = url;
+
+        /// <summary>
         /// Parse the code
         /// </summary>
         /// <param name="code"></param>
@@ -203,6 +218,13 @@ namespace Konata.Core.Message.Model
             var args = GetArgs(code);
             {
                 var file = args["file"];
+
+                // Create from url
+                if (file.StartsWith("http://")
+                    || file.StartsWith("https://"))
+                {
+                    return CreateFromURL(file);
+                }
 
                 // Create from base64
                 if (file.StartsWith("base64://"))

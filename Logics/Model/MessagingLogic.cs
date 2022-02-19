@@ -194,16 +194,17 @@ namespace Konata.Core.Logics.Model
         /// Upload image manually
         /// </summary>
         /// <returns></returns>
-        public async Task<string> UploadImage(ImageChain image, bool c2c, uint uin)
+        public async Task<bool> UploadImage(ImageChain image, bool c2c, uint uin)
         {
             var images = new List<ImageChain> {image};
             var result = await UploadImages(images, c2c, uin);
             {
-                if (!result) return string.Empty;
+                if (!result) return false;
                 {
                     // Maybe need ImageStore.down
                     // in the future.
-                    return $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{image.FileHash}/0";
+                    image.SetImageUrl($"https://gchat.qpic.cn/gchatpic_new/0/0-0-{image.FileHash}/0");
+                    return true;
                 }
             }
         }

@@ -198,7 +198,7 @@ namespace Konata.Core
         /// <param name="image"><b>[In]</b> Image to upload. </param>
         /// <param name="groupUin"><b>[In]</b> Group uin. </param>
         /// <returns></returns>
-        public Task<string> UploadGroupImage(ImageChain image, uint groupUin)
+        public Task<bool> UploadGroupImage(ImageChain image, uint groupUin)
             => BusinessComponent.Messaging.UploadImage(image, true, groupUin);
 
         /// <summary>
