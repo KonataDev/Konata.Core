@@ -1,4 +1,6 @@
-﻿using Konata.Core.Events.Model;
+﻿using System;
+using Konata.Core.Events;
+using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
@@ -6,12 +8,12 @@ using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.OidbSvc
 {
-    [EventSubscribe(typeof(GroupMuteMemberEvent))]
     [Service("OidbSvc.0x570_8", "Mute member in the group")]
+    [EventSubscribe(typeof(GroupMuteMemberEvent))]
     public class Oidb0x570_8 : BaseService<GroupMuteMemberEvent>
     {
-        protected override bool Parse(SSOFrame input,
-            BotKeyStore keystore, out GroupMuteMemberEvent output)
+        public override bool Parse(SSOFrame input,
+            BotKeyStore keystore, out ProtocolEvent output)
         {
             var tree = ProtoTreeRoot.Deserialize
                 (input.Payload.GetBytes(), true);

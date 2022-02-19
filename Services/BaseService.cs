@@ -1,8 +1,6 @@
 ﻿using Konata.Core.Events;
 using Konata.Core.Packets;
 
-// ReSharper disable InvertIf
-
 namespace Konata.Core.Services
 {
     public abstract class BaseService<TEvent> : IService
@@ -15,8 +13,8 @@ namespace Konata.Core.Services
         /// <param name="keystore"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        protected virtual bool Parse(SSOFrame input, 
-            BotKeyStore keystore, out TEvent output)
+        public virtual bool Parse(SSOFrame input,
+            BotKeyStore keystore, out ProtocolEvent output)
         {
             output = null;
             return false;
@@ -50,29 +48,9 @@ namespace Konata.Core.Services
         /// <param name="newSequence"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool IService.Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+        public bool Build(Sequence sequence, ProtocolEvent input, BotKeyStore
+            keystore, BotDevice device, out int newSequence, out byte[] output)
             => Build(sequence, (TEvent) input, keystore, device, out newSequence, out output);
-
-        /// <summary>
-        /// Parse packet
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="keystore"></param>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        bool IService.Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
-        {
-            output = null;
-            
-            if (Parse(input, keystore, out var dirtyCs))
-            {
-                output = dirtyCs;
-                return true;
-            }
-
-            return false;
-        }
 
         /// <summary>
         /// TODO: sso service refactor

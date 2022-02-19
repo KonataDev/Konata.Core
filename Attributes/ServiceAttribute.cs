@@ -1,8 +1,5 @@
 ﻿using System;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Konata.Core.Attributes
 {
     /// <summary>
@@ -10,9 +7,9 @@ namespace Konata.Core.Attributes
     /// </summary>
     internal class ServiceAttribute : Attribute
     {
-        public string ServiceName { get; }
+        public string ServiceName { get; set; }
 
-        public string Description { get; }
+        public string Description { get; set; }
 
         public ServiceAttribute(string name, string description)
         {
