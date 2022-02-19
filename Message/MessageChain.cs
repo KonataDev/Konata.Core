@@ -166,7 +166,7 @@ namespace Konata.Core.Message
             var builder = new MessageBuilder();
             {
                 var regexp = new Regex
-                    (@"\[KQ:(at|image|face|bface|record|video|reply|json|xml).*?\]");
+                    (@"\[KQ:(at|image|qface|record|video|reply|json|xml).*?\]");
 
                 // Match pattern
                 var matches = regexp.Matches(message);
