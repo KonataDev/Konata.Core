@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Message;
@@ -154,7 +155,7 @@ namespace Konata.Core.Logics.Model
                 {
                     // Okay we've got it
                     if (ConfigComponent.TryGetMemberInfo
-                        (uin, chain.AtUin, out var member))
+                            (uin, chain.AtUin, out var member))
                     {
                         chain.DisplayString = $"@{member.NickName}";
                     }
@@ -190,7 +191,62 @@ namespace Konata.Core.Logics.Model
         }
 
         /// <summary>
-        /// Upload the image
+        /// Upload image manually
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> UploadImage(ImageChain image, bool c2c, uint uin)
+        {
+            var images = new List<ImageChain> {image};
+            var result = await UploadImages(images, c2c, uin);
+            {
+                if (!result) return string.Empty;
+                {
+                    // Maybe need ImageStore.down
+                    // in the future.
+                    return $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{image.FileHash}/0";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Upload images
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="c2c"></param>
+        /// <param name="uin"></param>
+        /// <returns></returns>
+        private async Task<bool> UploadImages(List<ImageChain> image, bool c2c, uint uin)
+        {
+            if (c2c)
+            {
+                // Request image upload
+                var result = await GroupPicUp(Context, uin, image);
+                {
+                    // Set upload data
+                    for (var i = 0; i < image.Count; ++i)
+                    {
+                        image[i].SetPicUpInfo(result.UploadInfo[i]);
+                    }
+                }
+
+                // Highway image upload
+                return await HighwayComponent.GroupPicUp(Context.Bot.Uin,
+                    image.ToArray(), result.UploadInfo.ToArray());
+            }
+            else
+            {
+                // TODO:
+                // Off picup
+
+                // var result = await PrivateOffPicUp(Context, uin, upload);
+
+                // Image upload for private messages
+                return await HighwayComponent.OffPicUp();
+            }
+        }
+
+        /// <summary>
+        /// Search image and upload
         /// </summary>
         /// <param name="uin"><b>[In]</b> Uin</param>
         /// <param name="message"><b>[In]</b> The message chain</param>
@@ -201,39 +257,14 @@ namespace Konata.Core.Logics.Model
             // Find the image chain
             var upload = message.FindChain<ImageChain>();
             {
-                // No images
+                // No image
                 if (upload.Count <= 0) return true;
 
                 // 1. Request ImageStore.GroupPicUp
                 // 2. Upload the image via highway
                 // 3. Return false while failed to upload
 
-                if (c2c)
-                {
-                    // Request image upload
-                    var result = await GroupPicUp(Context, uin, upload);
-                    {
-                        // Set upload data
-                        for (var i = 0; i < upload.Count; ++i)
-                        {
-                            upload[i].SetPicUpInfo(result.UploadInfo[i]);
-                        }
-                    }
-
-                    // Highway image upload
-                    return await HighwayComponent.GroupPicUp(Context.Bot.Uin,
-                        upload.ToArray(), result.UploadInfo.ToArray());
-                }
-                else
-                {
-                    // TODO:
-                    // Off picup
-
-                    // var result = await PrivateOffPicUp(Context, uin, upload);
-
-                    // Image upload for private messages
-                    return await HighwayComponent.OffPicUp();
-                }
+                return await UploadImages(upload, c2c, uin);
             }
         }
 
