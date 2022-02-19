@@ -1,6 +1,4 @@
-﻿using System;
-
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core.Message.Model
 {
@@ -37,6 +35,6 @@ namespace Konata.Core.Message.Model
         }
 
         public override string ToString()
-            => $"[KQ:xml,content={Escape(Content)}]";
+            => $"[KQ:xml,content={Content}]";
     }
 }
