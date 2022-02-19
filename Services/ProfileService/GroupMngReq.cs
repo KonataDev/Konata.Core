@@ -3,16 +3,20 @@ using Konata.Core.Common;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
+using Konata.Core.Packets.SvcResponse;
 
 namespace Konata.Core.Services.ProfileService
 {
+    [EventSubscribe(typeof(GroupManagementEvent))]
     [Service("ProfileService.GroupMngReq", "Group management request")]
     internal class GroupMngReq : BaseService<GroupManagementEvent>
     {
         protected override bool Parse(SSOFrame input,
             BotKeyStore keystore, out GroupManagementEvent output)
         {
-            return base.Parse(input, keystore, out output);
+            var root = new SvcRspGroupMng(input.Payload.GetBytes());
+            output = GroupManagementEvent.Result(root.Result);
+            return true;
         }
 
         protected override bool Build(Sequence sequence, GroupManagementEvent input,
@@ -24,10 +28,10 @@ namespace Konata.Core.Services.ProfileService
             var svcRequest = new SvcReqGroupMngReq(input.SelfUin, input.GroupCode, input.Dismiss);
 
             if (SSOFrame.Create("ProfileService.GroupMngReq", PacketType.TypeB,
-                newSequence, sequence.Session, svcRequest, out var ssoFrame))
+                    newSequence, sequence.Session, svcRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
+                        keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
