@@ -32,17 +32,11 @@ namespace Konata.Core
         internal KeyStub KeyStub { get; }
 
         /// <summary>
-        /// Highway configurations
-        /// </summary>
-        internal Highway Highway { get; set; }
-
-        /// <summary>
         /// Create a key store
         /// </summary>
         public BotKeyStore()
         {
             KeyStub = new KeyStub();
-            Highway = new Highway();
         }
 
         /// <summary>
@@ -253,15 +247,10 @@ namespace Konata.Core
         internal string WtLoginSmsCountry { get; set; }
 
         internal string WtLoginSession { get; set; }
-    }
 
-    internal class Highway
-    {
-        public string Host { get; set; }
+        internal string HighwayKey { get; set; }
 
-        public int Port { get; set; }
-
-        public byte[] Ticket { get; set; }
+        internal string HighwayToken { get; set; }
     }
 
     internal class KeyStub

@@ -30,21 +30,17 @@ namespace Konata.Core.Components.Model
         public BotConfig GlobalConfig { get; private set; }
 
         /// <summary>
+        /// Highway host
+        /// </summary>
+        public (string Host, int Port, byte[] Ticket) HighwayConfig { get; internal set; }
+
+        /// <summary>
         /// Sync cookie
         /// </summary>
         public byte[] SyncCookie
         {
             get => KeyStore.Account.SyncCookie;
             internal set => KeyStore.Account.SyncCookie = value;
-        }
-
-        /// <summary>
-        /// Highway host
-        /// </summary>
-        internal Highway HighwayConfig
-        {
-            get => KeyStore.Highway;
-            set => KeyStore.Highway = value;
         }
 
         private readonly ConcurrentDictionary<uint, BotGroup> _groupList;
