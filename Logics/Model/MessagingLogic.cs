@@ -6,7 +6,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Components.Model;
-using Konata.Core.Exceptions.Model;
+using Konata.Core.Exceptions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Packets;

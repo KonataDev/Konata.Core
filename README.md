@@ -78,7 +78,7 @@ Console.WriteLine("We got online!");
 - [ ] Refactor packets
 - [ ] Robust login logic
 - [ ] Ecdh xchg
-- [x] Fix task stuck
+- [ ] Fix task stuck
 - [ ] [More Plans](../../projects/1)...
 
 ## LICENSE
