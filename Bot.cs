@@ -10,6 +10,7 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Exceptions.Model;
+using Konata.Core.Message.Model;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
@@ -190,6 +191,15 @@ namespace Konata.Core
         /// <exception cref="MessagingException"></exception>
         public Task<bool> SendPrivateMessage(uint friendUin, MessageBuilder builder)
             => BusinessComponent.Messaging.SendPrivateMessage(friendUin, builder.Build());
+
+        /// <summary>
+        /// Upload the image manually
+        /// </summary>
+        /// <param name="image"><b>[In]</b> Image to upload. </param>
+        /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+        /// <returns></returns>
+        public Task<string> UploadGroupImage(ImageChain image, uint groupUin)
+            => BusinessComponent.Messaging.UploadImage(image, true, groupUin);
 
         /// <summary>
         /// Get group list
