@@ -1,14 +1,13 @@
-﻿using Konata.Core.Attributes;
-using Konata.Core.Entity;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Entity;
+using Konata.Core.Attributes;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
-using System;
-using System.Collections;
-using System.Linq;
-using System.Threading.Tasks;
 
 // ReSharper disable InvertIf
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
@@ -64,8 +63,6 @@ namespace Konata.Core.Components.Model
             var lowestTime = long.MaxValue;
             var selectHost = DefaultServers[0];
 
-            var serverList = new ((string, int), long)[] { }.ToList();
-
             // Using user config
             if (ConfigComponent.GlobalConfig!.CustomHost != null)
             {
@@ -83,8 +80,6 @@ namespace Konata.Core.Components.Model
                 else LogW(TAG, "Invalid custom host config passed in.");
             }
 
-            
-
             // Find the fastest server
             else if (useLowLatency)
             {
@@ -97,8 +92,6 @@ namespace Konata.Core.Components.Model
                             lowestTime = time;
                             selectHost = item;
                         }
-
-                        serverList.Add(((item.Host, item.Port), time));
                     }
 
                     LogI(TAG, "Probing latency " +
@@ -107,38 +100,9 @@ namespace Konata.Core.Components.Model
                 }
             }
 
-            //Sort the list by lantency
-            serverList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
-            var queue = new Queue(serverList);
-
             // Connect
-            bool connectResult = false;
-
-            while (!connectResult && queue.Count > 0)
-            {
-                var pop = (((string, int), long))queue.Dequeue();
-                var host = pop.Item1;
-
-                LogI(TAG, "Try Connecting " +
-                              $"{host.Item1}:{host.Item2}.");
-                try
-                {
-                    connectResult = await _tcpClient
-                    .Connect(selectHost.Host, selectHost.Port);
-
-                    if (connectResult)
-                    {
-                        return true;
-                    }
-                }
-                catch   //Try next server
-                {
-                    LogI(TAG, "Failed to connecting to " +
-                              $"{host.Item1}:{host.Item2}.");
-                }
-            }
-            
-            return false;
+            return await _tcpClient
+                .Connect(selectHost.Host, selectHost.Port);
         }
 
         /// <summary>
