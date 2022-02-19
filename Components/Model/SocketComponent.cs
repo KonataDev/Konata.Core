@@ -2,6 +2,8 @@
 using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Exceptions;
+using Konata.Core.Exceptions.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
@@ -62,69 +64,83 @@ namespace Konata.Core.Components.Model
             }
 
             var lowestTime = long.MaxValue;
+            var selectHost = DefaultServers[0];
+
             var serverList = new ((string, int), long)[] { }.ToList();
 
             // Using user config
             if (ConfigComponent.GlobalConfig!.CustomHost != null)
             {
-                // Parse the config
                 var customHost = ConfigComponent
                     .GlobalConfig.CustomHost.Split(':');
 
-                // Connect to server with
-                // custom server address
-                if (customHost.Length >= 1)
+                // Parse the config
+                if (customHost.Length == 2)
                 {
-                    return await _tcpClient.Connect(customHost[0],
+                    selectHost = new(customHost[0],
                         customHost.Length == 2 ? ushort.Parse(customHost[1]) : 8080);
+                    serverList.Add(((selectHost.Host, selectHost.Port), 0));
                 }
 
                 // Failed to parse the config
-                LogE(TAG, "Invalid custom host config passed in.");
-                return false;
+                else LogW(TAG, "Invalid custom host config passed in.");
             }
 
-            // Using fastest server
+            
+
+            // Find the fastest server
             else if (useLowLatency)
             {
-                // Ping the server
-                foreach (var server in DefaultServers)
+                foreach (var item in DefaultServers)
                 {
-                    var time = Icmp.Ping(server.Host, 2000);
+                    var time = Icmp.Ping(item.Host, 2000);
                     {
-                        if (time < lowestTime) lowestTime = time;
-                        serverList.Add(((server.Host, server.Port), time));
+                        if (time < lowestTime)
+                        {
+                            lowestTime = time;
+                            selectHost = item;
+                        }
+
+                        serverList.Add(((item.Host, item.Port), time));
                     }
 
                     LogI(TAG, "Probing latency " +
-                              $"{server.Host}:{server.Port} " +
+                              $"{item.Host}:{item.Port} " +
                               $"=> {time}ms.");
-                }
-
-                // Sort the list by lantency
-                serverList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
-                var tryQueue = new Queue(serverList);
-
-                // Try connect to each server
-                while (tryQueue.Count > 0)
-                {
-                    var pop = (((string, int ) Host, long Latency)) tryQueue.Dequeue();
-                    var (Addr, Port) = pop.Host;
-
-                    // Connect
-                    LogI(TAG, $"Try Connecting {Addr}:{Port}.");
-                    var result = await _tcpClient.Connect(Addr, Port);
-
-                    // Try next server
-                    if (result) return true;
-                    {
-                        LogI(TAG, $"Failed to connecting to {Addr}:{Port}.");
-                        await _tcpClient.Disconnect();
-                    }
                 }
             }
 
-            throw new Exception("All servers are unavailable.");
+            //Sort the list by lantency
+            serverList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+            var queue = new Queue(serverList);
+
+            // Connect
+            bool connectResult = false;
+
+            while (!connectResult && queue.Count > 0)
+            {
+                var pop = (((string, int), long))queue.Dequeue();
+                var host = pop.Item1;
+
+                LogI(TAG, "Try Connecting " +
+                              $"{host.Item1}:{host.Item2}.");
+
+                connectResult = _tcpClient
+                    .Connect(host.Item1, host.Item2).Result;
+
+                if (connectResult)
+                {
+                    return true;
+                }
+                else    //Try next server
+                {
+                    LogI(TAG, "Failed to connecting to " +
+                          $"{host.Item1}:{host.Item2}.");
+                    _tcpClient.Disconnect().Wait();
+                }
+            }
+            
+            throw new Exception("All server are unavailable.");
         }
 
         /// <summary>
@@ -141,7 +157,7 @@ namespace Konata.Core.Components.Model
         public async Task<bool> Disconnect(string reason)
         {
             // Not connected
-            if (_tcpClient is not {Connected: true})
+            if (_tcpClient is not { Connected: true })
             {
                 LogW(TAG, "Calling Disconnect " +
                           "method after socket disconnected.");
@@ -209,7 +225,7 @@ namespace Konata.Core.Components.Model
             if (task.EventPayload is PacketEvent packetEvent)
             {
                 // Not connected
-                if (_tcpClient is not {Connected: true})
+                if (_tcpClient is not { Connected: true })
                 {
                     LogW(TAG, "Calling SendData method after socket disconnected.");
                 }

@@ -231,8 +231,7 @@ namespace Konata.Core.Utils.TcpSocket
 
     class FeaturedSocket : Socket
     {
-        public FeaturedSocket(AddressFamily addressFamily, SocketType socketType, 
-            ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
+        public FeaturedSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
         {
         }
 
