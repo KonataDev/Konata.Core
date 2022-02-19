@@ -2,8 +2,6 @@
 using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
-using Konata.Core.Exceptions;
-using Konata.Core.Exceptions.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
@@ -123,23 +121,24 @@ namespace Konata.Core.Components.Model
 
                 LogI(TAG, "Try Connecting " +
                               $"{host.Item1}:{host.Item2}.");
-
-                connectResult = _tcpClient
-                    .Connect(host.Item1, host.Item2).Result;
-
-                if (connectResult)
+                try
                 {
-                    return true;
+                    connectResult = await _tcpClient
+                    .Connect(selectHost.Host, selectHost.Port);
+
+                    if (connectResult)
+                    {
+                        return true;
+                    }
                 }
-                else    //Try next server
+                catch   //Try next server
                 {
                     LogI(TAG, "Failed to connecting to " +
-                          $"{host.Item1}:{host.Item2}.");
-                    _tcpClient.Disconnect().Wait();
+                              $"{host.Item1}:{host.Item2}.");
                 }
             }
             
-            throw new Exception("All server are unavailable.");
+            return false;
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace Konata.Core.Utils.TcpSocket
 
         private int _socketIp;
         private string _socketHost;
-        private FeaturedSocket _socketInstance;
+        private Socket _socketInstance;
 
         private IClientListener _listener;
         private readonly MemoryStream _recvStream;
@@ -86,20 +86,15 @@ namespace Konata.Core.Utils.TcpSocket
             await Disconnect();
 
             // Create socket
-            _socketInstance = new FeaturedSocket(AddressFamily.InterNetwork,
+            _socketInstance = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
             {
                 _socketInstance.ReceiveTimeout = 100;
             }
 
             // Connect to the server
-            static void callback(IAsyncResult result) => ((FeaturedSocket)result.AsyncState).EndConnect(result);
-            if (!_socketInstance.TryConnect(_socketHost, _socketIp,
-            callback, _socketInstance))
-            {
-                return false;
-            }
-
+            _socketInstance.BeginConnect(_socketHost, _socketIp,
+                r => ((Socket) r.AsyncState).EndConnect(r), _socketInstance).AsyncWaitHandle.WaitOne();
 
             // Connected
             if (_socketInstance.Connected)
@@ -149,7 +144,7 @@ namespace Konata.Core.Utils.TcpSocket
 
             // Send the data
             _socketInstance.BeginSend(buffer.ToArray(), 0, buffer.Length, SocketFlags.None,
-                r => ((FeaturedSocket) r.AsyncState).EndSend(r), _socketInstance).AsyncWaitHandle.WaitOne();
+                r => ((Socket) r.AsyncState).EndSend(r), _socketInstance).AsyncWaitHandle.WaitOne();
 
             return Task.FromResult(true);
         }
@@ -226,31 +221,6 @@ namespace Konata.Core.Utils.TcpSocket
             {
                 Disconnect();
             }
-        }
-    }
-
-    class FeaturedSocket : Socket
-    {
-        public FeaturedSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
-        {
-        }
-
-        public bool TryConnect(string host, int port, AsyncCallback requestCallback, object state)
-        {
-            BeginConnect(host, port, requestCallback, state).AsyncWaitHandle.WaitOne();
-            return this.Connected;
-        }
-
-        public new bool EndConnect(IAsyncResult result)
-        {
-            try
-            {
-                base.EndConnect(result);
-            } catch
-            {
-                return false; 
-            }
-            return true;
         }
     }
 }
