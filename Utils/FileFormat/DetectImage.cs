@@ -118,9 +118,9 @@ namespace Konata.Core.Utils.FileFormat
             // FF C1 extended
             // FF C2 progressive
             // FF C3 lossless
-            buffer.PeekUshortBE(0x03, out var h);
+            buffer.PeekUshortLE(0x03, out var h);
             height = h;
-            buffer.PeekUshortBE(0x05, out var w);
+            buffer.PeekUshortLE(0x05, out var w);
             width = w;
 
             return true;
