@@ -153,7 +153,7 @@ namespace Konata.Core.Services.MessageSvc
                     _.AddLeafVar("B801", chain.Height);
                     _.AddLeafVar("C001", 200); // TODO: Unknown
                     _.AddLeafVar("C801", chain.FileLength);
-                    _.AddLeafVar("D001", 0);
+                    _.AddLeafVar("D001", 1);
                     _.AddLeafVar("E801", 0);
                     _.AddLeafVar("F001", 0);
                     _.AddTree("9202", __ => __.AddLeafVar("78", 2));
