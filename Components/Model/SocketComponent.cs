@@ -182,18 +182,18 @@ namespace Konata.Core.Components.Model
         /// Event handler
         /// </summary>
         /// <param name="task"></param>
-        internal override async Task<bool> OnHandleEvent(KonataTask task)
+        internal override bool OnHandleEvent(KonataTask task)
         {
             if (task.EventPayload is PacketEvent packetEvent)
             {
                 // Not connected
-                if (_tcpClient is not { Connected: true })
+                if (_tcpClient is not {Connected: true})
                 {
                     LogW(TAG, "Calling SendData method after socket disconnected.");
                 }
 
                 // Send data
-                await _tcpClient.Send(packetEvent.Buffer);
+                _tcpClient.Send(packetEvent.Buffer).Wait();
                 LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
             }
             else LogW(TAG, "Unsupported event received.");
@@ -203,10 +203,10 @@ namespace Konata.Core.Components.Model
 
         #region Stub methods
 
-        private static Task PushOffline(SocketComponent context, string reason)
+        private static void PushOffline(SocketComponent context, string reason)
             => context.PostEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
 
-        private static Task PushNewPacket(SocketComponent context, byte[] data)
+        private static void PushNewPacket(SocketComponent context, byte[] data)
             => context.PostEvent<PacketComponent>(PacketEvent.Push(data));
 
         #endregion

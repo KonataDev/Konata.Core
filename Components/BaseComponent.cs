@@ -16,13 +16,14 @@ namespace Konata.Core.Components
 
         public BaseComponent()
         {
-            EventPipeline = new ActionBlock<KonataTask>(async t =>
+            EventPipeline = new ActionBlock<KonataTask>(t =>
             {
                 try
                 {
                     // Force finish the tasks if the
                     // handler does not save the event by itself.
-                    if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
+                    if (!OnHandleEvent(t) && !t.Complected) t.Finish();
+
                 }
                 catch (Exception e)
                 {
@@ -31,9 +32,9 @@ namespace Konata.Core.Components
             });
         }
 
-        internal virtual Task<bool> OnHandleEvent(KonataTask task)
+        internal virtual bool OnHandleEvent(KonataTask task)
         {
-            return Task.FromResult(false);
+            return false;
         }
 
         public void PostEventToEntity(BaseEvent anyEvent)
