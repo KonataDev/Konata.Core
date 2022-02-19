@@ -3,6 +3,7 @@
 using Konata.Core.Packets;
 using Konata.Core.Events;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 namespace Konata.Core.Services.MessageSvc
 {

@@ -4,7 +4,7 @@ namespace Konata.Core.Packets.Oidb.Model
 {
     /// <summary>
     /// 移除多個群成員
-    /// <TODO> 支援批量移除群成員
+    /// <TODO> 支援批量移除群成員 </TODO>
     /// </summary>
 
     public class OidbCmd0x8a0_0 : OidbCmd0x8a0

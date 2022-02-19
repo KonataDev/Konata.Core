@@ -5,7 +5,7 @@ using System.Collections.Generic;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
-namespace Konata.Core
+namespace Konata.Core.Common
 {
     /// <summary>
     /// Bot group definitions

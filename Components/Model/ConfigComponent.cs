@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable CollectionNeverUpdated.Local

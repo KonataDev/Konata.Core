@@ -222,7 +222,7 @@ namespace Konata.Core.Utils.TcpSocket
             }
 
             // Catch exceptions
-            catch (Exception e)
+            catch (Exception)
             {
                 Disconnect();
             }

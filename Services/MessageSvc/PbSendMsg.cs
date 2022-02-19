@@ -4,6 +4,7 @@ using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 

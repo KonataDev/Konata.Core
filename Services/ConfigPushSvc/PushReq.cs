@@ -1,5 +1,6 @@
 ﻿using Konata.Core.Packets;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets.SvcPush;
 

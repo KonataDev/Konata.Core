@@ -2,6 +2,7 @@
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
 

@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
+using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Protobuf;
-using Konata.Core.Packets.Protobuf;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Konata.Core
+namespace Konata.Core.Common
 {
     /// <summary>
     /// Keystore

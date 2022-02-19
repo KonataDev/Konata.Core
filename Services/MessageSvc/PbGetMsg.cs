@@ -9,6 +9,7 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.Protobuf.ProtoModel;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
 

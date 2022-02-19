@@ -243,11 +243,15 @@ namespace Konata.Core.Message.Model
 
     public enum ImageType
     {
+        INVALID = 1,
         FACE = 4,
         JPG = 1000,
         PNG = 1001,
         WEBP = 1002,
+        PJPEG = 1003,
+        SHARPP = 1004,
         BMP = 1005,
         GIF = 2000,
+        APNG = 2001
     }
 }

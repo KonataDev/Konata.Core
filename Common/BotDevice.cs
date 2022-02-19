@@ -8,7 +8,7 @@ using Guid = System.Guid;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
 
-namespace Konata.Core
+namespace Konata.Core.Common
 {
     /// <summary>
     /// Bot device definitions

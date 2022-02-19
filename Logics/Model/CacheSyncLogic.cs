@@ -5,6 +5,7 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Components.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Exceptions.Model;
 
 // ReSharper disable InvertIf
@@ -202,7 +203,7 @@ namespace Konata.Core.Logics.Model
                 return ConfigComponent.GetGroupList();
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new SyncFailedException(-1,
                     "Failed to sync the group list.");
@@ -230,7 +231,7 @@ namespace Konata.Core.Logics.Model
                 return ConfigComponent.GetGroupMemberList(groupUin);
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new SyncFailedException(-1,
                     "Failed to sync the group list.");
@@ -260,7 +261,7 @@ namespace Konata.Core.Logics.Model
                 return ConfigComponent.GetMemberInfo(groupUin, memberUin);
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new SyncFailedException(-1,
                     "Failed to sync the group or group member list.");
@@ -281,7 +282,7 @@ namespace Konata.Core.Logics.Model
                 return ConfigComponent.GetFriendList();
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new SyncFailedException(-1,
                     "Failed to sync the friend list.");

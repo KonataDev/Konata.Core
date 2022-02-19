@@ -2,6 +2,7 @@
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
 

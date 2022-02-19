@@ -5,6 +5,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 
 namespace Konata.Core.Services.OidbSvc
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Konata.Core;
+using Konata.Core.Common;
 
 namespace Konata.Core.Packets.Tlv.Model
 {
