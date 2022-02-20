@@ -410,6 +410,7 @@ namespace Konata.Core.Logics.Model
                 if (SocketComponent.Connected)
                     await SocketComponent.Disconnect("Try Relogin");
 
+                _onlineType = OnlineStatusEvent.Type.Offline;
                 if (await Login()) ScheduleComponent.Cancel(ScheduleReLogin);
             }
             catch (TimeoutException e)
