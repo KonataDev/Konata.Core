@@ -1,25 +1,29 @@
-﻿using System;
-using System.Text;
-
-using Konata.Core.Events;
-using Konata.Core.Events.Model;
+﻿using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.OidbSvc
 {
-    [Service("OidbSvc.0x8a0_1", "Kick member in the group")]
+    [Service("OidbSvc.0x8a0_1", "Kick a member from group")]
     [EventSubscribe(typeof(GroupKickMemberEvent))]
-    class Oidb0x8a0_1 : IService
+    internal class Oidb0x8a0_1 : BaseService<GroupKickMemberEvent>
     {
-        public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+        protected override bool Parse(SSOFrame input,
+            BotKeyStore keystore, out GroupKickMemberEvent output)
         {
-            throw new NotImplementedException();
+            var tree = ProtoTreeRoot.Deserialize
+                (input.Payload.GetBytes(), true);
+            {
+                output = GroupKickMemberEvent
+                    .Result((int) tree.GetLeafVar("18"));
+                return true;
+            }
         }
 
-        public bool Build(Sequence sequence, GroupKickMemberEvent input,
+        protected override bool Build(Sequence sequence, GroupKickMemberEvent input,
             BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
         {
             output = null;
@@ -28,10 +32,10 @@ namespace Konata.Core.Services.OidbSvc
             var oidbRequest = new OidbCmd0x8a0_1(input.GroupUin, input.MemberUin, input.ToggleType);
 
             if (SSOFrame.Create("OidbSvc.0x8a0_1", PacketType.TypeB,
-            newSequence, sequence.Session, oidbRequest, out var ssoFrame))
+                    newSequence, sequence.Session, oidbRequest, out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
+                        keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
@@ -39,10 +43,5 @@ namespace Konata.Core.Services.OidbSvc
 
             return false;
         }
-
-        public bool Build(Sequence sequence, ProtocolEvent input,
-            BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-            => Build(sequence, (GroupKickMemberEvent)input, keystore, device, out newSequence, out output);
-
     }
 }
