@@ -6,7 +6,7 @@
 
 namespace Konata.Core.Events.Model
 {
-    public class PrivateMessageEvent : ProtocolEvent
+    public class FriendMessageEvent : ProtocolEvent
     {
         /// <summary>
         /// <b>[In]</b> <br/>
@@ -50,7 +50,7 @@ namespace Konata.Core.Events.Model
         /// </summary>
         public uint SliceFlags { get; private set; }
 
-        private PrivateMessageEvent(uint friendUin, uint selfUin,
+        private FriendMessageEvent(uint friendUin, uint selfUin,
             MessageChain messageChain) : base(2000, true)
         {
             FriendUin = friendUin;
@@ -58,7 +58,7 @@ namespace Konata.Core.Events.Model
             Message = messageChain;
         }
 
-        private PrivateMessageEvent(int resultCode)
+        private FriendMessageEvent(int resultCode)
             : base(resultCode)
         {
         }
@@ -70,7 +70,7 @@ namespace Konata.Core.Events.Model
         /// <param name="selfUin"></param>
         /// <param name="messageChain"></param>
         /// <returns></returns>
-        internal static PrivateMessageEvent Create(uint friendUin, uint selfUin,
+        internal static FriendMessageEvent Create(uint friendUin, uint selfUin,
             MessageChain messageChain) => new(friendUin, selfUin, messageChain);
 
         /// <summary>
@@ -78,14 +78,14 @@ namespace Konata.Core.Events.Model
         /// </summary>
         /// <param name="resultCode"></param>
         /// <returns></returns>
-        internal static PrivateMessageEvent Result(int resultCode)
+        internal static FriendMessageEvent Result(int resultCode)
             => new(resultCode);
 
         /// <summary>
         /// Construct event push
         /// </summary>
         /// <returns></returns>
-        internal static PrivateMessageEvent Push()
+        internal static FriendMessageEvent Push()
             => new(0);
 
         /// <summary>

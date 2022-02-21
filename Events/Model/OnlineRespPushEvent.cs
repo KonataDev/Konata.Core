@@ -16,9 +16,9 @@ public class OnlineRespPushEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[In]</b> <br/>
-    /// Unknown variable 0 <br/>
+    /// From source <br/>
     /// </summary>
-    public int UnknownV0 { get; }
+    public uint FromSource { get; }
     
     /// <summary>
     /// <b>[In]</b> <br/>
@@ -49,7 +49,7 @@ public class OnlineRespPushEvent : ProtocolEvent
         SelfUin = selfUin;
         RequestId = original.RequestId;
         SvrIp = original.SvrIp;
-        UnknownV0 = original.UnknownV0;
+        FromSource = original.FromSource;
         UnknownV1 = original.UnknownV1;
         UnknownV8 = original.UnknownV8;
         UnknownV32 = original.UnknownV32;

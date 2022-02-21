@@ -18,8 +18,8 @@ using Konata.Core.Packets.Protobuf;
 namespace Konata.Core.Logics.Model;
 
 [EventSubscribe(typeof(GroupMessageEvent))]
-[EventSubscribe(typeof(PrivateMessageEvent))]
-[EventSubscribe(typeof(PrivateMessageNotifyEvent))]
+[EventSubscribe(typeof(FriendMessageEvent))]
+[EventSubscribe(typeof(FriendMessageNotifyEvent))]
 [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
 public class MessagingLogic : BaseLogic
 {
@@ -35,12 +35,12 @@ public class MessagingLogic : BaseLogic
         switch (e)
         {
             // Pull new private message
-            case PrivateMessageNotifyEvent:
+            case FriendMessageNotifyEvent:
                 PullPrivateMessage(Context, ConfigComponent.SyncCookie);
                 return;
 
             // Received a private message
-            case PrivateMessageEvent friend:
+            case FriendMessageEvent friend:
                 SyncPrivateCookie(friend);
                 break;
 
@@ -61,7 +61,7 @@ public class MessagingLogic : BaseLogic
     /// <param name="message"></param>
     /// <returns></returns>
     /// <exception cref="MessagingException"></exception>
-    public async Task<bool> SendPrivateMessage(uint friendUin, MessageChain message)
+    public async Task<bool> SendFriendMessage(uint friendUin, MessageChain message)
     {
         // Check and process some resources
         var uploadImage = SearchImageAndUpload(friendUin, message, false);
@@ -79,7 +79,7 @@ public class MessagingLogic : BaseLogic
         }
 
         // Send the message
-        var result = await SendPrivateMessage(Context, friendUin, message);
+        var result = await SendFriendMessage(Context, friendUin, message);
         if (result.ResultCode == 0) return true;
         {
             throw new MessagingException($"Send private message failed: " +
@@ -346,7 +346,7 @@ public class MessagingLogic : BaseLogic
     /// Update the local sync cookie
     /// </summary>
     /// <param name="e"></param>
-    private void SyncPrivateCookie(PrivateMessageEvent e)
+    private void SyncPrivateCookie(FriendMessageEvent e)
     {
         ConfigComponent.SyncCookie = e.SyncCookie;
         Context.LogI(TAG, $"New cookie synced => {ByteConverter.Hex(e.SyncCookie)}");
@@ -363,8 +363,8 @@ public class MessagingLogic : BaseLogic
     private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
         => context.PostPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
 
-    private static Task<PrivateMessageEvent> SendPrivateMessage(BusinessComponent context, uint friendUin, MessageChain message)
-        => context.PostPacket<PrivateMessageEvent>(PrivateMessageEvent.Create(friendUin, context.Bot.Uin, message));
+    private static Task<FriendMessageEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
+        => context.PostPacket<FriendMessageEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
 
     private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
         => context.PostPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));

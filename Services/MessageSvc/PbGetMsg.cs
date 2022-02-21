@@ -21,7 +21,7 @@ namespace Konata.Core.Services.MessageSvc
     {
         public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
         {
-            var message = PrivateMessageEvent.Push();
+            var message = FriendMessageEvent.Push();
             {
                 var root = ProtoTreeRoot.Deserialize(input.Payload, true);
                 {

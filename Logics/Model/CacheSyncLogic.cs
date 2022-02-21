@@ -16,8 +16,8 @@ namespace Konata.Core.Logics.Model;
 
 [EventSubscribe(typeof(OnlineStatusEvent))]
 [EventSubscribe(typeof(GroupMessageEvent))]
-[EventSubscribe(typeof(PrivateMessageEvent))]
-[EventSubscribe(typeof(PrivateMessageNotifyEvent))]
+[EventSubscribe(typeof(FriendMessageEvent))]
+[EventSubscribe(typeof(FriendMessageNotifyEvent))]
 [BusinessLogic("Cache Sync Logic", "Sync the cache such as grouplist or friendlist and more.")]
 public class CacheSyncLogic : BaseLogic
 {
@@ -44,7 +44,7 @@ public class CacheSyncLogic : BaseLogic
                 return;
 
             // private message coming
-            case PrivateMessageEvent friend:
+            case FriendMessageEvent friend:
                 SyncFriendInfo(friend);
                 return;
         }
@@ -183,7 +183,7 @@ public class CacheSyncLogic : BaseLogic
     /// Sync friend info while the message coming
     /// </summary>
     /// <param name="e"></param>
-    private void SyncFriendInfo(PrivateMessageEvent e)
+    private void SyncFriendInfo(FriendMessageEvent e)
     {
         // TODO:
         // Sync friend cache

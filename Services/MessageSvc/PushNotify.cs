@@ -9,12 +9,12 @@ using Konata.Core.Common;
 namespace Konata.Core.Services.MessageSvc
 {
     [Service("MessageSvc.PushNotify", "Push notify on received a private message")]
-    public class PushNotify : BaseService<PrivateMessageNotifyEvent>
+    public class PushNotify : BaseService<FriendMessageNotifyEvent>
     {
         protected override bool Parse(SSOFrame input,
-            BotKeyStore keystore, out PrivateMessageNotifyEvent output)
+            BotKeyStore keystore, out FriendMessageNotifyEvent output)
         {
-            output = PrivateMessageNotifyEvent.Push();
+            output = FriendMessageNotifyEvent.Push();
             return true;
         }
     }

@@ -1,8 +1,8 @@
 ﻿namespace Konata.Core.Events.Model
 {
-    public class PrivateMessageNotifyEvent : ProtocolEvent
+    public class FriendMessageNotifyEvent : ProtocolEvent
     {
-        private PrivateMessageNotifyEvent() : base(0)
+        private FriendMessageNotifyEvent() : base(0)
         {
         }
 
@@ -10,6 +10,6 @@
         /// Construct event push
         /// </summary>
         /// <returns></returns>
-        internal static PrivateMessageNotifyEvent Push() => new();
+        internal static FriendMessageNotifyEvent Push() => new();
     }
 }

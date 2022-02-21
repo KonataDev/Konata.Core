@@ -7,6 +7,8 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Packets.SvcPush;
 using Konata.Core.Utils.IO;
+using Konata.Core.Utils.JceStruct;
+using Konata.Core.Utils.JceStruct.Model;
 using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable UnusedParameter.Local
@@ -15,7 +17,8 @@ using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Services.OnlinePush;
 
-using EventHandler = Dictionary<byte, Func<BotKeyStore, uint, ByteBuffer, ProtocolEvent>>;
+using GroupPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, ByteBuffer, ProtocolEvent>>;
+using FriendPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, JStruct, ProtocolEvent>>;
 
 [Service("OnlinePush.ReqPush", "Push messages from server")]
 internal class ReqPush : BaseService<OnlineReqPushEvent>
@@ -30,12 +33,12 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
         var innerEvent = pushMsg.EventType switch
         {
             PushType.Group => HandlePushGroupEvent(pushMsg.PushPayload, keystore),
-            PushType.Friend => HandlePushFriendEvent(pushMsg.PushPayload, keystore),
+            PushType.Friend => HandlePushFriendEvent(pushMsg.FromSource, pushMsg.PushPayload, keystore),
             _ => null
         };
 
         // Construct push event
-        output = OnlineReqPushEvent.Push(innerEvent, pushMsg.packageRequestId, pushMsg.Unknown0x02,
+        output = OnlineReqPushEvent.Push(innerEvent, pushMsg.packageRequestId, pushMsg.FromSource,
             pushMsg.Unknown0x1C, pushMsg.SvrIp, pushMsg.Unknown0x8D, pushMsg.Unknown0x32);
 
         // Set sequence
@@ -68,29 +71,104 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
     /// <summary>
     /// Parse friend push event
     /// </summary>
+    /// <param name="fromSource"></param>
     /// <param name="pushPayload"></param>
     /// <param name="signInfo"></param>
     /// <returns></returns>
-    private ProtocolEvent HandlePushFriendEvent(byte[] pushPayload, BotKeyStore signInfo)
+    private ProtocolEvent HandlePushFriendEvent(uint fromSource,
+        byte[] pushPayload, BotKeyStore signInfo)
     {
-        // var buffer = new ByteBuffer(pushPayload);
-        // {
-        //     buffer.TakeUintBE(out var fromGroup);
-        //     buffer.TakeByte(out var messageType);
-        //
-        //     // Parse events
-        //     return _friendHandler.ContainsKey(messageType)
-        //         ? _friendHandler[messageType].Invoke(signInfo, fromGroup, buffer)
-        //         : null;
-        // }
-        return null;
+        var buffer = new ByteBuffer(pushPayload);
+        {
+            var tree = Jce.Deserialize(buffer.GetBytes());
+            var messageType = (ushort) tree[0].Number.ValueShort;
+
+            // Parse events
+            return _friendHandler.ContainsKey(messageType)
+                ? _friendHandler[messageType].Invoke(signInfo, fromSource, tree)
+                : null;
+        }
     }
 
-    private static readonly EventHandler _friendHandler = new()
+    private static readonly FriendPushHandler _friendHandler = new()
     {
+        {
+            // Friend message recall
+            0x8a, (key, src, buf) => { return null; }
+        },
+
+        {
+            // New friend
+            0xb3, (key, src, buf) => { return null; }
+        },
+
+        {
+            // Force update group information
+            0x27, (key, src, buf) => { return null; }
+        },
+
+        {
+            // Friend poke
+            0x122, (key, src, jce) =>
+            {
+                var actionPrefix = "";
+                var actionSuffix = "";
+                var operatorUin = 0U;
+                var affectedUin = 0U;
+
+                // Decode proto tree
+                var buf = (byte[]) jce[10].SimpleList;
+                var pokeTree = ProtoTreeRoot.Deserialize(buf, true);
+                {
+                    // Find keys
+                    foreach (ProtoTreeRoot i in pokeTree.GetLeaves("3A"))
+                    {
+                        // Get key name
+                        var keyName = i.GetLeafString("0A");
+
+                        switch (keyName)
+                        {
+                            case "action_str":
+                                i.TryGetLeafString("12", out actionPrefix);
+                                break;
+
+                            case "suffix_str":
+                                i.TryGetLeafString("12", out actionSuffix);
+                                break;
+
+                            case "uin_str1":
+                                operatorUin = uint.Parse(i.GetLeafString("12"));
+                                break;
+
+                            case "uin_str2":
+                                affectedUin = uint.Parse(i.GetLeafString("12"));
+                                break;
+                        }
+                    }
+
+                    // If no affected uin included
+                    if (affectedUin == 0)
+                    {
+                        affectedUin = key.Account.Uin;
+                    }
+
+                    // Failed to parse
+                    if (operatorUin == 0 || affectedUin == 0) return null;
+                }
+
+                // Construct event
+                return FriendPokeEvent.Push(src,
+                    operatorUin, actionPrefix, actionSuffix);
+            }
+        },
+
+        {
+            // Friend input
+            0x115, (key, src, buf) => { return null; }
+        }
     };
 
-    private static readonly EventHandler _groupHandler = new()
+    private static readonly GroupPushHandler _groupHandler = new()
     {
         {
             // Group recall message
