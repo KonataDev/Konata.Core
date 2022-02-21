@@ -314,6 +314,11 @@ namespace Konata.Core
         public event EventHandler<FriendMessageEvent> OnFriendMessage;
 
         /// <summary>
+        /// On group recall message event
+        /// </summary>
+        public event EventHandler<FriendMessageRecallEvent> OnFriendMessageRecall;
+
+        /// <summary>
         /// On friend poke event
         /// </summary>
         public event EventHandler<FriendPokeEvent> OnFriendPoke;
@@ -336,6 +341,8 @@ namespace Konata.Core
                 {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
                 {typeof(FriendMessageEvent), e => OnFriendMessage?.Invoke(this, (FriendMessageEvent) e)},
                 {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},
+                {typeof(FriendMessageRecallEvent), e => OnFriendMessageRecall?.Invoke(this, (FriendMessageRecallEvent) e)},
+                {typeof(FriendTypingEvent), e => OnFriendTyping?.Invoke(this, (FriendTypingEvent) e)},
             };
 
             // Default group message handler
@@ -350,7 +357,7 @@ namespace Konata.Core
             OnGroupMute += (sender, e) =>
             {
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                    LogLevel.Verbose, $"[Mute]{e.GroupUin} " +
+                    LogLevel.Verbose, $"[Group Mute]{e.GroupUin} " +
                                       $"[Operator]{e.OperatorUin} " +
                                       $"[Member]{e.MemberUin} " +
                                       $"[Time]{e.TimeSeconds} sec."));
@@ -369,16 +376,23 @@ namespace Konata.Core
             OnGroupMessageRecall += (sender, e) =>
             {
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                    LogLevel.Verbose, $"[Recall]{e.GroupUin} " +
+                    LogLevel.Verbose, $"[Group Recall]{e.GroupUin} " +
                                       $"[Messageid]{e.MessageId} " +
                                       $"[Member]{e.MemberUin}"));
             };
 
-            // Default private message handler
+            // Default friend message handler
             OnFriendMessage += (sender, e) =>
             {
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
                     LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Message}"));
+            };
+
+            // Default friend message recall handler
+            OnFriendMessageRecall += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Friend Recall]{e.FriendUin}"));
             };
 
             // Default friend poke handler
