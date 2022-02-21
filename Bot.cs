@@ -323,6 +323,11 @@ namespace Konata.Core
         /// </summary>
         public event EventHandler<FriendPokeEvent> OnFriendPoke;
 
+        /// <summary>
+        /// On friend typing event
+        /// </summary>
+        public event EventHandler<FriendTypingEvent> OnFriendTyping;
+
         private Dictionary<Type, Action<BaseEvent>> _dict;
 
         /// <summary>
@@ -401,6 +406,13 @@ namespace Konata.Core
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
                     LogLevel.Verbose, $"[Friend Poke]{e.FriendUin} " +
                                       $"[Operator]{e.OperatorUin} "));
+            };
+
+            // Default friend poke handler
+            OnFriendTyping += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Friend Typing]{e.FriendUin}"));
             };
         }
 
