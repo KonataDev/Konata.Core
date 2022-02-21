@@ -7,15 +7,9 @@ namespace Konata.Core.Events.Model
     {
         /// <summary>
         /// <b>[Out]</b> <br/>
-        /// Group uin <br/>
+        /// Friend uin <br/>
         /// </summary>s
         public uint FriendUin { get; }
-
-        /// <summary>
-        /// <b>[Out]</b> <br/>
-        /// Operator uin <br/>
-        /// </summary>
-        public uint OperatorUin { get; }
 
         /// <summary>
         /// <b>[Out]</b> <br/>
@@ -29,11 +23,10 @@ namespace Konata.Core.Events.Model
         /// </summary>
         public string ActionSuffix { get; }
 
-        private FriendPokeEvent(uint friendUin, uint operatorUin,
+        private FriendPokeEvent(uint friendUin,
             string actionPrefix, string actionSuffix) : base(0)
         {
             FriendUin = friendUin;
-            OperatorUin = operatorUin;
             ActionPrefix = actionPrefix;
             ActionSuffix = actionSuffix;
         }
@@ -42,11 +35,10 @@ namespace Konata.Core.Events.Model
         /// Construct event push
         /// </summary>
         /// <param name="friendUin"></param>
-        /// <param name="operatorUin"></param>
         /// <param name="actionPrefix"></param>
         /// <param name="actionSuffix"></param>
         /// <returns></returns>
-        internal static FriendPokeEvent Push(uint friendUin, uint operatorUin,
-            string actionPrefix, string actionSuffix) => new(friendUin, operatorUin, actionPrefix, actionSuffix);
+        internal static FriendPokeEvent Push(uint friendUin, string actionPrefix,
+            string actionSuffix) => new(friendUin, actionPrefix, actionSuffix);
     }
 }
