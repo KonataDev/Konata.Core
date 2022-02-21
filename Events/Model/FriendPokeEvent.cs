@@ -41,12 +41,12 @@ namespace Konata.Core.Events.Model
         /// <summary>
         /// Construct event push
         /// </summary>
-        /// <param name="groupUin"></param>
+        /// <param name="friendUin"></param>
         /// <param name="operatorUin"></param>
         /// <param name="actionPrefix"></param>
         /// <param name="actionSuffix"></param>
         /// <returns></returns>
-        internal static FriendPokeEvent Push(uint groupUin, uint operatorUin,
-            string actionPrefix, string actionSuffix) => new(groupUin, operatorUin, actionPrefix, actionSuffix);
+        internal static FriendPokeEvent Push(uint friendUin, uint operatorUin,
+            string actionPrefix, string actionSuffix) => new(friendUin, operatorUin, actionPrefix, actionSuffix);
     }
 }

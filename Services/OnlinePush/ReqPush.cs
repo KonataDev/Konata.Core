@@ -180,8 +180,16 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
         },
 
         {
-            // Friend input
-            0x115, (key, src, buf) => { return null; }
+            // Friend typing event
+            0x115, (key, src, jce) =>
+            {
+                // Decode proto tree
+                var buf = (byte[]) jce[10].SimpleList;
+                var typingTree = ProtoTreeRoot.Deserialize(buf, true);
+                var friendUin = (uint) typingTree.GetLeafVar("08");
+                
+                return FriendTypingEvent.Push(friendUin);
+            }
         }
     };
 
