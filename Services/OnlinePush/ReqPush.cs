@@ -94,17 +94,34 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
     {
         {
             // Friend message recall
-            0x8a, (key, src, buf) => { return null; }
+            0x8a, (key, src, jce) =>
+            {
+                // Decode proto tree
+                var buf = (byte[]) jce[10].SimpleList;
+                var recallTree = ProtoTreeRoot.Deserialize(buf, true);
+
+                // Get data
+                var info0A = (ProtoTreeRoot) recallTree.GetLeaf("0A");
+                var info6A = (ProtoTreeRoot) info0A.GetLeaf("6A");
+
+                var recallSuffix = "";
+                var friendUin = (uint) info0A.GetLeafVar("08");
+                if (info6A.TryGetLeafString("12", out var str))
+                    recallSuffix = str;
+
+                // Construct event
+                return FriendMessageRecallEvent.Push(friendUin, recallSuffix);
+            }
         },
 
         {
             // New friend
-            0xb3, (key, src, buf) => { return null; }
+            0xb3, (key, src, jce) => { return null; }
         },
 
         {
             // Force update group information
-            0x27, (key, src, buf) => { return null; }
+            0x27, (key, src, jce) => { return null; }
         },
 
         {
