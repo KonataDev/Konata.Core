@@ -404,8 +404,7 @@ namespace Konata.Core
             OnFriendPoke += (sender, e) =>
             {
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                    LogLevel.Verbose, $"[Friend Poke]{e.FriendUin} " +
-                                      $"[Operator]{e.OperatorUin} "));
+                    LogLevel.Verbose, $"[Friend Poke]{e.FriendUin}"));
             };
 
             // Default friend poke handler

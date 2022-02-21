@@ -6,7 +6,7 @@ public class FriendMessageRecallEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
-    /// Member uin <br/>
+    /// Friend uin <br/>
     /// </summary>
     public uint FriendUin { get; }
 

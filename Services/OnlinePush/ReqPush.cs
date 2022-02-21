@@ -174,8 +174,7 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
                 }
 
                 // Construct event
-                return FriendPokeEvent.Push(src,
-                    operatorUin, actionPrefix, actionSuffix);
+                return FriendPokeEvent.Push(operatorUin, actionPrefix, actionSuffix);
             }
         },
 
@@ -187,7 +186,7 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
                 var buf = (byte[]) jce[10].SimpleList;
                 var typingTree = ProtoTreeRoot.Deserialize(buf, true);
                 var friendUin = (uint) typingTree.GetLeafVar("08");
-                
+
                 return FriendTypingEvent.Push(friendUin);
             }
         }
