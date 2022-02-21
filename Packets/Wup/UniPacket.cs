@@ -18,14 +18,14 @@ namespace Konata.Core.Packets.Wup
         public readonly string packageSubFuncName;
         public readonly byte packagePacketType;
         public readonly ushort packageMessageType;
-        public readonly uint packageRequestId;
+        public readonly int packageRequestId;
         public readonly ushort packageOldRespIret;
         public readonly ushort packageTimeout;
         public readonly Dictionary<string, string> packageContext;
         public readonly Dictionary<string, string> packageStatus;
 
         public UniPacket(byte pktVersion, string servantName, string funcName,
-            string subFuncName, byte packetType, ushort messageType, uint requestId,
+            string subFuncName, byte packetType, ushort messageType, int requestId,
             UniPacketPayloadWriter writer)
         {
             packageVersion = pktVersion;
@@ -80,7 +80,7 @@ namespace Konata.Core.Packets.Wup
                 packageVersion = (ushort)root["1"].Number.Value;
                 packagePacketType = (byte)root["2"].Number.Value;
                 packageMessageType = (ushort)root["3"].Number.Value;
-                packageRequestId = (ushort)root["4"].Number.Value;
+                packageRequestId = (int)root["4"].Number.Value;
                 packageServantName = root["5"].String.Value;
                 packageFuncName = root["6"].String.Value;
 
