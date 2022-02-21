@@ -183,14 +183,14 @@ namespace Konata.Core
             => BusinessComponent.Messaging.SendGroupMessage(groupUin, builder.Build());
 
         /// <summary>
-        /// Send the message to a given friend
+        /// Send the message to a friend
         /// </summary>
         /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
         /// <param name="builder"><b>[In]</b> Message chain builder. </param>
         /// <returns>Return true for operation successfully.</returns>
         /// <exception cref="MessagingException"></exception>
-        public Task<bool> SendPrivateMessage(uint friendUin, MessageBuilder builder)
-            => BusinessComponent.Messaging.SendPrivateMessage(friendUin, builder.Build());
+        public Task<bool> SendFriendMessage(uint friendUin, MessageBuilder builder)
+            => BusinessComponent.Messaging.SendFriendMessage(friendUin, builder.Build());
 
         /// <summary>
         /// Upload the image manually
@@ -294,11 +294,6 @@ namespace Konata.Core
         public event EventHandler<GroupMessageEvent> OnGroupMessage;
 
         /// <summary>
-        /// On private message event
-        /// </summary>
-        public event EventHandler<PrivateMessageEvent> OnPrivateMessage;
-
-        /// <summary>
         /// On group mute event
         /// </summary>
         public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
@@ -313,6 +308,16 @@ namespace Konata.Core
         /// </summary>
         public event EventHandler<GroupPokeEvent> OnGroupPoke;
 
+        /// <summary>
+        /// On friend message event
+        /// </summary>
+        public event EventHandler<FriendMessageEvent> OnFriendMessage;
+
+        /// <summary>
+        /// On friend poke event
+        /// </summary>
+        public event EventHandler<FriendPokeEvent> OnFriendPoke;
+
         private Dictionary<Type, Action<BaseEvent>> _dict;
 
         /// <summary>
@@ -326,10 +331,11 @@ namespace Konata.Core
                 {typeof(CaptchaEvent), e => OnCaptcha?.Invoke(this, (CaptchaEvent) e)},
                 {typeof(OnlineStatusEvent), e => OnOnlineStatusChanged?.Invoke(this, (OnlineStatusEvent) e)},
                 {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
-                {typeof(PrivateMessageEvent), e => OnPrivateMessage?.Invoke(this, (PrivateMessageEvent) e)},
                 {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
                 {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
                 {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
+                {typeof(FriendMessageEvent), e => OnFriendMessage?.Invoke(this, (FriendMessageEvent) e)},
+                {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},
             };
 
             // Default group message handler
@@ -338,13 +344,6 @@ namespace Konata.Core
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
                     LogLevel.Verbose, $"[Group]{e.GroupUin} " +
                                       $"[Member]{e.MemberUin} {e.Message}"));
-            };
-
-            // Default private message handler
-            OnPrivateMessage += (sender, e) =>
-            {
-                OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                    LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Message}"));
             };
 
             // Default group mute handler
@@ -361,7 +360,7 @@ namespace Konata.Core
             OnGroupPoke += (sender, e) =>
             {
                 OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                    LogLevel.Verbose, $"[Poke]{e.GroupUin} " +
+                    LogLevel.Verbose, $"[Group Poke]{e.GroupUin} " +
                                       $"[Operator]{e.OperatorUin} " +
                                       $"[Member]{e.MemberUin}"));
             };
@@ -373,6 +372,21 @@ namespace Konata.Core
                     LogLevel.Verbose, $"[Recall]{e.GroupUin} " +
                                       $"[Messageid]{e.MessageId} " +
                                       $"[Member]{e.MemberUin}"));
+            };
+
+            // Default private message handler
+            OnFriendMessage += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Message}"));
+            };
+
+            // Default friend poke handler
+            OnFriendPoke += (sender, e) =>
+            {
+                OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                    LogLevel.Verbose, $"[Friend Poke]{e.FriendUin} " +
+                                      $"[Operator]{e.OperatorUin} "));
             };
         }
 

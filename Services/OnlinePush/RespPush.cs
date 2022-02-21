@@ -16,7 +16,7 @@ public class RespPush : BaseService<OnlineRespPushEvent>
         output = null;
         newSequence = sequence.NewSequence;
 
-        var svcRequest = new SvcReqPushMsgResp(input.RequestId, input.SelfUin, input.UnknownV0,
+        var svcRequest = new SvcReqPushMsgResp(input.RequestId, input.SelfUin, input.FromSource,
             input.UnknownV1, input.SvrIp, input.UnknownV8, input.UnknownV32);
 
         if (SSOFrame.Create("OnlinePush.RespPush", PacketType.TypeB,

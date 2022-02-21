@@ -6,7 +6,7 @@ namespace Konata.Core.Packets.SvcRequest;
 
 public class SvcReqPushMsgResp : UniPacket
 {
-    public SvcReqPushMsgResp(int reqid, uint selfUin, int v0, int v1, int svrip, byte[] v8, int v32)
+    public SvcReqPushMsgResp(int reqid, uint selfUin, uint source, int v1, int svrip, byte[] v8, int v32)
         : base(0x03, "OnlinePush", "SvcRespPushMsg", "resp", 0x00, 0x00, reqid,
             (out JStruct w) =>
             {
@@ -17,7 +17,7 @@ public class SvcReqPushMsgResp : UniPacket
                     {
                         ((JList) w[1]).Add(new JStruct
                         {
-                            [0] = (JNumber) v0,
+                            [0] = (JNumber) source,
                             [1] = (JNumber) v1,
                             [2] = (JNumber) svrip,
                             [3] = (JSimpleList) v8,
