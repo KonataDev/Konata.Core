@@ -6,7 +6,7 @@ public class FriendTypingEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Group uin <br/>
+    /// Friend uin <br/>
     /// </summary>s
     public uint FriendUin { get; }
 
