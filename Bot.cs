@@ -102,7 +102,7 @@ namespace Konata.Core
         /// </summary>
         /// <returns></returns>
         public Task<bool> Logout()
-            => BusinessComponent.WtExchange.Login();
+            => BusinessComponent.WtExchange.Logout();
 
         /// <summary>
         /// Submit Slider ticket while login
