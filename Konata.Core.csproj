@@ -16,7 +16,7 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageVersion>1.0.8-alpha.3</PackageVersion>
+    <PackageVersion>1.0.8</PackageVersion>
     <Version>$(PackageVersion)</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
