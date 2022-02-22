@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Konata.Core.Packets.Wup;
+using Konata.Core.Utils.IO;
 using Konata.Core.Utils.JceStruct.Model;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -35,9 +36,9 @@ namespace Konata.Core.Packets.SvcPush
                     p.Unknown0x8D = vstruct["8"].SimpleList.Value;
 
                     if (p.EventType == PushType.Friend)
-                        p.FromSource = (uint) vstruct["0"].Number.ValueInt;
+                        p.FromSource = (uint) vstruct["0"].Number.Value;
                     else if (p.EventType == PushType.Group)
-                        p.FromSource = Convert.ToUInt32(p.PushPayload.Take(4).Reverse());
+                        p.FromSource = ByteConverter.BytesToUInt32(p.PushPayload.Take(4).ToArray(), 0, Endian.Big);
                 }
                 p.Unknown0x32 = r["0.3"].Number.ValueInt;
             })
