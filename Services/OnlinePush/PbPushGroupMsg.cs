@@ -144,7 +144,7 @@ namespace Konata.Core.Services.OnlinePush
         private static BaseChain ParseJSON(ProtoTreeRoot tree)
         {
             var bytes = tree.GetLeafBytes("0A");
-            var json = Deflate.Decompress(bytes[1..^1]);
+            var json = Compression.ZDecompress(bytes[1..]);
             return JsonChain.Create(Encoding.UTF8.GetString(json));
         }
 
@@ -156,7 +156,7 @@ namespace Konata.Core.Services.OnlinePush
         private static BaseChain ParseXML(ProtoTreeRoot tree)
         {
             var bytes = tree.GetLeafBytes("0A");
-            var xml = Deflate.Decompress(bytes[1..^1]);
+            var xml = Compression.ZDecompress(bytes[1..]);
             return XmlChain.Create(Encoding.UTF8.GetString(xml));
         }
 
