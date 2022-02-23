@@ -124,7 +124,7 @@ namespace Konata.Core.Message.Model
                 var audioType = RecordType.SILK;
                 var audioData = Array.Empty<byte>();
                 var audioTime = 0U;
-                
+
                 // Process
                 switch (type)
                 {
@@ -145,7 +145,7 @@ namespace Konata.Core.Message.Model
                         audioType = RecordType.SILK;
 
                         // Estimated time
-                        audioTime = (uint)audio.Length / 2394;
+                        audioTime = (uint) audio.Length / 2394;
                         break;
 
                     // Normal silk v3
@@ -158,7 +158,7 @@ namespace Konata.Core.Message.Model
                             .Concat(audio[..^2]).ToArray();
 
                         // Estimated time
-                        audioTime = (uint)audio.Length / 2394;
+                        audioTime = (uint) audio.Length / 2394;
                         break;
                     }
 
@@ -202,7 +202,8 @@ namespace Konata.Core.Message.Model
                             // Set audio information
                             audioType = RecordType.SILK;
                             audioData = outputStream.ToArray();
-                            audioTime = (uint)audioPipeline.GetAudioTime();
+                            audioTime = (uint) audioPipeline.GetAudioTime();
+                            audioPipeline.Dispose();
                         }
 
                         break;

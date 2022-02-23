@@ -41,7 +41,7 @@ namespace Konata.Core.Packets.Protobuf
             AddLeafVar("28", new Random().Next(int.MaxValue));
 
             // Unknown flag
-            AddLeafVar("40", 1);
+            AddLeafVar("40", 0);
         }
     }
 }
