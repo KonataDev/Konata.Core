@@ -9,7 +9,7 @@ namespace Konata.Core.Message.Model
         /// <summary>
         /// Xml content
         /// </summary>
-        private string Content { get; }
+        public string Content { get; }
 
         private XmlChain(string xml)
             : base(ChainType.Xml, ChainMode.Singleton)
@@ -33,7 +33,10 @@ namespace Konata.Core.Message.Model
         /// <returns></returns>
         internal static XmlChain Parse(string code)
         {
-            return null;
+            var args = GetArgs(code);
+            {
+                return Create(UnEscape(args["content"]));
+            }
         }
 
         public override string ToString()
