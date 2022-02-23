@@ -9,7 +9,7 @@ namespace Konata.Core.Message.Model
         /// <summary>
         /// Json content
         /// </summary>
-        private string Content { get; }
+        public string Content { get; }
 
         private JsonChain(string json)
             : base(ChainType.Json, ChainMode.Singleton)
@@ -33,7 +33,10 @@ namespace Konata.Core.Message.Model
         /// <returns></returns>
         internal static JsonChain Parse(string code)
         {
-            return null;
+            var args = GetArgs(code);
+            {
+                return Create(args["content"]);
+            }
         }
 
         public override string ToString()

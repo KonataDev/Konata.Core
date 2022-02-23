@@ -57,23 +57,90 @@ namespace Konata.Core.Services.MessageSvc
                         case RecordChain recordChain:
                             ConstructRecordChain(root, recordChain);
                             break;
+
+                        case XmlChain xmlChain:
+                            ConstructXmlChain(root, xmlChain);
+                            break;
+
+                        case JsonChain jsonChain:
+                            ConstructJsonChain(root, jsonChain);
+                            break;
                     }
                 }
             }
 
-            var readReport = new GroupMsg(input.GroupUin, root);
+            var groupMsg = new GroupMsg(input.GroupUin, root);
 
             if (SSOFrame.Create("MessageSvc.PbSendMsg", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(readReport), out var ssoFrame))
+                    newSequence, sequence.Session, ProtoTreeRoot.Serialize(groupMsg), out var ssoFrame))
             {
                 if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
+                        keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
                 {
                     return ServiceMessage.Build(toService, device, out output);
                 }
             }
 
             return false;
+        }
+
+        private static void ConstructPBReserved(ProtoTreeRoot root, int v8801, int v78)
+        {
+            root.AddTree("12", (_) =>
+            {
+                _.AddTree("AA02", (__) =>
+                {
+                    __.AddLeafVar("8801", v8801);
+                    __.AddTree("9A01", (___) =>
+                    {
+                        ___.AddLeafVar("78", v78);
+                        ___.AddLeafVar("F801", 0);
+                        ___.AddLeafVar("C802", 0);
+                    });
+                });
+            });
+        }
+
+        private static void ConstructJsonChain(ProtoTreeRoot root, JsonChain chain)
+        {
+            // Compress the content
+            var deflate = Compression.ZCompress(chain.Content);
+            var compressed = new byte[1 + deflate.Length];
+            {
+                compressed[0] = 0x01;
+                deflate.CopyTo(compressed, 1);
+            }
+
+            root.AddTree("12", (leaf) =>
+            {
+                leaf.AddTree("9A03", (_) =>
+                {
+                    _.AddLeafBytes("0A", compressed);
+                    _.AddLeafVar("10", 0x23);
+                });
+            });
+        }
+
+        private static void ConstructXmlChain(ProtoTreeRoot root, XmlChain chain)
+        {
+            // Compress the content
+            var deflate = Compression.ZCompress(chain.Content);
+            var compressed = new byte[1 + deflate.Length];
+            {
+                compressed[0] = 0x01;
+                deflate.CopyTo(compressed, 1);
+            }
+
+            root.AddTree("12", (leaf) =>
+            {
+                leaf.AddTree("62", (_) =>
+                {
+                    _.AddLeafBytes("0A", compressed);
+                    _.AddLeafVar("10", 0x23);
+                });
+            });
+
+            ConstructPBReserved(root, 0, 65536);
         }
 
         private static void ConstructPlainTextChain(ProtoTreeRoot root, PlainTextChain chain)
