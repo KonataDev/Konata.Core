@@ -101,7 +101,7 @@ namespace Konata.Core.Packets
                         ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
                     {
                         output._payload = new ByteBuffer
-                            (isCompressed ? Deflate.Decompress(bytes) : bytes);
+                            (isCompressed ? Compression.ZDecompress(bytes) : bytes);
                     }
                 }
             }
