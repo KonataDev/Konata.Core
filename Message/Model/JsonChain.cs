@@ -35,7 +35,7 @@ namespace Konata.Core.Message.Model
         {
             var args = GetArgs(code);
             {
-                return Create(args["content"]);
+                return Create(UnEscape(args["content"]));
             }
         }
 
