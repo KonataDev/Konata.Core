@@ -25,9 +25,9 @@ namespace Konata.Core.Entity
             where TAttribute : Attribute
         {
             foreach (var type in Reflection
-                .GetClassesByAttribute(typeof(TAttribute)))
+                         .GetClassesByAttribute(typeof(TAttribute)))
             {
-                AddComponent((BaseComponent)Activator.CreateInstance(type));
+                AddComponent((BaseComponent) Activator.CreateInstance(type));
             }
         }
 
@@ -40,11 +40,11 @@ namespace Konata.Core.Entity
             where TAttribute : Attribute
         {
             foreach (var type in Reflection
-                .GetClassesByAttribute(typeof(TAttribute)))
+                         .GetClassesByAttribute(typeof(TAttribute)))
             {
-                if (filter.Invoke((TAttribute)type.GetCustomAttribute(typeof(TAttribute))))
+                if (filter.Invoke((TAttribute) type.GetCustomAttribute(typeof(TAttribute))))
                 {
-                    AddComponent((BaseComponent)Activator.CreateInstance(type));
+                    AddComponent((BaseComponent) Activator.CreateInstance(type));
                 }
             }
         }
@@ -56,6 +56,7 @@ namespace Konata.Core.Entity
         public void UnloadComponents()
         {
             // TODO: destroy components
+            foreach (var comp in _componentDict) comp.Value.OnDestroy();
             _componentDict.Clear();
         }
 
@@ -68,12 +69,12 @@ namespace Konata.Core.Entity
             where T : BaseComponent
         {
             if (!_componentDict.TryGetValue(typeof(T),
-                out BaseComponent component))
+                    out BaseComponent component))
             {
                 return default(T);
             }
 
-            return (T)component;
+            return (T) component;
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace Konata.Core.Entity
         public void RemoveComponent(Type type)
         {
             if (!_componentDict.TryGetValue
-                (type, out BaseComponent _))
+                    (type, out BaseComponent _))
             {
                 return;
             }

@@ -22,7 +22,7 @@ namespace Konata.Core
     /// <summary>
     /// Bot instance
     /// </summary>
-    public class Bot : BaseEntity
+    public class Bot : BaseEntity, IDisposable
     {
         /// <summary>
         /// Create a bot
@@ -47,6 +47,9 @@ namespace Konata.Core
             // Setup event handlers
             InitializeHandlers();
         }
+
+        public void Dispose()
+            => UnloadComponents();
 
         #region Bot Information
 
@@ -103,6 +106,12 @@ namespace Konata.Core
         /// <returns></returns>
         public Task<bool> Logout()
             => BusinessComponent.WtExchange.Logout();
+
+        // /// <summary>
+        // /// Deinit (temporary method)
+        // /// </summary>
+        // public void DeInit()
+        //     => ScheduleComponent.DeInit();
 
         /// <summary>
         /// Submit Slider ticket while login
