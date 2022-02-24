@@ -55,6 +55,14 @@ namespace Konata.Core.Components
         public T GetComponent<T>()
             where T : BaseComponent => Entity.GetComponent<T>();
 
+        public virtual void OnInit()
+        {
+        }
+
+        public virtual void OnDestroy()
+        {
+        }
+
         #region Log Methods
 
         private void Log(LogLevel logLevel, string tag, string content)

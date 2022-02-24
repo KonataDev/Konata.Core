@@ -73,15 +73,24 @@ namespace Konata.Core.Components.Model
         private readonly Thread _taskThread;
         private readonly ConcurrentDictionary<string, Schedule> _taskDict;
         private readonly ManualResetEvent _taskNotify;
+        private bool _taskThreadExit;
 
         public ScheduleComponent()
         {
             _taskDict = new();
             _taskNotify = new(false);
             _taskThread = new(SchedulerThread);
+            _taskThreadExit = false;
 
             // Start task thread
             _taskThread.Start();
+        }
+
+        public override void OnDestroy()
+        {
+            _taskThreadExit = true;
+            _taskNotify.Set();
+            _taskThread.Join();
         }
 
         /// <summary>
@@ -102,7 +111,7 @@ namespace Konata.Core.Components.Model
                 needUpdate = false;
 
                 // Scheduler steps
-                while (true)
+                while (!_taskThreadExit)
                 {
                     Update();
                     WaitOne();
@@ -119,7 +128,7 @@ namespace Konata.Core.Components.Model
                     foreach (var (key, value) in _taskDict)
                     {
                         if (taskTable.Find(i =>
-                            i.GetHashCode() == value.GetHashCode()) == null)
+                                i.GetHashCode() == value.GetHashCode()) == null)
                         {
                             // Set the value
                             value.RemainTimes = value.Times;
@@ -154,7 +163,7 @@ namespace Konata.Core.Components.Model
                 {
                     // Set sleep time
                     var sleepTime = minInterval == 0
-                        ? Int32.MaxValue
+                        ? int.MaxValue
                         : minInterval;
 
                     // Reset event and wait
