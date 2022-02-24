@@ -113,12 +113,15 @@ namespace Konata.Core.Services.MessageSvc
 
             root.AddTree("12", (leaf) =>
             {
-                leaf.AddTree("9A03", (_) =>
+                leaf.AddTree("AA03", (_) =>
                 {
-                    _.AddLeafBytes("0A", compressed);
-                    _.AddLeafVar("10", 0x23);
+                    _.AddLeafVar("08", 0x14);
+                    _.AddTree("12", __ => __.AddLeafBytes("0A", compressed));
+                    _.AddLeafVar("18", 0x01);
                 });
             });
+
+            ConstructPBReserved(root, 2153, 116581);
         }
 
         private static void ConstructXmlChain(ProtoTreeRoot root, XmlChain chain)
