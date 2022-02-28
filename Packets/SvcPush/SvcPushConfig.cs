@@ -13,7 +13,7 @@ namespace Konata.Core.Packets.SvcPush
     {
         public List<ServerList> ServerList { get; private set; }
 
-        public byte[] SessionToken { get; private set; }
+        public byte[] Ticket { get; private set; }
 
         public SvcPushConfig(byte[] payload)
             : base(payload, (userdata, r) =>
@@ -26,7 +26,7 @@ namespace Konata.Core.Packets.SvcPush
                 var tree = (JStruct) r["0.2.5"];
                 {
                     // Get session key
-                    p.SessionToken = ((JSimpleList) tree["1"]).Value;
+                    p.Ticket = ((JSimpleList) tree["1"]).Value;
 
                     // Get server list
                     foreach (JStruct i in (JList) tree["0.0.1"])
@@ -34,7 +34,7 @@ namespace Konata.Core.Packets.SvcPush
                         p.ServerList.Add(new ServerList
                         {
                             Host = (string) (JString) i["1"],
-                            Port = (int) (JNumber) i["2"],
+                            Port = (ushort) (JNumber) i["2"],
                         });
                     }
                 }
@@ -47,6 +47,6 @@ namespace Konata.Core.Packets.SvcPush
     {
         public string Host { get; set; }
 
-        public int Port { get; set; }
+        public ushort Port { get; set; }
     }
 }

@@ -1,9 +1,8 @@
-﻿using System;
-using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf
 {
-    class SyncCookie : ProtoTreeRoot
+    internal class SyncCookie : ProtoTreeRoot
     {
         public SyncCookie(long timeStamp)
         {
