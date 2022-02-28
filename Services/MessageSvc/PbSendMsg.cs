@@ -38,7 +38,7 @@ namespace Konata.Core.Services.MessageSvc
                 {
                     switch (chain)
                     {
-                        case PlainTextChain textChain:
+                        case TextChain textChain:
                             ConstructPlainTextChain(root, textChain);
                             break;
 
@@ -146,7 +146,7 @@ namespace Konata.Core.Services.MessageSvc
             ConstructPBReserved(root, 0, 65536);
         }
 
-        private static void ConstructPlainTextChain(ProtoTreeRoot root, PlainTextChain chain)
+        private static void ConstructPlainTextChain(ProtoTreeRoot root, TextChain chain)
         {
             // @formatter:off
             root.AddTree("12", (leaf) =>

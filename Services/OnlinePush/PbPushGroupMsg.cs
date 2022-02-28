@@ -276,7 +276,7 @@ namespace Konata.Core.Services.OnlinePush
 
             // Plain text chain
             return tree.TryGetLeafString("0A", out var content)
-                ? PlainTextChain.Create(content)
+                ? TextChain.Create(content)
                 : null;
         }
 
