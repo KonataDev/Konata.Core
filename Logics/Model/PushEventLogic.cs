@@ -10,10 +10,6 @@ using Konata.Core.Components.Model;
 
 namespace Konata.Core.Logics.Model;
 
-// [EventSubscribe(typeof(GroupPokeEvent))]
-// [EventSubscribe(typeof(GroupMessageRecallEvent))]
-// [EventSubscribe(typeof(GroupMuteMemberEvent))]
-// [EventSubscribe(typeof(GroupSettingsAnonymousEvent))]
 [EventSubscribe(typeof(PushConfigEvent))]
 [EventSubscribe(typeof(OnlineReqPushEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
@@ -57,12 +53,12 @@ public class PushEventLogic : BaseLogic
     private void OnPushConfig(PushConfigEvent e)
     {
         // Update the config
-        ConfigComponent.HighwayConfig.Host = e.HighwayHost;
-        ConfigComponent.HighwayConfig.Port = e.HighwayPort;
-        ConfigComponent.HighwayConfig.Ticket = e.HighwayToken;
-
-        Context.LogI(TAG, "Highway server has changed" +
-                          $" to {e.HighwayHost}:{e.HighwayPort}");
+        ConfigComponent.HighwayConfig = new()
+        {
+            Server = e.HighwayHost,
+            Ticket = e.HighwayTicket
+        };
+        Context.LogI(TAG, $"Highway server has changed {e.HighwayHost}");
     }
 
     /// <summary>
@@ -72,7 +68,8 @@ public class PushEventLogic : BaseLogic
     private async void OnOnlineReqPush(OnlineReqPushEvent e)
     {
         // Post inner event
-        if (e.InnerEvent != null) Context.PostEventToEntity(e.InnerEvent);
+        if (e.InnerEvent != null)
+            Context.PostEventToEntity(e.InnerEvent);
 
         // Confirm push
         await ConfrimReqPushEvent(Context, e);
