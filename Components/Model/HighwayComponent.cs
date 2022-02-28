@@ -7,9 +7,10 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
+using Konata.Core.Message;
 using Konata.Core.Message.Model;
-using Konata.Core.Packets.Protobuf;
 using Konata.Core.Packets.Protobuf.Highway;
+using Konata.Core.Packets.Protobuf.Highway.Requests;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.TcpSocket;
 
@@ -93,6 +94,46 @@ namespace Konata.Core.Components.Model
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> MultiMsgUp(uint selfUin, MessageChain chain)
+        {
+            // Get upload config
+            var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
+            {
+                // Length limit
+                if (chunksize is <= 1024 or > 1048576)
+                {
+                    chunksize = 8192;
+                }
+            }
+
+            // Chain packup
+            var packed = MessagePacker.PackUp(chain);
+            if (packed == null) return false;
+
+            // Queue all tasks
+            // var result = await HighwayClient.Upload(
+            //     infos[i].Host,
+            //     infos[i].Port,
+            //     chunksize,
+            //     selfUin,
+            //     infos[i].UploadTicket,
+            //     upload[i].FileData,
+            //     upload[i].HashData
+            // );
+            //
+            // LogV(TAG, "All tasks are queued, " +
+            //           "waiting for upload finish.");
+            //
+            // // Wait for tasks
+            // var results = await Task.WhenAll(tasks);
+            // return results.Count(i => i != null) == results.Length;
+            return false;
+        }
+
+        /// <summary>
         /// Upload group record
         /// </summary>
         /// <param name="selfUin"></param>
@@ -167,7 +208,7 @@ namespace Konata.Core.Components.Model
         /// <param name="extend"></param>
         /// <returns></returns>
         public static async Task<HwResponse> Upload(string host, int port, int chunk,
-            uint peer, byte[] ticket, byte[] data, byte[] datamd5, GroupPttUpRequest extend = null)
+            uint peer, byte[] ticket, byte[] data, byte[] datamd5, ProtoTreeRoot extend = null)
         {
             HwResponse lastResponse = null;
 
@@ -226,22 +267,27 @@ namespace Konata.Core.Components.Model
         }
 
         private async Task<HwResponse> DataUp(byte[] fileData, byte[] dataMd5,
-            int offset, int length, GroupPttUpRequest extend = null)
+            int offset, int length, ProtoTreeRoot extend = null)
         {
             // Calculate chunk
             var chunk = fileData[offset..(offset + length)];
             var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
             // Send request
-            var result = await SendRequest(extend == null
-
+            var result = await SendRequest(extend switch
+            {
                 // Group Image upload
-                ? new PicUpDataUp(_peer, _sequence, _ticket,
-                    fileData.Length, dataMd5, offset, length, chunkMD5)
+                GroupPicUpRequest => new PicUpDataUp(PicUp.CommandId.GroupPicDataUp,
+                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunkMD5),
 
                 // Group Ptt Upload
-                : new PicUpDataUp(_peer, _sequence, _ticket,
-                    fileData.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
+                GroupPttUpRequest => new PicUpDataUp(PicUp.CommandId.GroupPttDataUp,
+                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunkMD5, extend),
+
+                // Multi Message upload
+                MultiMsgUpRequest => new PicUpDataUp(PicUp.CommandId.MultiMsgDataUp,
+                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunk, extend)
+            }, chunk);
             {
                 // No response
                 if (result == null) return null;
@@ -311,7 +357,6 @@ namespace Konata.Core.Components.Model
 
         public void OnDisconnect()
         {
-            
         }
     }
 }
