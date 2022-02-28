@@ -42,11 +42,7 @@ namespace Konata.Core.Components.Model
         /// <summary>
         /// Highway host
         /// </summary>
-        internal Highway HighwayConfig
-        {
-            get => KeyStore.Highway;
-            set => KeyStore.Highway = value;
-        }
+        internal Highway HighwayConfig { get; set; }
 
         private readonly ConcurrentDictionary<uint, BotGroup> _groupList;
         private readonly ConcurrentDictionary<uint, BotFriend> _friendList;
