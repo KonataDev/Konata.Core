@@ -11,6 +11,7 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
+using Konata.Core.Packets.Protobuf.Highway.Requests;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
@@ -99,20 +100,22 @@ public class MessagingLogic : BaseLogic
         // Check and process some resources
         var uploadImage = SearchImageAndUpload(groupUin, message, true);
         var uploadRecord = SearchRecordAndUpload(groupUin, message);
+        var uploadMultiMsg = SearchMultiMsgAndUpload(groupUin, message);
         var checkAtChain = SearchAt(groupUin, message);
 
         // Wait for tasks done
-        var results = await Task.WhenAll
-            (uploadImage, uploadRecord, checkAtChain);
+        var results = await Task.WhenAll(uploadImage,
+            uploadRecord, uploadMultiMsg, checkAtChain);
         {
             // Check results
-            if (!(results[0] && results[1] && results[2]))
+            if (!(results[0] && results[1] && results[2] && results[3]))
             {
                 // Some task failed
                 throw new MessagingException($"Send group message failed: Task failed.\n" +
                                              $"uploadImage => {results[0]}, " +
                                              $"uploadImage => {results[1]}, " +
-                                             $"checkAtChain => {results[2]}");
+                                             $"uploadMultiMsg => {results[2]}, " +
+                                             $"checkAtChain => {results[3]}");
             }
         }
 
@@ -289,14 +292,14 @@ public class MessagingLogic : BaseLogic
             }
 
             // Upload record via highway
-            if (!string.IsNullOrEmpty(ConfigComponent.HighwayConfig.Host))
+            if (ConfigComponent.HighwayConfig != null)
             {
                 // Setup the highway server
                 Context.LogV(TAG, "Uploading record file via highway.");
                 upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
                 {
-                    Host = ConfigComponent.HighwayConfig.Host,
-                    Port = ConfigComponent.HighwayConfig.Port,
+                    Host = ConfigComponent.HighwayConfig.Server.Host,
+                    Port = ConfigComponent.HighwayConfig.Server.Port,
                     UploadTicket = ConfigComponent.HighwayConfig.Ticket,
                 });
 
@@ -340,6 +343,15 @@ public class MessagingLogic : BaseLogic
             Context.LogV(TAG, ByteConverter.Hex(retdata));
             return true;
         }
+    }
+
+    /// <summary>
+    /// Upload the multimsg
+    /// </summary>
+    /// <returns></returns>
+    private async Task<bool> SearchMultiMsgAndUpload(uint uin, MessageChain message)
+    {
+        return true;
     }
 
     /// <summary>
