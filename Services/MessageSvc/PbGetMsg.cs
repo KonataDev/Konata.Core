@@ -113,7 +113,7 @@ namespace Konata.Core.Services.MessageSvc
         /// <param name="tree"></param>
         /// <returns></returns>
         private BaseChain ParsePlainText(ProtoTreeRoot tree)
-            => PlainTextChain.Create(tree.GetLeafString("0A"));
+            => TextChain.Create(tree.GetLeafString("0A"));
 
         /// <summary>
         /// Process QFace chain

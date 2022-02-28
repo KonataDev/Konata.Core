@@ -4,6 +4,7 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
+using Konata.Core.Packets.Protobuf.Highway.Requests;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.Protobuf;
 

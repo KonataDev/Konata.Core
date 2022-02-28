@@ -7,7 +7,7 @@ using Konata.Core.Packets.SvcPush;
 namespace Konata.Core.Services.ConfigPushSvc
 {
     [Service("ConfigPushSvc.PushReq", "Push req")]
-    public class PushReq : BaseService<PushConfigEvent>
+    internal class PushReq : BaseService<PushConfigEvent>
     {
         protected override bool Parse(SSOFrame input,
             BotKeyStore keystore, out PushConfigEvent output)
@@ -19,7 +19,7 @@ namespace Konata.Core.Services.ConfigPushSvc
                 if (push.ServerList.Count == 0) return false;
 
                 output = PushConfigEvent.Push(push.ServerList[0].Host,
-                    push.ServerList[1].Port, push.SessionToken);
+                    push.ServerList[1].Port, push.Ticket);
             }
 
             return true;
