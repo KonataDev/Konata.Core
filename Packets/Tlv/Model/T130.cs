@@ -1,21 +1,17 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+/// <summary>
+/// TODO
+/// </summary>
+internal class T130Body : TlvBody
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
-    public class T130Body : TlvBody
+    public T130Body()
+        : base()
     {
-        public T130Body()
-            : base()
-        {
-        }
+    }
 
-        public T130Body(byte[] data)
-            : base(data)
-        {
-
-        }
+    public T130Body(byte[] data)
+        : base(data)
+    {
     }
 }

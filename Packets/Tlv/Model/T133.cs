@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T133Body : TlvBody
 {
-    public class T133Body : TlvBody
+    public readonly byte[] _wtSessionTicketSig;
+
+    public T133Body(byte[] wtSessionTicketSig, object nil)
+        : base()
     {
-        public readonly byte[] _wtSessionTicketSig;
+        _wtSessionTicketSig = wtSessionTicketSig;
 
-        public T133Body(byte[] wtSessionTicketSig, object nil)
-            : base()
-        {
-            _wtSessionTicketSig = wtSessionTicketSig;
+        PutBytes(_wtSessionTicketSig);
+    }
 
-            PutBytes(_wtSessionTicketSig);
-        }
-
-        public T133Body(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _wtSessionTicketSig, Prefix.None);
-        }
+    public T133Body(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _wtSessionTicketSig, Prefix.None);
     }
 }

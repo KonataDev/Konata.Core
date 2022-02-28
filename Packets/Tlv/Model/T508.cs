@@ -1,31 +1,28 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T508Body : TlvBody
 {
-    public class T508Body : TlvBody
+    public readonly bool _doFetch;
+    public readonly uint _timeout;
+    public readonly byte[] _userData;
+
+    public T508Body(bool doFetch, uint timeout, byte[] userData)
+        : base()
     {
-        public readonly bool _doFetch;
-        public readonly uint _timeout;
-        public readonly byte[] _userData;
+        _doFetch = doFetch;
+        _timeout = timeout;
+        _userData = userData;
 
-        public T508Body(bool doFetch, uint timeout, byte[] userData)
-            : base()
-        {
-            _doFetch = doFetch;
-            _timeout = timeout;
-            _userData = userData;
+        PutBoolBE(_doFetch, 1);
+        PutUintBE(_timeout);
+        PutBytes(_userData);
+    }
 
-            PutBoolBE(_doFetch, 1);
-            PutUintBE(_timeout);
-            PutBytes(_userData);
-        }
-
-        public T508Body(byte[] data)
-            : base(data)
-        {
-            TakeBoolBE(out _doFetch, 1);
-            TakeUintBE(out _timeout);
-            TakeBytes(out _userData, Prefix.Uint16);
-        }
+    public T508Body(byte[] data)
+        : base(data)
+    {
+        TakeBoolBE(out _doFetch, 1);
+        TakeUintBE(out _timeout);
+        TakeBytes(out _userData, Prefix.Uint16);
     }
 }

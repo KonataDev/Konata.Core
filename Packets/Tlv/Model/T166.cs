@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T166Body : TlvBody
 {
-    public class T166Body : TlvBody
+    public readonly byte _imgType;
+
+    public T166Body(byte imgType)
+        : base()
     {
-        public readonly byte _imgType;
+        _imgType = imgType;
 
-        public T166Body(byte imgType)
-            : base()
-        {
-            _imgType = imgType;
+        PutByte(_imgType);
+    }
 
-            PutByte(_imgType);
-        }
-
-        public T166Body(byte[] data)
-            : base(data)
-        {
-            TakeByte(out _imgType);
-        }
+    public T166Body(byte[] data)
+        : base(data)
+    {
+        TakeByte(out _imgType);
     }
 }

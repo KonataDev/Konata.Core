@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T108Body : TlvBody
 {
-    public class T108Body : TlvBody
+    public readonly byte[] _ksid;
+
+    public T108Body(byte[] ksid, int ksidLength)
+        : base()
     {
-        public readonly byte[] _ksid;
+        _ksid = ksid;
 
-        public T108Body(byte[] ksid, int ksidLength)
-            : base()
-        {
-            _ksid = ksid;
+        PutBytes(_ksid);
+    }
 
-            PutBytes(_ksid);
-        }
-
-        public T108Body(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _ksid, Prefix.None);
-        }
+    public T108Body(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _ksid, Prefix.None);
     }
 }

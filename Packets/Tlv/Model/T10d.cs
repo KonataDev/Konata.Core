@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T10dBody : TlvBody
 {
-    public class T10dBody : TlvBody
+    public readonly byte[] _tgtKey;
+
+    public T10dBody(byte[] tgtKey, object nil)
+        : base()
     {
-        public readonly byte[] _tgtKey;
+        _tgtKey = tgtKey;
 
-        public T10dBody(byte[] tgtKey, object nil)
-            : base()
-        {
-            _tgtKey = tgtKey;
+        PutBytes(_tgtKey);
+    }
 
-            PutBytes(_tgtKey);
-        }
-
-        public T10dBody(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _tgtKey, Prefix.None);
-        }
+    public T10dBody(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _tgtKey, Prefix.None);
     }
 }

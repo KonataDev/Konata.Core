@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T17cBody : TlvBody
 {
-    public class T17cBody : TlvBody
+    public readonly string _smsCode;
+
+    public T17cBody(string smsCode)
+        : base()
     {
-        public readonly string _smsCode;
+        _smsCode = smsCode;
 
-        public T17cBody(string smsCode)
-            : base()
-        {
-            _smsCode = smsCode;
+        PutString(_smsCode, Prefix.Uint16);
+    }
 
-            PutString(_smsCode, Prefix.Uint16);
-        }
-
-        public T17cBody(byte[] data)
-            : base(data)
-        {
-            TakeString(out _smsCode, Prefix.Uint16);
-        }
+    public T17cBody(byte[] data)
+        : base(data)
+    {
+        TakeString(out _smsCode, Prefix.Uint16);
     }
 }

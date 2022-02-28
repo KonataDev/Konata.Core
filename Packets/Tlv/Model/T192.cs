@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T192Body : TlvBody
 {
-    public class T192Body : TlvBody
+    public readonly string _url;
+
+    public T192Body(string url)
+        : base()
     {
-        public readonly string _url;
+        _url = url;
 
-        public T192Body(string url)
-            : base()
-        {
-            _url = url;
+        PutString(_url, Prefix.Uint16);
+    }
 
-            PutString(_url, Prefix.Uint16);
-        }
-
-        public T192Body(byte[] data)
-            : base(data)
-        {
-            TakeString(out _url, Prefix.None);
-        }
+    public T192Body(byte[] data)
+        : base(data)
+    {
+        TakeString(out _url, Prefix.None);
     }
 }

@@ -1,59 +1,56 @@
-﻿using System;
-using Konata.Core.Utils.Crypto;
+﻿using Konata.Core.Utils.Crypto;
 
-namespace Konata.Core.Packets.Tlv
+namespace Konata.Core.Packets.Tlv;
+
+internal class TlvPacker
 {
-    public class TlvPacker
+    private ushort _count;
+    private readonly PacketBase _packet;
+
+    public TlvPacker()
     {
-        private ushort _count;
-        private readonly PacketBase _packet;
+        _count = 0;
+        _packet = new PacketBase();
+    }
 
-        public TlvPacker()
+    public void PutTlv(byte[] tlvData)
+    {
+        if (tlvData == null || tlvData.Length == 0)
         {
-            _count = 0;
-            _packet = new PacketBase();
+            return;
         }
 
-        public void PutTlv(byte[] tlvData)
-        {
-            if (tlvData == null || tlvData.Length == 0)
-            {
-                return;
-            }
+        ++_count;
+        _packet.PutBytes(tlvData);
+    }
 
-            ++_count;
-            _packet.PutBytes(tlvData);
+    public void PutTlv(Tlv tlvData)
+    {
+        if (tlvData == null)
+        {
+            return;
         }
 
-        public void PutTlv(Tlv tlvData)
-        {
-            if (tlvData == null)
-            {
-                return;
-            }
-
-            ++_count;
-            _packet.PutTlv(tlvData);
-        }
+        ++_count;
+        _packet.PutTlv(tlvData);
+    }
 
 
-        public PacketBase GetPacket(bool prefixTlvCount)
-        {
-            var packet = new PacketBase();
-            packet.PutUshortBE(_count);
-            packet.PutPacket(_packet);
-            return packet;
-        }
+    public PacketBase GetPacket(bool prefixTlvCount)
+    {
+        var packet = new PacketBase();
+        packet.PutUshortBE(_count);
+        packet.PutPacket(_packet);
+        return packet;
+    }
 
-        public byte[] GetBytes(bool prefixTlvCount)
-        {
-            return GetPacket(prefixTlvCount).GetBytes();
-        }
+    public byte[] GetBytes(bool prefixTlvCount)
+    {
+        return GetPacket(prefixTlvCount).GetBytes();
+    }
 
-        public byte[] GetEncryptedBytes(bool prefixTlvCount, ICryptor cryptor, byte[] cryptKey)
-        {
-            return cryptor.Encrypt(GetBytes(prefixTlvCount), cryptKey);
-        }
-
+    public byte[] GetEncryptedBytes(bool prefixTlvCount, ICryptor cryptor, byte[] cryptKey)
+    {
+        return cryptor.Encrypt(GetBytes(prefixTlvCount), cryptKey);
     }
 }

@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T145Body : TlvBody
 {
-    public class T145Body : TlvBody
+    public readonly byte[] _guid;
+
+    public T145Body(byte[] guid, int guidLength)
+        : base()
     {
-        public readonly byte[] _guid;
+        _guid = guid;
 
-        public T145Body(byte[] guid, int guidLength)
-            : base()
-        {
-            _guid = guid;
+        PutBytes(_guid);
+    }
 
-            PutBytes(_guid);
-        }
-
-        public T145Body(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _guid, Prefix.None);
-        }
+    public T145Body(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _guid, Prefix.None);
     }
 }

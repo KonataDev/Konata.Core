@@ -1,46 +1,45 @@
 ﻿using System;
 
-namespace Konata.Core.Packets.Tlv.Model
+namespace Konata.Core.Packets.Tlv.Model;
+
+internal class T100Body : TlvBody
 {
-    public class T100Body : TlvBody
-    {
-        public readonly uint _ssoVer;
-        public readonly uint _sigmap;
-        public readonly ushort _dbBufVer;
+    public readonly uint _ssoVer;
+    public readonly uint _sigmap;
+    public readonly ushort _dbBufVer;
 
-        public readonly uint _appId;
-        public readonly uint _subAppId;
-        public readonly uint _appClientVersion;
+    public readonly uint _appId;
+    public readonly uint _subAppId;
+    public readonly uint _appClientVersion;
 
-        public T100Body(uint appId, uint subAppId,
-            uint appClientVersion, uint sigMap)
+    public T100Body(uint appId, uint subAppId,
+        uint appClientVersion, uint sigMap)
         : base()
-        {
-            _appId = appId;
-            _subAppId = subAppId;
-            _appClientVersion = appClientVersion;
+    {
+        _appId = appId;
+        _subAppId = subAppId;
+        _appClientVersion = appClientVersion;
 
-            _ssoVer = 6;
-            _dbBufVer = 1;
-            _sigmap = sigMap;
+        _ssoVer = 6;
+        _dbBufVer = 1;
+        _sigmap = sigMap;
 
-            PutUshortBE(_dbBufVer);
-            PutUintBE(_ssoVer);
-            PutUintBE(_appId);
-            PutUintBE(_subAppId);
-            PutUintBE(_appClientVersion);
-            PutUintBE(_sigmap);
-        }
+        PutUshortBE(_dbBufVer);
+        PutUintBE(_ssoVer);
+        PutUintBE(_appId);
+        PutUintBE(_subAppId);
+        PutUintBE(_appClientVersion);
+        PutUintBE(_sigmap);
+    }
 
-        public T100Body(byte[] data)
-            : base(data)
-        {
-            TakeUshortBE(out _dbBufVer);
-            TakeUintBE(out _ssoVer);
-            TakeUintBE(out _appId);
-            TakeUintBE(out _subAppId);
-            TakeUintBE(out _appClientVersion);
-            TakeUintBE(out _sigmap);
-        }
+    public T100Body(byte[] data)
+        : base(data)
+    {
+        TakeUshortBE(out _dbBufVer);
+        TakeUintBE(out _ssoVer);
+        TakeUintBE(out _appId);
+        TakeUintBE(out _subAppId);
+        TakeUintBE(out _appClientVersion);
+        TakeUintBE(out _sigmap);
     }
 }
