@@ -1,34 +1,27 @@
-﻿using System;
-using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Utils.Protobuf;
 
-namespace Konata.Core.Packets.Protobuf
+namespace Konata.Core.Packets.Protobuf;
+
+/// <summary>
+/// 撤回群訊息 PbMsgWithDraw
+/// </summary>
+internal class ProtoMsgWithDraw : ProtoTreeRoot
 {
-    /// <summary>
-    /// 撤回群訊息 PbMsgWithDraw
-    /// </summary>
-
-    public class ProtoMsgWithDraw : ProtoTreeRoot
+    public ProtoMsgWithDraw(uint group, uint msgId) : base()
     {
-        public ProtoMsgWithDraw(uint group, uint msgId)
-            : base()
+        AddTree("12", (t) =>
         {
-            AddTree("12", (ProtoTreeRoot t) =>
+            t.AddLeafVar("08", 1);
+            t.AddLeafVar("10", 0);
+            t.AddLeafVar("18", group);
+
+            t.AddTree("22", (t2) =>
             {
-                t.AddLeafVar("08", 1);
-                t.AddLeafVar("10", 0);
-                t.AddLeafVar("18", group);
-
-                t.AddTree("22", (ProtoTreeRoot t2) =>
-                {
-                    t2.AddLeafVar("08", 7499);
-                    t2.AddLeafVar("10", msgId);
-                });
-
-                t.AddTree("2A", (ProtoTreeRoot t2) =>
-                {
-                    t2.AddLeafVar("08", 0);
-                });
+                t2.AddLeafVar("08", 7499);
+                t2.AddLeafVar("10", msgId);
             });
-        }
+
+            t.AddTree("2A", (t2) => t2.AddLeafVar("08", 0));
+        });
     }
 }
