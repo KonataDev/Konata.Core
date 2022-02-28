@@ -1,29 +1,26 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T177Body : TlvBody
 {
-    public class T177Body : TlvBody
+    public readonly uint _buildTime;
+    public readonly string _sdkVersion;
+
+    public T177Body(uint buildTime, string sdkVersion)
+        : base()
     {
-        public readonly uint _buildTime;
-        public readonly string _sdkVersion;
+        _buildTime = buildTime;
+        _sdkVersion = sdkVersion;
 
-        public T177Body(uint buildTime, string sdkVersion)
-            : base()
-        {
-            _buildTime = buildTime;
-            _sdkVersion = sdkVersion;
+        PutByte(1);
+        PutUintBE(_buildTime);
+        PutString(_sdkVersion, Prefix.Uint16);
+    }
 
-            PutByte(1);
-            PutUintBE(_buildTime);
-            PutString(_sdkVersion, Prefix.Uint16);
-        }
-
-        public T177Body(byte[] data)
-            : base(data)
-        {
-            EatBytes(1);
-            TakeUintBE(out _buildTime);
-            TakeString(out _sdkVersion, Prefix.Uint16);
-        }
+    public T177Body(byte[] data)
+        : base(data)
+    {
+        EatBytes(1);
+        TakeUintBE(out _buildTime);
+        TakeString(out _sdkVersion, Prefix.Uint16);
     }
 }

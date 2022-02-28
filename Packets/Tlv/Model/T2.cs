@@ -1,31 +1,28 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T2Body : TlvBody
 {
-    public class T2Body : TlvBody
+    public readonly ushort _sigVer;
+    public readonly string _captchaCode;
+    public readonly byte[] _captchaKey;
+
+    public T2Body(string captchaCode, byte[] captchaKey)
+        : base()
     {
-        public readonly ushort _sigVer;
-        public readonly string _captchaCode;
-        public readonly byte[] _captchaKey;
+        _sigVer = 0;
+        _captchaCode = captchaCode;
+        _captchaKey = captchaKey;
 
-        public T2Body(string captchaCode, byte[] captchaKey)
-            : base()
-        {
-            _sigVer = 0;
-            _captchaCode = captchaCode;
-            _captchaKey = captchaKey;
+        PutUshortBE(_sigVer);
+        PutString(_captchaCode, Prefix.Uint16);
+        PutBytes(_captchaKey);
+    }
 
-            PutUshortBE(_sigVer);
-            PutString(_captchaCode, Prefix.Uint16);
-            PutBytes(_captchaKey);
-        }
-
-        public T2Body(byte[] data)
-            : base(data)
-        {
-            TakeUshortBE(out _sigVer);
-            TakeString(out _captchaCode, Prefix.Uint16);
-            TakeBytes(out _captchaKey, Prefix.Uint16);
-        }
+    public T2Body(byte[] data)
+        : base(data)
+    {
+        TakeUshortBE(out _sigVer);
+        TakeString(out _captchaCode, Prefix.Uint16);
+        TakeBytes(out _captchaKey, Prefix.Uint16);
     }
 }

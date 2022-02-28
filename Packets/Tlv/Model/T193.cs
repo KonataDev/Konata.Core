@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T193Body : TlvBody
 {
-    public class T193Body : TlvBody
+    public readonly string _ticket;
+
+    public T193Body(string ticket)
+        : base()
     {
-        public readonly string _ticket;
+        _ticket = ticket;
 
-        public T193Body(string ticket)
-            : base()
-        {
-            _ticket = ticket;
+        PutString(_ticket);
+    }
 
-            PutString(_ticket);
-        }
-
-        public T193Body(byte[] data)
-            : base(data)
-        {
-            TakeString(out _ticket, Prefix.None);
-        }
+    public T193Body(byte[] data)
+        : base(data)
+    {
+        TakeString(out _ticket, Prefix.None);
     }
 }

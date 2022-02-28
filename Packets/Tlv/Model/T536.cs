@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T536Body : TlvBody
 {
-    public class T536Body : TlvBody
+    public readonly byte[] _loginExtraData;
+
+    public T536Body(byte[] loginExtraData, int loginExtraDataLength)
+        : base()
     {
-        public readonly byte[] _loginExtraData;
+        _loginExtraData = loginExtraData;
 
-        public T536Body(byte[] loginExtraData, int loginExtraDataLength)
-            : base()
-        {
-            _loginExtraData = loginExtraData;
+        PutBytes(_loginExtraData);
+    }
 
-            PutBytes(_loginExtraData);
-        }
-
-        public T536Body(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _loginExtraData, Prefix.None);
-        }
+    public T536Body(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _loginExtraData, Prefix.None);
     }
 }

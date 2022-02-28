@@ -1,25 +1,22 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+// 與T198相同?
+
+internal class T197Body : TlvBody
 {
-    // 與T198相同?
+    public readonly byte _devLockMobileType;
 
-    public class T197Body : TlvBody
+    public T197Body(byte devLockMobileType)
+        : base()
     {
-        public readonly byte _devLockMobileType;
+        _devLockMobileType = devLockMobileType;
 
-        public T197Body(byte devLockMobileType)
-            : base()
-        {
-            _devLockMobileType = devLockMobileType;
+        PutByte(_devLockMobileType);
+    }
 
-            PutByte(_devLockMobileType);
-        }
-
-        public T197Body(byte[] data)
-            : base(data)
-        {
-            TakeByte(out _devLockMobileType);
-        }
+    public T197Body(byte[] data)
+        : base(data)
+    {
+        TakeByte(out _devLockMobileType);
     }
 }

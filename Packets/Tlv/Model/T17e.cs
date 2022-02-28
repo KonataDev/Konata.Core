@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T17eBody : TlvBody
 {
-    public class T17eBody : TlvBody
+    public readonly string _message;
+
+    public T17eBody(string message)
+        : base()
     {
-        public readonly string _message;
+        _message = message;
 
-        public T17eBody(string message)
-            : base()
-        {
-            _message = message;
+        PutString(_message);
+    }
 
-            PutString(_message);
-        }
-
-        public T17eBody(byte[] data)
-            : base(data)
-        {
-            TakeString(out _message, Prefix.None);
-        }
+    public T17eBody(byte[] data)
+        : base(data)
+    {
+        TakeString(out _message, Prefix.None);
     }
 }

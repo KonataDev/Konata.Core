@@ -1,38 +1,35 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T511Body : TlvBody
 {
-    public class T511Body : TlvBody
+    public readonly string[] _domains;
+
+    public T511Body(string[] domains)
+        : base()
     {
-        public readonly string[] _domains;
+        _domains = domains;
 
-        public T511Body(string[] domains)
-            : base()
+        PutUshortBE((ushort) _domains.Length);
         {
-            _domains = domains;
-
-            PutUshortBE((ushort)_domains.Length);
+            foreach (string element in _domains)
             {
-                foreach (string element in _domains)
-                {
-                    PutByte(0x01);
-                    PutString(element, Prefix.Uint16);
-                }
+                PutByte(0x01);
+                PutString(element, Prefix.Uint16);
             }
         }
+    }
 
-        public T511Body(byte[] data)
-           : base(data)
+    public T511Body(byte[] data)
+        : base(data)
+    {
+        TakeUshortBE(out var length);
+
+        _domains = new string[length];
         {
-            TakeUshortBE(out var length);
-            
-            _domains = new string[length];
+            for (int i = 0; i < length; ++i)
             {
-                for (int i = 0; i < length; ++i)
-                {
-                    EatBytes(1);
-                    TakeString(out _domains[i], Prefix.Uint16);
-                }
+                EatBytes(1);
+                TakeString(out _domains[i], Prefix.Uint16);
             }
         }
     }

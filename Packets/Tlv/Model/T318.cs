@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T318Body : TlvBody
 {
-    public class T318Body : TlvBody
+    public readonly byte[] _tgtQr;
+
+    public T318Body(byte[] tgtQr, int tgtQrLength)
+        : base()
     {
-        public readonly byte[] _tgtQr;
+        _tgtQr = tgtQr;
 
-        public T318Body(byte[] tgtQr, int tgtQrLength)
-            : base()
-        {
-            _tgtQr = tgtQr;
+        PutBytes(_tgtQr);
+    }
 
-            PutBytes(_tgtQr);
-        }
-
-        public T318Body(byte[] data)
-            : base(data)
-        {
-            TakeBytes(out _tgtQr, Prefix.None);
-        }
+    public T318Body(byte[] data)
+        : base(data)
+    {
+        TakeBytes(out _tgtQr, Prefix.None);
     }
 }

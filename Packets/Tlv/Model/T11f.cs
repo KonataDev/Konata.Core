@@ -1,28 +1,25 @@
-﻿using System;
+﻿namespace Konata.Core.Packets.Tlv.Model;
 
-namespace Konata.Core.Packets.Tlv.Model
+internal class T11fBody : TlvBody
 {
-    public class T11fBody : TlvBody
+    public readonly uint _chgTime;
+    public readonly uint _tkPri;
+
+    public T11fBody(uint chgTime, uint tkPri)
+        : base()
     {
-        public readonly uint _chgTime;
-        public readonly uint _tkPri;
+        _chgTime = chgTime;
+        _tkPri = tkPri;
 
-        public T11fBody(uint chgTime, uint tkPri)
-            : base()
-        {
-            _chgTime = chgTime;
-            _tkPri = tkPri;
+        PutUintBE(_chgTime);
+        PutUintBE(_tkPri);
+    }
 
-            PutUintBE(_chgTime);
-            PutUintBE(_tkPri);
-        }
-
-        public T11fBody(byte[] data)
-            : base(data)
-        {
-            TakeUintBE(out _chgTime);
-            TakeUintBE(out _tkPri);
-            EatBytes(2);
-        }
+    public T11fBody(byte[] data)
+        : base(data)
+    {
+        TakeUintBE(out _chgTime);
+        TakeUintBE(out _tkPri);
+        EatBytes(2);
     }
 }
