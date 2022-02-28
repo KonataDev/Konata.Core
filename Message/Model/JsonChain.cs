@@ -1,45 +1,40 @@
-﻿using System;
+﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+namespace Konata.Core.Message.Model;
 
-namespace Konata.Core.Message.Model
+public class JsonChain : BaseChain
 {
-    public class JsonChain : BaseChain
+    /// <summary>
+    /// Json content
+    /// </summary>
+    public string Content { get; }
+
+    private JsonChain(string json)
+        : base(ChainType.Json, ChainMode.Singleton)
     {
-        /// <summary>
-        /// Json content
-        /// </summary>
-        public string Content { get; }
-
-        private JsonChain(string json)
-            : base(ChainType.Json, ChainMode.Singleton)
-        {
-            Content = json;
-        }
-
-        /// <summary>
-        /// Create a json chain
-        /// </summary>
-        /// <param name="json"></param>
-        public static JsonChain Create(string json)
-        {
-            return new(json);
-        }
-
-        /// <summary>
-        /// Parse the code
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        internal static JsonChain Parse(string code)
-        {
-            var args = GetArgs(code);
-            {
-                return Create(UnEscape(args["content"]));
-            }
-        }
-
-        public override string ToString()
-            => $"[KQ:json,content={Escape(Content)}]";
+        Content = json;
     }
+
+    /// <summary>
+    /// Create a json chain
+    /// </summary>
+    /// <param name="json"></param>
+    public static JsonChain Create(string json)
+        => new(json);
+
+    /// <summary>
+    /// Parse the code
+    /// </summary>
+    /// <param name="code"></param>
+    /// <returns></returns>
+    internal static JsonChain Parse(string code)
+    {
+        var args = GetArgs(code);
+        {
+            return Create(UnEscape(args["content"]));
+        }
+    }
+
+    public override string ToString()
+        => $"[KQ:json,content={Escape(Content)}]";
 }
