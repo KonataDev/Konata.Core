@@ -1,34 +1,29 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
+using Konata.Core.Common;
+
 namespace Konata.Core.Events.Model
 {
-    public class PushConfigEvent : ProtocolEvent
+    internal class PushConfigEvent : ProtocolEvent
     {
         /// <summary>
         /// <b>[Out]</b> <br/>
         /// Highway host server
         /// </summary>
-        internal string HighwayHost { get; }
-
-        /// <summary>
-        /// <b>[Out]</b> <br/>
-        /// Highway host port
-        /// </summary>
-        internal int HighwayPort { get; }
+        public ServerInfo HighwayHost { get; }
 
         /// <summary>
         /// <b>[Out]</b> <br/>
         /// Highway token
         /// </summary>
-        internal byte[] HighwayToken { get; }
+        public byte[] HighwayTicket { get; }
 
         internal PushConfigEvent(string highwayHost,
-            int highwayPort, byte[] highwayToken) : base(0)
+            ushort highwayPort, byte[] highwayTicket) : base(0)
         {
-            HighwayHost = highwayHost;
-            HighwayPort = highwayPort;
-            HighwayToken = highwayToken;
+            HighwayTicket = highwayTicket;
+            HighwayHost = new(highwayHost, highwayPort);
         }
 
         /// <summary>
@@ -36,9 +31,9 @@ namespace Konata.Core.Events.Model
         /// </summary>
         /// <param name="highwayHost"></param>
         /// <param name="highwayPort"></param>
-        /// <param name="highwayToken"></param>
+        /// <param name="highwayTicket"></param>
         /// <returns></returns>
-        internal static PushConfigEvent Push(string highwayHost, int highwayPort,
-            byte[] highwayToken) => new(highwayHost, highwayPort, highwayToken);
+        internal static PushConfigEvent Push(string highwayHost, ushort highwayPort,
+            byte[] highwayTicket) => new(highwayHost, highwayPort, highwayTicket);
     }
 }
