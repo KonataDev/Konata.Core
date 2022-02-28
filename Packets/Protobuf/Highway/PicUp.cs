@@ -1,42 +1,57 @@
-﻿using System;
+﻿using Konata.Core.Utils.Protobuf;
 
-using Konata.Core.Utils.Protobuf;
+namespace Konata.Core.Packets.Protobuf.Highway;
 
-namespace Konata.Core.Packets.Protobuf.Highway
+internal class PicUp : ProtoTreeRoot
 {
-    public class PicUp : ProtoTreeRoot
+    public enum CommandId
     {
-        public PicUp(string cmd, uint cmdid, uint peerUin, int sequence)
+        // Friend picture / record
+        FriendPicDataUp = 1,
+        FriendPttDataUp = 26,
+
+        // Group picture / record / file
+        GroupPicDataUp = 2,
+        GroupPttDataUp = 29,
+        GroupFileDataUp = 71,
+
+        // Avatar
+        SelfPortrait = 5,
+
+        // Multl message
+        MultiMsgDataUp = 27
+    }
+
+    public PicUp(string cmd, CommandId cmdid, uint peerUin, int sequence)
+    {
+        AddTree("0A", (w) =>
         {
-            AddTree("0A", (w) =>
-            {
-                // Version
-                w.AddLeafVar("08", 1);
+            // Version
+            w.AddLeafVar("08", 1);
 
-                // Uin string
-                w.AddLeafString("12", peerUin.ToString());
+            // Uin string
+            w.AddLeafString("12", peerUin.ToString());
 
-                // Command
-                w.AddLeafString("1A", cmd);
+            // Command
+            w.AddLeafString("1A", cmd);
 
-                // Sequence
-                w.AddLeafVar("20", sequence);
+            // Sequence
+            w.AddLeafVar("20", sequence);
 
-                // Retry times
-                w.AddLeafVar("28", 0);
+            // Retry times
+            w.AddLeafVar("28", 0);
 
-                // App id
-                w.AddLeafVar("30", AppInfo.SubAppId);
+            // App id
+            w.AddLeafVar("30", AppInfo.SubAppId);
 
-                // Normal Flag
-                w.AddLeafVar("38", 4096);
+            // Normal Flag
+            w.AddLeafVar("38", 4096);
 
-                // Command id
-                w.AddLeafVar("40", cmdid);
+            // Command id
+            w.AddLeafVar("40", (long) cmdid);
 
-                // Locale id
-                w.AddLeafVar("50", 2052);
-            });
-        }
+            // Locale id
+            w.AddLeafVar("50", 2052);
+        });
     }
 }
