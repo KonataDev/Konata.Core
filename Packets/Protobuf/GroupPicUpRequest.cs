@@ -2,7 +2,7 @@
 using Konata.Core.Message.Model;
 using Konata.Core.Utils.Protobuf;
 
-namespace Konata.Core.Packets.Protobuf.Highway.Requests;
+namespace Konata.Core.Packets.Protobuf;
 
 internal class GroupPicUpRequest : ProtoTreeRoot
 {

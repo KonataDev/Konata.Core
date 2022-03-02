@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
-using Konata.Core.Events.Model;
-using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.TcpSocket;
 
@@ -26,52 +25,32 @@ namespace Konata.Core.Components.Model
     {
         private const string TAG = "HighwayComponent";
 
-        public HighwayComponent()
-        {
-        }
-
         /// <summary>
         /// Upload group images
         /// </summary>
         /// <param name="selfUin"></param>
         /// <param name="upload"></param>
-        /// <param name="infos"></param>
         /// <returns></returns>
-        public async Task<bool> GroupPicUp
-            (uint selfUin, ImageChain[] upload, PicUpInfo[] infos)
+        public async Task<bool> GroupPicUp(uint selfUin,
+            IEnumerable<ImageChain> upload)
         {
-            // Check quantities
-            if (upload.Length != infos.Length)
-            {
-                LogV(TAG, $"Wtf? The quantity does not equal " +
-                          $"upload [{upload.Length}], infos [{infos.Length}]");
-                return false;
-            }
-
             // Get upload config
             var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
-            {
-                // Length limit
-                if (chunksize is <= 1024 or > 1048576)
-                {
-                    chunksize = 8192;
-                }
-            }
+            if (chunksize is <= 1024 or > 1048576) chunksize = 8192;
 
             // Queue all tasks
             var tasks = new List<Task<HwResponse>>();
-            for (var i = 0; i < upload.Length; ++i)
+            foreach (var i in upload)
             {
-                if (!infos[i].UseCached)
+                if (!i.PicUpInfo.UseCached)
                 {
                     tasks.Add(HighwayClient.Upload(
-                        infos[i].Host,
-                        infos[i].Port,
-                        chunksize,
-                        selfUin,
-                        infos[i].UploadTicket,
-                        upload[i].FileData,
-                        upload[i].HashData
+                        i.PicUpInfo.Host,
+                        i.PicUpInfo.Port,
+                        chunksize, selfUin,
+                        i.PicUpInfo.UploadTicket,
+                        i.FileData,
+                        PicUp.CommandId.GroupPicDataUp
                     ));
                 }
             }
@@ -94,54 +73,49 @@ namespace Konata.Core.Components.Model
         }
 
         /// <summary>
-        /// 
+        /// Multimsg upload
         /// </summary>
+        /// <param name="selfUin"></param>
+        /// <param name="destUin"></param>
+        /// <param name="chain"></param>
         /// <returns></returns>
-        public async Task<bool> MultiMsgUp(uint selfUin, MessageChain chain)
+        public async Task<bool> MultiMsgUp(uint destUin, uint selfUin,
+            MultiMsgChain chain)
         {
-            // Get upload config
-            var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
+            // Queue task
+            var data = new MultiMsgUpRequest(destUin,
+                chain.PackedData, chain.MultiMsgUpInfo.MsgUKey);
+            var task = HighwayClient.Upload(
+                chain.MultiMsgUpInfo.Host,
+                chain.MultiMsgUpInfo.Port,
+                8192, selfUin,
+                chain.MultiMsgUpInfo.UploadTicket,
+                ProtoTreeRoot.Serialize(data).GetBytes(),
+                PicUp.CommandId.MultiMsgDataUp
+            );
+
+            LogV(TAG, "Task queued, " +
+                      "waiting for upload finish.");
+
+            // Wait for task
+            var results = await task;
             {
-                // Length limit
-                if (chunksize is <= 1024 or > 1048576)
-                {
-                    chunksize = 8192;
-                }
+                var result = results.GetLeafVar("18");
+                if (result != 0) return false;
+
+                return true;
             }
-
-            // Chain packup
-            var packed = MessagePacker.PackUp(chain);
-            if (packed == null) return false;
-
-            // Queue all tasks
-            // var result = await HighwayClient.Upload(
-            //     infos[i].Host,
-            //     infos[i].Port,
-            //     chunksize,
-            //     selfUin,
-            //     infos[i].UploadTicket,
-            //     upload[i].FileData,
-            //     upload[i].HashData
-            // );
-            //
-            // LogV(TAG, "All tasks are queued, " +
-            //           "waiting for upload finish.");
-            //
-            // // Wait for tasks
-            // var results = await Task.WhenAll(tasks);
-            // return results.Count(i => i != null) == results.Length;
-            return false;
         }
 
         /// <summary>
         /// Upload group record
         /// </summary>
+        /// <param name="groupUin"></param>
         /// <param name="selfUin"></param>
         /// <param name="upload"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<bool> GroupPttUp(uint selfUin,
-            RecordChain upload, GroupPttUpRequest request)
+        public async Task<bool> GroupPttUp(uint groupUin,
+            uint selfUin, RecordChain upload)
         {
             var task = HighwayClient.Upload(
                 upload.PttUpInfo.Host,
@@ -149,8 +123,8 @@ namespace Konata.Core.Components.Model
                 8192, selfUin,
                 upload.PttUpInfo.UploadTicket,
                 upload.FileData,
-                upload.HashData,
-                request
+                PicUp.CommandId.GroupPttDataUp,
+                new GroupPttUpRequest(groupUin, selfUin, upload)
             );
 
             LogV(TAG, "Task queued, " +
@@ -204,13 +178,14 @@ namespace Konata.Core.Components.Model
         /// <param name="peer"></param>
         /// <param name="ticket"></param>
         /// <param name="data"></param>
-        /// <param name="datamd5"></param>
+        /// <param name="cmdId"></param>
         /// <param name="extend"></param>
         /// <returns></returns>
         public static async Task<HwResponse> Upload(string host, int port, int chunk,
-            uint peer, byte[] ticket, byte[] data, byte[] datamd5, ProtoTreeRoot extend = null)
+            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
         {
             HwResponse lastResponse = null;
+            var datamd5 = data.Md5();
 
             var client = new HighwayClient(peer, ticket);
             client.SetListener(client);
@@ -232,8 +207,8 @@ namespace Konata.Core.Components.Model
                     }
 
                     // DataUp
-                    lastResponse = await client
-                        .DataUp(data, datamd5, i, chunk, extend);
+                    lastResponse = await client.DataUp
+                        (data, datamd5, i, chunk, cmdId, extend);
                     {
                         if (lastResponse == null) return null;
                     }
@@ -241,6 +216,8 @@ namespace Konata.Core.Components.Model
                     i += chunk;
                 }
             }
+
+            // Disconnect after send finish
             await client.Disconnect();
             return lastResponse;
         }
@@ -266,28 +243,26 @@ namespace Konata.Core.Components.Model
             }
         }
 
-        private async Task<HwResponse> DataUp(byte[] fileData, byte[] dataMd5,
-            int offset, int length, ProtoTreeRoot extend = null)
+        /// <summary>
+        /// Data Up
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="dataMd5"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <param name="cmdId"></param>
+        /// <param name="extend"></param>
+        /// <returns></returns>
+        private async Task<HwResponse> DataUp(byte[] data, byte[] dataMd5,
+            int offset, int length, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
         {
             // Calculate chunk
-            var chunk = fileData[offset..(offset + length)];
+            var chunk = data[offset..(offset + length)];
             var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
             // Send request
-            var result = await SendRequest(extend switch
-            {
-                // Group Image upload
-                GroupPicUpRequest => new PicUpDataUp(PicUp.CommandId.GroupPicDataUp,
-                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunkMD5),
-
-                // Group Ptt Upload
-                GroupPttUpRequest => new PicUpDataUp(PicUp.CommandId.GroupPttDataUp,
-                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunkMD5, extend),
-
-                // Multi Message upload
-                MultiMsgUpRequest => new PicUpDataUp(PicUp.CommandId.MultiMsgDataUp,
-                    _peer, _sequence, _ticket, fileData.Length, dataMd5, offset, length, chunk, extend)
-            }, chunk);
+            var result = await SendRequest(new PicUpDataUp(cmdId, _peer, _sequence,
+                _ticket, data.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
             {
                 // No response
                 if (result == null) return null;
