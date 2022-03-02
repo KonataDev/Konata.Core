@@ -144,6 +144,6 @@ namespace Konata.Core.Utils.IO
         /// <param name="data"></param>
         /// <returns></returns>
         public static byte[] GunZip(byte[] data)
-            => Inflate(data[9..^8]);
+            => Inflate(data[10..^8]);
     }
 }
