@@ -11,7 +11,7 @@
         /// <returns></returns>
         public static byte[] Generate()
         {
-            return new System.Guid().ToByteArray();
+            return System.Guid.NewGuid().ToByteArray();
         }
     }
 }
