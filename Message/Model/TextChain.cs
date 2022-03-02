@@ -20,4 +20,7 @@ public class TextChain : BaseChain
 
     public override string ToString()
         => Content;
+
+    internal override string ToPreviewString()
+        => Content.Length > 8 ? Content[..8] + "..." : Content;
 }

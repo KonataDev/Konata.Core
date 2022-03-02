@@ -39,4 +39,7 @@ public class AtChain : BaseChain
 
     public override string ToString()
         => $"[KQ:at,qq={(AtUin == 0 ? "all" : AtUin.ToString())}]";
+
+    internal override string ToPreviewString()
+        => DisplayString ?? $"@{AtUin}";
 }

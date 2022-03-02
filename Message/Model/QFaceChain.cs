@@ -35,4 +35,7 @@ public class QFaceChain : BaseChain
 
     public override string ToString()
         => $"[KQ:face,id={FaceId}]";
+    
+    internal override string ToPreviewString()
+        => "[表情]";
 }

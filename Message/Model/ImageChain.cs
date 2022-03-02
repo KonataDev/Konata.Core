@@ -258,6 +258,9 @@ public class ImageChain : BaseChain
            $"height={Height}," +
            $"length={FileLength}," +
            $"type={(int) ImageType}]";
+    
+    internal override string ToPreviewString()
+        => "[图片]";
 }
 
 /// <summary>

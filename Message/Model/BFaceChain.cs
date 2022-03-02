@@ -43,4 +43,7 @@ public class BFaceChain : BaseChain
 
     public override string ToString()
         => $"[KQ:bface,id={FaceId}]";
+
+    internal override string ToPreviewString()
+        => "[原创表情]";
 }
