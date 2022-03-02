@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.IO;
 
 namespace Konata.Core.Utils.Extensions;
@@ -70,4 +71,13 @@ public static class BytesExt
 
         return ByteConverter.UInt32ToBytes(~crc, Endian.Little);
     }
+
+    /// <summary>
+    /// Md5
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] Md5(this byte[] data)
+        => new Md5Cryptor().Encrypt(data);
 }
