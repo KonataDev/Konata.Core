@@ -5,8 +5,9 @@ using Konata.Codec.Audio;
 using Konata.Codec.Audio.Codecs;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Crypto;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.FileFormat;
+
 #pragma warning disable CS8509
 
 // ReSharper disable RedundantAssignment
@@ -216,8 +217,8 @@ public class RecordChain : BaseChain
             }
 
             // Audio MD5
-            var audioMD5 = new Md5Cryptor().Encrypt(audioData);
-            var audioMD5Str = ByteConverter.Hex(audioMD5).ToUpper();
+            var audioMD5 = audioData.Md5();
+            var audioMD5Str = audioMD5.ToHex().ToUpper();
             if (audioTime == 0) audioTime = 1;
 
             return new RecordChain(audioData, audioTime,
@@ -282,6 +283,9 @@ public class RecordChain : BaseChain
     public override string ToString()
         => "[KQ:record," +
            $"file={FileName}]";
+    
+    internal override string ToPreviewString()
+        => "[语音]";
 }
 
 /// <summary>

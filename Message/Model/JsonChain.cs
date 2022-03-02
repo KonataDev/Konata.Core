@@ -37,4 +37,7 @@ public class JsonChain : BaseChain
 
     public override string ToString()
         => $"[KQ:json,content={Escape(Content)}]";
+    
+    internal override string ToPreviewString()
+        => "[JSON]";
 }
