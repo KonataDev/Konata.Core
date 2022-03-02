@@ -1,4 +1,6 @@
-﻿using Konata.Core.Message.Model;
+﻿using System.Collections.Generic;
+using Konata.Core.Message.Model;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
@@ -51,6 +53,64 @@ internal static class MessagePacker
         }
 
         return ProtoTreeRoot.Serialize(root).GetBytes();
+    }
+
+    /// <summary>
+    /// Pack up multi msg to byte
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input)
+    {
+        var msgs = new ProtoTreeRoot();
+        foreach (var (source, chain) in input)
+        {
+            msgs.AddTree("0A", _ =>
+            {
+                // Message source
+                _.AddTree("0A", __ =>
+                {
+                    var time = source.Time.Epoch();
+                    __.AddLeafVar("08", source.SourceUin); // Source uin
+                    __.AddLeafVar("18", 82); // Type
+                    __.AddLeafVar("28", 0); // Sequence
+                    __.AddLeafVar("30", time); // Time stamp
+                    __.AddLeafVar("38", 82); // UUID?
+
+                    // Multimsg from group
+                    if (true)
+                    {
+                        __.AddTree("4A", ___ =>
+                        {
+                            ___.AddLeafVar("08", source.SourceUin);
+                            ___.AddLeafString("22", source.SourceName);
+                        });
+                    }
+
+                    // __.AddLeafString("38", 82); // Name
+                    // __.AddTree("A201", ___ =>
+                    // { 
+                    //     ___.AddLeafVar("08", 0);
+                    //     ___.AddLeafBytes("10", null);
+                    // });
+                });
+
+                // Message content
+                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(chain)));
+            });
+        }
+
+        // Construct multi msg tree
+        var tree = new ProtoTreeRoot();
+        tree.AddTree("12", _ =>
+        {
+            _.AddLeafString("0A", "MultiMsg");
+            _.AddTree("12", msgs);
+        });
+
+        tree.AddTree(msgs);
+
+        return ProtoTreeRoot.Serialize(tree).GetBytes();
     }
 
     private static void ConstructPBReserved(ProtoTreeRoot root, int v8801, int v78)
@@ -117,14 +177,14 @@ internal static class MessagePacker
 
     private static void ConstructPlainTextChain(ProtoTreeRoot root, TextChain chain)
     {
-            // @formatter:off
-            root.AddTree("12", (leaf) =>
+        // @formatter:off
+        root.AddTree("12", (leaf) =>
+        {
+            leaf.AddTree("0A", (_) =>
             {
-                leaf.AddTree("0A", (_) =>
-                {
-                    _.AddLeafString("0A", chain.Content);
-                });
+                _.AddLeafString("0A", chain.Content);
             });
+        });
         // @formatter:on
     }
 

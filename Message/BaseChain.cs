@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -39,6 +40,19 @@ public abstract class BaseChain
     }
 
     /// <summary>
+    /// Serialize to protobuf<br/>
+    /// // TODO Serialzie
+    /// </summary>
+    /// <returns></returns>
+    internal virtual ProtoTreeRoot ToProtoBuf() => null;
+
+    /// <summary>
+    /// To qq generic string
+    /// </summary>
+    /// <returns></returns>
+    internal abstract string ToPreviewString();
+    
+    /// <summary>
     /// Get arguments of a code string
     /// </summary>
     /// <param name="code"></param>
@@ -55,7 +69,7 @@ public abstract class BaseChain
             // Split every kvpair with an equal
             // "KQ:x" ignored
             // "x=1" will becomes "x" "1"
-            for (int i = 1; i < split.Length; ++i)
+            for (var i = 1; i < split.Length; ++i)
             {
                 var eqpair = split[i].Split('=');
                 if (eqpair.Length < 2) continue;
