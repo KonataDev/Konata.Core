@@ -31,7 +31,10 @@ namespace Konata.Core.Utils.Protobuf
 
         public void AddTree(ProtoTreeRoot value)
         {
-            Leaves = value.Leaves;
+            Leaves ??= new();
+
+            foreach (var (key, val) in value.Leaves)
+                Leaves.Add(key, val);
         }
 
         public void AddTree(string treePath, ProtoTreeRoot value)
