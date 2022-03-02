@@ -4,7 +4,7 @@ namespace Konata.Core.Packets.Tlv.Model;
 
 internal class T52dBody : TlvBody
 {
-    public readonly DeviceReport _deviceReportInfo;
+    // public readonly DeviceReport _deviceReportInfo;
 
     public T52dBody(string bootLoader, string version, string codeName,
         string incremental, string fingerprint, string bootId, string androidId,
