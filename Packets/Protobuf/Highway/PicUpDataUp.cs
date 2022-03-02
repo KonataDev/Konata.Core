@@ -18,9 +18,9 @@ internal class PicUpDataUp : PicUp
     /// <param name="chunkOffset"></param>
     /// <param name="chunkSize"></param>
     /// <param name="chunkMD5"></param>
-    /// <param name="extend"></param>
+    /// <param name="request"></param>
     public PicUpDataUp(CommandId cmdId, uint peerUin, int sequence, byte[] ticket,
-        int fileSize, byte[] fileMD5, int chunkOffset, int chunkSize, byte[] chunkMD5, ProtoTreeRoot extend = null)
+        int fileSize, byte[] fileMD5, int chunkOffset, int chunkSize, byte[] chunkMD5, ProtoTreeRoot request = null)
         : base(Command, cmdId, peerUin, sequence)
     {
         AddTree("12", w =>
@@ -44,6 +44,7 @@ internal class PicUpDataUp : PicUp
             w.AddLeafBytes("4A", fileMD5);
         });
 
-        if (extend != null) AddTree("1A", extend);
+        // Additional request body
+        if (request != null) AddTree("1A", request);
     }
 }

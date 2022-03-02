@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Message;
@@ -10,8 +11,8 @@ using Konata.Core.Exceptions.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
-using Konata.Core.Packets.Protobuf;
-using Konata.Core.Packets.Protobuf.Highway.Requests;
+using Konata.Core.Utils;
+using Konata.Core.Utils.Extensions;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
@@ -64,26 +65,24 @@ public class MessagingLogic : BaseLogic
     /// <exception cref="MessagingException"></exception>
     public async Task<bool> SendFriendMessage(uint friendUin, MessageChain message)
     {
-        // Check and process some resources
-        var uploadImage = SearchImageAndUpload(friendUin, message, false);
-
         // Wait for tasks done
-        var results = await Task.WhenAll(uploadImage);
+        var results = await Task.WhenAll(
+            SearchImageAndUpload(friendUin, message, false)
+        );
+
+        // Check results
+        if (results.Contains(false))
         {
-            // Check results
-            if (!results[0])
-            {
-                // Task failed
-                throw new MessagingException($"Send private message failed: Task failed.\n" +
-                                             $"uploadImage => {results[0]}\n");
-            }
+            // Task failed
+            throw new MessagingException("Send friend message failed: Task failed.\n" +
+                                         $"uploadImage => {results[0]}\n");
         }
 
         // Send the message
         var result = await SendFriendMessage(Context, friendUin, message);
         if (result.ResultCode == 0) return true;
         {
-            throw new MessagingException($"Send private message failed: " +
+            throw new MessagingException("Send friend message failed: " +
                                          $"Assert failed. Ret => {result.ResultCode}");
         }
     }
@@ -97,33 +96,30 @@ public class MessagingLogic : BaseLogic
     /// <exception cref="MessagingException"></exception>
     public async Task<bool> SendGroupMessage(uint groupUin, MessageChain message)
     {
-        // Check and process some resources
-        var uploadImage = SearchImageAndUpload(groupUin, message, true);
-        var uploadRecord = SearchRecordAndUpload(groupUin, message);
-        var uploadMultiMsg = SearchMultiMsgAndUpload(groupUin, message);
-        var checkAtChain = SearchAt(groupUin, message);
-
         // Wait for tasks done
-        var results = await Task.WhenAll(uploadImage,
-            uploadRecord, uploadMultiMsg, checkAtChain);
+        var results = await Task.WhenAll(
+            SearchImageAndUpload(groupUin, message, true),
+            SearchRecordAndUpload(groupUin, message),
+            SearchMultiMsgAndUpload(groupUin, message),
+            SearchAt(groupUin, message)
+        );
+
+        // Check results
+        if (results.Contains(false))
         {
-            // Check results
-            if (!(results[0] && results[1] && results[2] && results[3]))
-            {
-                // Some task failed
-                throw new MessagingException($"Send group message failed: Task failed.\n" +
-                                             $"uploadImage => {results[0]}, " +
-                                             $"uploadImage => {results[1]}, " +
-                                             $"uploadMultiMsg => {results[2]}, " +
-                                             $"checkAtChain => {results[3]}");
-            }
+            // Some task failed
+            throw new MessagingException("Send group message failed: Task failed.\n" +
+                                         $"uploadImage => {results[0]}, " +
+                                         $"uploadRecord => {results[1]}, " +
+                                         $"uploadMultiMsg => {results[2]}, " +
+                                         $"checkAtChain => {results[3]}");
         }
 
         // Send the message
         var result = await SendGroupMessage(Context, groupUin, message);
         if (result.ResultCode == 0) return true;
         {
-            throw new MessagingException($"Send group message failed: " +
+            throw new MessagingException("Send group message failed: " +
                                          $"Assert failed. Ret => {result.ResultCode}");
         }
     }
@@ -233,8 +229,8 @@ public class MessagingLogic : BaseLogic
             }
 
             // Highway image upload
-            return await HighwayComponent.GroupPicUp(Context.Bot.Uin,
-                image.ToArray(), result.UploadInfo.ToArray());
+            return await HighwayComponent
+                .GroupPicUp(Context.Bot.Uin, image);
         }
         else
         {
@@ -254,8 +250,7 @@ public class MessagingLogic : BaseLogic
     /// <param name="uin"><b>[In]</b> Uin</param>
     /// <param name="message"><b>[In]</b> The message chain</param>
     /// <param name="c2c"><b>[In]</b> Group or Private </param>
-    private async Task<bool> SearchImageAndUpload
-        (uint uin, MessageChain message, bool c2c)
+    private async Task<bool> SearchImageAndUpload(uint uin, MessageChain message, bool c2c)
     {
         // Find the image chain
         var upload = message.FindChain<ImageChain>();
@@ -294,7 +289,7 @@ public class MessagingLogic : BaseLogic
             // Upload record via highway
             if (ConfigComponent.HighwayConfig != null)
             {
-                // Setup the highway server
+                // Setup the highway info
                 Context.LogV(TAG, "Uploading record file via highway.");
                 upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
                 {
@@ -303,13 +298,9 @@ public class MessagingLogic : BaseLogic
                     UploadTicket = ConfigComponent.HighwayConfig.Ticket,
                 });
 
-                // Request record upload
-                var request = new GroupPttUpRequest(uin, Context.Bot.Uin, upload);
-                {
-                    // Upload the record
-                    return await HighwayComponent
-                        .GroupPttUp(Context.Bot.Uin, upload, request);
-                }
+                // Upload the record
+                return await HighwayComponent
+                    .GroupPttUp(uin, Context.Bot.Uin, upload);
             }
 
             // Upload record via http
@@ -351,7 +342,69 @@ public class MessagingLogic : BaseLogic
     /// <returns></returns>
     private async Task<bool> SearchMultiMsgAndUpload(uint uin, MessageChain message)
     {
-        return true;
+        // Find the multimsg chain
+        var upload = message.GetChain<MultiMsgChain>();
+        {
+            // No multimsg
+            if (upload == null) return true;
+
+            // Chain packup
+            var packed = MessagePacker.PackMultiMsg(upload.Messages);
+            if (packed == null) return false;
+
+            // Compressing the data
+            packed = Compression.GZip(packed);
+
+            // Request apply up
+            var result = await MultiMsgApplyUp(Context, uin, packed);
+            if (result.ResultCode != 0) return false;
+            {
+                // Setup the highway info
+                upload.SetMultiMsgUpInfo(result.UploadInfo, packed);
+            }
+
+            // Highway multimsg upload
+            if (!await HighwayComponent.MultiMsgUp
+                    (uin, Context.Bot.Uin, upload)) return false;
+
+            string GetPreviewString()
+            {
+                var preview = "";
+                var limit = 4;
+                foreach (var (info, chain) in upload.Messages)
+                {
+                    if (--limit < 0) break;
+                    preview += "<title size=\"26\" color=\"#777777\" maxLines=\"2\" lineSpace=\"12\">" +
+                               $"{info.SourceName}: {chain.Chains[0]?.ToPreviewString()}</title>";
+                }
+
+                return preview;
+            }
+
+            upload.SetContent(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+
+                // Msg
+                "<msg serviceID=\"35\" templateID=\"1\" action=\"viewMultiMsg\" brief=\"[聊天记录]\" " +
+                $"m_resid=\"{upload.MultiMsgUpInfo.MsgResId}\" " +
+                $"m_fileName=\"{Guid.Generate().ToHex()}\" tSum=\"1\" sourceMsgId=\"0\" " +
+                "url=\"\" flag=\"3\" adverSign=\"0\" multiMsgFlag=\"0\">" +
+
+                // Message preview
+                "<item layout=\"1\" advertiser_id=\"0\" aid=\"0\">" +
+                "<title size=\"34\" maxLines=\"2\" lineSpace=\"12\">转发的聊天记录</title>" +
+                GetPreviewString() +
+                "<hr hidden=\"false\" style=\"0\" />" +
+                $"<summary size=\"26\" color=\"#777777\">查看{upload.Messages.Count}条转发消息</summary>" +
+                "</item>" +
+
+                // Banner
+                "<source name=\"聊天记录\" icon=\"\" action=\"\" appid=\"-1\" />" +
+                "</msg>"
+            );
+
+            return true;
+        }
     }
 
     /// <summary>
@@ -384,8 +437,11 @@ public class MessagingLogic : BaseLogic
     private static Task<GroupPttUpEvent> GroupPttUp(BusinessComponent context, uint groupUin, RecordChain record)
         => context.PostPacket<GroupPttUpEvent>(GroupPttUpEvent.Create(groupUin, context.Bot.Uin, record));
 
-    private static Task<LongConnOffPicUpEvent> PrivateOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
+    private static Task<LongConnOffPicUpEvent> LongConnOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
         => context.PostPacket<LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));
+
+    private static Task<MultiMsgApplyUpEvent> MultiMsgApplyUp(BusinessComponent context, uint destUin, byte[] packed)
+        => context.PostPacket<MultiMsgApplyUpEvent>(MultiMsgApplyUpEvent.Create(destUin, packed));
 
     #endregion
 }

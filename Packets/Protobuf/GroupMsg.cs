@@ -10,7 +10,7 @@ internal class GroupMsg : ProtoTreeRoot
         AddTree("0A", (root) =>
         {
             // Add source node
-            root.AddTree("12", (source) => { source.AddLeafVar("08", groupUin); });
+            root.AddTree("12", (source) => source.AddLeafVar("08", groupUin));
         });
 
         // Add slice node
@@ -22,7 +22,7 @@ internal class GroupMsg : ProtoTreeRoot
         });
 
         // Add message content node
-        AddTree("1A", (message) => { message.AddTree("0A", (_) => { _.AddTree(chain); }); });
+        AddTree("1A", (message) => { message.AddTree("0A", (_) => _.AddTree(chain)); });
 
         // Add random request id
         AddLeafVar("20", new Random().Next(1000, 65536));
