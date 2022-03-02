@@ -13,6 +13,11 @@ public class MessageChain : IEnumerable<BaseChain>
 {
     internal List<BaseChain> Chains { get; }
 
+    /// <summary>
+    /// Count
+    /// </summary>
+    public int Count => this.Count();
+
     internal MessageChain()
         => Chains = new();
 
