@@ -1,5 +1,6 @@
 ﻿using System;
 using Konata.Core.Events.Model;
+using Konata.Core.Utils.Extensions;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -21,17 +22,22 @@ public class SourceInfo
     /// <summary>
     /// Time
     /// </summary>
-    public DateTime Time { get; }
+    public uint MessageTime { get; }
+
+    /// <summary>
+    /// Uniseq
+    /// </summary>
+    public uint MessageUniSeq { get; }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sourceUin"></param>
     /// <param name="sourceName"></param>
-    /// <param name="time"></param>
-    public SourceInfo(uint sourceUin, string sourceName, DateTime time)
+    /// <param name="messageTime"></param>
+    public SourceInfo(uint sourceUin, string sourceName, uint messageTime)
     {
-        Time = time;
+        MessageTime = messageTime;
         SourceUin = sourceUin;
         SourceName = sourceName;
     }
@@ -41,8 +47,19 @@ public class SourceInfo
     /// </summary>
     /// <param name="sourceUin"></param>
     /// <param name="sourceName"></param>
+    /// <param name="messageTime"></param>
+    public SourceInfo(uint sourceUin, string sourceName, DateTime messageTime)
+        : this(sourceUin, sourceName, (uint) (messageTime.Epoch() / 1000))
+    {
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sourceUin"></param>
+    /// <param name="sourceName"></param>
     public SourceInfo(uint sourceUin, string sourceName)
-        : this(sourceUin, sourceName, DateTime.Now)
+        : this(sourceUin, sourceName, DateTime.Now.ToUniversalTime())
     {
     }
 
@@ -52,7 +69,7 @@ public class SourceInfo
     /// <param name="e"></param>
     /// <returns></returns>
     public static SourceInfo From(GroupMessageEvent e)
-        => new(e.MemberUin, e.MemberCard, e.EventTime);
+        => new(e.MemberUin, e.MemberCard, e.MessageTime);
 
     /// <summary>
     /// Create source info from friend message
