@@ -70,12 +70,11 @@ internal static class MessagePacker
                 // Message source
                 _.AddTree("0A", __ =>
                 {
-                    var time = source.MessageTime;
                     __.AddLeafVar("08", source.SourceUin); // Source uin
                     __.AddLeafVar("18", 82); // Type
-                    __.AddLeafVar("28", 0); // Sequence
-                    __.AddLeafVar("30", time); // Time stamp
-                    __.AddLeafVar("38", ByteConverter.BytesToInt64(guid, 0)); // UUID?
+                    __.AddLeafVar("28", source.MessageId); // Sequence
+                    __.AddLeafVar("30", source.MessageTime); // Time stamp
+                    __.AddLeafVar("38", source.MessageUniSeq); // Uniseq
 
                     // Multimsg from group
                     if (true)

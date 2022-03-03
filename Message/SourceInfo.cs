@@ -25,54 +25,62 @@ public class SourceInfo
     public uint MessageTime { get; }
 
     /// <summary>
+    /// Id
+    /// </summary>
+    public uint MessageId { get; }
+
+    /// <summary>
     /// Uniseq
     /// </summary>
     public uint MessageUniSeq { get; }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sourceUin"></param>
-    /// <param name="sourceName"></param>
-    /// <param name="messageTime"></param>
-    public SourceInfo(uint sourceUin, string sourceName, uint messageTime)
-    {
-        MessageTime = messageTime;
-        SourceUin = sourceUin;
-        SourceName = sourceName;
-    }
-
-    /// <summary>
-    /// 
+    /// Construct fake source info
     /// </summary>
     /// <param name="sourceUin"></param>
     /// <param name="sourceName"></param>
     /// <param name="messageTime"></param>
     public SourceInfo(uint sourceUin, string sourceName, DateTime messageTime)
-        : this(sourceUin, sourceName, (uint) (messageTime.Epoch() / 1000))
     {
+        SourceUin = sourceUin;
+        SourceName = sourceName;
+        MessageId = 0;
+        MessageUniSeq = 0;
+        MessageTime = (uint) (messageTime.ToUniversalTime().Epoch() / 1000);
     }
 
     /// <summary>
-    /// 
+    /// Construct fake source info
     /// </summary>
     /// <param name="sourceUin"></param>
     /// <param name="sourceName"></param>
     public SourceInfo(uint sourceUin, string sourceName)
-        : this(sourceUin, sourceName, DateTime.Now.ToUniversalTime())
+        : this(sourceUin, sourceName, DateTime.Now)
     {
     }
 
     /// <summary>
-    /// Create source info from group message
+    /// Construct source info from group message
+    /// </summary>
+    private SourceInfo(GroupMessageEvent e)
+    {
+        SourceUin = e.MemberUin;
+        SourceName = e.MemberCard;
+        MessageTime = e.MessageTime;
+        MessageUniSeq = e.MessageSeq;
+        MessageId = e.MessageId;
+    }
+
+    /// <summary>
+    /// Construct source info from group message
     /// </summary>
     /// <param name="e"></param>
     /// <returns></returns>
     public static SourceInfo From(GroupMessageEvent e)
-        => new(e.MemberUin, e.MemberCard, e.MessageTime);
+        => new(e);
 
     /// <summary>
-    /// Create source info from friend message
+    /// Construct source info from friend message
     /// TODO Friend name
     /// </summary>
     /// <param name="e"></param>
