@@ -60,7 +60,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input)
+    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input, byte[] guid)
     {
         var msgs = new ProtoTreeRoot();
         foreach (var (source, chain) in input)
@@ -75,7 +75,7 @@ internal static class MessagePacker
                     __.AddLeafVar("18", 82); // Type
                     __.AddLeafVar("28", 0); // Sequence
                     __.AddLeafVar("30", time); // Time stamp
-                    __.AddLeafVar("38", 82); // UUID?
+                    __.AddLeafVar("38", ByteConverter.BytesToInt64(guid, 0)); // UUID?
 
                     // Multimsg from group
                     if (true)
