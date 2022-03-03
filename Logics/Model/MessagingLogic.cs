@@ -216,6 +216,10 @@ public class MessagingLogic : BaseLogic
     /// <returns></returns>
     private async Task<bool> UploadImages(List<ImageChain> image, bool c2c, uint uin)
     {
+        // 1. Request ImageStore.GroupPicUp
+        // 2. Upload the image via highway
+        // 3. Return false while failed to upload
+
         if (c2c)
         {
             // Request image upload
@@ -245,6 +249,73 @@ public class MessagingLogic : BaseLogic
     }
 
     /// <summary>
+    /// Upload multimsgs
+    /// </summary>
+    /// <param name="uin"></param>
+    /// <param name="upload"></param>
+    /// <returns></returns>
+    private async Task<bool> UploadMultiMsgs(uint uin, MultiMsgChain upload)
+    {
+        // Chain packup
+        var uuid = Guid.Generate();
+        var packed = MessagePacker.PackMultiMsg(upload.Messages, uuid);
+        if (packed == null) return false;
+
+        // Compressing the data
+        packed = Compression.GZip(packed);
+
+        // Request apply up
+        var result = await MultiMsgApplyUp(Context, uin, packed);
+        if (result.ResultCode != 0) return false;
+        {
+            // Setup the highway info
+            upload.SetMultiMsgUpInfo(result.UploadInfo, packed);
+        }
+
+        // Highway multimsg upload
+        if (!await HighwayComponent.MultiMsgUp
+                (uin, Context.Bot.Uin, upload)) return false;
+
+        string GetPreviewString()
+        {
+            var preview = "";
+            var limit = 4;
+            foreach (var (info, chain) in upload.Messages)
+            {
+                if (--limit < 0) break;
+                preview += "<title size=\"26\" color=\"#777777\" maxLines=\"2\" lineSpace=\"12\">" +
+                           $"{info.SourceName}: {chain.Chains[0]?.ToPreviewString()}</title>";
+            }
+
+            return preview;
+        }
+
+        upload.SetContent(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+
+            // Msg
+            "<msg serviceID=\"35\" templateID=\"1\" action=\"viewMultiMsg\" brief=\"[聊天记录]\" " +
+            $"m_resid=\"{upload.MultiMsgUpInfo.MsgResId}\" " +
+            $"m_fileName=\"{uuid.ToHex()}\" tSum=\"1\" sourceMsgId=\"0\" " +
+            "url=\"\" flag=\"3\" adverSign=\"0\" multiMsgFlag=\"0\">" +
+
+            // Message preview
+            "<item layout=\"1\" advertiser_id=\"0\" aid=\"0\">" +
+            "<title size=\"34\" maxLines=\"2\" lineSpace=\"12\">转发的聊天记录</title>" +
+            GetPreviewString() +
+            "<hr hidden=\"false\" style=\"0\" />" +
+            $"<summary size=\"26\" color=\"#777777\">查看{upload.Messages.Count}条转发消息</summary>" +
+            "</item>" +
+
+            // Banner
+            "<source name=\"聊天记录\" icon=\"\" action=\"\" appid=\"-1\" />" +
+            "</msg>"
+        );
+
+        return true;
+    }
+
+    /// <summary>
     /// Search image and upload
     /// </summary>
     /// <param name="uin"><b>[In]</b> Uin</param>
@@ -257,11 +328,6 @@ public class MessagingLogic : BaseLogic
         {
             // No image
             if (upload.Count <= 0) return true;
-
-            // 1. Request ImageStore.GroupPicUp
-            // 2. Upload the image via highway
-            // 3. Return false while failed to upload
-
             return await UploadImages(upload, c2c, uin);
         }
     }
@@ -348,62 +414,31 @@ public class MessagingLogic : BaseLogic
             // No multimsg
             if (upload == null) return true;
 
-            // Chain packup
-            var packed = MessagePacker.PackMultiMsg(upload.Messages);
-            if (packed == null) return false;
-
-            // Compressing the data
-            packed = Compression.GZip(packed);
-
-            // Request apply up
-            var result = await MultiMsgApplyUp(Context, uin, packed);
-            if (result.ResultCode != 0) return false;
+            // Upload
+            foreach (var (source, chain) in upload.Messages)
             {
-                // Setup the highway info
-                upload.SetMultiMsgUpInfo(result.UploadInfo, packed);
-            }
+                // Wait for tasks done
+                var results = await Task.WhenAll(
+                    SearchImageAndUpload(uin, chain, true),
+                    SearchRecordAndUpload(uin, chain),
+                    SearchMultiMsgAndUpload(uin, chain),
+                    SearchAt(uin, chain)
+                );
 
-            // Highway multimsg upload
-            if (!await HighwayComponent.MultiMsgUp
-                    (uin, Context.Bot.Uin, upload)) return false;
-
-            string GetPreviewString()
-            {
-                var preview = "";
-                var limit = 4;
-                foreach (var (info, chain) in upload.Messages)
+                // Check results
+                if (results.Contains(false))
                 {
-                    if (--limit < 0) break;
-                    preview += "<title size=\"26\" color=\"#777777\" maxLines=\"2\" lineSpace=\"12\">" +
-                               $"{info.SourceName}: {chain.Chains[0]?.ToPreviewString()}</title>";
+                    // Some task failed
+                    throw new MessagingException("Send group message failed: Task failed.\n" +
+                                                 $"uploadImage => {results[0]}, " +
+                                                 $"uploadRecord => {results[1]}, " +
+                                                 $"uploadMultiMsg => {results[2]}, " +
+                                                 $"checkAtChain => {results[3]}");
                 }
-
-                return preview;
             }
-
-            upload.SetContent(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-
-                // Msg
-                "<msg serviceID=\"35\" templateID=\"1\" action=\"viewMultiMsg\" brief=\"[聊天记录]\" " +
-                $"m_resid=\"{upload.MultiMsgUpInfo.MsgResId}\" " +
-                $"m_fileName=\"{Guid.Generate().ToHex()}\" tSum=\"1\" sourceMsgId=\"0\" " +
-                "url=\"\" flag=\"3\" adverSign=\"0\" multiMsgFlag=\"0\">" +
-
-                // Message preview
-                "<item layout=\"1\" advertiser_id=\"0\" aid=\"0\">" +
-                "<title size=\"34\" maxLines=\"2\" lineSpace=\"12\">转发的聊天记录</title>" +
-                GetPreviewString() +
-                "<hr hidden=\"false\" style=\"0\" />" +
-                $"<summary size=\"26\" color=\"#777777\">查看{upload.Messages.Count}条转发消息</summary>" +
-                "</item>" +
-
-                // Banner
-                "<source name=\"聊天记录\" icon=\"\" action=\"\" appid=\"-1\" />" +
-                "</msg>"
-            );
-
-            return true;
+            
+            // Upload
+            return await UploadMultiMsgs(uin, upload);
         }
     }
 
