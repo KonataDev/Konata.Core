@@ -50,6 +50,12 @@ namespace Konata.Core.Events.Model
         public uint MessageTime { get; private set; }
 
         /// <summary>
+        /// <b>[Out]</b> <br/>
+        /// Message seq <br/>
+        /// </summary>
+        public uint MessageSeq { get; private set; }
+
+        /// <summary>
         /// <b>[Opt] [Out]</b> <br/>
         /// Total slice count <br/>
         /// </summary>
@@ -126,6 +132,13 @@ namespace Konata.Core.Events.Model
         internal void SetMessageTime(uint messageTime)
             => MessageTime = messageTime;
 
+        /// <summary>
+        /// Set message time
+        /// </summary>
+        /// <param name="seq"></param>
+        internal void SetMessageUniSeq(uint seq)
+            => MessageSeq = seq;
+        
         /// <summary>
         /// Set message 
         /// </summary>

@@ -73,5 +73,5 @@ public class VideoChain : BaseChain
            $"height={Height}]";
 
     internal override string ToPreviewString()
-        => "[短视频]";
+        => "[视频]";
 }

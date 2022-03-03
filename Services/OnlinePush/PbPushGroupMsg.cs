@@ -33,6 +33,7 @@ namespace Konata.Core.Services.OnlinePush
                         message.SetMemberUin((uint) sourceRoot.GetLeafVar("08"));
                         message.SetMessageId((uint) sourceRoot.GetLeafVar("28"));
                         message.SetMessageTime((uint) sourceRoot.GetLeafVar("30"));
+                        message.SetMessageUniSeq((uint) sourceRoot.GetLeafVar("38"));
 
                         sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("4A");
                         {

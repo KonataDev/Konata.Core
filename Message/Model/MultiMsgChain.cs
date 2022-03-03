@@ -83,5 +83,5 @@ public class MultiMsgChain : XmlChain
         => new();
     
     internal override string ToPreviewString()
-        => "[合并转发]";
+        => "[聊天记录]";
 }
