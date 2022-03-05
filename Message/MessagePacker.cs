@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Konata.Core.Message.Model;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
@@ -60,56 +61,97 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input, byte[] guid)
+    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input)
     {
-        var msgs = new ProtoTreeRoot();
+        var newClientMsgs = new ProtoTreeRoot();
+        var compatiableMsgs = new ProtoTreeRoot();
+        var multiMsgExpanded = new ProtoTreeRoot();
+
         foreach (var (source, chain) in input)
         {
-            msgs.AddTree("0A", _ =>
+            // Check if multimsg chain
+            var isMultiMsg = chain.Count == 1 &&
+                             chain.FirstOrDefault() is MultiMsgChain;
+
+            compatiableMsgs.AddTree("0A", _ =>
             {
                 // Message source
-                _.AddTree("0A", __ =>
-                {
-                    __.AddLeafVar("08", source.SourceUin); // Source uin
-                    __.AddLeafVar("18", 82); // Type
-                    __.AddLeafVar("28", source.MessageId); // Sequence
-                    __.AddLeafVar("30", source.MessageTime); // Time stamp
-                    __.AddLeafVar("38", source.MessageUniSeq); // Uniseq
+                _.AddTree("0A", __ => ConstructSource(__, source));
 
-                    // Multimsg from group
-                    if (true)
-                    {
-                        __.AddTree("4A", ___ =>
-                        {
-                            ___.AddLeafVar("08", source.SourceUin);
-                            ___.AddLeafString("22", source.SourceName);
-                        });
-                    }
+                // Message content
+                _.AddTree("1A", __ => __.AddLeafBytes("0A", isMultiMsg
+                    ? PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))
+                    : PackUp(chain)));
+            });
 
-                    // __.AddLeafString("38", 82); // Name
-                    // __.AddTree("A201", ___ =>
-                    // { 
-                    //     ___.AddLeafVar("08", 0);
-                    //     ___.AddLeafBytes("10", null);
-                    // });
-                });
+            newClientMsgs.AddTree("0A", _ =>
+            {
+                // Message source
+                _.AddTree("0A", __ => ConstructSource(__, source));
 
                 // Message content
                 _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(chain)));
             });
+
+            if (isMultiMsg)
+            {
+                var multiMsg = chain.GetChain<MultiMsgChain>();
+                multiMsgExpanded.AddTree("12", _ =>
+                {
+                    _.AddLeafString("0A", multiMsg.Guid);
+                    _.AddTree("12", __ =>
+                    {
+                        foreach (var subchain in multiMsg.Messages)
+                        {
+                            __.AddTree("0A", ___ =>
+                            {
+                                ___.AddTree("0A", ____ => ConstructSource(____, subchain.info));
+                                ___.AddTree("1A", ____ => ____.AddLeafBytes("0A", PackUp(subchain.chain)));
+                            });
+                        }
+                    });
+                });
+            }
         }
 
-        // Construct multi msg tree
+        // Construct multimsg tree
         var tree = new ProtoTreeRoot();
+        tree.AddTree(compatiableMsgs);
+        tree.AddTree(multiMsgExpanded);
         tree.AddTree("12", _ =>
         {
             _.AddLeafString("0A", "MultiMsg");
-            _.AddTree("12", msgs);
+            _.AddTree("12", newClientMsgs);
         });
 
-        tree.AddTree(msgs);
-
         return ProtoTreeRoot.Serialize(tree).GetBytes();
+    }
+
+    private static void ConstructSource(ProtoTreeRoot root, SourceInfo source)
+    {
+        // Message source
+        root.AddLeafVar("08", source.SourceUin); // Source uin
+        root.AddLeafVar("18", 82); // Type
+        root.AddLeafVar("28", source.MessageId); // Sequence
+        root.AddLeafVar("30", source.MessageTime); // Time stamp
+        root.AddLeafVar("38", source.MessageUniSeq); // Uniseq
+
+        // Multimsg from group
+        if (true)
+        {
+            root.AddTree("4A", _ =>
+            {
+                _.AddLeafVar("08", source.SourceUin);
+                _.AddLeafString("22", source.SourceName);
+            });
+        }
+
+        // __.AddLeafString("38", 82); // Name
+        // __.AddTree("A201", ___ =>
+        // { 
+        //     ___.AddLeafVar("08", 0);
+        //     ___.AddLeafBytes("10", null);
+        // });
     }
 
     private static void ConstructPBReserved(ProtoTreeRoot root, int v8801, int v78)

@@ -12,7 +12,6 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
 using Konata.Core.Utils;
-using Konata.Core.Utils.Extensions;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
@@ -257,8 +256,7 @@ public class MessagingLogic : BaseLogic
     private async Task<bool> UploadMultiMsgs(uint uin, MultiMsgChain upload)
     {
         // Chain packup
-        var uuid = Guid.Generate();
-        var packed = MessagePacker.PackMultiMsg(upload.Messages, uuid);
+        var packed = MessagePacker.PackMultiMsg(upload.Messages);
         if (packed == null) return false;
 
         // Compressing the data
@@ -290,13 +288,15 @@ public class MessagingLogic : BaseLogic
             return preview;
         }
 
+        // Update chain
+        upload.SetGuid(Guid.Generate());
         upload.SetContent(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 
             // Msg
             "<msg serviceID=\"35\" templateID=\"1\" action=\"viewMultiMsg\" brief=\"[聊天记录]\" " +
             $"m_resid=\"{upload.MultiMsgUpInfo.MsgResId}\" " +
-            $"m_fileName=\"{uuid.ToHex()}\" tSum=\"1\" sourceMsgId=\"0\" " +
+            $"m_fileName=\"{upload.Guid}\" tSum=\"1\" sourceMsgId=\"0\" " +
             "url=\"\" flag=\"3\" adverSign=\"0\" multiMsgFlag=\"0\">" +
 
             // Message preview
@@ -436,7 +436,7 @@ public class MessagingLogic : BaseLogic
                                                  $"checkAtChain => {results[3]}");
                 }
             }
-            
+
             // Upload
             return await UploadMultiMsgs(uin, upload);
         }
