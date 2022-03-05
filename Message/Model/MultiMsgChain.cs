@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Konata.Core.Events.Model;
+using Konata.Core.Utils.Extensions;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable CollectionNeverQueried.Global
@@ -23,6 +24,11 @@ public class MultiMsgChain : XmlChain
     /// Packed data
     /// </summary>
     internal byte[] PackedData { get; private set; }
+
+    /// <summary>
+    /// Guid
+    /// </summary>
+    internal string Guid { get; private set; }
 
     private MultiMsgChain() : base("")
     {
@@ -64,7 +70,7 @@ public class MultiMsgChain : XmlChain
         Messages.Add((sourceInfo, builder.Build()));
         return this;
     }
-    
+
     /// <summary>
     /// Set upload info
     /// </summary>
@@ -76,12 +82,15 @@ public class MultiMsgChain : XmlChain
         PackedData = packed;
     }
 
+    internal void SetGuid(byte[] guid)
+        => Guid = guid.ToHex();
+
     /// <summary>
     /// Create mulimsg chain
     /// </summary>
     public static MultiMsgChain Create()
         => new();
-    
+
     internal override string ToPreviewString()
         => "[聊天记录]";
 }
