@@ -86,7 +86,7 @@ namespace Konata.Core.Services.OnlinePush
                                     {
                                         chain = key switch
                                         {
-                                            "0A" => ParsePlainText((ProtoTreeRoot) value),
+                                            "0A" => ParseText((ProtoTreeRoot) value),
                                             "12" => ParseQFace((ProtoTreeRoot) value),
                                             "42" => ParsePicture((ProtoTreeRoot) value),
                                             "62" => ParseXML((ProtoTreeRoot) value),
@@ -264,7 +264,7 @@ namespace Konata.Core.Services.OnlinePush
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
-        private static BaseChain ParsePlainText(ProtoTreeRoot tree)
+        private static BaseChain ParseText(ProtoTreeRoot tree)
         {
             // At chain
             if (tree.TryGetLeafBytes("1A", out var leaf))
@@ -276,9 +276,7 @@ namespace Konata.Core.Services.OnlinePush
             }
 
             // Plain text chain
-            return tree.TryGetLeafString("0A", out var content)
-                ? TextChain.Create(content)
-                : null;
+            return TextChain.Create(tree.GetLeafString("0A"));
         }
 
         /// <summary>
