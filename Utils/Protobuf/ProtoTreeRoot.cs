@@ -7,10 +7,8 @@ namespace Konata.Core.Utils.Protobuf
 {
     using ProtoLeaves = Dictionary<string, List<IProtoType>>;
 
-    public class ProtoTreeRoot : IProtoType
+    public class ProtoTreeRoot : ProtoLengthDelimited
     {
-        private byte[] RawData { get; set; }
-
         private ProtoLeaves Leaves { get; set; }
 
         public delegate void TreeRootWriter(ProtoTreeRoot tree);
@@ -364,14 +362,14 @@ namespace Konata.Core.Utils.Protobuf
                                 case ProtoVarInt protoVarint:
                                     pbBytes = ProtoVarInt.Serialize(protoVarint);
                                     break;
-
-                                case ProtoLengthDelimited protoLengthDelimited:
-                                    pbBytes = ProtoLengthDelimited.Serialize(protoLengthDelimited);
-                                    break;
-
+                                
                                 case ProtoTreeRoot protoRoot:
                                     pbBytes = Serialize(protoRoot).GetBytes();
                                     buffer.PutBytes(ByteConverter.NumberToVarint(pbBytes.Length));
+                                    break;
+                                
+                                case ProtoLengthDelimited protoLengthDelimited:
+                                    pbBytes = ProtoLengthDelimited.Serialize(protoLengthDelimited);
                                     break;
                             }
                         }
@@ -394,7 +392,7 @@ namespace Konata.Core.Utils.Protobuf
         /// <returns></returns>
         public static ProtoTreeRoot Deserialize(byte[] data, bool recursion)
         {
-            var tree = new ProtoTreeRoot {RawData = data};
+            var tree = new ProtoTreeRoot {Value = data};
             var buffer = new ByteBuffer(data);
             {
                 while (buffer.RemainLength > 0)
@@ -450,7 +448,7 @@ namespace Konata.Core.Utils.Protobuf
             return tree;
         }
 
-        public static explicit operator ProtoLengthDelimited(ProtoTreeRoot root)
-            => ProtoLengthDelimited.Create(root.RawData);
+        // public static explicit operator ProtoLengthDelimited(ProtoTreeRoot root)
+        //     => ProtoLengthDelimited.Create(root.RawData);
     }
 }
