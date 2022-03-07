@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;

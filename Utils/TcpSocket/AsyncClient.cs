@@ -94,8 +94,7 @@ namespace Konata.Core.Utils.TcpSocket
 
             // Connect to the server
             static void callback(IAsyncResult result) => ((FeaturedSocket) result.AsyncState).EndConnect(result);
-            if (!_socketInstance.TryConnect(_socketHost, _socketIp,
-                    callback, _socketInstance))
+            if (!_socketInstance.TryConnect(_socketHost, _socketIp, callback, _socketInstance))
             {
                 return false;
             }
