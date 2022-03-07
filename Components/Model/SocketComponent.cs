@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Packets;
+using Konata.Core.Packets.SvcRequest;
+using Konata.Core.Packets.SvcResponse;
+using Konata.Core.Utils.Crypto;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.TcpSocket;
@@ -21,20 +28,6 @@ namespace Konata.Core.Components.Model;
 [Component("SocketComponent", "Konata Socket Client Component")]
 internal class SocketComponent : InternalComponent, IClientListener
 {
-    private static (string Host, int Port)[] DefaultServers { get; } =
-    {
-        new("msfwifi.3g.qq.com", 8080),
-        new("14.215.138.110", 8080),
-        new("113.96.12.224", 8080),
-        new("157.255.13.77", 14000),
-        new("120.232.18.27", 443),
-        new("183.3.235.162", 14000),
-        new("163.177.89.195", 443),
-        new("183.232.94.44", 80),
-        new("203.205.255.224", 8080),
-        new("203.205.255.221", 8080),
-    };
-
     public bool Connected
         => _tcpClient.Connected;
 
@@ -86,8 +79,10 @@ internal class SocketComponent : InternalComponent, IClientListener
         // Using fastest server
         else if (useLowLatency)
         {
+            var servers = await GetServerList();
+
             // Ping the server
-            foreach (var server in DefaultServers)
+            foreach (var server in servers)
             {
                 var time = Icmp.Ping(server.Host, 2000);
                 {
@@ -221,6 +216,47 @@ internal class SocketComponent : InternalComponent, IClientListener
         else LogW(TAG, "Unsupported event received.");
 
         return false;
+    }
+
+    /// <summary>
+    /// Get server list
+    /// </summary>
+    /// <returns></returns>
+    private async Task<IEnumerable<ServerInfo>> GetServerList()
+    {
+        // Make request packet
+        var reqUrl = "https://configsvr.msf.3g.qq.com/configsvr/serverlist.jsp";
+        var reqBuf = new PacketBase();
+        {
+            reqBuf.EnterBarrierEncrypted(ByteBuffer.Prefix.None,
+                Endian.FollowMachine, TeaCryptor.Instance, "F0441F5FF42DA58FDCF7949ABA62D411".UnHex());
+            {
+                var body = new SvcReqHttpServerListReq();
+                reqBuf.PutUintBE(body.Length + 4);
+                reqBuf.PutByteBuffer(body);
+            }
+            reqBuf.LeaveBarrier();
+        }
+
+        try
+        {
+            // Request server list
+            var response = await Http.Post(reqUrl, reqBuf.GetBytes());
+            {
+                var rspBuf = new PacketBase(response, TeaCryptor.Instance,
+                    "F0441F5FF42DA58FDCF7949ABA62D411".UnHex());
+                {
+                    rspBuf.EatBytes(4);
+                    return new SvcRspHttpServerListRsp(rspBuf.TakeAllBytes(out _)).Servers;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            LogE(TAG, e);
+            LogW(TAG, "Request server list failed, fallback to the default server.");
+            return new ServerInfo[] {new("msfwifi.3g.qq.com", 8080)};
+        }
     }
 
     #region Stub methods

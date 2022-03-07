@@ -75,13 +75,19 @@ namespace Konata.Core.Utils.Network
         /// <param name="timeout"></param>
         /// <returns></returns>
         public static async Task<byte[]> Post(string url, byte[] data,
-            Dictionary<string, string> header, Dictionary<string, string> param,
+            Dictionary<string, string> header = null, Dictionary<string, string> param = null,
             int timeout = 8000)
         {
-            var args = param.Aggregate("", (current, i)
-                => current + $"&{i.Key}={i.Value}");
+            // Append params to url
+            if (param != null)
+            {
+                var args = param.Aggregate("", (current, i)
+                    => current + $"&{i.Key}={i.Value}");
 
-            url += $"?{args[1..]}";
+                url += $"?{args[1..]}";
+            }
+
+            // Create request
             var request = WebRequest.CreateHttp(url);
             {
                 request.Method = "POST";
@@ -92,8 +98,11 @@ namespace Konata.Core.Utils.Network
                     DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
                 // Append request header
-                foreach (var (k, v) in header)
-                    request.Headers.Add(k, v);
+                if (header != null)
+                {
+                    foreach (var (k, v) in header)
+                        request.Headers.Add(k, v);
+                }
 
                 // Write the post body
                 var reqstream = request.GetRequestStream();
