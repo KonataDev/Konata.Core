@@ -37,10 +37,10 @@ var bot = new Bot(config, device, keystore);
             Console.WriteLine(e.SliderUrl); 
             ((Bot)s).SubmitSliderTicket(Console.ReadLine());
         }
-        else if(e.Type == CaptchaType.CheckSms)
+        else if(e.Type == CaptchaType.SMS)
         {
             Console.WriteLine(e.Phone); 
-            ((Bot)s).SubmitSMSCode(Console.ReadLine());
+            ((Bot)s).SubmitSmsCode(Console.ReadLine());
         }
     };
 
@@ -48,13 +48,13 @@ var bot = new Bot(config, device, keystore);
     bot.OnGroupMessage += (s, e) =>
     {
          Console.WriteLine($"{e.Message.ToString()}"); 
-    }
+    };
     
     // Handle messages from friend
-    bot.OnPrivateMessage += (s, e) =>
+    bot.OnFriendMessage += (s, e) =>
     {
          Console.WriteLine($"{e.Message.ToString()}"); 
-    }
+    };
     
     // ... More handlers
 }
