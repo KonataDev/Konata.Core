@@ -107,12 +107,6 @@ namespace Konata.Core
         public Task<bool> Logout()
             => BusinessComponent.WtExchange.Logout();
 
-        // /// <summary>
-        // /// Deinit (temporary method)
-        // /// </summary>
-        // public void DeInit()
-        //     => ScheduleComponent.DeInit();
-
         /// <summary>
         /// Submit Slider ticket while login
         /// </summary>
