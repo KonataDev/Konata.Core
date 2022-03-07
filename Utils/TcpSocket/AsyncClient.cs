@@ -93,9 +93,9 @@ namespace Konata.Core.Utils.TcpSocket
             }
 
             // Connect to the server
-            static void callback(IAsyncResult result) => ((FeaturedSocket)result.AsyncState).EndConnect(result);
+            static void callback(IAsyncResult result) => ((FeaturedSocket) result.AsyncState).EndConnect(result);
             if (!_socketInstance.TryConnect(_socketHost, _socketIp,
-            callback, _socketInstance))
+                    callback, _socketInstance))
             {
                 return false;
             }
@@ -199,10 +199,16 @@ namespace Konata.Core.Utils.TcpSocket
                             // Move the remaining data ahead
                             var streamBuf = _recvStream.GetBuffer();
                             var streamLen = _recvStream.Length - _recvStream.Position;
-                            Array.Copy(streamBuf, _recvStream.Position, streamBuf, 0, streamLen);
+
+                            if (streamLen > 0)
                             {
-                                _recvStream.SetLength(streamLen);
+                                Array.Copy(streamBuf, _recvStream.Position, streamBuf, 0, streamLen);
+                                {
+                                    _recvStream.SetLength(streamLen);
+                                    _recvStream.Seek(streamLen, SeekOrigin.Begin);
+                                }
                             }
+                            else _recvStream.SetLength(0);
 
                             // Reset
                             _packetLen = 0;
@@ -231,7 +237,7 @@ namespace Konata.Core.Utils.TcpSocket
 
     class FeaturedSocket : Socket
     {
-        public FeaturedSocket(AddressFamily addressFamily, SocketType socketType, 
+        public FeaturedSocket(AddressFamily addressFamily, SocketType socketType,
             ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
         {
         }
@@ -247,10 +253,12 @@ namespace Konata.Core.Utils.TcpSocket
             try
             {
                 base.EndConnect(result);
-            } catch
-            {
-                return false; 
             }
+            catch
+            {
+                return false;
+            }
+
             return true;
         }
     }
