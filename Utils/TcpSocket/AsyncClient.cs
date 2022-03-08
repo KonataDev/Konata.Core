@@ -222,8 +222,8 @@ namespace Konata.Core.Utils.TcpSocket
                 }
 
                 Final:
-                _socketInstance.BeginReceive(_recvBuffer, 0,
-                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
+                new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
+                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
             }
 
             // Catch exceptions
