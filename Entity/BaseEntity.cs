@@ -126,7 +126,7 @@ namespace Konata.Core.Entity
             where TComponent : BaseComponent
         {
             var task = new KonataTask(anyEvent);
-            GetComponent<TComponent>().EventPipeline.SendAsync(task);
+            GetComponent<TComponent>().EventPipeline.Invoke(task);
 
             return task.CompletionSource.Task;
         }
@@ -143,7 +143,7 @@ namespace Konata.Core.Entity
             where TComponent : BaseComponent
         {
             var task = new KonataTask(anyEvent, timeout);
-            GetComponent<TComponent>().EventPipeline.SendAsync(task);
+            GetComponent<TComponent>().EventPipeline.Invoke(task);
 
             return task.CompletionSource.Task;
         }
@@ -156,7 +156,7 @@ namespace Konata.Core.Entity
         {
             foreach (var component in _componentDict)
             {
-                component.Value.EventPipeline.SendAsync(new KonataTask(anyEvent));
+                component.Value.EventPipeline.Invoke(new KonataTask(anyEvent));
             }
         }
 

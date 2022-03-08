@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Konata.Core.Events;
@@ -12,23 +13,42 @@ namespace Konata.Core.Components
     {
         public BaseEntity Entity { get; set; }
 
-        public ActionBlock<KonataTask> EventPipeline { get; }
+        // public ActionBlock<KonataTask> EventPipeline { get; }
+
+        public Action<KonataTask> EventPipeline { get; }
 
         public BaseComponent()
         {
-            EventPipeline = new ActionBlock<KonataTask>(async t =>
+            // EventPipeline = new ActionBlock<KonataTask>(async t =>
+            // {
+            //     try
+            //     {
+            //         // Force finish the tasks if the
+            //         // handler does not save the event by itself.
+            //         if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
+            //     }
+            //     catch (Exception e)
+            //     {
+            //         if (!t.Complected) t.Exception(e);
+            //     }
+            // });
+
+            EventPipeline = t =>
             {
-                try
+                ThreadPool.QueueUserWorkItem(async _ =>
                 {
-                    // Force finish the tasks if the
-                    // handler does not save the event by itself.
-                    if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
-                }
-                catch (Exception e)
-                {
-                    if (!t.Complected) t.Exception(e);
-                }
-            });
+                    try
+                    {
+                        // Force finish the tasks if the
+                        // handler does not save the event by itself.
+                        if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
+                    }
+                    catch (Exception e)
+                    {
+                        if (!t.Complected) t.Exception(e);
+                    }
+                });
+            };
         }
 
         internal virtual Task<bool> OnHandleEvent(KonataTask task)
