@@ -103,8 +103,9 @@ namespace Konata.Core.Utils.TcpSocket
             // Connected
             if (_socketInstance.Connected)
             {
-                _socketInstance.BeginReceive(_recvBuffer, 0,
-                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null);
+                // Begin receive data Asynchronously
+                new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
+                    _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
 
                 return true;
             }
@@ -221,7 +222,13 @@ namespace Konata.Core.Utils.TcpSocket
                     }
                 }
 
-                Final:
+            // Start a new task to continue receive new data
+            // and complete current task
+            // to prevent recursive function invoke
+            // which leads to memory leak
+            //
+            // See: Issue (#95)
+            Final:
                 new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
                     _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
             }
