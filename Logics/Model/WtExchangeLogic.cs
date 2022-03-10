@@ -282,7 +282,7 @@ namespace Konata.Core.Logics.Model
                 {
                     // Bot online
                     Context.PostEventToEntity(online);
-                    await Context.PostEvent<BusinessComponent>(online);
+                    await Context.SendEvent<BusinessComponent>(online);
 
                     // Register schedules
                     ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);

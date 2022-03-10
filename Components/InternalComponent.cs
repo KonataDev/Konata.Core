@@ -34,8 +34,8 @@ namespace Konata.Core.Components
             where TEvent : ProtocolEvent
         {
             var task = timeout == 0
-                ? Entity.PostEvent<PacketComponent>(anyEvent)
-                : Entity.PostEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
+                ? Entity.SendEvent<PacketComponent>(anyEvent)
+                : Entity.SendEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
             return (TEvent) await task;
         }
 
@@ -45,8 +45,8 @@ namespace Konata.Core.Components
         public async void PostPacket(ProtocolEvent anyEvent)
         {
             var task = anyEvent.Timeout == 0
-                ? Entity.PostEvent<PacketComponent>(anyEvent)
-                : Entity.PostEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
+                ? Entity.SendEvent<PacketComponent>(anyEvent)
+                : Entity.SendEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
             await task;
         }
     }
