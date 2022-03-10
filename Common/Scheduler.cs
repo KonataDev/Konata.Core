@@ -31,10 +31,16 @@ public class Scheduler
     /// </summary>
     public string Name { get; }
 
-    internal Scheduler(Bot bot, string name)
+    /// <summary>
+    /// Scheduler action
+    /// </summary>
+    public Action<Bot> Action { get; }
+
+    internal Scheduler(Bot bot, string name, Action<Bot> action)
     {
         Bot = bot;
         Name = name;
+        Action = action;
         Instance = bot.ScheduleComponent;
     }
 
@@ -42,56 +48,53 @@ public class Scheduler
     /// Cancel the task
     /// </summary>
     ~Scheduler() => Cancel();
-    
+
     /// <summary>
     /// Create a task scheduler
     /// </summary>
     /// <param name="bot"><b>[In]</b> Bot instance</param>
     /// <param name="name"><b>[In]</b> Task identity name</param>
+    /// <param name="action"><b>[In]</b> Task callback action</param>
     /// <returns></returns>
-    public static Scheduler Create(Bot bot, string name)
-        => new(bot, name);
+    public static Scheduler Create(Bot bot, string name, Action<Bot> action)
+        => new(bot, name, action);
 
     /// <summary>
     /// Execute the task with a specific interval
     /// </summary>
     /// <param name="interval"><b>[In]</b> Interval in milliseconds</param>
     /// <param name="times"><b>[In]</b> Execute times</param>
-    /// <param name="action"><b>[In]</b> Callback action</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void Interval(int interval, int times, Action action)
-        => Instance.Interval(Name, interval, times, action);
+    public void Interval(int interval, int times)
+        => Instance.Interval(Name, interval, times, () => Action(Bot));
 
     /// <summary>
     /// Execute the task with a specific interval infinity
     /// </summary>
     /// <param name="interval"><b>[In]</b> Interval in milliseconds</param>
-    /// <param name="action"><b>[In]</b> Callback action</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void Interval(int interval, Action action)
-        => Instance.Interval(Name, interval, Infinity, action);
+    public void Interval(int interval)
+        => Instance.Interval(Name, interval, Infinity, () => Action(Bot));
 
     /// <summary>
     /// Execute the task once
     /// </summary>
     /// <param name="delay"><b>[In]</b> Delay time in milliseconds</param>
-    /// <param name="action"><b>[In]</b> Callback action</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void RunOnce(int delay, Action action)
-        => Instance.RunOnce(Name, delay, action);
+    public void RunOnce(int delay)
+        => Instance.RunOnce(Name, delay, () => Action(Bot));
 
     /// <summary>
     /// Execute the task once
     /// </summary>
     /// <param name="date"><b>[In]</b> Execute date</param>
-    /// <param name="action"><b>[In]</b> Callback action</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void RunOnce(DateTime date, Action action)
-        => Instance.RunOnce(Name, date, action);
+    public void RunOnce(DateTime date)
+        => Instance.RunOnce(Name, date, () => Action(Bot));
 
     /// <summary>
     /// Trigger a task to run
