@@ -262,10 +262,10 @@ internal class SocketComponent : InternalComponent, IClientListener
     #region Stub methods
 
     private static Task PushOffline(SocketComponent context, string reason)
-        => context.PostEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
+        => context.SendEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
 
     private static Task PushNewPacket(SocketComponent context, byte[] data)
-        => context.PostEvent<PacketComponent>(PacketEvent.Push(data));
+        => context.SendEvent<PacketComponent>(PacketEvent.Push(data));
 
     #endregion
 }

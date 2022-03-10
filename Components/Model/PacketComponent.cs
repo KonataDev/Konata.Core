@@ -101,7 +101,7 @@ namespace Konata.Core.Components.Model
         {
             // Parse service message
             if (!ServiceMessage.Parse(packetEvent.Buffer,
-                ConfigComponent.KeyStore, out var serviceMsg))
+                    ConfigComponent.KeyStore, out var serviceMsg))
             {
                 LogW(TAG, "Parse message failed.");
                 return false;
@@ -130,13 +130,13 @@ namespace Konata.Core.Components.Model
             {
                 // Translate bytes to ProtocolEvent 
                 if (service.Parse(ssoFrame, ConfigComponent.KeyStore,
-                    out var outEvent) && outEvent != null)
+                        out var outEvent) && outEvent != null)
                 {
                     // Set result
                     if (isPending) request.Finish(outEvent);
 
                     // Pass this message to business
-                    else await PostEvent<BusinessComponent>(outEvent);
+                    else PushBusiness(BusinessComponent, outEvent);
                 }
                 else
                 {
@@ -161,7 +161,7 @@ namespace Konata.Core.Components.Model
         {
             // If no service can process this message
             if (!_servicesEventType.TryGetValue
-                (protocolEvent.GetType(), out var serviceList))
+                    (protocolEvent.GetType(), out var serviceList))
                 return false;
 
             // Enumerate all the service
@@ -169,10 +169,10 @@ namespace Konata.Core.Components.Model
             foreach (var service in serviceList)
             {
                 if (service.Build(_serviceSequence, protocolEvent, ConfigComponent.KeyStore,
-                    ConfigComponent.DeviceInfo, out var sequence, out var buffer))
+                        ConfigComponent.DeviceInfo, out var sequence, out var buffer))
                 {
                     // Pass messages to socket
-                    await PostEvent<SocketComponent>(PacketEvent.Create(buffer));
+                    await SendEvent<SocketComponent>(PacketEvent.Create(buffer));
 
                     // This event is no need response
                     if (!protocolEvent.WaitForResponse) continue;
@@ -192,5 +192,12 @@ namespace Konata.Core.Components.Model
 
             return true;
         }
+
+        #region Stub methods
+
+        private static void PushBusiness(BusinessComponent context, BaseEvent anyEvent)
+            => context.SendEvent<BusinessComponent>(anyEvent);
+
+        #endregion
     }
 }
