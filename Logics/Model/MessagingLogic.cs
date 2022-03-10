@@ -455,28 +455,28 @@ public class MessagingLogic : BaseLogic
     #region Stub methods
 
     private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
-        => context.PostPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
+        => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
 
     private static void PullPrivateMessage(BusinessComponent context, byte[] syncCookie)
-        => context.PostPacket(PullMessageEvent.Create(syncCookie));
+        => context.SendPacket(PullMessageEvent.Create(syncCookie));
 
     private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
-        => context.PostPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
+        => context.SendPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
 
     private static Task<FriendMessageEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
-        => context.PostPacket<FriendMessageEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
+        => context.SendPacket<FriendMessageEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
 
     private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
-        => context.PostPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));
+        => context.SendPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));
 
     private static Task<GroupPttUpEvent> GroupPttUp(BusinessComponent context, uint groupUin, RecordChain record)
-        => context.PostPacket<GroupPttUpEvent>(GroupPttUpEvent.Create(groupUin, context.Bot.Uin, record));
+        => context.SendPacket<GroupPttUpEvent>(GroupPttUpEvent.Create(groupUin, context.Bot.Uin, record));
 
     private static Task<LongConnOffPicUpEvent> LongConnOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
-        => context.PostPacket<LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));
+        => context.SendPacket<LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));
 
     private static Task<MultiMsgApplyUpEvent> MultiMsgApplyUp(BusinessComponent context, uint destUin, byte[] packed)
-        => context.PostPacket<MultiMsgApplyUpEvent>(MultiMsgApplyUpEvent.Create(destUin, packed));
+        => context.SendPacket<MultiMsgApplyUpEvent>(MultiMsgApplyUpEvent.Create(destUin, packed));
 
     #endregion
 }

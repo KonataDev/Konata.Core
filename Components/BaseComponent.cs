@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Konata.Core.Events;
 using Konata.Core.Entity;
 
@@ -12,45 +10,7 @@ namespace Konata.Core.Components;
 public class BaseComponent
 {
     public BaseEntity Entity { get; set; }
-
-    // public ActionBlock<KonataTask> EventPipeline { get; }
-
-    // public Action<KonataTask> EventPipeline { get; }
-
-    public BaseComponent()
-    {
-        // EventPipeline = new ActionBlock<KonataTask>(async t =>
-        // {
-        //     try
-        //     {
-        //         // Force finish the tasks if the
-        //         // handler does not save the event by itself.
-        //         if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         if (!t.Complected) t.Exception(e);
-        //     }
-        // });
-
-        // EventPipeline = t =>
-        // {
-        //     ThreadPool.QueueUserWorkItem(async _ =>
-        //     {
-        //         try
-        //         {
-        //             // Force finish the tasks if the
-        //             // handler does not save the event by itself.
-        //             if (!await OnHandleEvent(t) && !t.Complected) t.Finish();
-        //         }
-        //         catch (Exception e)
-        //         {
-        //             if (!t.Complected) t.Exception(e);
-        //         }
-        //     });
-        // };
-    }
-
+ 
     internal virtual Task<bool> OnHandleEvent(BaseEvent anyEvent)
         => Task.FromResult(false);
 
