@@ -423,28 +423,28 @@ namespace Konata.Core.Logics.Model
         #region Stub methods
 
         private static Task<WtLoginEvent> WtLogin(BusinessComponent context)
-            => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateTgtgt());
+            => context.SendPacket<WtLoginEvent>(WtLoginEvent.CreateTgtgt());
 
         private static Task<WtLoginEvent> WtXchg(BusinessComponent context)
-            => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateXchg());
+            => context.SendPacket<WtLoginEvent>(WtLoginEvent.CreateXchg());
 
         private static Task<WtLoginEvent> WtRefreshSmsCode(BusinessComponent context)
-            => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateRefreshSms());
+            => context.SendPacket<WtLoginEvent>(WtLoginEvent.CreateRefreshSms());
 
         private static Task<WtLoginEvent> WtVerifyDeviceLock(BusinessComponent context)
-            => context.PostPacket<WtLoginEvent>(WtLoginEvent.CreateCheckDevLock());
+            => context.SendPacket<WtLoginEvent>(WtLoginEvent.CreateCheckDevLock());
 
         private static Task<WtLoginEvent> WtCheckUserOperation(BusinessComponent context, WtLoginEvent userOperation)
-            => context.PostPacket<WtLoginEvent>(userOperation);
+            => context.SendPacket<WtLoginEvent>(userOperation);
 
         private static Task<OnlineStatusEvent> SetClientOnineType(BusinessComponent context, OnlineStatusEvent.Type onlineType)
-            => context.PostPacket<OnlineStatusEvent>(OnlineStatusEvent.Create(onlineType));
+            => context.SendPacket<OnlineStatusEvent>(OnlineStatusEvent.Create(onlineType));
 
         private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context)
-            => context.PostPacket<CheckHeartbeatEvent>(CheckHeartbeatEvent.Create());
+            => context.SendPacket<CheckHeartbeatEvent>(CheckHeartbeatEvent.Create());
 
         private static Task<PullMessageEvent> PullMessage(BusinessComponent context)
-            => context.PostPacket<PullMessageEvent>(PullMessageEvent.Create(context.ConfigComponent.SyncCookie));
+            => context.SendPacket<PullMessageEvent>(PullMessageEvent.Create(context.ConfigComponent.SyncCookie));
 
         #endregion
     }

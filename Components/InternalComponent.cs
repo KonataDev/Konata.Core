@@ -30,7 +30,7 @@ namespace Konata.Core.Components
         public HighwayComponent HighwayComponent
             => Bot.HighwayComponent;
 
-        public async Task<TEvent> PostPacket<TEvent>(ProtocolEvent anyEvent, int timeout)
+        public async Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent, int timeout)
             where TEvent : ProtocolEvent
         {
             var task = timeout == 0
@@ -39,10 +39,10 @@ namespace Konata.Core.Components
             return (TEvent) await task;
         }
 
-        public Task<TEvent> PostPacket<TEvent>(ProtocolEvent anyEvent)
-            where TEvent : ProtocolEvent => PostPacket<TEvent>(anyEvent, anyEvent.Timeout);
+        public Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
+            where TEvent : ProtocolEvent => SendPacket<TEvent>(anyEvent, anyEvent.Timeout);
 
-        public async void PostPacket(ProtocolEvent anyEvent)
+        public async void SendPacket(ProtocolEvent anyEvent)
         {
             var task = anyEvent.Timeout == 0
                 ? Entity.SendEvent<PacketComponent>(anyEvent)

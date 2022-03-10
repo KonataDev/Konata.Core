@@ -313,13 +313,13 @@ public class CacheSyncLogic : BaseLogic
     #region Stub methods
 
     private static Task<PullGroupListEvent> PullGroupList(BusinessComponent context)
-        => context.PostPacket<PullGroupListEvent>(PullGroupListEvent.Create(context.Bot.Uin));
+        => context.SendPacket<PullGroupListEvent>(PullGroupListEvent.Create(context.Bot.Uin));
 
     private static Task<PullFriendListEvent> PullFriendList(BusinessComponent context, uint startIndex, uint limitNum)
-        => context.PostPacket<PullFriendListEvent>(PullFriendListEvent.Create(context.Bot.Uin, startIndex, limitNum));
+        => context.SendPacket<PullFriendListEvent>(PullFriendListEvent.Create(context.Bot.Uin, startIndex, limitNum));
 
     private static Task<PullGroupMemberListEvent> PullGroupMemberList(BusinessComponent context, uint groupUin, ulong groupCode, uint nextUin)
-        => context.PostPacket<PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
+        => context.SendPacket<PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
 
     #endregion
 }

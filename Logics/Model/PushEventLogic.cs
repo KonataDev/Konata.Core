@@ -78,7 +78,7 @@ public class PushEventLogic : BaseLogic
     #region Stub methods
 
     private static Task<OnlineRespPushEvent> ConfrimReqPushEvent(BusinessComponent context, OnlineReqPushEvent original)
-        => context.PostPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
+        => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
 
     #endregion
 }

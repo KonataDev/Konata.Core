@@ -218,19 +218,19 @@ public class OperationLogic : BaseLogic
     #region Stub methods
 
     private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
-        => context.PostPacket<GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
+        => context.SendPacket<GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
 
     private static Task<GroupMuteMemberEvent> GroupMuteMember(BusinessComponent context, uint groupUin, uint memberUin, uint timeSeconds)
-        => context.PostPacket<GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
+        => context.SendPacket<GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
 
     private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
-        => context.PostPacket<GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
+        => context.SendPacket<GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, preventRequest));
 
     private static Task<GroupSpecialTitleEvent> GroupSetSpecialTitle(BusinessComponent context, uint groupUin, uint memberUin, string specialTitle, uint expiredTime)
-        => context.PostPacket<GroupSpecialTitleEvent>(GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime));
+        => context.SendPacket<GroupSpecialTitleEvent>(GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime));
 
     private static Task<GroupManagementEvent> GroupLeave(BusinessComponent context, ulong groupCode, bool dismiss)
-        => context.PostPacket<GroupManagementEvent>(GroupManagementEvent.Create(groupCode, context.Bot.Uin, dismiss));
+        => context.SendPacket<GroupManagementEvent>(GroupManagementEvent.Create(groupCode, context.Bot.Uin, dismiss));
 
     #endregion
 }
