@@ -5,13 +5,13 @@
 ## Konata.Core
 
 [![Core](https://img.shields.io/badge/Konata-Core-blue)](#)
-[![C#](https://img.shields.io/badge/C%23-9.0-green)](#)
-[![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)  
+[![C#](https://img.shields.io/badge/.NET-Standard%202.1-blue)](#)
+[![NuGet](https://img.shields.io/nuget/v/Konata.Core)](https://www.nuget.org/packages/Konata.Core)  
 [![NuGet](https://img.shields.io/nuget/dt/Konata.Core)](https://www.nuget.org/packages/Konata.Core)
-[![NuGet](https://img.shields.io/nuget/v/Konata.Core)](https://www.nuget.org/packages/Konata.Core)
+[![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)
 [![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
 
-QQ(Android) protocol core implementation in C# 9.0   
+QQ(Android) protocol core implemented with pure C#  
 based on **.net standard 2.1**, event driven.
 </div>
 
@@ -23,38 +23,34 @@ based on **.net standard 2.1**, event driven.
 // Create a bot instance
 var bot = new Bot(config, device, keystore);
 {
-    // Print the log
-    bot.OnLog += (s, e) =>
-    {
-        Console.WriteLine(e.EventMessage); 
-    };
-
     // Handle the captcha
     bot.OnCaptcha += (s, e) =>
     {
+        var bot = (Bot)s;
+        
         if(e.Type == CaptchaType.Slider)
         {
             Console.WriteLine(e.SliderUrl); 
-            ((Bot)s).SubmitSliderTicket(Console.ReadLine());
+            bot.SubmitSliderTicket(Console.ReadLine());
         }
         else if(e.Type == CaptchaType.SMS)
         {
             Console.WriteLine(e.Phone); 
-            ((Bot)s).SubmitSmsCode(Console.ReadLine());
+            bot.SubmitSmsCode(Console.ReadLine());
         }
     };
 
-    // Handle messages from group
-    bot.OnGroupMessage += (s, e) =>
-    {
-         Console.WriteLine($"{e.Message.ToString()}"); 
-    };
+    // Print the log
+    bot.OnLog += (_, e) 
+        => Console.WriteLine(e.EventMessage);
+
+    // Handle group messages
+    bot.OnGroupMessage += (_, e) 
+        => Console.WriteLine(e.Message); 
     
-    // Handle messages from friend
-    bot.OnFriendMessage += (s, e) =>
-    {
-         Console.WriteLine($"{e.Message.ToString()}"); 
-    };
+    // Handle friend messages
+    bot.OnFriendMessage += (_, e) 
+        => Console.WriteLine(e.Message);
     
     // ... More handlers
 }
