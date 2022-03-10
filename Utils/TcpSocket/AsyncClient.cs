@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable RedundantAssignment
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable InvertIf
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable TooWideLocalVariableScope
 
 namespace Konata.Core.Utils.TcpSocket
@@ -222,13 +220,13 @@ namespace Konata.Core.Utils.TcpSocket
                     }
                 }
 
-            // Start a new task to continue receive new data
-            // and complete current task
-            // to prevent recursive function invoke
-            // which leads to memory leak
-            //
-            // See: Issue (#95)
-            Final:
+                // Start a new task to continue receive new data
+                // and complete current task
+                // to prevent recursive function invoke
+                // which leads to memory leak
+                //
+                // See: Issue (#95)
+                Final:
                 new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
                     _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
             }
@@ -241,7 +239,7 @@ namespace Konata.Core.Utils.TcpSocket
         }
     }
 
-    class FeaturedSocket : Socket
+    internal class FeaturedSocket : Socket
     {
         public FeaturedSocket(AddressFamily addressFamily, SocketType socketType,
             ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
