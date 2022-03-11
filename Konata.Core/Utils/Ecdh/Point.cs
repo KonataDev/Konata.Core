@@ -1,27 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 
-namespace Konata.Core.Utils.Ecdh.ECDHAlgorithm
+namespace Konata.Core.Utils.Ecdh;
+
+internal struct Point
 {
-    using bint = BigInteger;
+    public BigInteger X { get; set; }
 
-    public struct Point
+    public BigInteger Y { get; set; }
+
+    public Point(BigInteger x, BigInteger y)
     {
-        public bint X { get; set; }
-
-        public bint Y { get; set; }
-
-        public Point(bint x, bint y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        public bool IsDefault => X == 0 && Y == 0;
-
-        public override string ToString() => $"({X:X}, {Y:X})";
-
-        public static Point operator -(Point p) => new Point(-p.X, -p.Y);
+        X = x;
+        Y = y;
     }
+
+    public bool IsDefault => X == 0 && Y == 0;
+
+    public override string ToString() => $"({X:X}, {Y:X})";
+
+    public static Point operator -(Point p) => new Point(-p.X, -p.Y);
 }
