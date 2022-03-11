@@ -133,7 +133,7 @@ internal class ECDiffieHellman
     public byte[] PackShared(Point shared)
     {
         var x = TakeReverse(shared.X.ToByteArray(), Curve.Size);
-        return md5.ComputeHash(x[..16]);
+        return md5.ComputeHash(x[..Curve.PackSize]);
     }
 
     /// <summary>
