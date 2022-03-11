@@ -1,22 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Language features -->
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
 
+  <!-- Package definition -->
+  <PropertyGroup>
     <Product>Konata Core</Product>
     <Authors>Konata Project</Authors>
     <Copyright>Konata Project (C) 2022</Copyright>
-    
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Core implementation for Konata.</Description>
-    <PackageIcon>konata_icon_512_round64.png</PackageIcon>
-    <PackageIconUrl />
-    <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
+
     <PackageVersion>1.0.9</PackageVersion>
+    <PackageIcon>konata_icon_512_round64.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
+
+    <NoWarn>1701;1702;1591</NoWarn>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <DocumentationFile>$(ProjectDir)bin\Konata.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+  
+  <!-- File definition -->
+  <PropertyGroup>
     <Version>$(PackageVersion)</Version>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -24,31 +40,9 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>Konata.Core.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
-
+  <!-- References -->
   <ItemGroup>
     <PackageReference Include="Konata.Codec" Version="1.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="Resources\konata_icon_512_round64.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
   <!-- Get Build Stamp -->
