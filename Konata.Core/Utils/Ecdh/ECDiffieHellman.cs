@@ -19,7 +19,11 @@ internal class ECDiffieHellman
 {
     public EllipticCurve Curve { get; set; }
 
-    public ECDiffieHellman(EllipticCurve curve) => Curve = curve;
+    private static readonly Random random = new();
+    private static readonly MD5 md5 = MD5.Create();
+
+    public ECDiffieHellman(EllipticCurve curve)
+        => Curve = curve;
 
     /// <summary>
     /// Generate the sec
@@ -43,7 +47,8 @@ internal class ECDiffieHellman
     /// <summary>
     /// 使用给予的私钥生成公钥
     /// </summary>
-    public Point CreatePublic(BigInteger secret) => CreateShared(secret, Curve.G);
+    public Point CreatePublic(BigInteger secret)
+        => CreateShared(secret, Curve.G);
 
     /// <summary>
     /// Calculate shared based on pub and sec
@@ -96,52 +101,86 @@ internal class ECDiffieHellman
     /// Pack public
     /// </summary>
     /// <param name="public"></param>
+    /// <param name="compress"></param>
     /// <returns></returns>
-    public byte[] PackPublic(Point @public)
+    public byte[] PackPublic(Point @public, bool compress = true)
     {
-        byte[] result = @public.X.ToByteArray();
-        if (result.Length == Curve.Size)
+        if (compress)
         {
-            Array.Resize(ref result, Curve.Size + 1);
+            var result = @public.X.ToByteArray();
+            if (result.Length == Curve.Size)
+                Array.Resize(ref result, Curve.Size + 1);
+
+            Array.Reverse(result);
+            result[0] = (byte) ((@public.Y.IsEven ^ @public.Y.Sign < 0) ? 0x02 : 0x03);
+            return result;
         }
 
-        Array.Reverse(result);
-        result[0] = (byte) ((@public.Y.IsEven ^ @public.Y.Sign < 0) ? 0x02 : 0x03);
-        return result;
+        var x = TakeReverse(@public.X.ToByteArray(), Curve.Size);
+        var y = TakeReverse(@public.Y.ToByteArray(), Curve.Size);
+        var buffer = new byte [Curve.Size * 2 + 1];
+        {
+            buffer[0] = 0x04;
+            Buffer.BlockCopy(x, 0, buffer, 1, x.Length);
+            Buffer.BlockCopy(y, 0, buffer, y.Length + 1, x.Length);
+        }
+        return buffer;
     }
 
     /// <summary>
     /// 使用MD5对共享密钥打包
     /// </summary>
-    public byte[] PackShared(Point shared) => md5.ComputeHash(TakeReverse(shared.X.ToByteArray(), 24));
+    public byte[] PackShared(Point shared)
+    {
+        var x = TakeReverse(shared.X.ToByteArray(), Curve.Size);
+        return md5.ComputeHash(x[..16]);
+    }
 
     /// <summary>
     /// 私钥解包
     /// </summary>
     public BigInteger UnpackSecret(byte[] secret)
     {
-        int length = secret.Length - 4;
+        var length = secret.Length - 4;
         if (length != secret[3])
-        {
             throw new Exception("Length does not match.");
-        }
 
-        byte[] temp = new byte[length];
+        // Teardown data
+        var temp = new byte[length];
         Buffer.BlockCopy(secret, 4, temp, 0, length);
-        return new BigInteger(temp);
+
+        return new(temp);
     }
 
     /// <summary>
-    /// [Not Implemented] Decompress public key.
+    /// Decompress public key
     /// </summary>
     public Point UnpackPublic(byte[] @public)
     {
-        throw new NotImplementedException();
+        var length = @public.Length;
+        if (length != Curve.Size * 2 + 1)
+            throw new Exception("Length does not match.");
+        if (@public[0] != 0x04)
+            throw new Exception("Not supported packed public key.");
+
+        // Teardown x and y
+        var x = new byte[Curve.Size];
+        var y = new byte[Curve.Size];
+
+        Buffer.BlockCopy(@public, 1, x, 0, Curve.Size);
+        Buffer.BlockCopy(@public, Curve.Size + 1, y, 0, Curve.Size);
+        {
+            // To LE
+            Array.Reverse(x);
+            Array.Reverse(y);
+
+            // Append 0x00
+            Array.Resize(ref x, x.Length + 1);
+            Array.Resize(ref y, y.Length + 1);
+        }
+
+        return new Point(new(x), new(y));
     }
-
-    private static readonly Random random = new Random();
-
-    private static readonly MD5 md5 = MD5.Create();
 
     private static byte[] TakeReverse(byte[] array, int length)
     {

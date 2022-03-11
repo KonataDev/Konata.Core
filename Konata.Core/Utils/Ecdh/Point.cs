@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 namespace Konata.Core.Utils.Ecdh;
 
 internal struct Point
@@ -18,5 +20,5 @@ internal struct Point
 
     public override string ToString() => $"({X:X}, {Y:X})";
 
-    public static Point operator -(Point p) => new Point(-p.X, -p.Y);
+    public static Point operator -(Point p) => new(-p.X, -p.Y);
 }
