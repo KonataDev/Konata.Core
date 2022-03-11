@@ -15,6 +15,12 @@
         public uint MemberUin { get; }
 
         /// <summary>
+        /// <b>[In]</b> <br/>
+        /// Member uin did the operation.
+        /// </summary>
+        public uint OperatorUin { get; }
+
+        /// <summary>
         /// <b>[Opt] [In]</b> <br/>
         /// Flag to prevent member request or no. <br/>
         /// The default value is <b>false</b>
@@ -22,10 +28,11 @@
         public bool ToggleType { get; }
 
         private GroupKickMemberEvent(uint groupUin,
-            uint memberUin, bool toggleType) : base(2000, true)
+            uint memberUin, uint operatorUin, bool toggleType) : base(2000, true)
         {
             GroupUin = groupUin;
             MemberUin = memberUin;
+            OperatorUin = operatorUin;
             ToggleType = toggleType;
         }
 
@@ -35,14 +42,26 @@
         }
 
         /// <summary>
+        /// Construct event push
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="operatorUin"></param>
+        /// <param name="toggleType"></param>
+        /// <returns></returns>
+        internal static GroupKickMemberEvent Push(uint groupUin, uint memberUin, uint operatorUin, bool toggleType)
+            => new(groupUin, memberUin, operatorUin, toggleType);
+
+        /// <summary>
         /// Construct event request
         /// </summary>
         /// <param name="groupUin"></param>
         /// <param name="memberUin"></param>
+        /// <param name="operatorUin"></param>
         /// <param name="toggleType"></param>
         /// <returns></returns>
-        internal static GroupKickMemberEvent Create(uint groupUin, uint memberUin, bool toggleType)
-            => new(groupUin, memberUin, toggleType);
+        internal static GroupKickMemberEvent Create(uint groupUin, uint memberUin, uint operatorUin, bool toggleType)
+            => new(groupUin, memberUin, operatorUin, toggleType);
 
         /// <summary>
         /// Construct event result
