@@ -4,17 +4,17 @@
     {
         public const uint AppId = 16;
 
-        public const uint SubAppId = 537063202;
+        public const uint SubAppId = 537113159;
 
         public const uint AppClientVersion = 0;
 
         public const string ApkPackageName = "com.tencent.mobileqq";
 
-        public const string ApkVersionName = "8.2.7";
+        public const string ApkVersionName = "8.8.80";
 
-        public const string AppBuildVer = "8.2.7.4395";
+        public const string AppBuildVer = "8.8.80.7400";
 
-        public const string AppRevision = "7288ad61";
+        public const string AppRevision = "61cd5c8c";
 
         public static byte[] ApkSignatureMd5 { get; } =
         {
@@ -35,9 +35,9 @@
 
         public static class WtLoginSdk
         {
-            public const uint SdkBuildTime = 1577331209;
+            public const uint SdkBuildTime = 1640921786;
 
-            public const string SdkVersion = "6.0.0.2425";
+            public const string SdkVersion = "6.0.0.2494";
 
             public const uint MainSigBitmap = 16724722;
 
