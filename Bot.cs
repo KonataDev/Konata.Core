@@ -312,6 +312,16 @@ namespace Konata.Core
         public event EventHandler<GroupPokeEvent> OnGroupPoke;
 
         /// <summary>
+        /// On group member decrease event
+        /// </summary>
+        public event EventHandler<GroupKickMemberEvent> OnGroupKick;
+
+        /// <summary>
+        /// On group admin set/unset event
+        /// </summary>
+        public event EventHandler<GroupPromoteAdminEvent> OnGroupAdmin;
+
+        /// <summary>
         /// On friend message event
         /// </summary>
         public event EventHandler<FriendMessageEvent> OnFriendMessage;
@@ -346,6 +356,8 @@ namespace Konata.Core
                 {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
                 {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
                 {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
+                {typeof(GroupKickMemberEvent), e => OnGroupKick?.Invoke(this, (GroupKickMemberEvent) e)},
+                {typeof(GroupPromoteAdminEvent), e => OnGroupAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
                 {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
                 {typeof(FriendMessageEvent), e => OnFriendMessage?.Invoke(this, (FriendMessageEvent) e)},
                 {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},

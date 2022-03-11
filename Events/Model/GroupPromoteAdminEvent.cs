@@ -34,6 +34,16 @@
         }
 
         /// <summary>
+        /// Construct event push
+        /// </summary>
+        /// <param name="groupUin"></param>
+        /// <param name="memberUin"></param>
+        /// <param name="toggleType"></param>
+        /// <returns></returns>
+        internal static GroupPromoteAdminEvent Push(uint groupUin,
+            uint memberUin, bool toggleType) => new(groupUin, memberUin, toggleType);
+
+        /// <summary>
         /// Construct event requests
         /// </summary>
         /// <param name="groupUin"></param>

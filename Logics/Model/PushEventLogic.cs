@@ -12,6 +12,7 @@ namespace Konata.Core.Logics.Model;
 
 [EventSubscribe(typeof(PushConfigEvent))]
 [EventSubscribe(typeof(OnlineReqPushEvent))]
+[EventSubscribe(typeof(PushTransMsgEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
 public class PushEventLogic : BaseLogic
 {
@@ -37,6 +38,11 @@ public class PushEventLogic : BaseLogic
             // Handle online push
             case OnlineReqPushEvent reqpush:
                 OnOnlineReqPush(reqpush);
+                break;
+
+            // Handle online push trans
+            case PushTransMsgEvent transpush:
+                OnPushTransMsg(transpush);
                 break;
 
             // Just forward messages to userend
@@ -73,6 +79,17 @@ public class PushEventLogic : BaseLogic
 
         // Confirm push
         await ConfrimReqPushEvent(Context, e);
+    }
+
+    /// <summary>
+    /// Trans msg push
+    /// </summary>
+    /// <param name="e"></param>
+    private void OnPushTransMsg(PushTransMsgEvent e)
+    {
+        // Post inner event
+        if (e.InnerEvent != null)
+            Context.PostEventToEntity(e.InnerEvent);
     }
 
     #region Stub methods
