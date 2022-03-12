@@ -76,9 +76,6 @@ internal readonly struct EllipticCurve
         16 // Pack size
     );
     
-    
-    
-    
 // @formatter:on
 
     public BigInteger P { get; }
@@ -87,7 +84,7 @@ internal readonly struct EllipticCurve
 
     public BigInteger B { get; }
 
-    public Point G { get; }
+    public EllipticPoint G { get; }
 
     public BigInteger N { get; }
 
@@ -104,7 +101,7 @@ internal readonly struct EllipticCurve
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
-    public bool CheckOn(Point point)
+    public bool CheckOn(EllipticPoint point)
         => (point.Y * point.Y - point.X * point.X * point.X - A * point.X - B) % P == 0;
 
     private EllipticCurve(BigInteger p, BigInteger a, BigInteger b,
@@ -113,7 +110,7 @@ internal readonly struct EllipticCurve
         P = p;
         A = a;
         B = b;
-        G = new Point(gx, gy);
+        G = new EllipticPoint(gx, gy);
         N = n;
         H = h;
         Size = size;

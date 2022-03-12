@@ -4,13 +4,13 @@
 
 namespace Konata.Core.Utils.Ecdh;
 
-internal struct Point
+internal struct EllipticPoint
 {
     public BigInteger X { get; set; }
 
     public BigInteger Y { get; set; }
 
-    public Point(BigInteger x, BigInteger y)
+    public EllipticPoint(BigInteger x, BigInteger y)
     {
         X = x;
         Y = y;
@@ -20,5 +20,5 @@ internal struct Point
 
     public override string ToString() => $"({X:X}, {Y:X})";
 
-    public static Point operator -(Point p) => new(-p.X, -p.Y);
+    public static EllipticPoint operator -(EllipticPoint p) => new(-p.X, -p.Y);
 }
