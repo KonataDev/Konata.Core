@@ -16,7 +16,7 @@ internal class PushNotify : BaseService<PushNotifyEvent>
 		BotKeyStore keystore, out PushNotifyEvent output)
 	{
 		input.Payload.EatBytes(4);
-		var bytes = input.Payload.GetBytes();
+		var bytes = input.Payload.TakeAllBytes(out _);
 
 		var packets = new SvcPushNotify(bytes);
 		output = PushNotifyEvent.Push((NotifyType)packets.Type);

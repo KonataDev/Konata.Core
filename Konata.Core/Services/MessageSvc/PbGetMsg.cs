@@ -26,14 +26,14 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 		var root = ProtoTreeRoot.Deserialize(input.Payload, true);
 
 		// Get sync cookie 
-		var cookie = root.GetLeafBytes("1A");
+        root.TryGetLeafBytes("1A", out var cookie);
 
 		// Get push events
 		var push = new List<ProtocolEvent>();
 		foreach (var root2 in root.GetLeaves<ProtoTreeRoot>("2A"))
 			foreach (var leaf in root2.GetLeaves<ProtoTreeRoot>("22"))
 			{
-				leaf.GetTree("12", _ =>
+				leaf.GetTree("0A", _ =>
 				{
 					var type = (NotifyType)_.GetLeafVar("18");
 					switch (type)
@@ -64,12 +64,12 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 	{
 		var output = FriendMessageEvent.Push();
 		{
-			var sourceRoot = (ProtoTreeRoot)root.PathTo("2A.22.0A");
+			var sourceRoot = (ProtoTreeRoot)root.PathTo("0A");
 			{
 				output.SetFriendUin((uint)sourceRoot.GetLeafVar("08"));
 			}
 
-			var contentRoot = (ProtoTreeRoot)root.PathTo("2A.22.1A.0A");
+			var contentRoot = (ProtoTreeRoot)root.PathTo("1A.0A");
 			{
 				var builder = new MessageBuilder();
 
@@ -107,7 +107,6 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 							builder.Add(chain);
 						}
 					});
-
 				});
 
 				output.SetMessage(builder.Build());
@@ -126,10 +125,12 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 	private BaseChain ParsePicture(ProtoTreeRoot tree)
 	{
 		// TODO: fix args
+        var hash = ByteConverter.Hex(tree.GetLeafBytes("3A"));
 		return ImageChain.Create(
-			  tree.GetLeafString("D201"),
-			  ByteConverter.Hex(tree.GetLeafBytes("3A")),
-			  tree.GetLeafString("0A"), 0, 0, 0, ImageType.JPG);
+            "https://c2cpicdw.qpic.cn" + tree.GetLeafString("7A"),
+            hash, hash,
+            (uint) tree.GetLeafVar("48"), (uint) tree.GetLeafVar("40"), (uint) tree.GetLeafVar("10"),
+            ImageType.JPG);
 	}
 
 	/// <summary>
@@ -152,7 +153,6 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 	protected override bool Build(Sequence sequence, PbGetMessageEvent input,
 		  BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
 	{
-
 		output = null;
 		newSequence = sequence.NewSequence;
 
@@ -170,6 +170,4 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 
 		return false;
 	}
-
-
 }

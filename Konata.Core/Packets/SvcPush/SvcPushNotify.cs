@@ -9,8 +9,8 @@ internal class SvcPushNotify : UniPacket
     public SvcPushNotify(byte[] pushMsg)
         : base(pushMsg, (userdata, r) =>
         {
-            // var p = (SvcPushNotify)userdata;
-            // p.Type = r["0.5"].Number.ValueInt;
+            var p = (SvcPushNotify)userdata;
+            p.Type = r["0.5"].Number.ValueInt;
         })
     {
     }
