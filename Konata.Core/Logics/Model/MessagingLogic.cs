@@ -30,7 +30,7 @@ public class MessagingLogic : BaseLogic
     {
     }
 
-    public override void Incoming(ProtocolEvent e)
+    public override Task Incoming(ProtocolEvent e)
     {
         switch (e)
         {
@@ -47,6 +47,7 @@ public class MessagingLogic : BaseLogic
 
         // Forward messages to userend
         Context.PostEventToEntity(e);
+        return Task.CompletedTask; 
     }
 
     /// <summary>

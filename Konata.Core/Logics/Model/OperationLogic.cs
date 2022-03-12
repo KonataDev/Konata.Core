@@ -27,8 +27,9 @@ public class OperationLogic : BaseLogic
     {
     }
 
-    public override void Incoming(ProtocolEvent e)
+    public override Task Incoming(ProtocolEvent e)
     {
+        return Task.CompletedTask; 
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
@@ -20,15 +21,12 @@ public class PushEventLogic : BaseLogic
     private const string TAG = "PushEvent Logic";
 
     internal PushEventLogic(BusinessComponent context)
-          : base(context)
+        : base(context)
     {
     }
 
-    public override void Incoming(ProtocolEvent e)
+    public override async Task Incoming(ProtocolEvent e)
     {
-        // TODO:
-        // Confirm the push events with server
-
         switch (e)
         {
             // Handle push config
@@ -38,7 +36,7 @@ public class PushEventLogic : BaseLogic
 
             // Handle online push
             case OnlineReqPushEvent reqpush:
-                OnOnlineReqPush(reqpush);
+                await OnOnlineReqPush(reqpush);
                 break;
 
             // Handle online push trans
@@ -48,7 +46,7 @@ public class PushEventLogic : BaseLogic
 
             // Handle push notify event
             case PushNotifyEvent notifypush:
-                OnPushNotify(notifypush);
+                await OnPushNotify(notifypush);
                 break;
 
             // Just forward messages to userend
@@ -77,7 +75,7 @@ public class PushEventLogic : BaseLogic
     /// Online push
     /// </summary>
     /// <param name="e"></param>
-    private async void OnOnlineReqPush(OnlineReqPushEvent e)
+    private async Task OnOnlineReqPush(OnlineReqPushEvent e)
     {
         // Post inner event
         if (e.InnerEvent != null)
@@ -98,7 +96,7 @@ public class PushEventLogic : BaseLogic
             Context.PostEventToEntity(e.InnerEvent);
     }
 
-    private void OnPushNotify(PushNotifyEvent e)
+    private async Task OnPushNotify(PushNotifyEvent e)
     {
         switch (e.Type)
         {
@@ -110,7 +108,7 @@ public class PushEventLogic : BaseLogic
             case NotifyType.FriendPttMessage:
             case NotifyType.StrangerMessage:
             case NotifyType.FriendFileMessage:
-                OnPullNewMessage();
+                await OnPullNewMessage();
                 break;
 
             case NotifyType.GroupRequest:
@@ -128,7 +126,7 @@ public class PushEventLogic : BaseLogic
         }
     }
 
-    private async void OnPullNewMessage()
+    private async Task OnPullNewMessage()
     {
         var result = await PullMessage(Context, ConfigComponent.SyncCookie);
 
@@ -144,10 +142,10 @@ public class PushEventLogic : BaseLogic
     #region Stub methods
 
     private static Task<OnlineRespPushEvent> ConfrimReqPushEvent(BusinessComponent context, OnlineReqPushEvent original)
-          => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
+        => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
 
     private static Task<PbGetMessageEvent> PullMessage(BusinessComponent context, byte[] syncCookie)
-          => context.SendPacket<PbGetMessageEvent>(PbGetMessageEvent.Create(syncCookie));
+        => context.SendPacket<PbGetMessageEvent>(PbGetMessageEvent.Create(syncCookie));
 
     #endregion
 }

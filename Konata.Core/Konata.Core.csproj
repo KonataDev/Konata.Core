@@ -27,9 +27,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath=""/>
-        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
-        <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png"/>
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+        <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png" />
     </ItemGroup>
 
     <!-- File definition -->
@@ -43,7 +43,7 @@
 
     <!-- References -->
     <ItemGroup>
-        <PackageReference Include="Konata.Codec" Version="1.3.1"/>
+        <PackageReference Include="Konata.Codec" Version="1.3.1" />
     </ItemGroup>
 
     <!-- Get Build Stamp -->
@@ -57,16 +57,16 @@
         </PropertyGroup>
 
         <!-- Git Branch -->
-        <Exec Command="git -C $(ProjectDir) rev-parse --abbrev-ref HEAD &gt; $(BuildStampFile)"/>
+        <Exec Command="git -C $(ProjectDir) rev-parse --abbrev-ref HEAD &gt; $(BuildStampFile)" />
 
         <!-- Git Commit Hash -->
-        <Exec Command="git -C $(ProjectDir) rev-parse HEAD &gt;&gt; $(BuildStampFile)"/>
+        <Exec Command="git -C $(ProjectDir) rev-parse HEAD &gt;&gt; $(BuildStampFile)" />
 
         <!--Build Date -->
-        <Exec Command="echo $(BuildDate) &gt;&gt; $(BuildStampFile)"/>
+        <Exec Command="echo $(BuildDate) &gt;&gt; $(BuildStampFile)" />
 
         <ReadLinesFromFile File="$(BuildStampFile)">
-            <Output TaskParameter="Lines" ItemName="Stamp"/>
+            <Output TaskParameter="Lines" ItemName="Stamp" />
         </ReadLinesFromFile>
 
         <PropertyGroup>
@@ -81,7 +81,7 @@
         </PropertyGroup>
 
         <ItemGroup>
-            <Compile Include="$(CustomAssemblyInfoFile)"/>
+            <Compile Include="$(CustomAssemblyInfoFile)" />
         </ItemGroup>
 
         <ItemGroup>
@@ -91,7 +91,7 @@
             </AssemblyAttributes>
         </ItemGroup>
 
-        <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)"/>
+        <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)" />
     </Target>
 
 </Project>

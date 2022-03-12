@@ -39,7 +39,7 @@ namespace Konata.Core.Logics.Model
             _heartbeatCounter = 0;
         }
 
-        public override void Incoming(ProtocolEvent e)
+        public override Task Incoming(ProtocolEvent e)
         {
             // Receive online status from server
             if (e is OnlineStatusEvent status)
@@ -49,6 +49,7 @@ namespace Konata.Core.Logics.Model
             }
 
             _heartbeatCounter++;
+            return Task.CompletedTask;
         }
 
         /// <summary>

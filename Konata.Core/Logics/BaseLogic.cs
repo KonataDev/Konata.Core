@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Konata.Core.Events;
 using Konata.Core.Components.Model;
 
@@ -31,7 +32,7 @@ namespace Konata.Core.Logics
             Context = context;
         }
 
-        public virtual void Incoming(ProtocolEvent e)
+        public virtual Task Incoming(ProtocolEvent e)
         {
             throw new NotImplementedException();
         }

@@ -27,14 +27,13 @@ public class CacheSyncLogic : BaseLogic
     {
     }
 
-    public override void Incoming(ProtocolEvent e)
+    public override async Task Incoming(ProtocolEvent e)
     {
         switch (e)
         {
             // Bot is online
             case OnlineStatusEvent {EventType: OnlineStatusEvent.Type.Online}:
-                Task.Run(SyncGroupList);
-                Task.Run(SyncFriendList);
+                await Task.WhenAll(SyncGroupList(), SyncFriendList());
                 return;
 
             // New group message coming

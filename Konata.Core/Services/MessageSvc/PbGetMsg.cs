@@ -8,7 +8,6 @@ using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
-using Konata.Core.Utils.Protobuf.ProtoModel;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 
@@ -21,7 +20,7 @@ namespace Konata.Core.Services.MessageSvc;
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
     protected override bool Parse(SSOFrame input,
-         BotKeyStore keystore, out PbGetMessageEvent output)
+        BotKeyStore keystore, out PbGetMessageEvent output)
     {
         var root = ProtoTreeRoot.Deserialize(input.Payload, true);
 
@@ -30,32 +29,41 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 
         // Get push events
         var push = new List<ProtocolEvent>();
-        foreach (var root2 in root.GetLeaves<ProtoTreeRoot>("2A"))
-            foreach (var leaf in root2.GetLeaves<ProtoTreeRoot>("22"))
+
+        var root2A = root.GetLeaves<ProtoTreeRoot>("2A");
+        if (root2A == null) goto Finish;
+
+        foreach (var i in root2A)
+        {
+            var root22 = i.GetLeaves<ProtoTreeRoot>("22");
+            if (root22 == null) continue;
+
+            foreach (var j in root22)
             {
-                leaf.GetTree("0A", _ =>
+                j.GetTree("0A", _ =>
                 {
-                    var type = (NotifyType)_.GetLeafVar("18");
+                    var type = (NotifyType) _.GetLeafVar("18");
                     switch (type)
                     {
                         case NotifyType.FriendMessage:
                         case NotifyType.FriendMessageSingle:
                         case NotifyType.FriendPttMessage:
                         case NotifyType.StrangerMessage:
-                            push.Add(ProcessMessage(leaf));
+                            push.Add(ProcessMessage(j));
                             break;
 
+                        default:
                         case NotifyType.FriendFileMessage:
                         case NotifyType.NewMember:
                         case NotifyType.GroupCreated:
                         case NotifyType.GroupRequestAccepted:
                             break;
-                        default:
-                            break;
                     }
                 });
             }
+        }
 
+        Finish:
         output = PbGetMessageEvent.Result(0, cookie, push);
         return true;
     }
@@ -64,12 +72,12 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
     {
         var output = FriendMessageEvent.Push();
         {
-            var sourceRoot = (ProtoTreeRoot)root.PathTo("0A");
+            var sourceRoot = (ProtoTreeRoot) root.PathTo("0A");
             {
-                output.SetFriendUin((uint)sourceRoot.GetLeafVar("08"));
+                output.SetFriendUin((uint) sourceRoot.GetLeafVar("08"));
             }
 
-            var contentRoot = (ProtoTreeRoot)root.PathTo("1A.0A");
+            var contentRoot = (ProtoTreeRoot) root.PathTo("1A.0A");
             {
                 var builder = new MessageBuilder();
 
@@ -77,7 +85,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                 {
                     if (_ != "12") return;
 
-                    ((ProtoTreeRoot)__).ForEach((key, value) =>
+                    ((ProtoTreeRoot) __).ForEach((key, value) =>
                     {
                         BaseChain chain = null;
                         try
@@ -85,15 +93,15 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                             switch (key)
                             {
                                 case "0A":
-                                    chain = ParseText((ProtoTreeRoot)value);
+                                    chain = ParseText((ProtoTreeRoot) value);
                                     break;
 
                                 case "12":
-                                    chain = ParseQFace((ProtoTreeRoot)value);
+                                    chain = ParseQFace((ProtoTreeRoot) value);
                                     break;
 
                                 case "22":
-                                    chain = ParsePicture((ProtoTreeRoot)value);
+                                    chain = ParsePicture((ProtoTreeRoot) value);
                                     break;
                             }
                         }
@@ -139,7 +147,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
     /// <param name="tree"></param>
     /// <returns></returns>
     private BaseChain ParseText(ProtoTreeRoot tree)
-          => TextChain.Create(tree.GetLeafString("0A"));
+        => TextChain.Create(tree.GetLeafString("0A"));
 
     /// <summary>
     /// Process QFace chain
@@ -147,11 +155,11 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
     /// <param name="tree"></param>
     /// <returns></returns>
     private BaseChain ParseQFace(ProtoTreeRoot tree)
-          => QFaceChain.Create((uint)tree.GetLeafVar("08"));
+        => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
 
     protected override bool Build(Sequence sequence, PbGetMessageEvent input,
-          BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
     {
         output = null;
         newSequence = sequence.NewSequence;
@@ -159,10 +167,10 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
         var pullRequest = new GetMessageRequest(input.SyncCookie);
 
         if (SSOFrame.Create("MessageSvc.PbGetMsg", PacketType.TypeB,
-              newSequence, sequence.Session, ProtoTreeRoot.Serialize(pullRequest), out var ssoFrame))
+                newSequence, sequence.Session, ProtoTreeRoot.Serialize(pullRequest), out var ssoFrame))
         {
             if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                  keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
+                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
             {
                 return ServiceMessage.Build(toService, device, out output);
             }

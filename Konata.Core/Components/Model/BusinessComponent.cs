@@ -100,7 +100,7 @@ namespace Konata.Core.Components.Model
                     try
                     {
                         // Execute a business logic
-                        i.Incoming(protocolEvent);
+                        await i.Incoming(protocolEvent);
                     }
                     catch (Exception e)
                     {

@@ -239,8 +239,7 @@ namespace Konata.Core.Utils.Protobuf
         }
 
         public List<T> GetLeaves<T>(string leafPath)
-            where T : IProtoType => GetLeaves(leafPath)
-            .ConvertAll(new Converter<IProtoType, T>((t) => (T) t));
+            where T : IProtoType => GetLeaves(leafPath)?.ConvertAll(t => (T) t);
 
         public List<IProtoType> GetLeaves(string leafPath)
         {
