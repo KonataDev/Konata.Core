@@ -23,10 +23,10 @@ internal class PbGetMessageEvent : ProtocolEvent
     }
 
     private PbGetMessageEvent(int result, byte[] cookie,
-         List<ProtocolEvent> inner) : base(result)
+         List<ProtocolEvent> events) : base(result)
     {
         SyncCookie = cookie;
-        InnerEvent = inner;
+        InnerEvent = events;
     }
 
     /// <summary>

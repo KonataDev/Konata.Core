@@ -66,6 +66,10 @@ namespace Konata.Core.Components.Model
                     case CacheSyncLogic cache:
                         CacheSync = cache;
                         break;
+                    
+                    case PushEventLogic pushEv:
+                        PushEvent = pushEv;
+                        break;
                 }
             });
         }
@@ -129,6 +133,8 @@ namespace Konata.Core.Components.Model
         internal MessagingLogic Messaging { get; private set; }
 
         internal CacheSyncLogic CacheSync { get; private set; }
+        
+        internal PushEventLogic PushEvent { get; private set; }
 
         #endregion
     }
