@@ -41,9 +41,10 @@ internal class ECDiffieHellman
     /// <summary>
     /// Pack public key
     /// </summary>
+    /// <param name="compress"></param>
     /// <returns></returns>
-    public byte[] GetPublicKeyPacked()
-        => PackPublic(Public, false);
+    public byte[] GetPublicKeyPacked(bool compress = false)
+        => PackPublic(Public, compress);
 
     /// <summary>
     /// Pack secret

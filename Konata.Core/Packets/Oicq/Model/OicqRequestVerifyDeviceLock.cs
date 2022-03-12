@@ -14,7 +14,7 @@ namespace Konata.Core.Packets.Oicq.Model
         public OicqRequestVerifyDeviceLock(BotKeyStore signinfo)
             : base(OicqCommand, signinfo.Account.Uin, OicqEncryptMethod.ECDH7,
                 signinfo.KeyStub.ShareKey, signinfo.KeyStub.RandKey,
-                signinfo.KeyStub.DefaultPublicKey, w =>
+                signinfo.KeyStub.PublicKey, w =>
                 {
                     TlvPacker tlvs = new TlvPacker();
                     {

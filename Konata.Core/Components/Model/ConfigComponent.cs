@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 
-using Konata.Core.Utils.Protobuf;
-using Konata.Core.Packets.Protobuf;
-
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable CollectionNeverUpdated.Local
 // ReSharper disable MemberCanBePrivate.Global
@@ -36,7 +33,11 @@ internal class ConfigComponent : InternalComponent
     /// <summary>
     /// Sync cookie
     /// </summary>
-    public byte[] SyncCookie { set; get; }
+    public byte[] SyncCookie
+    {
+        set => KeyStore.Account.SyncCookie = value;
+        get => KeyStore.Account.SyncCookie;
+    }
 
     /// <summary>
     /// Highway host
@@ -50,8 +51,6 @@ internal class ConfigComponent : InternalComponent
     {
         _groupList = new();
         _friendList = new();
-
-        SyncCookie = MakeSyncCookie();
     }
 
     public void LoadKeyStore(BotKeyStore keyStore, string imei)
@@ -61,16 +60,10 @@ internal class ConfigComponent : InternalComponent
     }
 
     public void LoadConfig(BotConfig config)
-         => GlobalConfig = config;
+        => GlobalConfig = config;
 
     public void LoadDeviceInfo(BotDevice device)
-         => DeviceInfo = device;
-
-    private static byte[] MakeSyncCookie()
-    {
-        return ProtoTreeRoot.Serialize(new SyncCookie
-             (DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
-    }
+        => DeviceInfo = device;
 
     /// <summary>
     /// Get member information
@@ -79,12 +72,12 @@ internal class ConfigComponent : InternalComponent
     /// <param name="memberUin"><b>[In]</b> Member uin</param>
     /// <param name="memberInfo"><b>[Out]</b> Member information</param>
     public bool TryGetMemberInfo(uint groupUin,
-         uint memberUin, out BotMember memberInfo)
+        uint memberUin, out BotMember memberInfo)
     {
         // Get member information
         memberInfo = null;
         return _groupList.TryGetValue(groupUin, out var groupInfo)
-                 && groupInfo.Members.TryGetValue(memberUin, out memberInfo);
+               && groupInfo.Members.TryGetValue(memberUin, out memberInfo);
     }
 
     /// <summary>
@@ -93,7 +86,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupUin"><b>[In]</b> Group uin</param>
     /// <param name="memberUin"><b>[In]</b> Member uin</param>
     public BotMember GetMemberInfo(uint groupUin, uint memberUin)
-         => _groupList[groupUin].Members[memberUin];
+        => _groupList[groupUin].Members[memberUin];
 
     /// <summary>
     /// Get group information
@@ -102,7 +95,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupInfo"><b>[Out]</b> Group information</param>
     /// <returns></returns>
     public bool TryGetGroupInfo(uint groupUin, out BotGroup groupInfo)
-         => _groupList.TryGetValue(groupUin, out groupInfo);
+        => _groupList.TryGetValue(groupUin, out groupInfo);
 
     /// <summary>
     /// Get group information
@@ -110,7 +103,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupUin"><b>[In]</b> Group uin</param>
     /// <returns></returns>
     public BotGroup GetGroupInfo(uint groupUin)
-         => _groupList[groupUin];
+        => _groupList[groupUin];
 
     /// <summary>
     /// Get friend information
@@ -119,7 +112,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="friendInfo"><b>[Out]</b> Friend information</param>
     /// <returns></returns>
     public bool TryGetFriendInfo(uint friendUin, out BotFriend friendInfo)
-         => _friendList.TryGetValue(friendUin, out friendInfo);
+        => _friendList.TryGetValue(friendUin, out friendInfo);
 
     /// <summary>
     /// Get friend information
@@ -127,7 +120,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="friendUin"><b>[In]</b> Friend uin</param>
     /// <returns></returns>
     public BotFriend GetFriendInfo(uint friendUin)
-         => _friendList[friendUin];
+        => _friendList[friendUin];
 
     /// <summary>
     /// Add or update group
@@ -182,7 +175,7 @@ internal class ConfigComponent : InternalComponent
         {
             // Update group name
             if (groupName?.Length > 0
-                 && groupName != group.Name)
+                && groupName != group.Name)
             {
                 group.Name = groupName;
             }
@@ -245,14 +238,14 @@ internal class ConfigComponent : InternalComponent
     /// <param name="memberUin"><b>[In]</b> Member uin</param>
     /// <param name="memberCardName"><b>[In]</b> Member card name</param>
     public BotMember TouchGroupMemberInfo(uint groupUin,
-         uint memberUin, string memberCardName)
+        uint memberUin, string memberCardName)
     {
         // Touch the group first
         var group = TouchGroupInfo(groupUin);
 
         // Update cache
         if (!group.Members.TryGetValue
-                  (memberUin, out var member))
+                (memberUin, out var member))
         {
             member = new BotMember
             {
@@ -269,7 +262,7 @@ internal class ConfigComponent : InternalComponent
         {
             // Update member card name
             if (memberCardName.Length > 0
-                 && memberCardName != group.Name)
+                && memberCardName != group.Name)
             {
                 member.NickName = memberCardName;
             }
@@ -325,7 +318,7 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupCode"></param>
     /// <returns></returns>
     public ulong GetGroupUin(uint groupCode)
-         => _groupList.FirstOrDefault(x => x.Value.Code == groupCode).Key;
+        => _groupList.FirstOrDefault(x => x.Value.Code == groupCode).Key;
 
     /// <summary>
     /// Get group code from an uin
@@ -333,14 +326,14 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupUin"></param>
     /// <returns></returns>
     public ulong GetGroupCode(uint groupUin)
-         => TryGetGroupInfo(groupUin, out var group) ? group.Code : 0;
+        => TryGetGroupInfo(groupUin, out var group) ? group.Code : 0;
 
     /// <summary>
     /// Get group list
     /// </summary>
     /// <returns></returns>
     public IReadOnlyList<BotGroup> GetGroupList()
-         => _groupList.Values.ToList();
+        => _groupList.Values.ToList();
 
     /// <summary>
     /// Get group member list
@@ -348,12 +341,12 @@ internal class ConfigComponent : InternalComponent
     /// <param name="groupUin"></param>
     /// <returns></returns>
     public IReadOnlyList<BotMember> GetGroupMemberList(uint groupUin)
-         => _groupList[groupUin].Members.Values.ToList();
+        => _groupList[groupUin].Members.Values.ToList();
 
     /// <summary>
     /// Get friend list
     /// </summary>
     /// <returns></returns>
     public IReadOnlyList<BotFriend> GetFriendList()
-         => _friendList.Values.ToList();
+        => _friendList.Values.ToList();
 }

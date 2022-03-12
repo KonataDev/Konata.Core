@@ -15,7 +15,7 @@ namespace Konata.Core.Packets.Oicq.Model
         public OicqRequestTgtgt(int sequence, BotKeyStore signinfo, BotDevice device)
             : base(OicqCommand, signinfo.Account.Uin, OicqEncryptMethod.ECDH135,
                 signinfo.KeyStub.ShareKey, signinfo.KeyStub.RandKey,
-                signinfo.KeyStub.DefaultPublicKey, w =>
+                signinfo.KeyStub.PublicKey, w =>
                 {
                     // Device info report
                     var report = new DeviceReport(
