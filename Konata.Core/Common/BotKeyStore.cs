@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
-using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -57,7 +55,6 @@ namespace Konata.Core.Common
                 Uin = uinNum,
                 Name = uin,
                 Face = 0,
-                SyncCookie = MakeSyncCookie(),
                 PasswordMd5 = passwordMd5
             };
 
@@ -131,12 +128,6 @@ namespace Konata.Core.Common
                 return "1234567890123456";
             }
         }
-
-        private static byte[] MakeSyncCookie()
-        {
-            return ProtoTreeRoot.Serialize(new SyncCookie
-                (DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
-        }
     }
 
     /// <summary>
@@ -169,12 +160,6 @@ namespace Konata.Core.Common
         /// Account password md5
         /// </summary>
         public byte[] PasswordMd5 { get; set; }
-            = new byte[] { };
-
-        /// <summary>
-        /// Account sync cookie
-        /// </summary>
-        public byte[] SyncCookie { get; set; }
             = new byte[] { };
     }
 
