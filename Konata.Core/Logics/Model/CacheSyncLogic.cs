@@ -17,7 +17,6 @@ namespace Konata.Core.Logics.Model;
 [EventSubscribe(typeof(OnlineStatusEvent))]
 [EventSubscribe(typeof(GroupMessageEvent))]
 [EventSubscribe(typeof(FriendMessageEvent))]
-[EventSubscribe(typeof(FriendMessageNotifyEvent))]
 [BusinessLogic("Cache Sync Logic", "Sync the cache such as grouplist or friendlist and more.")]
 public class CacheSyncLogic : BaseLogic
 {

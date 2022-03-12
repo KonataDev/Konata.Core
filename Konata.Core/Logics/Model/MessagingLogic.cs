@@ -20,7 +20,7 @@ namespace Konata.Core.Logics.Model;
 
 [EventSubscribe(typeof(GroupMessageEvent))]
 [EventSubscribe(typeof(FriendMessageEvent))]
-[EventSubscribe(typeof(FriendMessageNotifyEvent))]
+[EventSubscribe(typeof(PushNotifyEvent))]
 [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
 public class MessagingLogic : BaseLogic
 {
@@ -36,7 +36,7 @@ public class MessagingLogic : BaseLogic
         switch (e)
         {
             // Pull new private message
-            case FriendMessageNotifyEvent:
+            case PushNotifyEvent:
                 PullPrivateMessage(Context, ConfigComponent.SyncCookie);
                 return;
 
@@ -458,7 +458,7 @@ public class MessagingLogic : BaseLogic
         => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
 
     private static void PullPrivateMessage(BusinessComponent context, byte[] syncCookie)
-        => context.SendPacket(PullMessageEvent.Create(syncCookie));
+        => context.SendPacket(PbGetMessageEvent.Create(syncCookie));
 
     private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
         => context.SendPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));

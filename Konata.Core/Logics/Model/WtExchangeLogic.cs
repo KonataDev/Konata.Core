@@ -443,8 +443,8 @@ namespace Konata.Core.Logics.Model
         private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context)
             => context.SendPacket<CheckHeartbeatEvent>(CheckHeartbeatEvent.Create());
 
-        private static Task<PullMessageEvent> PullMessage(BusinessComponent context)
-            => context.SendPacket<PullMessageEvent>(PullMessageEvent.Create(context.ConfigComponent.SyncCookie));
+        private static Task<PbGetMessageEvent> PullMessage(BusinessComponent context)
+            => context.SendPacket<PbGetMessageEvent>(PbGetMessageEvent.Create(context.ConfigComponent.SyncCookie));
 
         #endregion
     }
