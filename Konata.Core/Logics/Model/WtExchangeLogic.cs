@@ -286,8 +286,8 @@ namespace Konata.Core.Logics.Model
                     await Context.SendEvent<BusinessComponent>(online);
 
                     // Register schedules
-                    ScheduleComponent.Interval(SchedulePullMessage, 500 * 1000, OnPullMessage);
-                    ScheduleComponent.Interval(ScheduleCheckConnection, 120 * 1000, OnCheckConnection);
+                    ScheduleComponent.Interval(SchedulePullMessage, 180 * 1000, OnPullMessage);
+                    ScheduleComponent.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
 
                     Context.LogI(TAG, "Bot online.");
                     return true;
@@ -387,7 +387,8 @@ namespace Konata.Core.Logics.Model
             try
             {
                 // Get new message
-                await PullMessage(Context);
+                var result = await PullMessage(Context);
+                await Context.PushEvent.Incoming(result);
             }
             catch (TimeoutException)
             {
