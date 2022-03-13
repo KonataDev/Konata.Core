@@ -11,7 +11,7 @@ namespace Konata.Core.Message;
 
 public class MessageBuilder
 {
-    private readonly MessageChain _chain;
+    private MessageChain _chain;
 
     /// <summary>
     /// Create builder
@@ -52,6 +52,9 @@ public class MessageBuilder
     /// <returns></returns>
     public MessageChain Build()
     {
+        TextChain last = null;
+        var chain = new MessageChain();
+
         // Scan chains
         foreach (var i in _chain.Chains)
         {
@@ -61,10 +64,62 @@ public class MessageBuilder
                 // Then drop other chains
                 return new MessageChain(_chain[BaseChain.ChainMode.Singletag].FirstOrDefault(), i);
             }
+
+            // Combine text chains
+            //////////////////////
+
+            // Just append if not text chain
+            if (i.Type != BaseChain.ChainType.Text)
+            {
+                last = null;
+                chain.Add(i);
+                continue;
+            }
+
+            // Combine with last text chain
+            if (last != null) last.Combine((TextChain) i);
+            else
+            {
+                chain.Add(i);
+
+                // Keep last text chain
+                last = (TextChain) i;
+            }
         }
 
-        // Return multiple chain
-        return _chain;
+        return _chain = chain;
+    }
+
+    /// <summary>
+    /// Combine the continuous text chains
+    /// </summary>
+    internal void Combine()
+    {
+        var chain = new MessageChain();
+        TextChain last = null;
+
+        foreach (var i in _chain)
+        {
+            // Just append if not text chain
+            if (i.Type != BaseChain.ChainType.Text)
+            {
+                last = null;
+                chain.Add(i);
+                continue;
+            }
+
+            // Combine with last text chain
+            if (last != null) last.Combine((TextChain) i);
+            else
+            {
+                chain.Add(i);
+
+                // Keep last text chain
+                last = (TextChain) i;
+            }
+        }
+
+        _chain = chain;
     }
 
     /// <summary>
