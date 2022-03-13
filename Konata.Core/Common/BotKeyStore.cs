@@ -6,6 +6,7 @@ using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Ecdh;
 using Konata.Core.Utils.Protobuf;
+using Konata.Core.Utils.Extensions;
 using ECDiffieHellman = Konata.Core.Utils.Ecdh.ECDiffieHellman;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
@@ -87,7 +88,7 @@ public class BotKeyStore
         KeyStub.RandKey = MakeRandKey(16);
 
         // Generate keypair
-        var keyPair = MakeShareKeyPair(KeyStub.ServerPublicKey);
+        var keyPair = MakeShareKeyPair(KeyStub.NewServerPublicKey);
         {
             KeyStub.ShareKey = keyPair.share;
             KeyStub.PublicKey = keyPair.pub;
@@ -166,11 +167,11 @@ public class BotKeyStore
     /// <returns></returns>
     private static (byte[] share, byte[] pub) MakeShareKeyPair(byte[] serverPub)
     {
-        var ecdh = new ECDiffieHellman(EllipticCurve.SecP192k1);
+        var ecdh = new ECDiffieHellman(EllipticCurve.Prime256v1);
         {
             var publicPoint = ecdh.UnpackPublic(serverPub);
             var shareKey = ecdh.KeyExchange(publicPoint);
-            var publicKey = ecdh.GetPublicKeyPacked(true);
+            var publicKey = ecdh.GetPublicKeyPacked();
             return (shareKey, publicKey);
         }
     }
@@ -360,4 +361,9 @@ internal class KeyStub
         0x98, 0xB5, 0x1A, 0x99, 0x2D, 0x50, 0x81, 0x3D,
         0xA8
     };
+
+    /// <summary>
+    /// Server public key (Curve Prime256v1)
+    /// </summary>
+    internal byte[] NewServerPublicKey { get; } = "04EBCA94D733E399B2DB96EACDD3F69A8BB0F74224E2B44E3357812211D2E62EFBC91BB553098E25E33A799ADC7F76FEB208DA7C6522CDB0719A305180CC54A82E".UnHex();
 }

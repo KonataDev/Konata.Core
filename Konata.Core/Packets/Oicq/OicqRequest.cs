@@ -28,7 +28,7 @@ namespace Konata.Core.Packets.Oicq
 
     public enum OicqEncryptMethod
     {
-        ECDH7 = 0x07,
+        ECDH7 = 0x87,
         ECDH135 = 0x87,
     }
 
@@ -67,9 +67,10 @@ namespace Konata.Core.Packets.Oicq
         private void PutOicqRequestBody(PacketBase body, byte[] shareKey,
             byte[] randKey, byte[] publicKey)
         {
-            PutUshortBE(0x0101);
+            PutUshortBE(0x0201);
             PutBytes(randKey);
-            PutUshortBE(0x0102);
+            PutUshortBE(0x0131);
+            PutUshortBE(0x01);
             PutBytes(publicKey, Prefix.Uint16);
             PutPacketEncrypted(body, TeaCryptor.Instance, shareKey);
         }
