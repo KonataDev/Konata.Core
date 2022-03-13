@@ -3,6 +3,7 @@ using Konata.Core.Packets;
 using Konata.Core.Utils.Ecdh;
 using Konata.Core.Utils.IO;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
