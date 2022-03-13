@@ -19,6 +19,7 @@ public class EcdhTest
             Console.WriteLine(ecdh.GetSecret());
             Console.WriteLine(sharedPt.ToHex());
             Console.WriteLine(publicPt.ToHex());
+            Assert.Pass();
         }
     }
 
@@ -34,9 +35,10 @@ public class EcdhTest
             Console.WriteLine(ecdh.GetSecret());
             Console.WriteLine(sharedPt.ToHex());
             Console.WriteLine(publicPt.ToHex());
+            Assert.Pass();
         }
     }
-    
+
     [Test]
     public void TestPrime256V1_2()
     {
@@ -49,6 +51,19 @@ public class EcdhTest
             Console.WriteLine(ecdh.GetSecret());
             Console.WriteLine(sharedPt.ToHex());
             Console.WriteLine(publicPt.ToHex());
+            Assert.Pass();
+        }
+    }
+
+    [Test]
+    public void TestPublicUnpack()
+    {
+        var ecdh = new ECDiffieHellman(EllipticCurve.SecP192k1);
+        var spubUncomp = ecdh.UnpackPublic("04D5CFB02D5D4FCA2C84F6F1294B455BAB4C9698DD572BF86382A9DAF8ADE9D45A57DE1404FA5D41291E0A56CB4508D32F".UnHex());
+        var spubComp = ecdh.UnpackPublic("03D5CFB02D5D4FCA2C84F6F1294B455BAB4C9698DD572BF863".UnHex());
+        {
+            if (spubComp.X == spubUncomp.X && spubComp.Y == spubUncomp.Y) Assert.Pass();
+            Assert.Fail();
         }
     }
 }

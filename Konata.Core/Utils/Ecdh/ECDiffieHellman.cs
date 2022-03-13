@@ -91,28 +91,59 @@ internal class ECDiffieHellman
     public EllipticPoint UnpackPublic(byte[] publicKey)
     {
         var length = publicKey.Length;
-        if (length != Curve.Size * 2 + 1)
+        if (length != Curve.Size * 2 + 1 &&
+            length != Curve.Size + 1)
             throw new Exception("Length does not match.");
-        if (publicKey[0] != 0x04)
-            throw new Exception("Not supported packed public key.");
 
-        // Teardown x and y
         var x = new byte[Curve.Size];
-        var y = new byte[Curve.Size];
-
-        Buffer.BlockCopy(publicKey, 1, x, 0, Curve.Size);
-        Buffer.BlockCopy(publicKey, Curve.Size + 1, y, 0, Curve.Size);
         {
+            // Teardown x
+            Buffer.BlockCopy(publicKey, 1, x, 0, Curve.Size);
+            
             // To LE
             Array.Reverse(x);
-            Array.Reverse(y);
-
+            
             // Append 0x00
             Array.Resize(ref x, x.Length + 1);
-            Array.Resize(ref y, y.Length + 1);
         }
 
-        return new EllipticPoint(new(x), new(y));
+        // Not compressed
+        if (publicKey[0] == 0x04)
+        {
+            // Teardown y
+            var y = new byte[Curve.Size];
+            Buffer.BlockCopy(publicKey, Curve.Size + 1, y, 0, Curve.Size);
+            {
+                // To LE
+                Array.Reverse(y);
+
+                // Append 0x00
+                Array.Resize(ref y, y.Length + 1);
+            }
+
+            return new EllipticPoint(new(x), new(y));
+        }
+
+        // Calculate y from x based on equation
+        // y2 = x3 + ax + b (mod p) 
+        var px = new BigInteger(x);
+        {
+            var x3 = (px * px * px) % Curve.P;
+            var ax = px * Curve.P;
+            var right = (x3 + ax + Curve.B) % Curve.P;
+
+            var tmp = (Curve.P + 1) >> 2;
+            var py = BigInteger.ModPow(right, tmp, Curve.P);
+
+            if (py.IsEven)
+            {
+                tmp = Curve.P;
+                tmp -= py;
+                py = tmp;
+            }
+
+            return new EllipticPoint(px, py);
+        }
     }
 
     /// <summary>
