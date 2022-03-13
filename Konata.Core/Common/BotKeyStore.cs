@@ -42,7 +42,7 @@ public class BotKeyStore
     /// </summary>
     public BotKeyStore()
     {
-        Ecdh = new(EcdhCryptor.CryptMethod.SecP192k1);
+        Ecdh = new(EcdhCryptor.CryptMethod.Prime256v1);
         KeyStub = new KeyStub();
     }
 

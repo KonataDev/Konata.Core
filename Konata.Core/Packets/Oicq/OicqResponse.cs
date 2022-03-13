@@ -47,9 +47,13 @@ internal class OicqResponse : PacketBase
                         break;
 
                     case OicqShareKeyStat.ExchangeTwice:
-                        // BodyData.TakeBytes(out var bobPublic, Prefix.Uint16);
-                        // var shared = cryptor.GenerateShared(bobPublic);
-                        throw new NotSupportedException("Not supported to calculate share key twice.");
+                        var bobPublic = BodyData.TakeBytes(out _, Prefix.Uint16);
+                        cryptor.GenerateShared(bobPublic);
+
+                        // Decrypt data
+                        BodyData = new PacketBase(BodyData.TakeAllBytes(out _), cryptor);
+                        BodyData.EatBytes(2);
+                        BodyData.EatBytes(1);
                         break;
                 }
             }

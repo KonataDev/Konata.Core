@@ -113,7 +113,7 @@ internal class EcdhCryptor : ICryptor
     /// </summary>
     /// <param name="bobPublic"></param>
     /// <returns></returns>
-    private byte[] GenerateShared(byte[] bobPublic)
+    public byte[] GenerateShared(byte[] bobPublic)
     {
         var unpack = Ecdh.UnpackPublic(bobPublic);
         ShareKey = Ecdh.KeyExchange(unpack);
