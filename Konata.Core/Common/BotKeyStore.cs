@@ -6,7 +6,6 @@ using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Ecdh;
 using Konata.Core.Utils.Protobuf;
-using ECDiffieHellman = Konata.Core.Utils.Ecdh.ECDiffieHellman;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -29,6 +28,11 @@ public class BotKeyStore
     public WtLogin Session { get; set; }
 
     /// <summary>
+    /// Ecdh
+    /// </summary>
+    internal EcdhCryptor Ecdh { get; private set; }
+
+    /// <summary>
     /// Fixed keys
     /// </summary>
     internal KeyStub KeyStub { get; }
@@ -38,6 +42,7 @@ public class BotKeyStore
     /// </summary>
     public BotKeyStore()
     {
+        Ecdh = new(EcdhCryptor.CryptMethod.SecP192k1);
         KeyStub = new KeyStub();
     }
 
@@ -86,12 +91,8 @@ public class BotKeyStore
         // Roll a randkey
         KeyStub.RandKey = MakeRandKey(16);
 
-        // Generate keypair
-        var keyPair = MakeShareKeyPair(KeyStub.ServerPublicKey);
-        {
-            KeyStub.ShareKey = keyPair.share;
-            KeyStub.PublicKey = keyPair.pub;
-        }
+        // Create cryptor
+        Ecdh = new(EcdhCryptor.CryptMethod.Prime256v1);
     }
 
     private static byte[] MakeGSecret(string imei, string dpwd, byte[] salt)
@@ -157,22 +158,6 @@ public class BotKeyStore
     {
         return ProtoTreeRoot.Serialize(new SyncCookie
             (DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
-    }
-
-    /// <summary>
-    /// Make share keypair via ecdh
-    /// </summary>
-    /// <param name="serverPub"></param>
-    /// <returns></returns>
-    private static (byte[] share, byte[] pub) MakeShareKeyPair(byte[] serverPub)
-    {
-        var ecdh = new ECDiffieHellman(EllipticCurve.SecP192k1);
-        {
-            var publicPoint = ecdh.UnpackPublic(serverPub);
-            var shareKey = ecdh.KeyExchange(publicPoint);
-            var publicKey = ecdh.GetPublicKeyPacked(true);
-            return (shareKey, publicKey);
-        }
     }
 
     /// <summary>
@@ -327,37 +312,23 @@ internal class KeyStub
         0x56, 0xEB, 0x8B, 0x4C, 0x62, 0x7C, 0x22, 0xC4
     };
 
-    /// <summary>
-    /// Default share key
-    /// </summary>
-    internal byte[] ShareKey { get; set; } =
-    {
-        0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2,
-        0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7
-    };
-
-    /// <summary>
-    /// Default public key
-    /// </summary>
-    internal byte[] PublicKey { get; set; } =
-    {
-        0x02, 0x0B, 0x03, 0xCF, 0x3D, 0x99, 0x54, 0x1F,
-        0x29, 0xFF, 0xEC, 0x28, 0x1B, 0xEB, 0xBD, 0x4E,
-        0xA2, 0x11, 0x29, 0x2A, 0xC1, 0xF5, 0x3D, 0x71,
-        0x28
-    };
-
-    /// <summary>
-    /// Server public key (Curve SecP192k1)
-    /// </summary>
-    internal byte[] ServerPublicKey { get; } =
-    {
-        0x04, 0x92, 0x8D, 0x88, 0x50, 0x67, 0x30, 0x88,
-        0xB3, 0x43, 0x26, 0x4E, 0x0C, 0x6B, 0xAC, 0xB8,
-        0x49, 0x6D, 0x69, 0x77, 0x99, 0xF3, 0x72, 0x11,
-        0xDE, 0xB2, 0x5B, 0xB7, 0x39, 0x06, 0xCB, 0x08,
-        0x9F, 0xEA, 0x96, 0x39, 0xB4, 0xE0, 0x26, 0x04,
-        0x98, 0xB5, 0x1A, 0x99, 0x2D, 0x50, 0x81, 0x3D,
-        0xA8
-    };
+    // /// <summary>
+    // /// Default share key
+    // /// </summary>
+    // internal byte[] ShareKey { get; set; } =
+    // {
+    //     0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2,
+    //     0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7
+    // };
+    //
+    // /// <summary>
+    // /// Default public key
+    // /// </summary>
+    // internal byte[] PublicKey { get; set; } =
+    // {
+    //     0x02, 0x0B, 0x03, 0xCF, 0x3D, 0x99, 0x54, 0x1F,
+    //     0x29, 0xFF, 0xEC, 0x28, 0x1B, 0xEB, 0xBD, 0x4E,
+    //     0xA2, 0x11, 0x29, 0x2A, 0xC1, 0xF5, 0x3D, 0x71,
+    //     0x28
+    // };
 }
