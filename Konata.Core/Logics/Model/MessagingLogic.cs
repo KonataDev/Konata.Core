@@ -13,6 +13,7 @@ using Konata.Core.Utils.Network;
 using Konata.Core.Packets;
 using Konata.Core.Utils;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 
