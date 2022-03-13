@@ -22,10 +22,6 @@ internal class OicqResponse : PacketBase
 
     public OicqResponse(byte[] data, EcdhCryptor cryptor) : base(data)
     {
-        Console.WriteLine("--------------------------");
-        Console.WriteLine(cryptor.ShareKey.ToHex());
-        Console.WriteLine("--------------------------");
-
         EatBytes(1);
         {
             EatBytes(2);
