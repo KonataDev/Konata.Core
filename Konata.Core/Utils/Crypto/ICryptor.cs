@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Konata.Core.Utils.Crypto
+namespace Konata.Core.Utils.Crypto;
+
+internal interface ICryptor
 {
-    public interface ICryptor
-    {
-        byte[] Encrypt(byte[] data);
+    virtual byte[] Encrypt(byte[] data)
+        => throw new NotSupportedException();
 
-        byte[] Encrypt(byte[] data, byte[] key);
+    virtual byte[] Encrypt(byte[] data, byte[] key)
+        => throw new NotSupportedException();
 
-        byte[] Decrypt(byte[] data);
+    virtual byte[] Decrypt(byte[] data)
+        => throw new NotSupportedException();
 
-        byte[] Decrypt(byte[] data, byte[] key);
-
-    }
+    virtual byte[] Decrypt(byte[] data, byte[] key)
+        => throw new NotSupportedException();
 }

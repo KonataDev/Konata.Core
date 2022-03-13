@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Security.Cryptography;
 
-namespace Konata.Core.Utils.Crypto
+namespace Konata.Core.Utils.Crypto;
+
+internal class Md5Cryptor : ICryptor
 {
-    public class Md5Cryptor : ICryptor
-    {
+    public byte[] Encrypt(byte[] data)
+        => MD5.Create().ComputeHash(data);
 
-        public byte[] Decrypt(byte[] data) => null;
-
-        public byte[] Decrypt(byte[] data, byte[] key) => null;
-
-        public byte[] Encrypt(byte[] data)
-        {
-            return MD5.Create().ComputeHash(data);
-        }
-
-        public byte[] Encrypt(byte[] data, byte[] key)
-        {
-            return MD5.Create().ComputeHash(data);
-        }
-    }
+    public byte[] Encrypt(byte[] data, byte[] key)
+        => MD5.Create().ComputeHash(data);
 }

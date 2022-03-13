@@ -8,7 +8,7 @@ namespace Konata.Core.Services.OnlinePush;
 
 [EventSubscribe(typeof(OnlineRespPushEvent))]
 [Service("OnlinePush.RespPush", "Confirm online push")]
-public class RespPush : BaseService<OnlineRespPushEvent>
+internal class RespPush : BaseService<OnlineRespPushEvent>
 {
     protected override bool Build(Sequence sequence, OnlineRespPushEvent input,
         BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)

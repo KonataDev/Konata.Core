@@ -4,17 +4,16 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events.Model;
 
-namespace Konata.Core.Services.MessageSvc
+namespace Konata.Core.Services.MessageSvc;
+
+[Service("MessageSvc.PushForceOffline", "Force offline")]
+internal class PushForceOffline : BaseService<OnlineStatusEvent>
 {
-    [Service("MessageSvc.PushForceOffline", "Force offline")]
-    public class PushForceOffline : BaseService<OnlineStatusEvent>
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out OnlineStatusEvent output)
     {
-        protected override bool Parse(SSOFrame input,
-            BotKeyStore keystore, out OnlineStatusEvent output)
-        {
-            output = OnlineStatusEvent.Push
-                (OnlineStatusEvent.Type.Offline, "MessageSvc.PushForceOffline");
-            return true;
-        }
+        output = OnlineStatusEvent.Push
+            (OnlineStatusEvent.Type.Offline, "MessageSvc.PushForceOffline");
+        return true;
     }
 }

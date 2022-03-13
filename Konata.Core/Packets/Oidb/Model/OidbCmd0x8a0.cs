@@ -4,98 +4,92 @@
 using System;
 using Konata.Core.Utils.Protobuf;
 
-namespace Konata.Core.Packets.Oidb.Model
+namespace Konata.Core.Packets.Oidb.Model;
+
+internal abstract class OidbCmd0x8a0 : OidbSSOPkg
 {
-    public abstract class OidbCmd0x8a0 : OidbSSOPkg
+    internal OidbCmd0x8a0(uint svcType, ReqBody reqBody)
+        : base(0x8a0, svcType, null, (ProtoTreeRoot root) => { root.AddTree(reqBody.BuildTree()); })
     {
-        internal OidbCmd0x8a0(uint svcType, ReqBody reqBody)
+    }
 
-            : base(0x8a0, svcType, null, (ProtoTreeRoot root) =>
-            {
-                root.AddTree(reqBody.BuildTree());
-            })
+    public class KickMemberInfo : OidbStruct
+    {
+        // 0x08
+        public uint? operate;
+
+        // 0x10
+        public uint? member_uin;
+
+        // 0x18
+        public uint? flag;
+
+        // 0x22
+        public byte[] msg;
+
+        public override void Write(ProtoTreeRoot root)
         {
-
+            root.AddLeafVar("08", operate);
+            root.AddLeafVar("10", member_uin);
+            root.AddLeafVar("18", flag);
+            root.AddLeafBytes("22", msg);
         }
+    }
 
-        public class KickMemberInfo : OidbStruct
+    public class KickResult : OidbStruct
+    {
+        // 0x08
+        public uint? result;
+
+        // 0x10
+        public uint? member_uin;
+
+        public override void Write(ProtoTreeRoot root)
         {
-            // 0x08
-            public uint? operate;
-
-            // 0x10
-            public uint? member_uin;
-
-            // 0x18
-            public uint? flag;
-
-            // 0x22
-            public byte[] msg;
-
-            public override void Write(ProtoTreeRoot root)
-            {
-                root.AddLeafVar("08", operate);
-                root.AddLeafVar("10", member_uin);
-                root.AddLeafVar("18", flag);
-                root.AddLeafBytes("22", msg);
-            }
+            root.AddLeafVar("08", result);
+            root.AddLeafVar("10", member_uin);
         }
+    }
 
-        public class KickResult : OidbStruct
+    public class ReqBody : OidbStruct
+    {
+        // 0x08
+        public uint? group_code;
+
+        // 0x12
+        public KickMemberInfo msg_kick_list;
+
+        // 0x18
+        public uint? kick_list;
+
+        // 0x20
+        public uint? kick_flag;
+
+        // 0x2A
+        public byte[] kick_msg;
+
+        public override void Write(ProtoTreeRoot root)
         {
-            // 0x08
-            public uint? result;
-
-            // 0x10
-            public uint? member_uin;
-
-            public override void Write(ProtoTreeRoot root)
-            {
-                root.AddLeafVar("08", result);
-                root.AddLeafVar("10", member_uin);
-            }
+            root.AddLeafVar("08", group_code);
+            root.AddTree("12", msg_kick_list?.BuildTree());
+            root.AddLeafVar("18", kick_list);
+            root.AddLeafVar("20", kick_flag);
+            root.AddLeafBytes("2A", kick_msg);
         }
+    }
 
-        public class ReqBody : OidbStruct
+    public class RspBody : OidbStruct
+    {
+        // 0x08
+        public uint? group_code;
+
+        // 0x12
+        public KickResult msg_kick_result;
+
+        public override void Write(ProtoTreeRoot root)
         {
-            // 0x08
-            public uint? group_code;
-
-            // 0x12
-            public KickMemberInfo msg_kick_list;
-
-            // 0x18
-            public uint? kick_list;
-
-            // 0x20
-            public uint? kick_flag;
-
-            // 0x2A
-            public byte[] kick_msg;
-
-            public override void Write(ProtoTreeRoot root)
-            {
-                root.AddLeafVar("08", group_code);
-                root.AddTree("12", msg_kick_list?.BuildTree());
-                root.AddLeafVar("18", kick_list);
-                root.AddLeafVar("20", kick_flag);
-                root.AddLeafBytes("2A", kick_msg);
-            }
-        }
-
-        public class RspBody : OidbStruct
-        {
-            // 0x08
-            public uint? group_code;
-
-            // 0x12
-            public KickResult msg_kick_result;
-
-            public override void Write(ProtoTreeRoot root)
-            {
-                root.AddLeafVar("08", group_code);
-                root.AddTree("12", msg_kick_result?.BuildTree());
-            }
+            root.AddLeafVar("08", group_code);
+            root.AddTree("12", msg_kick_result?.BuildTree());
         }
     }
 }
