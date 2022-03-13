@@ -91,38 +91,6 @@ public class MessageBuilder
     }
 
     /// <summary>
-    /// Combine the continuous text chains
-    /// </summary>
-    internal void Combine()
-    {
-        var chain = new MessageChain();
-        TextChain last = null;
-
-        foreach (var i in _chain)
-        {
-            // Just append if not text chain
-            if (i.Type != BaseChain.ChainType.Text)
-            {
-                last = null;
-                chain.Add(i);
-                continue;
-            }
-
-            // Combine with last text chain
-            if (last != null) last.Combine((TextChain) i);
-            else
-            {
-                chain.Add(i);
-
-                // Keep last text chain
-                last = (TextChain) i;
-            }
-        }
-
-        _chain = chain;
-    }
-
-    /// <summary>
     /// Convert a text message to chain
     /// </summary>
     /// <param name="message"></param>
