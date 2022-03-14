@@ -9,7 +9,7 @@ using Konata.Core.Packets.SvcPush;
 namespace Konata.Core.Services.StatSvc;
 
 [EventSubscribe(typeof(ReqMSFOfflineEvent))]
-[Service("StatSvc.ReqMSFOffline", "Request MSF force offline.")]
+[Service("StatSvc.ReqMSFOffline", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ReqMSFOffline : BaseService<ReqMSFOfflineEvent>
 {
     protected override bool Parse(SSOFrame input,

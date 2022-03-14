@@ -10,31 +10,19 @@ using Konata.Core.Utils.IO;
 namespace Konata.Core.Services.Heartbeat;
 
 [EventSubscribe(typeof(CheckHeartbeatEvent))]
-[Service("Heartbeat.Alive", "Heartbeat for client")]
-internal class Alive : IService
+[Service("Heartbeat.Alive", PacketType.TypeA, AuthFlag.DefaultlyNo, SequenceMode.Managed)]
+internal class Alive : BaseService<CheckHeartbeatEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+        out CheckHeartbeatEvent output)
     {
         output = CheckHeartbeatEvent.Result(0);
         return true;
     }
 
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, CheckHeartbeatEvent input, 
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        if (SSOFrame.Create("Heartbeat.Alive", PacketType.TypeA,
-                newSequence, sequence.Session, new ByteBuffer(), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.DefaultlyNo,
-                    0x00, null, null, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        return true;
     }
 }

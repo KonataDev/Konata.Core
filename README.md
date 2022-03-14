@@ -73,7 +73,7 @@ Console.WriteLine("We got online!");
 - [ ] Refactor sso services
 - [ ] Refactor packets
 - [ ] Robust login logic
-- [ ] Ecdh xchg
+- [x] Ecdh xchg
 - [x] Fix task stuck
 - [ ] [More Plans](../../projects/1)...
 

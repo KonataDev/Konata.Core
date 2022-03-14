@@ -6,7 +6,7 @@ using Konata.Core.Packets.SvcPush;
 
 namespace Konata.Core.Services.ConfigPushSvc;
 
-[Service("ConfigPushSvc.PushReq", "Push req")]
+[Service("ConfigPushSvc.PushReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PushReq : BaseService<PushConfigEvent>
 {
     protected override bool Parse(SSOFrame input,

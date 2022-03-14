@@ -16,103 +16,84 @@ using Konata.Core.Utils.Protobuf.ProtoModel;
 
 namespace Konata.Core.Services.OnlinePush;
 
-[Service("OnlinePush.PbPushGroupMsg", "Receive group message from server")]
+[Service("OnlinePush.PbPushGroupMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 [EventSubscribe(typeof(GroupMessageEvent))]
-internal class PbPushGroupMsg : IService
+internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out GroupMessageEvent output)
     {
         var message = GroupMessageEvent.Result(0);
+        var root = ProtoTreeRoot.Deserialize(input.Payload, true);
         {
-            var root = ProtoTreeRoot.Deserialize(input.Payload, true);
+            // Parse message source information
+            var sourceRoot = (ProtoTreeRoot) root.PathTo("0A.0A");
             {
-                // Parse message source information
-                var sourceRoot = (ProtoTreeRoot) root.PathTo("0A.0A");
+                message.SetMemberUin((uint) sourceRoot.GetLeafVar("08"));
+                message.SetMessageId((uint) sourceRoot.GetLeafVar("28"));
+                message.SetMessageTime((uint) sourceRoot.GetLeafVar("30"));
+                message.SetMessageUniSeq((uint) sourceRoot.GetLeafVar("38"));
+
+                sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("4A");
                 {
-                    message.SetMemberUin((uint) sourceRoot.GetLeafVar("08"));
-                    message.SetMessageId((uint) sourceRoot.GetLeafVar("28"));
-                    message.SetMessageTime((uint) sourceRoot.GetLeafVar("30"));
-                    message.SetMessageUniSeq((uint) sourceRoot.GetLeafVar("38"));
+                    message.SetGroupUin((uint) sourceRoot.GetLeafVar("08"));
+                    message.SetGroupName(sourceRoot.GetLeafString("42"));
 
-                    sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("4A");
+                    // Try get member card
+                    if (sourceRoot.TryGetLeafString("22", out var cardText))
                     {
-                        message.SetGroupUin((uint) sourceRoot.GetLeafVar("08"));
-                        message.SetGroupName(sourceRoot.GetLeafString("42"));
-
-                        // Try get member card
-                        if (sourceRoot.TryGetLeafString("22", out var cardText))
+                        message.SetMemberCard(cardText);
+                    }
+                    else
+                    {
+                        // This member card contains a color code
+                        // We need to ignore this
+                        sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("22");
+                        if (sourceRoot.GetLeaves("0A").Count == 2)
                         {
-                            message.SetMemberCard(cardText);
-                        }
-                        else
-                        {
-                            // This member card contains a color code
-                            // We need to ignore this
-                            sourceRoot = (ProtoTreeRoot) sourceRoot.PathTo("22");
-                            if (sourceRoot.GetLeaves("0A").Count == 2)
-                            {
-                                message.SetMemberCard(((ProtoLengthDelimited)
-                                    sourceRoot.PathTo("0A[1].12")).ToString());
-                            }
+                            message.SetMemberCard(((ProtoLengthDelimited)
+                                sourceRoot.PathTo("0A[1].12")).ToString());
                         }
                     }
                 }
+            }
 
-                // Parse message slice information
-                var sliceInfoRoot = (ProtoTreeRoot) root.PathTo("0A.12");
+            // Parse message slice information
+            var sliceInfoRoot = (ProtoTreeRoot) root.PathTo("0A.12");
+            {
+                var total = (uint) sliceInfoRoot.GetLeafVar("08");
+                var index = (uint) sliceInfoRoot.GetLeafVar("10");
+                var flags = (uint) sliceInfoRoot.GetLeafVar("18");
+                message.SetSliceInfo(total, index, flags);
+            }
+
+            // Parse message content
+            var contentRoot = (ProtoTreeRoot) root.PathTo("0A.1A.0A");
+            {
+                var builder = new MessageBuilder();
+
+                contentRoot.ForEach((_, __) =>
                 {
-                    var total = (uint) sliceInfoRoot.GetLeafVar("08");
-                    var index = (uint) sliceInfoRoot.GetLeafVar("10");
-                    var flags = (uint) sliceInfoRoot.GetLeafVar("18");
-                    message.SetSliceInfo(total, index, flags);
-                }
+                    BaseChain chain = null;
 
-                // Parse message content
-                var contentRoot = (ProtoTreeRoot) root.PathTo("0A.1A.0A");
-                {
-                    var builder = new MessageBuilder();
-
-                    contentRoot.ForEach((_, __) =>
+                    // Messages
+                    if (_ == "12")
                     {
-                        BaseChain chain = null;
-
-                        // Messages
-                        if (_ == "12")
-                        {
-                            ((ProtoTreeRoot) __).ForEach((key, value) =>
-                            {
-                                try
-                                {
-                                    chain = key switch
-                                    {
-                                        "0A" => ParseText((ProtoTreeRoot) value),
-                                        "12" => ParseQFace((ProtoTreeRoot) value),
-                                        "42" => ParsePicture((ProtoTreeRoot) value),
-                                        "62" => ParseXML((ProtoTreeRoot) value),
-                                        "9A01" => ParseShortVideo((ProtoTreeRoot) value),
-                                        "9A03" => ParseJSON((ProtoTreeRoot) value),
-                                        "EA02" => ParseReply((ProtoTreeRoot) value),
-                                        _ => null
-                                    };
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.Message, e.StackTrace);
-                                }
-
-                                if (chain != null)
-                                {
-                                    builder.Add(chain);
-                                }
-                            });
-                        }
-
-                        // Audio message
-                        else if (_ == "22")
+                        ((ProtoTreeRoot) __).ForEach((key, value) =>
                         {
                             try
                             {
-                                chain = ParseRecord((ProtoTreeRoot) __);
+                                chain = key switch
+                                {
+                                    "0A" => ParseText((ProtoTreeRoot) value),
+                                    "12" => ParseQFace((ProtoTreeRoot) value),
+                                    "42" => ParsePicture((ProtoTreeRoot) value),
+                                    "62" => ParseXML((ProtoTreeRoot) value),
+                                    "9A01" => ParseShortVideo((ProtoTreeRoot) value),
+                                    "9A03" => ParseJSON((ProtoTreeRoot) value),
+                                    "EA02" => ParseReply((ProtoTreeRoot) value),
+                                    _ => null
+                                };
                             }
                             catch (Exception e)
                             {
@@ -123,12 +104,30 @@ internal class PbPushGroupMsg : IService
                             {
                                 builder.Add(chain);
                             }
-                        }
-                    });
+                        });
+                    }
 
-                    message.SetMessage(builder.Build());
-                    message.SetSessionSequence(input.Sequence);
-                }
+                    // Audio message
+                    else if (_ == "22")
+                    {
+                        try
+                        {
+                            chain = ParseRecord((ProtoTreeRoot) __);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message, e.StackTrace);
+                        }
+
+                        if (chain != null)
+                        {
+                            builder.Add(chain);
+                        }
+                    }
+                });
+
+                message.SetMessage(builder.Build());
+                message.SetSessionSequence(input.Sequence);
             }
         }
 
@@ -285,12 +284,4 @@ internal class PbPushGroupMsg : IService
     /// <returns></returns>
     private static BaseChain ParseQFace(ProtoTreeRoot tree)
         => QFaceChain.Create((uint) tree.GetLeafVar("08"));
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        output = null;
-        newSequence = 0;
-        return false;
-    }
 }

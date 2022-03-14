@@ -1,23 +1,51 @@
 ﻿using System;
+using Konata.Core.Packets;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Konata.Core.Attributes
+namespace Konata.Core.Attributes;
+
+/// <summary>
+/// SSO Service Attribute
+/// </summary>
+internal class ServiceAttribute : Attribute
 {
     /// <summary>
-    /// SSO Service Attribute
+    /// Service command name
     /// </summary>
-    internal class ServiceAttribute : Attribute
+    public string Command { get; }
+
+    /// <summary>
+    /// Service packet type
+    /// </summary>
+    public PacketType PacketType { get; }
+
+    /// <summary>
+    /// Service authorization type 
+    /// </summary>
+    public AuthFlag AuthType { get; }
+
+    /// <summary>
+    /// Sequence mode
+    /// </summary>
+    public SequenceMode SeqMode { get; }
+
+    public ServiceAttribute(string name, PacketType pktType,
+        AuthFlag authType, SequenceMode seqMode)
     {
-        public string ServiceName { get; }
-
-        public string Description { get; }
-
-        public ServiceAttribute(string name, string description)
-        {
-            ServiceName = name;
-            Description = description;
-        }
+        Command = name;
+        PacketType = pktType;
+        AuthType = authType;
+        SeqMode = seqMode;
     }
+}
+
+/// <summary>
+/// Sequence mode
+/// </summary>
+internal enum SequenceMode
+{
+    Managed = 0,
+    Selfhold
 }

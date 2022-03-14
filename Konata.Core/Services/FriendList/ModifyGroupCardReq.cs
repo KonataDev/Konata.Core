@@ -1,44 +1,29 @@
 ﻿using System;
-using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable RedundantAssignment
+
 namespace Konata.Core.Services.Friendlist;
 
-[Service("friendlist.ModifyGroupCardReq", "Modify group card")]
 [EventSubscribe(typeof(GroupModifyMemberCardEvent))]
-internal class ModifyGroupCardReq : IService
+[Service("friendlist.ModifyGroupCardReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
+internal class ModifyGroupCardReq : BaseService<GroupModifyMemberCardEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out GroupModifyMemberCardEvent output)
     {
         throw new NotImplementedException();
     }
 
-    public bool Build(Sequence sequence, GroupModifyMemberCardEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupModifyMemberCardEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var svcRequest = new SvcReqModifyGroupCard(input.GroupUin, input.MemberUin, input.MemberCard);
-
-        if (SSOFrame.Create("friendlist.ModifyGroupCardReq", PacketType.TypeB,
-                newSequence, sequence.Session, svcRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output = new SvcReqModifyGroupCard(input.GroupUin, input.MemberUin, input.MemberCard);
+        return true;
     }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        => Build(sequence, (GroupModifyMemberCardEvent) input, keystore, device, out newSequence, out output);
 }

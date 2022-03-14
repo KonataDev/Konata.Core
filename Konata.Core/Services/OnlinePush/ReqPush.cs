@@ -11,6 +11,7 @@ using Konata.Core.Utils.JceStruct;
 using Konata.Core.Utils.JceStruct.Model;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable UnusedType.Global
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable PossibleInvalidCastExceptionInForeachLoop
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -20,7 +21,7 @@ namespace Konata.Core.Services.OnlinePush;
 using GroupPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, ByteBuffer, ProtocolEvent>>;
 using FriendPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, JStruct, ProtocolEvent>>;
 
-[Service("OnlinePush.ReqPush", "Push messages from server")]
+[Service("OnlinePush.ReqPush", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ReqPush : BaseService<OnlineReqPushEvent>
 {
     protected override bool Parse(SSOFrame input,

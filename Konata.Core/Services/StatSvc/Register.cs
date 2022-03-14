@@ -1,5 +1,4 @@
-﻿using Konata.Core.Events;
-using Konata.Core.Events.Model;
+﻿using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
@@ -7,14 +6,16 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
+// ReSharper disable RedundantAssignment
 
 namespace Konata.Core.Services.StatSvc;
 
-[Service("StatSvc.register", "Register client")]
+[Service("StatSvc.register", PacketType.TypeA, AuthFlag.D2Authentication, SequenceMode.Managed)]
 [EventSubscribe(typeof(OnlineStatusEvent))]
-internal class Register : IService
+internal class Register : BaseService<OnlineStatusEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out OnlineStatusEvent output)
     {
         var svcResponse = new SvcRspRegister(input.Payload.GetBytes());
 
@@ -25,13 +26,10 @@ internal class Register : IService
         return true;
     }
 
-    public bool Build(Sequence sequence, OnlineStatusEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, OnlineStatusEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var svcRequest = new SvcReqRegister(new RegisterInfo
+        output = new SvcReqRegister(new RegisterInfo
         {
             uin = keystore.Account.Uin,
             bid = 7,
@@ -74,20 +72,6 @@ internal class Register : IService
             batteryStatus = 0
         });
 
-        if (SSOFrame.Create("StatSvc.register", PacketType.TypeA, newSequence,
-                keystore.Session.TgtToken, sequence.Session, svcRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        return true;
     }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int outsequence, out byte[] output)
-        => Build(sequence, (OnlineStatusEvent) input, keystore, device, out outsequence, out output);
 }

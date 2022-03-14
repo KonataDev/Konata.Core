@@ -4,31 +4,20 @@ using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable RedundantAssignment
+
 namespace Konata.Core.Services.OnlinePush;
 
 [EventSubscribe(typeof(OnlineRespPushEvent))]
-[Service("OnlinePush.RespPush", "Confirm online push")]
+[Service("OnlinePush.RespPush", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class RespPush : BaseService<OnlineRespPushEvent>
 {
-    protected override bool Build(Sequence sequence, OnlineRespPushEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, OnlineRespPushEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var svcRequest = new SvcReqPushMsgResp(input.RequestId, input.SelfUin, input.FromSource,
+        output = new SvcReqPushMsgResp(input.RequestId, input.SelfUin, input.FromSource,
             input.UnknownV1, input.SvrIp, input.UnknownV8, input.UnknownV32);
-
-        if (SSOFrame.Create("OnlinePush.RespPush", PacketType.TypeB,
-                newSequence, sequence.Session, svcRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        return true;
     }
 }

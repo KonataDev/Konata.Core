@@ -1,42 +1,21 @@
-﻿using Konata.Core.Events;
-using Konata.Core.Events.Model;
+﻿using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Utils.Protobuf;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.PbMessageSvc;
 
-[Service("PbMessageSvc.PbMsgReadedReport", "Push read signal")]
 [EventSubscribe(typeof(GroupMessageReadEvent))]
-internal class PbMsgReadReport : IService
+[Service("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Selfhold)]
+internal class PbMsgReadReport : BaseService<GroupMessageReadEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
-        => (output = null) == null;
-
-    public bool Build(Sequence sequence, GroupMessageReadEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupMessageReadEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = input.SessionSequence;
-
-        var readReport = new GroupMsgReadReport(input.GroupUin, input.RequestId);
-
-        if (SSOFrame.Create("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(readReport), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output.PutProtoNode(new GroupMsgReadReport(input.GroupUin, input.RequestId));
+        return true;
     }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        => Build(sequence, (GroupMessageReadEvent) input, keystore, device, out newSequence, out output);
 }

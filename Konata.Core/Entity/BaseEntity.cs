@@ -197,7 +197,7 @@ public class BaseEntity
     }
 }
 
-internal class KonataTask
+public class KonataTask
 {
     public BaseEvent EventPayload { get; }
 

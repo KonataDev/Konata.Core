@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
@@ -8,13 +6,14 @@ using Konata.Core.Common;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable UnusedType.Global
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable PossibleInvalidCastExceptionInForeachLoop
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Konata.Core.Services.OnlinePush;
 
-[Service("OnlinePush.PbPushTransMsg", "Push trans messages")]
+[Service("OnlinePush.PbPushTransMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
 {
     protected override bool Parse(SSOFrame input,

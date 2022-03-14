@@ -198,16 +198,15 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// <summary>
     /// Event handler
     /// </summary>
-    /// <param name="task"></param>
-    public override async Task<bool> OnHandleEvent(KonataTask task)
+    /// <param name="anyEvent"></param>
+    /// <returns></returns>
+    public override async Task<bool> OnHandleEvent(BaseEvent anyEvent)
     {
-        if (task.EventPayload is PacketEvent packetEvent)
+        if (anyEvent is PacketEvent packetEvent)
         {
             // Not connected
             if (_tcpClient is not {Connected: true})
-            {
                 LogW(TAG, "Calling SendData method after socket disconnected.");
-            }
 
             // Send data
             await _tcpClient.Send(packetEvent.Buffer);
@@ -260,9 +259,6 @@ internal class SocketComponent : InternalComponent, IClientListener
     }
 
     #region Stub methods
-
-    private static Task PushOffline(SocketComponent context, string reason)
-        => context.SendEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
 
     private static Task PushNewPacket(SocketComponent context, byte[] data)
         => context.SendEvent<PacketComponent>(PacketEvent.Push(data));

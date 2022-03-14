@@ -6,7 +6,7 @@ using Konata.Core.Utils.JceStruct.Model;
 
 namespace Konata.Core.Packets.Wup;
 
-internal class UniPacket : ByteBuffer
+internal class UniPacket : PacketBase
 {
     public delegate void UniPacketPayloadWriter(out JStruct writer);
 

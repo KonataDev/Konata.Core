@@ -1,23 +1,21 @@
 ﻿using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
-using Konata.Core.Packets.Protobuf;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
 using Konata.Core.Utils.Network;
 using Konata.Core.Utils.Protobuf;
 
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.PttStore;
 
 [EventSubscribe(typeof(GroupPttUpEvent))]
-[Service("PttStore.GroupPttUp", "Record upload")]
-internal class GroupPttUp : IService
+[Service("PttStore.GroupPttUp", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
+internal class GroupPttUp : BaseService<GroupPttUpEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out GroupPttUpEvent output)
     {
         var tree = new ProtoTreeRoot
             (input.Payload.GetBytes(), true);
@@ -39,29 +37,11 @@ internal class GroupPttUp : IService
         }
     }
 
-    public bool Build(Sequence sequence, GroupPttUpEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupPttUpEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = input.SessionSequence;
-
-        var picupRequest = new GroupPttUpRequest
-            (input.GroupUin, input.SelfUin, input.UploadRecord);
-
-        if (SSOFrame.Create("PttStore.GroupPttUp", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(picupRequest), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output.PutProtoNode(new GroupPttUpRequest
+            (input.GroupUin, input.SelfUin, input.UploadRecord));
+        return true;
     }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        => Build(sequence, (GroupPttUpEvent) input, keystore, device, out newSequence, out output);
 }

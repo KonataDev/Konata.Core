@@ -2,7 +2,6 @@
 using Konata.Core.Common;
 using Konata.Core.Packets;
 using Konata.Core.Events.Model;
-using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable UnusedType.Global
@@ -10,7 +9,7 @@ using Konata.Core.Utils.Protobuf;
 namespace Konata.Core.Services.StatSvc;
 
 [EventSubscribe(typeof(SimpleGetEvent))]
-[Service("StatSvc.SimpleGet", "Simple get")]
+[Service("StatSvc.SimpleGet", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Selfhold)]
 internal class SimpleGet : BaseService<SimpleGetEvent>
 {
     protected override bool Parse(SSOFrame input,
@@ -29,22 +28,6 @@ internal class SimpleGet : BaseService<SimpleGetEvent>
         }
     }
 
-    protected override bool Build(Sequence sequence, SimpleGetEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        output = null;
-        newSequence = input.SessionSequence;
-
-        if (SSOFrame.Create("StatSvc.SimpleGet", PacketType.TypeB,
-                newSequence, sequence.Session, new ByteBuffer(), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
-    }
+    protected override bool Build(int sequence, SimpleGetEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output) => true;
 }

@@ -5,10 +5,13 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable RedundantAssignment
+
 namespace Konata.Core.Services.OidbSvc;
 
 [EventSubscribe(typeof(GroupMuteMemberEvent))]
-[Service("OidbSvc.0x570_8", "Mute member in the group")]
+[Service("OidbSvc.0x570_8", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Oidb0x570_8 : BaseService<GroupMuteMemberEvent>
 {
     protected override bool Parse(SSOFrame input,
@@ -23,25 +26,10 @@ internal class Oidb0x570_8 : BaseService<GroupMuteMemberEvent>
         }
     }
 
-    protected override bool Build(Sequence sequence, GroupMuteMemberEvent input, BotKeyStore
-        keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupMuteMemberEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var oidbRequest = new OidbCmd0x570_8(input.GroupUin,
-            input.MemberUin, input.TimeSeconds);
-
-        if (SSOFrame.Create("OidbSvc.0x570_8", PacketType.TypeB,
-                newSequence, sequence.Session, oidbRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output = new OidbCmd0x570_8(input.GroupUin, input.MemberUin, input.TimeSeconds);
+        return true;
     }
 }

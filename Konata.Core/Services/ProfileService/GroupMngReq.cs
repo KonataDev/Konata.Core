@@ -5,10 +5,13 @@ using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable RedundantAssignment
+
 namespace Konata.Core.Services.ProfileService;
 
 [EventSubscribe(typeof(GroupManagementEvent))]
-[Service("ProfileService.GroupMngReq", "Group management request")]
+[Service("ProfileService.GroupMngReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class GroupMngReq : BaseService<GroupManagementEvent>
 {
     protected override bool Parse(SSOFrame input,
@@ -19,24 +22,10 @@ internal class GroupMngReq : BaseService<GroupManagementEvent>
         return true;
     }
 
-    protected override bool Build(Sequence sequence, GroupManagementEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupManagementEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var svcRequest = new SvcReqGroupMngReq(input.SelfUin, input.GroupCode, input.Dismiss);
-
-        if (SSOFrame.Create("ProfileService.GroupMngReq", PacketType.TypeB,
-                newSequence, sequence.Session, svcRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output = new SvcReqGroupMngReq(input.SelfUin, input.GroupCode, input.Dismiss);
+        return true;
     }
 }

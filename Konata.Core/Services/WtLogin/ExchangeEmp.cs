@@ -9,6 +9,8 @@ using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
 using Konata.Core.Utils.Crypto;
 
+// ReSharper disable RedundantAssignment
+
 // ReSharper disable UnusedVariable
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
@@ -20,7 +22,7 @@ using Konata.Core.Utils.Crypto;
 namespace Konata.Core.Services.WtLogin;
 
 [EventSubscribe(typeof(WtLoginEvent))]
-[Service("wtlogin.exchange_emp", "Exchange token")]
+[Service("wtlogin.exchange_emp", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Selfhold)]
 internal class ExchangeEmp : BaseService<WtLoginEvent>
 {
     protected override bool Parse(SSOFrame input,
@@ -38,6 +40,29 @@ internal class ExchangeEmp : BaseService<WtLoginEvent>
         };
 
         return true;
+    }
+
+    protected override bool Build(int sequence, WtLoginEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
+    {
+        output = null;
+        // newSequence = sequence.GetSessionSequence("wtlogin.exchange_emp");
+
+        // TODO:
+        // Move this to logic layer
+
+        // Update keys
+        keystore.Session.TgtKey =
+            new Md5Cryptor().Encrypt(keystore.Session.D2Key);
+
+        // Build OicqRequest
+        if (input.EventType == WtLoginEvent.Type.Xchg)
+        {
+            output = new OicqRequestXchg(sequence, keystore, device);
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -113,45 +138,4 @@ internal class ExchangeEmp : BaseService<WtLoginEvent>
     /// <returns></returns>
     private WtLoginEvent OnRecvUnknown(OicqResponse response)
         => WtLoginEvent.ResultUnknown((int) response.Status, "Unknown OicqRequest received.");
-
-    protected override bool Build(Sequence sequence, WtLoginEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        output = null;
-        newSequence = sequence.GetSessionSequence("wtlogin.exchange_emp");
-
-        // TODO:
-        // Move this to logic layer
-
-        // Update keys
-        keystore.Session.TgtKey =
-            new Md5Cryptor().Encrypt(keystore.Session.D2Key);
-
-        OicqRequest oicqRequest;
-
-        // Build OicqRequest
-        switch (input.EventType)
-        {
-            case WtLoginEvent.Type.Xchg:
-                oicqRequest = new OicqRequestXchg(newSequence, keystore, device);
-                break;
-
-            default:
-                return false;
-        }
-
-        // Build to service
-        if (SSOFrame.Create("wtlogin.exchange_emp", PacketType.TypeA,
-                newSequence, keystore.Session.TgtToken,
-                sequence.Session, oicqRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
-                    keystore.Account.Uin, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
-    }
 }

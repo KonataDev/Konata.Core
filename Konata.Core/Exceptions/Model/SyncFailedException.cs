@@ -1,12 +1,9 @@
-﻿using System;
+﻿namespace Konata.Core.Exceptions.Model;
 
-namespace Konata.Core.Exceptions.Model
+public class SyncFailedException : KonataException
 {
-    public class SyncFailedException : KonataException
+    public SyncFailedException(int code, string message)
+        : base(code, message)
     {
-        public SyncFailedException(int code, string message)
-            : base(code, message)
-        {
-        }
     }
 }

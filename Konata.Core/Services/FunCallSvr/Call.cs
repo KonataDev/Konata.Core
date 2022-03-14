@@ -7,7 +7,7 @@ using Konata.Core.Utils.Protobuf;
 namespace Konata.Core.Services.FunCallSvr;
 
 [EventSubscribe(typeof(FunCallSvrCallEvent))]
-[Service("FunCallSvr.call", "Calling service")]
+[Service("FunCallSvr.call", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Call : BaseService<FunCallSvrCallEvent>
 {
     protected override bool Parse(SSOFrame input, BotKeyStore keystore,
@@ -22,12 +22,9 @@ internal class Call : BaseService<FunCallSvrCallEvent>
         return true;
     }
 
-    protected override bool Build(Sequence sequence, FunCallSvrCallEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, FunCallSvrCallEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
         var req = new ProtoTreeRoot();
         {
             req.AddLeafVar("08", 2);
@@ -39,17 +36,7 @@ internal class Call : BaseService<FunCallSvrCallEvent>
                 _.AddLeafVar("12", 0);
             });
         }
-
-        if (SSOFrame.Create("FunCallSvr.call", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(req), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output.PutProtoNode(req);
+        return true;
     }
 }

@@ -1,25 +1,12 @@
+using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Packets;
-using Konata.Core.Attributes;
-using Konata.Core.Common;
 
-namespace Konata.Core.Services.ProfileService;
+// ReSharper disable UnusedType.Global
 
-[Service("ProfileService.Pb.ReqSystemMsgNew.Friend", "")]
+namespace Konata.Core.Services.ProfileService.Pb.ReqSystemMsgNew;
+
+[Service("ProfileService.Pb.ReqSystemMsgNew.Friend", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Friend : BaseService<ProtocolEvent>
 {
-    protected override bool Parse(SSOFrame input,
-         BotKeyStore keystore, out ProtocolEvent output)
-    {
-        output = null;
-        return false;
-    }
-
-    protected override bool Build(Sequence sequence, ProtocolEvent input,
-         BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        output = null;
-        newSequence = 0;
-        return false;
-    }
 }

@@ -9,6 +9,8 @@ using Konata.Core.Entity;
 using Konata.Core.Services;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.JceStruct;
 
 // ReSharper disable InvertIf
 // ReSharper disable UnusedParameter.Local
@@ -21,34 +23,31 @@ namespace Konata.Core.Components.Model;
 internal class PacketComponent : InternalComponent
 {
     private const string TAG = "PacketComponent";
-
     private readonly Dictionary<string, IService> _services;
-    private readonly Dictionary<Type, IService> _servicesType;
-    private readonly Dictionary<Type, List<IService>> _servicesEventType;
-    private readonly ConcurrentDictionary<int, KonataTask> _pendingRequests;
+
+    // private readonly Dictionary<Type, IService> _servicesType;
     private readonly Sequence _serviceSequence;
+    private readonly ConcurrentDictionary<int, KonataTask> _pendingRequests;
+    private readonly Dictionary<Type, List<(ServiceAttribute Attr, IService Instance)>> _servicesEventType;
 
     public PacketComponent()
     {
-        _serviceSequence = new();
         _services = new();
-        _servicesType = new();
+        _serviceSequence = new();
         _servicesEventType = new();
         _pendingRequests = new();
 
-        LoadService();
+        LoadServices();
     }
 
     /// <summary>
     /// Load sso service
     /// </summary>
-    private void LoadService()
+    private void LoadServices()
     {
         // Initialize protocol event types
         foreach (var type in Reflection.GetChildClasses<ProtocolEvent>())
-        {
-            _servicesEventType.Add(type, new List<IService>());
-        }
+            _servicesEventType.Add(type, new());
 
         // Create sso services
         foreach (var type in Reflection.GetClassesByAttribute<ServiceAttribute>())
@@ -61,13 +60,13 @@ internal class PacketComponent : InternalComponent
                 var service = (IService) Activator.CreateInstance(type);
 
                 // Bind service name with service
-                _services.Add(serviceAttr.ServiceName, service);
-                _servicesType.Add(type, service);
+                _services.Add(serviceAttr.Command, service);
+                // _servicesType.Add(type, service);
 
                 // Bind protocol event type with service
                 foreach (var attr in eventAttrs)
                 {
-                    _servicesEventType[attr.Event].Add(service);
+                    _servicesEventType[attr.Event].Add((serviceAttr, service));
                 }
             }
         }
@@ -168,11 +167,44 @@ internal class PacketComponent : InternalComponent
         // for outgoing packet building 
         foreach (var service in serviceList)
         {
-            if (service.Build(_serviceSequence, protocolEvent, ConfigComponent.KeyStore,
-                    ConfigComponent.DeviceInfo, out var sequence, out var buffer))
+            // Allocate a new sequence
+            var sequence = service.Attr.SeqMode switch
             {
+                SequenceMode.Selfhold => 0,
+                SequenceMode.Managed => _serviceSequence.GetNewSequence(),
+                _ => throw new NotSupportedException()
+            };
+
+            var wupBuffer = new PacketBase();
+            
+            // Build body data
+            service.Instance.Build(sequence, protocolEvent, ConfigComponent.KeyStore,
+                ConfigComponent.DeviceInfo, ref wupBuffer);
+            {
+                // Build sso frame
+                if (!SSOFrame.Create(service.Attr.Command, service.Attr.PacketType,
+                        sequence, _serviceSequence.Session, wupBuffer, out var ssoFrame))
+                {
+                    throw new Exception("=w=");
+                }
+
+                // Build to srevice message
+                if (!ServiceMessage.Create(ssoFrame, service.Attr.AuthType, Bot.Uin,
+                        ConfigComponent.KeyStore.Session.D2Token,
+                        ConfigComponent.KeyStore.Session.D2Key,
+                        out var toService))
+                {
+                    throw new Exception("=w=");
+                }
+
+                // Packup
+                if (!ServiceMessage.Build(toService, ConfigComponent.DeviceInfo, out var output))
+                {
+                    throw new Exception("=w=");
+                }
+
                 // Pass messages to socket
-                await SendEvent<SocketComponent>(PacketEvent.Create(buffer));
+                PostEvent<SocketComponent>(PacketEvent.Create(output));
 
                 // This event is no need response
                 if (!protocolEvent.WaitForResponse) continue;

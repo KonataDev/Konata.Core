@@ -1,20 +1,22 @@
 ﻿using System;
 
-namespace Konata.Core.Attributes
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+namespace Konata.Core.Attributes;
+
+/// <summary>
+/// Konata Component Attribute
+/// </summary>
+internal class ComponentAttribute : Attribute
 {
-    /// <summary>
-    /// Konata Component Attribute
-    /// </summary>
-    internal class ComponentAttribute : Attribute
+    public string ComponentName { get; }
+
+    public string Description { get; }
+
+    public ComponentAttribute(string name, string description)
     {
-        public string ComponentName { get; set; }
-
-        public string Description { get; set; }
-
-        public ComponentAttribute(string name, string description)
-        {
-            ComponentName = name;
-            Description = description;
-        }
+        ComponentName = name;
+        Description = description;
     }
 }

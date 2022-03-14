@@ -1,18 +1,12 @@
-﻿using System;
-using Konata.Core.Packets;
+﻿using Konata.Core.Packets;
 using Konata.Core.Events;
 using Konata.Core.Attributes;
-using Konata.Core.Common;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.MessageSvc;
 
-[Service("MessageSvc.PushReaded", "Push have been read this message")]
-internal class PushRead : IService
+[Service("MessageSvc.PushReaded", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
+internal class PushRead : BaseService<ProtocolEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
-        => (output = null) == null;
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        => throw new NotImplementedException();
 }

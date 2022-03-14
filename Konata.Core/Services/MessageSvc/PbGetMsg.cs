@@ -15,7 +15,7 @@ using Konata.Core.Common;
 
 namespace Konata.Core.Services.MessageSvc;
 
-[Service("MessageSvc.PbGetMsg", "Get message")]
+[Service("MessageSvc.PbGetMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 [EventSubscribe(typeof(PbGetMessageEvent))]
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
@@ -132,12 +132,13 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
     /// <returns></returns>
     private BaseChain ParsePicture(ProtoTreeRoot tree)
     {
-        // TODO: fix args
         var hash = ByteConverter.Hex(tree.GetLeafBytes("3A"));
         return ImageChain.Create(
             "https://c2cpicdw.qpic.cn" + tree.GetLeafString("7A"),
             hash, hash,
-            (uint) tree.GetLeafVar("48"), (uint) tree.GetLeafVar("40"), (uint) tree.GetLeafVar("10"),
+            (uint) tree.GetLeafVar("48"),
+            (uint) tree.GetLeafVar("40"),
+            (uint) tree.GetLeafVar("10"),
             ImageType.JPG);
     }
 
@@ -157,25 +158,10 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
     private BaseChain ParseQFace(ProtoTreeRoot tree)
         => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
-
-    protected override bool Build(Sequence sequence, PbGetMessageEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, PbGetMessageEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
-        var pullRequest = new GetMessageRequest(input.SyncCookie);
-
-        if (SSOFrame.Create("MessageSvc.PbGetMsg", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(pullRequest), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output.PutProtoNode(new GetMessageRequest(input.SyncCookie));
+        return true;
     }
 }

@@ -1,22 +1,12 @@
-﻿using System;
-using Konata.Core.Events;
+﻿using Konata.Core.Events;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
-using Konata.Core.Common;
+
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.PbMessageSvc;
 
-[Service("PbMessageSvc.PbMessageWithDraw", "Withdraw message")]
-internal class PbMessageWithDraw : IService
+[Service("PbMessageSvc.PbMessageWithDraw", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
+internal class PbMessageWithDraw : BaseService<ProtocolEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        throw new NotImplementedException();
-    }
 }

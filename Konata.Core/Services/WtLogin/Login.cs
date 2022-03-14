@@ -9,16 +9,14 @@ using Konata.Core.Packets.Oicq;
 using Konata.Core.Utils.Crypto;
 
 // ReSharper disable InvertIf
-// ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedVariable
-// ReSharper disable MemberCanBeMadeStatic.Local
-// ReSharper disable UnusedType.Global
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
 namespace Konata.Core.Services.WtLogin;
 
 [EventSubscribe(typeof(WtLoginEvent))]
-[Service("wtlogin.login", "WtLogin exchange")]
+[Service("wtlogin.login", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Selfhold)]
 internal class Login : BaseService<WtLoginEvent>
 {
     protected override bool Parse(SSOFrame input,
@@ -40,6 +38,40 @@ internal class Login : BaseService<WtLoginEvent>
             OicqStatus.PreventByLoginDenied => OnRecvLoginDenied(oicqResponse, keystore),
             _ => OnRecvUnknown(oicqResponse)
         };
+
+        return true;
+    }
+
+    protected override bool Build(int sequence, WtLoginEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
+    {
+        // newSequence = sequence.GetSessionSequence("wtlogin.login");
+
+        // Build OicqRequest
+        switch (input.EventType)
+        {
+            case WtLoginEvent.Type.Tgtgt:
+                output = new OicqRequestTgtgt(sequence, keystore, device);
+                break;
+
+            case WtLoginEvent.Type.CheckSms:
+                output = new OicqRequestCheckSms(input.CaptchaResult, keystore);
+                break;
+
+            case WtLoginEvent.Type.RefreshSms:
+                output = new OicqRequestRefreshSms(keystore);
+                break;
+
+            case WtLoginEvent.Type.CheckSlider:
+                output = new OicqRequestCheckSlider(input.CaptchaResult, keystore);
+                break;
+
+            case WtLoginEvent.Type.VerifyDeviceLock:
+                output = new OicqRequestVerifyDeviceLock(keystore);
+                break;
+
+            default: return false;
+        }
 
         return true;
     }
@@ -328,53 +360,4 @@ internal class Login : BaseService<WtLoginEvent>
         => WtLoginEvent.ResultUnknown((int) response.Status, "Unknown OicqRequest received.");
 
     #endregion
-
-    protected override bool Build(Sequence sequence, WtLoginEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-    {
-        output = null;
-        newSequence = sequence.GetSessionSequence("wtlogin.login");
-
-        OicqRequest oicqRequest;
-
-        // Build OicqRequest
-        switch (input.EventType)
-        {
-            case WtLoginEvent.Type.Tgtgt:
-                oicqRequest = new OicqRequestTgtgt(newSequence, keystore, device);
-                break;
-
-            case WtLoginEvent.Type.CheckSms:
-                oicqRequest = new OicqRequestCheckSms(input.CaptchaResult, keystore);
-                break;
-
-            case WtLoginEvent.Type.RefreshSms:
-                oicqRequest = new OicqRequestRefreshSms(keystore);
-                break;
-
-            case WtLoginEvent.Type.CheckSlider:
-                oicqRequest = new OicqRequestCheckSlider(input.CaptchaResult, keystore);
-                break;
-
-            case WtLoginEvent.Type.VerifyDeviceLock:
-                oicqRequest = new OicqRequestVerifyDeviceLock(keystore);
-                break;
-
-            default:
-                return false;
-        }
-
-        // Build to service
-        if (SSOFrame.Create("wtlogin.login", PacketType.TypeA,
-                newSequence, sequence.Session, oicqRequest, out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.WtLoginExchange,
-                    keystore.Account.Uin, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
-    }
 }

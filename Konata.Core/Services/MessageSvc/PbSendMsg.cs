@@ -1,5 +1,4 @@
-﻿using Konata.Core.Events;
-using Konata.Core.Events.Model;
+﻿using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf;
@@ -8,13 +7,16 @@ using Konata.Core.Common;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable UnusedType.Global
+
 namespace Konata.Core.Services.MessageSvc;
 
-[Service("MessageSvc.PbSendMsg", "Send message")]
 [EventSubscribe(typeof(GroupMessageEvent))]
-internal class PbSendMsg : IService
+[Service("MessageSvc.PbSendMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
+internal class PbSendMsg : BaseService<GroupMessageEvent>
 {
-    public bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output)
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out GroupMessageEvent output)
     {
         var tree = new ProtoTreeRoot
             (input.Payload.GetBytes(), true);
@@ -26,12 +28,9 @@ internal class PbSendMsg : IService
         return true;
     }
 
-    public bool Build(Sequence sequence, GroupMessageEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
+    protected override bool Build(int sequence, GroupMessageEvent input,
+        BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = null;
-        newSequence = sequence.NewSequence;
-
         var root = new ProtoTreeRoot();
         {
             foreach (var chain in input.Message.Chains)
@@ -69,19 +68,8 @@ internal class PbSendMsg : IService
             }
         }
 
-        var groupMsg = new GroupMsg(input.GroupUin, root);
-
-        if (SSOFrame.Create("MessageSvc.PbSendMsg", PacketType.TypeB,
-                newSequence, sequence.Session, ProtoTreeRoot.Serialize(groupMsg), out var ssoFrame))
-        {
-            if (ServiceMessage.Create(ssoFrame, AuthFlag.D2Authentication,
-                    keystore.Account.Uin, keystore.Session.D2Token, keystore.Session.D2Key, out var toService))
-            {
-                return ServiceMessage.Build(toService, device, out output);
-            }
-        }
-
-        return false;
+        output.PutProtoNode(new GroupMsg(input.GroupUin, root));
+        return true;
     }
 
     private static void ConstructPBReserved(ProtoTreeRoot root, int v8801, int v78)
@@ -244,8 +232,4 @@ internal class PbSendMsg : IService
             });
         // @formatter:on
     }
-
-    public bool Build(Sequence sequence, ProtocolEvent input,
-        BotKeyStore keystore, BotDevice device, out int newSequence, out byte[] output)
-        => Build(sequence, (GroupMessageEvent) input, keystore, device, out newSequence, out output);
 }
