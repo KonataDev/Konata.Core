@@ -29,7 +29,7 @@ public enum OicqStatus
 public enum OicqShareKeyStat
 {
     NoNeed = 0,
-    ExchangeTwice = 4
+    TwoStepExchange = 4
 }
 
 internal class OicqRequest : PacketBase

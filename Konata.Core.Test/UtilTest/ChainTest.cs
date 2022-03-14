@@ -13,7 +13,9 @@ public class ChainTest
             builder.Text("Hello!");
             builder.Text("World!");
         }
+        
         var chain = builder.Build();
         Assert.AreEqual(chain.Count, 1);
+        Assert.AreEqual(chain.ToString(), "Hello!World!");
     }
 }

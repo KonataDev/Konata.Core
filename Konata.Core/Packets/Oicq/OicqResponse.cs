@@ -46,7 +46,7 @@ internal class OicqResponse : PacketBase
                         BodyData.EatBytes(1);
                         break;
 
-                    case OicqShareKeyStat.ExchangeTwice:
+                    case OicqShareKeyStat.TwoStepExchange:
                         var bobPublic = BodyData.TakeBytes(out _, Prefix.Uint16);
                         cryptor.GenerateShared(bobPublic);
 
