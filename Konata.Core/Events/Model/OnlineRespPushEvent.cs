@@ -55,6 +55,13 @@ public class OnlineRespPushEvent : ProtocolEvent
         UnknownV32 = original.UnknownV32;
     }
 
+    private OnlineRespPushEvent(uint selfUin, PushTransMsgEvent original) : base(0, false)
+    {
+        SelfUin = selfUin;
+        RequestId = original.RequestId;
+        SvrIp = original.SvrIp;
+    }
+
     /// <summary>
     /// Confirm the push event
     /// </summary>
@@ -62,5 +69,14 @@ public class OnlineRespPushEvent : ProtocolEvent
     /// <param name="original"></param>
     /// <returns></returns>
     internal static OnlineRespPushEvent Create(uint selfUin, OnlineReqPushEvent original)
+        => new(selfUin, original);
+
+    /// <summary>
+    /// Confirm the push event
+    /// </summary>
+    /// <param name="selfUin"></param>
+    /// <param name="original"></param>
+    /// <returns></returns>
+    internal static OnlineRespPushEvent Create(uint selfUin, PushTransMsgEvent original)
         => new(selfUin, original);
 }

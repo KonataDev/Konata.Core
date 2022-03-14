@@ -14,12 +14,13 @@ public class SvcReqPushMsgResp : UniPacket
                 {
                     w[0] = (JNumber) selfUin; // uin
                     w[1] = new JList();
+                    if (source != 0)
                     {
                         ((JList) w[1]).Add(new JStruct
                         {
                             [0] = (JNumber) source,
                             [1] = (JNumber) v1,
-                            [2] = (JNumber) svrip,
+                            [2] = (JNumber) v32,
                             [3] = (JSimpleList) v8,
                             [4] = (JNumber) 0,
                             [5] = (JNumber) 0,
@@ -32,7 +33,7 @@ public class SvcReqPushMsgResp : UniPacket
                     }
                 }
 
-                w[2] = (JNumber) v32;
+                w[2] = (JNumber) svrip;
                 w[4] = (JNumber) 0;
             })
 

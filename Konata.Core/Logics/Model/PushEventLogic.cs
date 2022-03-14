@@ -89,11 +89,14 @@ public class PushEventLogic : BaseLogic
     /// Trans msg push
     /// </summary>
     /// <param name="e"></param>
-    private void OnPushTransMsg(PushTransMsgEvent e)
+    private async void OnPushTransMsg(PushTransMsgEvent e)
     {
         // Post inner event
         if (e.InnerEvent != null)
             Context.PostEventToEntity(e.InnerEvent);
+
+        // Confirm push
+        await ConfrimPushTransMsgEvent(Context, e);
     }
 
     private async Task OnPushNotify(PushNotifyEvent e)
@@ -142,6 +145,9 @@ public class PushEventLogic : BaseLogic
     #region Stub methods
 
     private static Task<OnlineRespPushEvent> ConfrimReqPushEvent(BusinessComponent context, OnlineReqPushEvent original)
+        => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
+
+    private static Task<OnlineRespPushEvent> ConfrimPushTransMsgEvent(BusinessComponent context, PushTransMsgEvent original)
         => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
 
     private static Task<PbGetMessageEvent> PullMessage(BusinessComponent context, byte[] syncCookie)

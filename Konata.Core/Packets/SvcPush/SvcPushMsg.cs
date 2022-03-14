@@ -32,7 +32,7 @@ namespace Konata.Core.Packets.SvcPush
                     p.PushPayload = vstruct["6"].SimpleList.Value;
 
                     p.Unknown0x1C = vstruct["1"].Number.ValueInt;
-                    p.SvrIp = vstruct["3"].Number.ValueInt;
+                    p.Unknown0x32 = vstruct["3"].Number.ValueInt;
                     p.Unknown0x8D = vstruct["8"].SimpleList.Value;
 
                     if (p.EventType == PushType.Friend)
@@ -40,7 +40,7 @@ namespace Konata.Core.Packets.SvcPush
                     else if (p.EventType == PushType.Group)
                         p.FromSource = ByteConverter.BytesToUInt32(p.PushPayload.Take(4).ToArray(), 0, Endian.Big);
                 }
-                p.Unknown0x32 = r["0.3"].Number.ValueInt;
+                p.SvrIp = r["0.3"].Number.ValueInt;
             })
         {
         }
