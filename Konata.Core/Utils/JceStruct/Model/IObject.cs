@@ -1,31 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Konata.Core.Utils.JceStruct.Model;
 
-namespace Konata.Core.Utils.JceStruct.Model
+internal interface IObject
 {
-    public interface IObject
-    {
-        Type Type { get; }
+    Type Type { get; }
 
-        BaseType BaseType { get; }
+    BaseType BaseType { get; }
 
-        JNumber Number { get; }
+    JNumber Number { get; }
 
-        JFloat Float { get; }
+    JFloat Float { get; }
 
-        JDouble Double { get; }
+    JDouble Double { get; }
 
-        JString String { get; }
+    JString String { get; }
 
-        JList List { get; }
+    JList List { get; }
 
-        JMap Map { get; }
+    JMap Map { get; }
 
-        JStruct Struct { get; }
+    JStruct Struct { get; }
 
-        JSimpleList SimpleList { get; }
+    JSimpleList SimpleList { get; }
 
-        JKeyValuePair KeyValuePair { get; }
-    }
+    JKeyValuePair KeyValuePair { get; }
 }

@@ -2,18 +2,19 @@
 
 namespace Konata.Core.Packets.SvcPush;
 
-public class SvcPushMsfForceOffline : UniPacket
+internal class SvcPushMsfForceOffline : UniPacket
 {
-    public string title;
-    public string message;
+    public string Title { get; private set; }
+
+    public string Message { get; private set; }
 
     public SvcPushMsfForceOffline(byte[] pushMsg)
         : base(pushMsg, (userdata, r) =>
         {
             var p = (SvcPushMsfForceOffline) userdata;
 
-            p.title = r["0.4"].String.Value;
-            p.message = r["0.3"].String.Value;
+            p.Title = r["0.4"].String.Value;
+            p.Message = r["0.3"].String.Value;
         })
     {
     }

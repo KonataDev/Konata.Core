@@ -1,17 +1,16 @@
-﻿namespace Konata.Core.Utils
+﻿namespace Konata.Core.Utils;
+
+/// <summary>
+/// GUID Generator
+/// </summary>
+internal static class Guid
 {
     /// <summary>
-    /// GUID Generator
+    /// 生成bytes类别的GUID
     /// </summary>
-    public static class Guid
+    /// <returns></returns>
+    public static byte[] Generate()
     {
-        /// <summary>
-        /// 生成bytes类别的GUID
-        /// </summary>
-        /// <returns></returns>
-        public static byte[] Generate()
-        {
-            return System.Guid.NewGuid().ToByteArray();
-        }
+        return System.Guid.NewGuid().ToByteArray();
     }
 }

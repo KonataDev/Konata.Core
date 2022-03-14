@@ -18,7 +18,7 @@ namespace Konata.Core.Logics.Model;
 [EventSubscribe(typeof(GroupMessageEvent))]
 [EventSubscribe(typeof(FriendMessageEvent))]
 [BusinessLogic("Cache Sync Logic", "Sync the cache such as grouplist or friendlist and more.")]
-public class CacheSyncLogic : BaseLogic
+internal class CacheSyncLogic : BaseLogic
 {
     private const string TAG = "CacheSyncLogic";
 

@@ -17,6 +17,12 @@ public class ServerInfo
         Host = host;
         Port = port;
     }
+    
+    public ServerInfo(string host, string port)
+    {
+        Host = host;
+        Port = ushort.Parse(port);
+    }
 
     public override string ToString()
         => $"{Host}:{Port}";

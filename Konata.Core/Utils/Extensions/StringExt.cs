@@ -3,7 +3,7 @@ using Konata.Core.Utils.IO;
 
 namespace Konata.Core.Utils.Extensions;
 
-public static class StringExt
+internal static class StringExt
 {
     /// <summary>
     /// Convert hex string to bytes 

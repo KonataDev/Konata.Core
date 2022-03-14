@@ -1,5 +1,4 @@
-﻿using System;
-using Konata.Core.Utils.IO;
+﻿using Konata.Core.Utils.IO;
 
 namespace Konata.Core.Packets.Oidb.Model;
 

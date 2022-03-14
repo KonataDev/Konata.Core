@@ -4,7 +4,7 @@ using Konata.Core.Utils.IO;
 
 namespace Konata.Core.Utils.Extensions;
 
-public static class BytesExt
+internal static class BytesExt
 {
     /// <summary>
     /// Convert bytes to hex string

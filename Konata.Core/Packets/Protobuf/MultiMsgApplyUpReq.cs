@@ -2,7 +2,7 @@
 
 namespace Konata.Core.Packets.Protobuf;
 
-public class MultiMsgApplyUpReq : ProtoTreeRoot
+internal class MultiMsgApplyUpReq : ProtoTreeRoot
 {
     public MultiMsgApplyUpReq(uint destUin, uint msgLen, byte[] msgMd5)
     {

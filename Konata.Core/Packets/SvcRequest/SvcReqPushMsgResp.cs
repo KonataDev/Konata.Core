@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using Konata.Core.Packets.Wup;
+﻿using Konata.Core.Packets.Wup;
 using Konata.Core.Utils.JceStruct.Model;
 
 namespace Konata.Core.Packets.SvcRequest;
 
-public class SvcReqPushMsgResp : UniPacket
+internal class SvcReqPushMsgResp : UniPacket
 {
-    public SvcReqPushMsgResp(int reqid, uint selfUin, uint source, int v1, int svrip, byte[] v8, int v32)
+    internal SvcReqPushMsgResp(int reqid, uint selfUin, uint source, int v1, int svrip, byte[] v8, int v32)
         : base(0x03, "OnlinePush", "SvcRespPushMsg", "resp", 0x00, 0x00, reqid,
             (out JStruct w) =>
             {

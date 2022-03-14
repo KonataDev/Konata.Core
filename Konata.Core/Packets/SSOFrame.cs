@@ -2,190 +2,188 @@
 using Konata.Core.Utils.IO;
 
 // ReSharper disable UseArrayEmptyMethod
-
 // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
 
-namespace Konata.Core.Packets
+namespace Konata.Core.Packets;
+
+internal enum PacketType : uint
 {
-    public enum PacketType : uint
+    TypeA = 0x0A,
+    TypeB = 0x0B
+}
+
+internal class SSOFrame
+{
+    private uint _session;
+    private int _sequence;
+    private string _command;
+    private ByteBuffer _payload;
+    private PacketType _packetType;
+    private byte[] _tgtoken;
+
+    public uint Session
     {
-        TypeA = 0x0A,
-        TypeB = 0x0B
+        get => _session;
     }
 
-    public class SSOFrame
+    public string Command
     {
-        private uint _session;
-        private int _sequence;
-        private string _command;
-        private ByteBuffer _payload;
-        private PacketType _packetType;
-        private byte[] _tgtoken;
+        get => _command;
+    }
 
-        public uint Session
-        {
-            get => _session;
-        }
+    public int Sequence
+    {
+        get => _sequence;
+    }
 
-        public string Command
-        {
-            get => _command;
-        }
+    public byte[] Tgtoken
+    {
+        get => _tgtoken;
+    }
 
-        public int Sequence
-        {
-            get => _sequence;
-        }
+    public ByteBuffer Payload
+    {
+        get => _payload;
+    }
 
-        public byte[] Tgtoken
-        {
-            get => _tgtoken;
-        }
+    public PacketType PacketType
+    {
+        get => _packetType;
+    }
 
-        public ByteBuffer Payload
+    public static bool Parse(ServiceMessage fromService, out SSOFrame output)
+    {
+        output = new SSOFrame
         {
-            get => _payload;
-        }
+            _packetType = fromService.MessagePktType
+        };
 
-        public PacketType PacketType
+        var read = new ByteBuffer(fromService.FrameBytes);
         {
-            get => _packetType;
-        }
-
-        public static bool Parse(ServiceMessage fromService, out SSOFrame output)
-        {
-            output = new SSOFrame
+            read.TakeUintBE(out var length);
             {
-                _packetType = fromService.MessagePktType
-            };
-
-            var read = new ByteBuffer(fromService.FrameBytes);
-            {
-                read.TakeUintBE(out var length);
-                {
-                    if (length > read.Length)
-                        return false;
-                }
-
-                read.TakeIntBE(out output._sequence);
-
-                read.TakeUintBE(out var zeroUint);
-                {
-                    if (zeroUint != 0)
-                        return false;
-                }
-
-                read.TakeBytes(out var unknownBytes,
-                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                read.TakeString(out output._command,
-                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                read.TakeBytes(out var session,
-                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-                {
-                    if (session.Length != 4)
-                        return false;
-
-                    output._session = ByteConverter.BytesToUInt32(session, 0);
-                }
-
-                read.TakeBoolBE(out var isCompressed, 4);
-
-                // new unknown data after 12/08/2021
-                read.TakeBytes(out var unknwonData,
-                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                {
-                    read.TakeBytes(out var bytes,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-                    {
-                        output._payload = new ByteBuffer
-                            (isCompressed ? Compression.ZDecompress(bytes) : bytes);
-                    }
-                }
+                if (length > read.Length)
+                    return false;
             }
 
-            return true;
-        }
+            read.TakeIntBE(out output._sequence);
 
-        public static ByteBuffer Build(SSOFrame ssoFrame, BotDevice device)
-        {
-            byte[] unknownBytes0 = { };
-            byte[] unknownBytes1 = { };
-            string unknownString = $"||A{AppInfo.ApkVersionName}.{AppInfo.AppRevision}";
-            byte[] sessionBytes = ByteConverter.UInt32ToBytes(ssoFrame._session, Endian.Big);
-
-            var write = new PacketBase();
-            var head = new PacketBase();
+            read.TakeUintBE(out var zeroUint);
             {
-                if (ssoFrame.PacketType == PacketType.TypeA)
-                {
-                    head.PutIntBE(ssoFrame._sequence);
-                    head.PutUintBE(AppInfo.SubAppId);
-                    head.PutUintBE(AppInfo.SubAppId);
-                    head.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
-
-                    head.PutBytes(ssoFrame._tgtoken ?? new byte[0],
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutString(ssoFrame._command,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutBytes(sessionBytes,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutString(device.Model.Imei,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutBytes(unknownBytes0,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutString(unknownString,
-                        ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutBytes(unknownBytes1,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-                }
-                else if (ssoFrame.PacketType == PacketType.TypeB)
-                {
-                    head.PutString(ssoFrame._command,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutBytes(sessionBytes,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-
-                    head.PutBytes(unknownBytes0,
-                        ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
-                }
+                if (zeroUint != 0)
+                    return false;
             }
-            write.PutByteBuffer(head,
-                ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
 
-            write.PutByteBuffer(ssoFrame.Payload,
+            read.TakeBytes(out var unknownBytes,
                 ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-            return write;
-        }
+            read.TakeString(out output._command,
+                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
-        public static bool Create(string command, PacketType pktType, int sequence,
-            byte[] tgtoken, uint session, ByteBuffer payload, out SSOFrame ssoFrame)
-        {
-            ssoFrame = new SSOFrame
+            read.TakeBytes(out var session,
+                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
             {
-                _command = command,
-                _sequence = sequence,
-                _session = session,
-                _packetType = pktType,
-                _payload = payload,
-                _tgtoken = tgtoken
-            };
+                if (session.Length != 4)
+                    return false;
 
-            return true;
+                output._session = ByteConverter.BytesToUInt32(session, 0);
+            }
+
+            read.TakeBoolBE(out var isCompressed, 4);
+
+            // new unknown data after 12/08/2021
+            read.TakeBytes(out var unknwonData,
+                ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+            {
+                read.TakeBytes(out var bytes,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+                {
+                    output._payload = new ByteBuffer
+                        (isCompressed ? Compression.ZDecompress(bytes) : bytes);
+                }
+            }
         }
 
-        public static bool Create(string command, PacketType pktType, int sequence,
-            uint session, ByteBuffer payload, out SSOFrame ssoFrame)
-            => Create(command, pktType, sequence, null, session, payload, out ssoFrame);
+        return true;
     }
+
+    public static ByteBuffer Build(SSOFrame ssoFrame, BotDevice device)
+    {
+        byte[] unknownBytes0 = { };
+        byte[] unknownBytes1 = { };
+        string unknownString = $"||A{AppInfo.ApkVersionName}.{AppInfo.AppRevision}";
+        byte[] sessionBytes = ByteConverter.UInt32ToBytes(ssoFrame._session, Endian.Big);
+
+        var write = new PacketBase();
+        var head = new PacketBase();
+        {
+            if (ssoFrame.PacketType == PacketType.TypeA)
+            {
+                head.PutIntBE(ssoFrame._sequence);
+                head.PutUintBE(AppInfo.SubAppId);
+                head.PutUintBE(AppInfo.SubAppId);
+                head.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
+
+                head.PutBytes(ssoFrame._tgtoken ?? new byte[0],
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutString(ssoFrame._command,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutBytes(sessionBytes,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutString(device.Model.Imei,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutBytes(unknownBytes0,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutString(unknownString,
+                    ByteBuffer.Prefix.Uint16 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutBytes(unknownBytes1,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+            }
+            else if (ssoFrame.PacketType == PacketType.TypeB)
+            {
+                head.PutString(ssoFrame._command,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutBytes(sessionBytes,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+                head.PutBytes(unknownBytes0,
+                    ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+            }
+        }
+        write.PutByteBuffer(head,
+            ByteBuffer.Prefix.WithPrefix | ByteBuffer.Prefix.Uint32);
+
+        write.PutByteBuffer(ssoFrame.Payload,
+            ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
+
+        return write;
+    }
+
+    public static bool Create(string command, PacketType pktType, int sequence,
+        byte[] tgtoken, uint session, ByteBuffer payload, out SSOFrame ssoFrame)
+    {
+        ssoFrame = new SSOFrame
+        {
+            _command = command,
+            _sequence = sequence,
+            _session = session,
+            _packetType = pktType,
+            _payload = payload,
+            _tgtoken = tgtoken
+        };
+
+        return true;
+    }
+
+    public static bool Create(string command, PacketType pktType, int sequence,
+        uint session, ByteBuffer payload, out SSOFrame ssoFrame)
+        => Create(command, pktType, sequence, null, session, payload, out ssoFrame);
 }

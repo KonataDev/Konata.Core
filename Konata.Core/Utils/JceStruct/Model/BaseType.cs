@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Konata.Core.Utils.JceStruct.Model;
 
-namespace Konata.Core.Utils.JceStruct.Model
+internal enum BaseType : byte
 {
-    public enum BaseType : byte
-    {
-        Number,
-        Float,
-        Double,
-        String,
-        Map,
-        List,
-        Struct,
-        ByteArray,
-        MaxValue = ByteArray,
-        None = byte.MaxValue
-    }
+    Number,
+    Float,
+    Double,
+    String,
+    Map,
+    List,
+    Struct,
+    ByteArray,
+    MaxValue = ByteArray,
+    None = byte.MaxValue
 }

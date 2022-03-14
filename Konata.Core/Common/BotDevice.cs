@@ -138,21 +138,21 @@ namespace Konata.Core.Common
         public static BotDevice Default()
         {
             // Roll a random model
-            var randName = $"Konata {Strings.GetRandHex(4)}";
-            var randBaseBand = $"KONATA.CORE.{Strings.GetRandHex(4)}.1.0.REV";
-            var randImei = Strings.GetRandNumber(14);
-            var randImsi = Strings.GetRandNumber(15);
+            var randName = $"Konata {StringGen.GetRandHex(4)}";
+            var randBaseBand = $"KONATA.CORE.{StringGen.GetRandHex(4)}.1.0.REV";
+            var randImei = StringGen.GetRandNumber(14);
+            var randImsi = StringGen.GetRandNumber(15);
 
             // Roll a random system
             var randOSVer = RandOsVer();
             var randGuid = Guid.NewGuid().ToByteArray();
-            var randBootId = Strings.GetRandHex(16, false);
-            var randBootLoader = $"KONATA.CORE.{Strings.GetRandHex(8)}.BOOTLOADER_1_0";
-            var randAndroidId = Strings.GetRandHex(16, false);
-            var randIncremental = Strings.GetRandHex(16, false);
+            var randBootId = StringGen.GetRandHex(16, false);
+            var randBootLoader = $"KONATA.CORE.{StringGen.GetRandHex(8)}.BOOTLOADER_1_0";
+            var randAndroidId = StringGen.GetRandHex(16, false);
+            var randIncremental = StringGen.GetRandHex(16, false);
             var randInnerVersion = $"KONATA.CORE.USERDEBUG.{randOSVer}";
             var randFringerPrint = $"konata/core/konata:{randOSVer}/" +
-                                   $"{Strings.GetRandNumber(8)}:user/release-keys";
+                                   $"{StringGen.GetRandNumber(8)}:user/release-keys";
 
             return new BotDevice
             {

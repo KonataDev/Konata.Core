@@ -85,7 +85,7 @@ internal class ScheduleComponent : InternalComponent
         _taskThread.Start();
     }
 
-    public override void OnDestroy()
+    internal override void OnDestroy()
     {
         _taskThreadExit = true;
         _taskNotify.Set();

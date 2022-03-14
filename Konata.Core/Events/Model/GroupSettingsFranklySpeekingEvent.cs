@@ -1,9 +1,8 @@
-﻿namespace Konata.Core.Events.Model
+﻿namespace Konata.Core.Events.Model;
+
+public class GroupSettingsFrankSpeekingEvent : ProtocolEvent
 {
-    public class GroupSettingsFrankSpeekingEvent : ProtocolEvent
+    private GroupSettingsFrankSpeekingEvent() : base(0)
     {
-        private GroupSettingsFrankSpeekingEvent() : base(0)
-        {
-        }
     }
 }

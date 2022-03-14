@@ -18,7 +18,7 @@ namespace Konata.Core.Logics.Model;
 [EventSubscribe(typeof(GroupModifyMemberCardEvent))]
 [EventSubscribe(typeof(GroupMuteMemberEvent))]
 [BusinessLogic("Operation Logic", "Group and friend operations.")]
-public class OperationLogic : BaseLogic
+internal class OperationLogic : BaseLogic
 {
     private const string TAG = "Operation Logic";
 

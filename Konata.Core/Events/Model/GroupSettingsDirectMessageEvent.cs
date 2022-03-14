@@ -1,10 +1,8 @@
-﻿namespace Konata.Core.Events.Model
+﻿namespace Konata.Core.Events.Model;
+
+public class GroupSettingsDirectMessageEvent : ProtocolEvent
 {
-    public class GroupSettingsDirectMessageEvent : ProtocolEvent
+    private GroupSettingsDirectMessageEvent() : base(0)
     {
-        private GroupSettingsDirectMessageEvent() : base(0)
-        {
-            
-        }
     }
 }

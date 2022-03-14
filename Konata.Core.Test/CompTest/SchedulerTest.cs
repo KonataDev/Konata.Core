@@ -2,7 +2,7 @@
 using Konata.Core.Components.Model;
 using NUnit.Framework;
 
-namespace Konata.Core.Test.Component;
+namespace Konata.Core.Test.CompTest;
 
 public class SchedulerTest
 {

@@ -22,7 +22,7 @@ namespace Konata.Core.Logics.Model;
 [EventSubscribe(typeof(GroupMessageEvent))]
 [EventSubscribe(typeof(FriendMessageEvent))]
 [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
-public class MessagingLogic : BaseLogic
+internal class MessagingLogic : BaseLogic
 {
     private const string TAG = "Messaging Logic";
 

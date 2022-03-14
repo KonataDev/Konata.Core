@@ -1,14 +1,13 @@
-﻿using System;
-using Konata.Core.Utils.IO;
+﻿using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Oidb;
 
-public delegate void OidbPayloadWriter(ProtoTreeRoot writer);
+internal delegate void OidbPayloadWriter(ProtoTreeRoot writer);
 
-public delegate void OidbPayloadReader(ProtoTreeRoot reader);
+internal delegate void OidbPayloadReader(ProtoTreeRoot reader);
 
-public delegate void OidbByteBufferWriter(ByteBuffer writer);
+internal delegate void OidbByteBufferWriter(ByteBuffer writer);
 
 internal class OidbSSOPkg : PacketBase
 {

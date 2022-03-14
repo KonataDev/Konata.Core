@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Konata.Core.Utils.Extensions;
 
-public static class DateTimeExt
+internal static class DateTimeExt
 {
     /// <summary>
     /// Convert DateTime to unix time

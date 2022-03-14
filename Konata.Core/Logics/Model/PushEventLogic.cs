@@ -16,7 +16,7 @@ namespace Konata.Core.Logics.Model;
 [EventSubscribe(typeof(OnlineReqPushEvent))]
 [EventSubscribe(typeof(PushTransMsgEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
-public class PushEventLogic : BaseLogic
+internal class PushEventLogic : BaseLogic
 {
     private const string TAG = "PushEvent Logic";
 

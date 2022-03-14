@@ -23,7 +23,7 @@ public class BaseEntity
     /// </summary>
     private readonly Dictionary<Type, BaseComponent> _componentDict;
 
-    public BaseEntity()
+    internal BaseEntity()
     {
         _componentDict = new();
     }
@@ -32,7 +32,7 @@ public class BaseEntity
     /// Load components
     /// </summary>
     /// <typeparam name="TAttribute"></typeparam>
-    public void LoadComponents<TAttribute>() where TAttribute : Attribute
+    internal void LoadComponents<TAttribute>() where TAttribute : Attribute
     {
         foreach (var type in Reflection.GetClassesByAttribute(typeof(TAttribute)))
         {
@@ -45,7 +45,7 @@ public class BaseEntity
     /// </summary>
     /// <param name="filter"></param>
     /// <typeparam name="TAttribute"></typeparam>
-    public void LoadComponents<TAttribute>(Func<TAttribute, bool> filter)
+    internal void LoadComponents<TAttribute>(Func<TAttribute, bool> filter)
         where TAttribute : Attribute
     {
         foreach (var type in Reflection.GetClassesByAttribute(typeof(TAttribute)))
@@ -61,7 +61,7 @@ public class BaseEntity
     /// Unload all components
     /// </summary>
     /// <returns></returns>
-    public void UnloadComponents()
+    internal void UnloadComponents()
     {
         // Destroy components
         foreach (var comp in _componentDict) comp.Value.OnDestroy();
@@ -75,7 +75,7 @@ public class BaseEntity
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public T GetComponent<T>() where T : BaseComponent
+    internal T GetComponent<T>() where T : BaseComponent
     {
         if (!_componentDict.TryGetValue(typeof(T), out var component)) return default;
         return (T) component;
@@ -85,7 +85,7 @@ public class BaseEntity
     /// Add component to this entity
     /// </summary>
     /// <param name="component"></param>
-    public void AddComponent(BaseComponent component)
+    internal void AddComponent(BaseComponent component)
     {
         if (_componentDict.TryGetValue(component.GetType(), out _))
         {
@@ -101,7 +101,7 @@ public class BaseEntity
     /// Delete component
     /// </summary>
     /// <param name="type"></param>
-    public void RemoveComponent(Type type)
+    internal void RemoveComponent(Type type)
     {
         if (!_componentDict.TryGetValue(type, out _)) return;
 
@@ -113,7 +113,7 @@ public class BaseEntity
     /// Post an event to entity
     /// </summary>
     /// <param name="anyEvent"></param>
-    public virtual void PostEventToEntity(BaseEvent anyEvent)
+    internal virtual void PostEventToEntity(BaseEvent anyEvent)
     {
     }
 
@@ -125,7 +125,7 @@ public class BaseEntity
     /// <param name="timeout"></param>
     /// <typeparam name="TComponent"></typeparam>
     /// <returns></returns>
-    public Task<BaseEvent> SendEvent<TComponent>(BaseEvent anyEvent, int timeout = 0)
+    internal Task<BaseEvent> SendEvent<TComponent>(BaseEvent anyEvent, int timeout = 0)
         where TComponent : BaseComponent
     {
         // Create a task
@@ -159,7 +159,7 @@ public class BaseEntity
     /// </summary>
     /// <param name="anyEvent"></param>
     /// <typeparam name="TComponent"></typeparam>
-    public void PostEvent<TComponent>(BaseEvent anyEvent)
+    internal void PostEvent<TComponent>(BaseEvent anyEvent)
         where TComponent : BaseComponent
     {
         // Create a task
@@ -188,7 +188,7 @@ public class BaseEntity
     /// Broad an event to all components
     /// </summary>
     /// <param name="anyEvent"></param>
-    public void BroadcastEvent(BaseEvent anyEvent)
+    internal void BroadcastEvent(BaseEvent anyEvent)
     {
         foreach (var component in _componentDict)
         {
@@ -197,7 +197,7 @@ public class BaseEntity
     }
 }
 
-public class KonataTask
+internal class KonataTask
 {
     public BaseEvent EventPayload { get; }
 

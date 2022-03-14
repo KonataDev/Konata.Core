@@ -1,26 +1,22 @@
 ﻿using System;
 
-namespace Konata.Core.Utils.Protobuf.ProtoModel
+namespace Konata.Core.Utils.Protobuf.ProtoModel;
+
+internal enum ProtoType : byte
 {
-    internal enum ProtoType : byte
-    {
-        VarInt = 0,
+    VarInt = 0,
 
-        Bit64 = 1,
+    Bit64 = 1,
 
-        LengthDelimited = 2,
+    LengthDelimited = 2,
 
-        [Obsolete]
-        StartGroup = 3,
+    [Obsolete] StartGroup = 3,
 
-        [Obsolete]
-        EndGroup = 4,
+    [Obsolete] EndGroup = 4,
 
-        Bit32 = 5,
-    }
+    Bit32 = 5,
+}
 
-    public interface IProtoType
-    {
-
-    }
+public interface IProtoType
+{
 }

@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Konata.Core.Test.Protocol;
+namespace Konata.Core.Test.ProtocolTest;
 
 public class LoginTest
 {

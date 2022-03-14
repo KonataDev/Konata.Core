@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Konata.Core.Common;
 using Konata.Core.Packets.Wup;
 using Konata.Core.Utils.JceStruct.Model;

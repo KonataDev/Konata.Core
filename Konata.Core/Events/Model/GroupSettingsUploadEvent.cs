@@ -1,9 +1,8 @@
-﻿namespace Konata.Core.Events.Model
+﻿namespace Konata.Core.Events.Model;
+
+public class GroupSettingsUploadEvent : ProtocolEvent
 {
-    public class GroupSettingsUploadEvent : ProtocolEvent
+    private GroupSettingsUploadEvent() : base(0)
     {
-        private GroupSettingsUploadEvent() : base(0)
-        {
-        }
     }
 }

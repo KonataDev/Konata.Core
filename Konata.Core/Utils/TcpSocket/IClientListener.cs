@@ -1,22 +1,21 @@
-﻿namespace Konata.Core.Utils.TcpSocket
+﻿namespace Konata.Core.Utils.TcpSocket;
+
+internal interface IClientListener
 {
-    public interface IClientListener
-    {
-        /// <summary>
-        /// Dissect a stream
-        /// </summary>
-        /// <returns></returns>
-        public uint OnStreamDissect(byte[] data, uint length);
+    /// <summary>
+    /// Dissect a stream
+    /// </summary>
+    /// <returns></returns>
+    public uint OnStreamDissect(byte[] data, uint length);
 
-        /// <summary>
-        /// On handle a packet
-        /// </summary>
-        /// <param name="data"></param>
-        public void OnRecvPacket(byte[] data);
+    /// <summary>
+    /// On handle a packet
+    /// </summary>
+    /// <param name="data"></param>
+    public void OnRecvPacket(byte[] data);
 
-        /// <summary>
-        /// On client disconnect
-        /// </summary>
-        public void OnDisconnect();
-    }
+    /// <summary>
+    /// On client disconnect
+    /// </summary>
+    public void OnDisconnect();
 }

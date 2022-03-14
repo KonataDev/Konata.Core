@@ -6,18 +6,17 @@ using Konata.Core.Packets.SvcPush;
 
 // ReSharper disable UnusedType.Global
 
-namespace Konata.Core.Services.StatSvc
+namespace Konata.Core.Services.StatSvc;
+
+[EventSubscribe(typeof(ReqMSFOfflineEvent))]
+[Service("StatSvc.ReqMSFOffline", "Request MSF force offline.")]
+internal class ReqMSFOffline : BaseService<ReqMSFOfflineEvent>
 {
-    [EventSubscribe(typeof(ReqMSFOfflineEvent))]
-    [Service("StatSvc.ReqMSFOffline", "Request MSF force offline.")]
-    internal class ReqMSFOffline : BaseService<ReqMSFOfflineEvent>
+    protected override bool Parse(SSOFrame input,
+        BotKeyStore keystore, out ReqMSFOfflineEvent output)
     {
-        protected override bool Parse(SSOFrame input,
-            BotKeyStore keystore, out ReqMSFOfflineEvent output)
-        {
-            var tree = new SvcPushMsfForceOffline(input.Payload.GetBytes());
-            output = new ReqMSFOfflineEvent(tree.title, tree.message);
-            return true;
-        }
+        var tree = new SvcPushMsfForceOffline(input.Payload.GetBytes());
+        output = new ReqMSFOfflineEvent(tree.Title, tree.Message);
+        return true;
     }
 }
