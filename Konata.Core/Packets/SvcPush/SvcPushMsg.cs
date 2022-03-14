@@ -50,7 +50,7 @@ internal class SvcReqPushMsg : UniPacket
     }
 }
 
-public enum PushType
+internal enum PushType
 {
     Friend = 528,
     Group = 732

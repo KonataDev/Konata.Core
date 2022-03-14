@@ -4,7 +4,7 @@
 
 namespace Konata.Core.Utils;
 
-public static class StringGen
+internal static class StringGen
 {
     private const string TemplateNum = "0123456789";
     private const string TemplateHex = "0123456789ABCDEF";

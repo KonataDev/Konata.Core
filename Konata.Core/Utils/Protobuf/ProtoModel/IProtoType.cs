@@ -17,6 +17,6 @@ internal enum ProtoType : byte
     Bit32 = 5,
 }
 
-public interface IProtoType
+internal interface IProtoType
 {
 }

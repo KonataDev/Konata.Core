@@ -5,7 +5,7 @@ using Konata.Core.Utils.Crypto;
 
 namespace Konata.Core.Packets.Oicq;
 
-public enum OicqStatus
+internal enum OicqStatus
 {
     OK = 0,
 
@@ -26,7 +26,7 @@ public enum OicqStatus
     PreventByHighRiskEnvironment = 237,
 }
 
-public enum OicqShareKeyStat
+internal enum OicqShareKeyStat
 {
     NoNeed = 0,
     TwoStepExchange = 4

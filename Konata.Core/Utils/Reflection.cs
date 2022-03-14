@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Konata.Core.Utils;
 
-public static class Reflection
+internal static class Reflection
 {
     public static void EnumAttributes<TAttr>(Action<Type, TAttr> action)
         where TAttr : Attribute

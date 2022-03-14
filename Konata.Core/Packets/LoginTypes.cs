@@ -1,13 +1,13 @@
 ﻿namespace Konata.Core.Packets;
 
-public enum LoginType
+internal enum LoginType
 {
     Password = 1,
     Sms = 3,
     WeChat = 4
 }
 
-public enum WtLoginSigType : uint
+internal enum WtLoginSigType : uint
 {
     WLOGIN_A5 = 2,
     WLOGIN_RESERVED = 16, // A8
