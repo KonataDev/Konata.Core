@@ -10,7 +10,7 @@ using Konata.Core.Common;
 
 namespace Konata.Core.Services.StatSvc;
 
-[Service("StatSvc.register", PacketType.TypeA, AuthFlag.D2Authentication, SequenceMode.Managed)]
+[Service("StatSvc.register", PacketType.TypeA, AuthFlag.D2Authentication, SequenceMode.Managed, true)]
 [EventSubscribe(typeof(OnlineStatusEvent))]
 internal class Register : BaseService<OnlineStatusEvent>
 {

@@ -4,6 +4,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcPush;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Services.StatSvc;

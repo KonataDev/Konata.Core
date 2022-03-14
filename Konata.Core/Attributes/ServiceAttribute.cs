@@ -31,13 +31,19 @@ internal class ServiceAttribute : Attribute
     /// </summary>
     public SequenceMode SeqMode { get; }
 
+    /// <summary>
+    /// Need tgtToken
+    /// </summary>
+    public bool NeedTgtToken { get; }
+
     public ServiceAttribute(string name, PacketType pktType,
-        AuthFlag authType, SequenceMode seqMode)
+        AuthFlag authType, SequenceMode seqMode, bool needTgt = false)
     {
         Command = name;
         PacketType = pktType;
         AuthType = authType;
         SeqMode = seqMode;
+        NeedTgtToken = needTgt;
     }
 }
 

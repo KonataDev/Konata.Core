@@ -9,13 +9,13 @@ using Konata.Core.Entity;
 using Konata.Core.Services;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
-using Konata.Core.Utils.IO;
-using Konata.Core.Utils.JceStruct;
+using Konata.Core.Utils.Extensions;
 
 // ReSharper disable InvertIf
+// ReSharper disable InconsistentNaming
 // ReSharper disable UnusedParameter.Local
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core.Components.Model;
 
@@ -23,10 +23,9 @@ namespace Konata.Core.Components.Model;
 internal class PacketComponent : InternalComponent
 {
     private const string TAG = "PacketComponent";
-    private readonly Dictionary<string, IService> _services;
-
-    // private readonly Dictionary<Type, IService> _servicesType;
+    
     private readonly Sequence _serviceSequence;
+    private readonly Dictionary<string, IService> _services;
     private readonly ConcurrentDictionary<int, KonataTask> _pendingRequests;
     private readonly Dictionary<Type, List<(ServiceAttribute Attr, IService Instance)>> _servicesEventType;
 
@@ -61,7 +60,6 @@ internal class PacketComponent : InternalComponent
 
                 // Bind service name with service
                 _services.Add(serviceAttr.Command, service);
-                // _servicesType.Add(type, service);
 
                 // Bind protocol event type with service
                 foreach (var attr in eventAttrs)
@@ -77,26 +75,26 @@ internal class PacketComponent : InternalComponent
     /// </summary>
     /// <param name="task"></param>
     /// <returns></returns>
-    public override async Task<bool> OnHandleEvent(KonataTask task)
+    public override Task<bool> OnHandleEvent(KonataTask task)
     {
         // Incoming and outgoing
         switch (task.EventPayload)
         {
             // Packet Event
             case PacketEvent incoming:
-                return await OnIncoming(task, incoming);
+                return Task.FromResult(OnIncoming(task, incoming));
 
             // Protocol Event
             case ProtocolEvent outgoing:
-                return await OnOutgoing(task, outgoing);
+                return Task.FromResult(OnOutgoing(task, outgoing));
         }
 
         // Unsupported event
         LogW(TAG, "Unsupported event received?");
-        return false;
+        return Task.FromResult(false);
     }
 
-    private async Task<bool> OnIncoming(KonataTask task, PacketEvent packetEvent)
+    private bool OnIncoming(KonataTask task, PacketEvent packetEvent)
     {
         // Parse service message
         if (!ServiceMessage.Parse(packetEvent.Buffer,
@@ -109,12 +107,12 @@ internal class PacketComponent : InternalComponent
         //  Parse sso frame
         if (!SSOFrame.Parse(serviceMsg, out var ssoFrame))
         {
-            LogW(TAG, $"pars sso frame failed. {ssoFrame.Command}");
+            LogW(TAG, $"parse sso frame failed. {ssoFrame.Command}");
             return false;
         }
 
         // Get sso service by sso command
-        LogV(TAG, ssoFrame.Command);
+        LogV(TAG, $"[recv:{ssoFrame.Command}] \n{ssoFrame.Payload.GetBytes().ToHex()}");
         if (!_services.TryGetValue(ssoFrame.Command, out var service))
         {
             LogW(TAG, $"Unsupported sso frame received. {ssoFrame.Command}");
@@ -155,8 +153,7 @@ internal class PacketComponent : InternalComponent
         return false;
     }
 
-    [Obsolete("Need to refactor")]
-    private async Task<bool> OnOutgoing(KonataTask task, ProtocolEvent protocolEvent)
+    private bool OnOutgoing(KonataTask task, ProtocolEvent protocolEvent)
     {
         // If no service can process this message
         if (!_servicesEventType.TryGetValue
@@ -165,59 +162,57 @@ internal class PacketComponent : InternalComponent
 
         // Enumerate all the service
         // for outgoing packet building 
-        foreach (var service in serviceList)
+        foreach (var (attr, instance) in serviceList)
         {
             // Allocate a new sequence
-            var sequence = service.Attr.SeqMode switch
+            var sequence = attr.SeqMode switch
             {
-                SequenceMode.Selfhold => 0,
+                SequenceMode.Selfhold => _serviceSequence.GetSessionSequence(attr.Command),
                 SequenceMode.Managed => _serviceSequence.GetNewSequence(),
                 _ => throw new NotSupportedException()
             };
 
             var wupBuffer = new PacketBase();
-            
+
             // Build body data
-            service.Instance.Build(sequence, protocolEvent, ConfigComponent.KeyStore,
+            var result = instance.Build(sequence, protocolEvent, ConfigComponent.KeyStore,
                 ConfigComponent.DeviceInfo, ref wupBuffer);
             {
+                if (!result) continue;
+                LogV(TAG, $"[send:{attr.Command}] \n{wupBuffer.GetBytes().ToHex()}");
+
                 // Build sso frame
-                if (!SSOFrame.Create(service.Attr.Command, service.Attr.PacketType,
-                        sequence, _serviceSequence.Session, wupBuffer, out var ssoFrame))
-                {
-                    throw new Exception("=w=");
-                }
+                if (!SSOFrame.Create(attr.Command, attr.PacketType, sequence,
+                        attr.NeedTgtToken ? ConfigComponent.KeyStore.Session.TgtToken : null,
+                        _serviceSequence.Session, wupBuffer, out var ssoFrame))
+                    throw new Exception("Create service message failed.");
 
                 // Build to srevice message
-                if (!ServiceMessage.Create(ssoFrame, service.Attr.AuthType, Bot.Uin,
+                if (!ServiceMessage.Create(ssoFrame, attr.AuthType, Bot.Uin,
                         ConfigComponent.KeyStore.Session.D2Token,
-                        ConfigComponent.KeyStore.Session.D2Key,
-                        out var toService))
-                {
-                    throw new Exception("=w=");
-                }
+                        ConfigComponent.KeyStore.Session.D2Key, out var toService))
+                    throw new Exception("Create service message failed.");
 
                 // Packup
                 if (!ServiceMessage.Build(toService, ConfigComponent.DeviceInfo, out var output))
-                {
-                    throw new Exception("=w=");
-                }
+                    throw new Exception("Build packet failed");
 
                 // Pass messages to socket
                 PostEvent<SocketComponent>(PacketEvent.Create(output));
-
-                // This event is no need response
-                if (!protocolEvent.WaitForResponse) continue;
-
-                // Add pending task 
-                if (!_pendingRequests.TryAdd(sequence, task))
                 {
-                    _pendingRequests[sequence].Cancel();
-                    _pendingRequests.TryRemove(sequence, out _);
+                    // This event is no need response
+                    if (!protocolEvent.WaitForResponse) continue;
 
-                    // Try it again
+                    // Add pending task 
                     if (!_pendingRequests.TryAdd(sequence, task))
-                        throw new Exception("This sequence is busy");
+                    {
+                        _pendingRequests[sequence].Cancel();
+                        _pendingRequests.TryRemove(sequence, out _);
+
+                        // Try it again
+                        if (!_pendingRequests.TryAdd(sequence, task))
+                            throw new Exception("This sequence is busy");
+                    }
                 }
             }
         }

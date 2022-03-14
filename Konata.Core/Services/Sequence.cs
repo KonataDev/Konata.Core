@@ -6,40 +6,20 @@ namespace Konata.Core.Services;
 
 internal class Sequence
 {
-    private int _globalSequence;
-    private ConcurrentDictionary<string, int> _sessionSequence;
-    private uint _sessionCookie;
-
-    /// <summary>
-    /// Get sequence with auto increment
-    /// </summary>
-    public int NewSequence
-    {
-        get => GetNewSequence();
-    }
-
-    /// <summary>
-    /// Get/Set current sequence
-    /// </summary>
-    public int CurrentSequence
-    {
-        get => _globalSequence;
-    }
+    private ConcurrentDictionary<string, int> _sessionSequence { get; }
 
     /// <summary>
     /// Get Session
     /// </summary>
-    public uint Session
-    {
-        get => _sessionCookie;
-        set => _sessionCookie = value;
-    }
+    public uint Session { get; }
+
+    private int _globalSequence;
 
     public Sequence()
     {
-        _globalSequence = 25900;
+        Session = 0x54B87ADC;
 
-        _sessionCookie = 0x54B87ADC;
+        _globalSequence = 25900;
         _sessionSequence = new ConcurrentDictionary<string, int>();
     }
 
@@ -62,17 +42,12 @@ internal class Sequence
     {
         // Get service sequence by name
         if (_sessionSequence.TryGetValue(service, out var sequence))
-        {
             return sequence;
-        }
-
-        sequence = GetNewSequence();
 
         // Record this sequence
+        sequence = GetNewSequence();
         if (_sessionSequence.TryAdd(service, sequence))
-        {
             return sequence;
-        }
 
         throw new Exception("Get service sequence failed.");
     }

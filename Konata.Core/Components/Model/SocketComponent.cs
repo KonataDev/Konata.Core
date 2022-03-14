@@ -5,9 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Entity;
 using Konata.Core.Events;
-using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
@@ -90,7 +88,7 @@ internal class SocketComponent : InternalComponent, IClientListener
                     serverList.Add(((server.Host, server.Port), time));
                 }
 
-                LogI(TAG, "Probing latency " +
+                LogI(TAG, "Testing latency " +
                           $"{server.Host}:{server.Port} " +
                           $"=> {time}ms.");
             }
@@ -167,21 +165,13 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// On Received a packet 
     /// </summary>
     /// <param name="data"></param>
-    public async void OnRecvPacket(byte[] data)
+    public void OnRecvPacket(byte[] data)
     {
         var packet = new byte[data.Length];
         Array.Copy(data, 0, packet, 0, data.Length);
         {
-            LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
-
-            try
-            {
-                await PushNewPacket(this, packet);
-            }
-            catch (Exception e)
-            {
-                LogE(TAG, e);
-            }
+            // LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
+            PostEvent<PacketComponent>(PacketEvent.Push(data));
         }
     }
 
@@ -210,7 +200,7 @@ internal class SocketComponent : InternalComponent, IClientListener
 
             // Send data
             await _tcpClient.Send(packetEvent.Buffer);
-            LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
+            // LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
         }
         else LogW(TAG, "Unsupported event received.");
 
@@ -257,11 +247,4 @@ internal class SocketComponent : InternalComponent, IClientListener
             return new ServerInfo[] {new("msfwifi.3g.qq.com", 8080)};
         }
     }
-
-    #region Stub methods
-
-    private static Task PushNewPacket(SocketComponent context, byte[] data)
-        => context.SendEvent<PacketComponent>(PacketEvent.Push(data));
-
-    #endregion
 }

@@ -70,7 +70,7 @@ Console.WriteLine("We got online!");
 - [x] Internal audio resampling
 - [x] Record chain
 - [ ] Expose more APIs
-- [ ] Refactor sso services
+- [x] Refactor sso services
 - [ ] Refactor packets
 - [ ] Robust login logic
 - [x] Ecdh xchg

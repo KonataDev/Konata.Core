@@ -1,5 +1,4 @@
-﻿using Konata.Core.Events;
-using Konata.Core.Packets;
+﻿using Konata.Core.Packets;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events.Model;
@@ -10,7 +9,6 @@ using Konata.Core.Packets.Tlv.Model;
 using Konata.Core.Utils.Crypto;
 
 // ReSharper disable RedundantAssignment
-
 // ReSharper disable UnusedVariable
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
