@@ -199,7 +199,7 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// Event handler
     /// </summary>
     /// <param name="task"></param>
-    internal override async Task<bool> OnHandleEvent(KonataTask task)
+    public override async Task<bool> OnHandleEvent(KonataTask task)
     {
         if (task.EventPayload is PacketEvent packetEvent)
         {

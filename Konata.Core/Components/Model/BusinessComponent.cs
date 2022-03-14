@@ -12,130 +12,129 @@ using Konata.Core.Logics.Model;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Konata.Core.Components.Model
+namespace Konata.Core.Components.Model;
+
+[Component("BusinessComponent", "Konata Business Component")]
+internal class BusinessComponent : InternalComponent
 {
-    [Component("BusinessComponent", "Konata Business Component")]
-    internal class BusinessComponent : InternalComponent
+    private const string TAG = "BusinessComponent";
+    private readonly Dictionary<Type, List<BaseLogic>> _businessLogics;
+
+    public BusinessComponent()
     {
-        private const string TAG = "BusinessComponent";
-        private readonly Dictionary<Type, List<BaseLogic>> _businessLogics;
+        _businessLogics = new();
 
-        public BusinessComponent()
+        // Load all business logics
+        Reflection.EnumAttributes<BusinessLogicAttribute>((type, _) =>
         {
-            _businessLogics = new();
+            // Event to subscribe 
+            var events = type.GetCustomAttributes<EventSubscribeAttribute>();
 
-            // Load all business logics
-            Reflection.EnumAttributes<BusinessLogicAttribute>((type, _) =>
+            // Logic instance
+            var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+            var instance = (BaseLogic) constructor[0].Invoke(new object[] {this});
+
+            // Bind logic withevents
+            foreach (var i in events)
             {
-                // Event to subscribe 
-                var events = type.GetCustomAttributes<EventSubscribeAttribute>();
-
-                // Logic instance
-                var constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-                var instance = (BaseLogic) constructor[0].Invoke(new object[] {this});
-
-                // Bind logic withevents
-                foreach (var i in events)
+                // Create the key
+                if (!_businessLogics.TryGetValue(i.Event, out var list))
                 {
-                    // Create the key
-                    if (!_businessLogics.TryGetValue(i.Event, out var list))
-                    {
-                        list = new();
-                        _businessLogics.Add(i.Event, list);
-                    }
-
-                    // Append logics
-                    list.Add(instance);
+                    list = new();
+                    _businessLogics.Add(i.Event, list);
                 }
 
-                // Save the cache
-                switch (instance)
-                {
-                    case MessagingLogic messaging:
-                        Messaging = messaging;
-                        break;
-
-                    case OperationLogic operation:
-                        Operation = operation;
-                        break;
-
-                    case WtExchangeLogic wtxchg:
-                        WtExchange = wtxchg;
-                        break;
-
-                    case CacheSyncLogic cache:
-                        CacheSync = cache;
-                        break;
-                    
-                    case PushEventLogic pushEv:
-                        PushEvent = pushEv;
-                        break;
-                }
-            });
-        }
-
-        /// <summary>
-        /// Business logics
-        /// </summary>
-        /// <param name="task"></param>
-        internal override async Task<bool> OnHandleEvent(KonataTask task)
-        {
-            // Pass if not a protocol event
-            if (task.EventPayload is not ProtocolEvent protocolEvent) return false;
-
-            // Get logics
-            _businessLogics.TryGetValue
-                (typeof(ProtocolEvent), out var baseLogics);
-
-            // Handle event
-            if (_businessLogics.TryGetValue
-                (protocolEvent.GetType(), out var logics))
-            {
-                // Append base logics and
-                // select distinct to avoid multiple executes
-                if (baseLogics != null)
-                {
-                    logics.AddRange(baseLogics);
-                    logics = logics.Distinct().ToList();
-                }
-
-                foreach (var i in logics)
-                {
-                    try
-                    {
-                        // Execute a business logic
-                        await i.Incoming(protocolEvent);
-                    }
-                    catch (Exception e)
-                    {
-                        LogE(TAG, $"The logic '{i.GetType()}'" +
-                                  " was thrown an exception:");
-                        LogE(TAG, e);
-                    }
-                }
+                // Append logics
+                list.Add(instance);
             }
 
-            // No handler
-            else
+            // Save the cache
+            switch (instance)
             {
-                LogW(TAG, "The event has no logic to handle.");
+                case MessagingLogic messaging:
+                    Messaging = messaging;
+                    break;
+
+                case OperationLogic operation:
+                    Operation = operation;
+                    break;
+
+                case WtExchangeLogic wtxchg:
+                    WtExchange = wtxchg;
+                    break;
+
+                case CacheSyncLogic cache:
+                    CacheSync = cache;
+                    break;
+
+                case PushEventLogic pushEv:
+                    PushEvent = pushEv;
+                    break;
             }
-
-            return false;
-        }
-
-        #region Business Logics
-
-        internal WtExchangeLogic WtExchange { get; private set; }
-
-        internal OperationLogic Operation { get; private set; }
-
-        internal MessagingLogic Messaging { get; private set; }
-
-        internal CacheSyncLogic CacheSync { get; private set; }
-        
-        internal PushEventLogic PushEvent { get; private set; }
-
-        #endregion
+        });
     }
+
+    /// <summary>
+    /// Business logics
+    /// </summary>
+    /// <param name="task"></param>
+    public override async Task<bool> OnHandleEvent(KonataTask task)
+    {
+        // Pass if not a protocol event
+        if (task.EventPayload is not ProtocolEvent protocolEvent) return false;
+
+        // Get logics
+        _businessLogics.TryGetValue
+            (typeof(ProtocolEvent), out var baseLogics);
+
+        // Handle event
+        if (_businessLogics.TryGetValue
+                (protocolEvent.GetType(), out var logics))
+        {
+            // Append base logics and
+            // select distinct to avoid multiple executes
+            if (baseLogics != null)
+            {
+                logics.AddRange(baseLogics);
+                logics = logics.Distinct().ToList();
+            }
+
+            foreach (var i in logics)
+            {
+                try
+                {
+                    // Execute a business logic
+                    await i.Incoming(protocolEvent);
+                }
+                catch (Exception e)
+                {
+                    LogE(TAG, $"The logic '{i.GetType()}'" +
+                              " was thrown an exception:");
+                    LogE(TAG, e);
+                }
+            }
+        }
+
+        // No handler
+        else
+        {
+            LogW(TAG, "The event has no logic to handle.");
+        }
+
+        return false;
+    }
+
+    #region Business Logics
+
+    internal WtExchangeLogic WtExchange { get; private set; }
+
+    internal OperationLogic Operation { get; private set; }
+
+    internal MessagingLogic Messaging { get; private set; }
+
+    internal CacheSyncLogic CacheSync { get; private set; }
+
+    internal PushEventLogic PushEvent { get; private set; }
+
+    #endregion
 }

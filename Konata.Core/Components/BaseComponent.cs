@@ -7,17 +7,17 @@ using Konata.Core.Entity;
 
 namespace Konata.Core.Components;
 
-public class BaseComponent
+internal class BaseComponent
 {
-    internal BaseEntity Entity { get; set; }
+    public BaseEntity Entity { get; set; }
  
-    internal virtual Task<bool> OnHandleEvent(BaseEvent anyEvent)
+    public virtual Task<bool> OnHandleEvent(BaseEvent anyEvent)
         => Task.FromResult(false);
 
-    internal virtual Task<bool> OnHandleEvent(KonataTask anyTask)
+    public virtual Task<bool> OnHandleEvent(KonataTask anyTask)
         => OnHandleEvent(anyTask.EventPayload);
 
-    internal void PostEventToEntity(BaseEvent anyEvent)
+    public void PostEventToEntity(BaseEvent anyEvent)
         => Entity?.PostEventToEntity(anyEvent);
 
     /// <summary>
@@ -26,7 +26,7 @@ public class BaseComponent
     /// <param name="anyEvent"></param>
     /// <typeparam name="TEvent"></typeparam>
     /// <returns></returns>
-    internal Task<BaseEvent> SendEvent<TEvent>(BaseEvent anyEvent)
+    public Task<BaseEvent> SendEvent<TEvent>(BaseEvent anyEvent)
         where TEvent : BaseComponent => Entity?.SendEvent<TEvent>(anyEvent);
 
     /// <summary>
@@ -34,20 +34,20 @@ public class BaseComponent
     /// </summary>
     /// <param name="anyEvent"></param>
     /// <typeparam name="TEvent"></typeparam>
-    internal void PostEvent<TEvent>(BaseEvent anyEvent)
+    public void PostEvent<TEvent>(BaseEvent anyEvent)
         where TEvent : BaseComponent => Entity?.PostEvent<TEvent>(anyEvent);
 
-    internal void BroadcastEvent(BaseEvent anyEvent)
+    public void BroadcastEvent(BaseEvent anyEvent)
         => Entity?.BroadcastEvent(anyEvent);
 
-    internal T GetComponent<T>()
+    public T GetComponent<T>()
         where T : BaseComponent => Entity.GetComponent<T>();
 
-    internal virtual void OnInit()
+    public virtual void OnInit()
     {
     }
 
-    internal virtual void OnDestroy()
+    public virtual void OnDestroy()
     {
     }
 
@@ -56,22 +56,22 @@ public class BaseComponent
     private void Log(LogLevel logLevel, string tag, string content)
         => PostEventToEntity(LogEvent.Create(tag, logLevel, content));
 
-    internal void LogV(string tag, string content)
+    public void LogV(string tag, string content)
         => Log(LogLevel.Verbose, tag, content);
 
-    internal void LogI(string tag, string content)
+    public void LogI(string tag, string content)
         => Log(LogLevel.Information, tag, content);
 
-    internal void LogW(string tag, string content)
+    public void LogW(string tag, string content)
         => Log(LogLevel.Warning, tag, content);
 
-    internal void LogE(string tag, string content)
+    public void LogE(string tag, string content)
         => Log(LogLevel.Exception, tag, content);
 
-    internal void LogE(string tag, Exception e)
+    public void LogE(string tag, Exception e)
         => LogE(tag, $"{e.Message}\n{e.StackTrace}");
 
-    internal void LogF(string tag, string content)
+    public void LogF(string tag, string content)
         => Log(LogLevel.Fatal, tag, content);
 
     #endregion

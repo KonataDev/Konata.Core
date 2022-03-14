@@ -318,12 +318,12 @@ public class Bot : BaseEntity, IDisposable
     /// <summary>
     /// On group member decrease event
     /// </summary>
-    public event EventHandler<GroupKickMemberEvent> OnGroupKick;
+    public event EventHandler<GroupKickMemberEvent> OnGroupKickMember;
 
     /// <summary>
     /// On group admin set/unset event
     /// </summary>
-    public event EventHandler<GroupPromoteAdminEvent> OnGroupAdmin;
+    public event EventHandler<GroupPromoteAdminEvent> OnGroupPromoteAdmin;
 
     /// <summary>
     /// On friend message event
@@ -360,8 +360,8 @@ public class Bot : BaseEntity, IDisposable
             {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
             {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
             {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
-            {typeof(GroupKickMemberEvent), e => OnGroupKick?.Invoke(this, (GroupKickMemberEvent) e)},
-            {typeof(GroupPromoteAdminEvent), e => OnGroupAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
+            {typeof(GroupKickMemberEvent), e => OnGroupKickMember?.Invoke(this, (GroupKickMemberEvent) e)},
+            {typeof(GroupPromoteAdminEvent), e => OnGroupPromoteAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
             {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
             {typeof(FriendMessageEvent), e => OnFriendMessage?.Invoke(this, (FriendMessageEvent) e)},
             {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},
@@ -402,6 +402,24 @@ public class Bot : BaseEntity, IDisposable
             OnLog?.Invoke(sender, LogEvent.Create("Bot",
                 LogLevel.Verbose, $"[Group Recall]{e.GroupUin} " +
                                   $"[Messageid]{e.MessageId} " +
+                                  $"[Member]{e.MemberUin}"));
+        };
+
+        // Default group promote handler
+        OnGroupPromoteAdmin += (sender, e) =>
+        {
+            OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                LogLevel.Verbose, $"[Group Promote]{e.GroupUin} " +
+                                  $"[Member]{e.MemberUin} " +
+                                  $"[Set]{e.ToggleType}"));
+        };
+
+        // Default group promote handler
+        OnGroupKickMember += (sender, e) =>
+        {
+            OnLog?.Invoke(sender, LogEvent.Create("Bot",
+                LogLevel.Verbose, $"[Group Kick]{e.GroupUin} " +
+                                  $"[Operator]{e.OperatorUin} " +
                                   $"[Member]{e.MemberUin}"));
         };
 
