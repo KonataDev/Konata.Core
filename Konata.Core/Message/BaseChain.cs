@@ -14,11 +14,13 @@ public abstract class BaseChain
         Reply,
         Text,
         Image,
+        Flash,
         Record,
         Video,
         QFace,
         BFace,
         Xml,
+        MultiMsg,
         Json,
     }
 
@@ -29,9 +31,9 @@ public abstract class BaseChain
         Singletag
     }
 
-    public ChainType Type { get; }
+    public ChainType Type { get; protected set; }
 
-    public ChainMode Mode { get; }
+    public ChainMode Mode { get; protected set; }
 
     protected BaseChain(ChainType type, ChainMode mode)
     {

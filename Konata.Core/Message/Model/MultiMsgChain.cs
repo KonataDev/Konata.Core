@@ -33,6 +33,7 @@ public class MultiMsgChain : XmlChain
     private MultiMsgChain() : base("")
     {
         Messages = new();
+        Type = ChainType.MultiMsg;
     }
 
     /// <summary>

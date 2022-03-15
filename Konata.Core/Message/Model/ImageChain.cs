@@ -65,7 +65,7 @@ public class ImageChain : BaseChain
     /// </summary>
     internal PicUpInfo PicUpInfo { get; private set; }
 
-    private ImageChain(string url, string fileName,
+    protected ImageChain(string url, string fileName,
         string fileHash, uint width, uint height, uint length, ImageType type)
         : base(ChainType.Image, ChainMode.Multiple)
     {
@@ -81,7 +81,7 @@ public class ImageChain : BaseChain
         HashData = ByteConverter.UnHex(fileHash);
     }
 
-    private ImageChain(byte[] data, uint width,
+    protected ImageChain(byte[] data, uint width,
         uint height, byte[] md5, string md5str, ImageType type)
         : base(ChainType.Image, ChainMode.Multiple)
     {

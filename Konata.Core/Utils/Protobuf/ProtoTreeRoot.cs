@@ -224,7 +224,7 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
         return null;
     }
 
-    public bool TrtGetLeaf(string leafPath, out IProtoType leaf)
+    public bool TryGetLeaf(string leafPath, out IProtoType leaf)
     {
         try
         {
@@ -251,9 +251,7 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
         return null;
     }
 
-    public delegate void TreeRootEnumerator(string key, IProtoType value);
-
-    public void ForEach(TreeRootEnumerator callback)
+    public void ForEach(Action<string, IProtoType> callback)
     {
         foreach (var node in Leaves)
         {
@@ -263,6 +261,9 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
             }
         }
     }
+
+    public void ForEach<TValue>(Action<string, TValue> callback)
+        => ForEach((s, p) => callback(s, (TValue)p));
 
     public IProtoType PathTo(string leafPath)
         => PathTo(this, leafPath);

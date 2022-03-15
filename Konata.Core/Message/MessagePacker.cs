@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Konata.Core.Utils.IO;
@@ -125,28 +126,40 @@ internal static class MessagePacker
         return ProtoTreeRoot.Serialize(tree).GetBytes();
     }
 
-    public static MessageChain UnPack(ProtoTreeRoot root)
+    /// <summary>
+    /// Pack up multi msg to byte
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    public static MessageChain UnPack(ProtoTreeRoot root, ParseMode mode)
     {
         BaseChain chain;
         var builder = new MessageBuilder();
 
-        root.ForEach((_, __) =>
+        root.ForEach<ProtoTreeRoot>((key, val) =>
         {
-            switch (_)
+            switch (key)
             {
                 // Messages
                 case "12":
-                    ((ProtoTreeRoot) __).ForEach((key, value) =>
+                    (val).ForEach<ProtoTreeRoot>((subkey, subval) =>
                     {
-                        chain = key switch
+                        chain = subkey switch
                         {
-                            "0A" => ParseText((ProtoTreeRoot) value),
-                            "12" => ParseQFace((ProtoTreeRoot) value),
-                            "42" => ParsePicture((ProtoTreeRoot) value),
-                            "62" => ParseXml((ProtoTreeRoot) value),
-                            "9A01" => ParseShortVideo((ProtoTreeRoot) value),
-                            "9A03" => ParseJson((ProtoTreeRoot) value),
-                            "EA02" => ParseReply((ProtoTreeRoot) value),
+                            "0A" => subval.TryGetLeafBytes("1A", out var at) ? ParseAt(at) : ParseText(subval),
+                            "12" => ParseQFace(subval),
+                            "42" => ParseImage(subval, ParseMode.Group),
+                            "62" => ParseXml(subval),
+                            "9A01" => ParseShortVideo(subval),
+                            "9A03" => ParseJson(subval),
+                            "EA02" => ParseReply(subval),
+
+                            "AA03" => ParseCommonElem(subval),
+
+                            // Friend image
+                            "22" => ParseImage(subval, ParseMode.Friend),
+
                             _ => null
                         };
 
@@ -157,7 +170,7 @@ internal static class MessagePacker
                 // Audio message
                 case "22":
                 {
-                    chain = ParseRecord((ProtoTreeRoot) __);
+                    chain = ParseRecord(val);
                     if (chain != null) builder.Add(chain);
                     break;
                 }
@@ -172,9 +185,9 @@ internal static class MessagePacker
         // Message source
         root.AddLeafVar("08", source.SourceUin); // Source uin
         root.AddLeafVar("18", 82); // Type
-        root.AddLeafVar("28", source.MessageId); // Sequence
+        root.AddLeafVar("28", source.MessageSeq); // Sequence
         root.AddLeafVar("30", source.MessageTime); // Time stamp
-        root.AddLeafVar("38", source.MessageUniSeq); // Uniseq
+        root.AddLeafVar("38", source.MessageUuid); // Uniseq
 
         // Multimsg from group
         if (true)
@@ -360,7 +373,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseJson(ProtoTreeRoot tree)
+    private static JsonChain ParseJson(ProtoTreeRoot tree)
     {
         var bytes = tree.GetLeafBytes("0A");
         var json = Compression.ZDecompress(bytes[1..]);
@@ -372,7 +385,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseXml(ProtoTreeRoot tree)
+    private static XmlChain ParseXml(ProtoTreeRoot tree)
     {
         var bytes = tree.GetLeafBytes("0A");
         var xml = Compression.ZDecompress(bytes[1..]);
@@ -384,7 +397,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseReply(ProtoTreeRoot tree)
+    private static ReplyChain ParseReply(ProtoTreeRoot tree)
     {
         var messageId = (uint) tree.GetLeafVar("08");
         var replyUin = (uint) tree.GetLeafVar("10");
@@ -401,7 +414,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseShortVideo(ProtoTreeRoot tree)
+    private static VideoChain ParseShortVideo(ProtoTreeRoot tree)
     {
         var width = (uint) tree.GetLeafVar("38");
         var height = (uint) tree.GetLeafVar("40");
@@ -418,7 +431,7 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseRecord(ProtoTreeRoot tree)
+    private static RecordChain ParseRecord(ProtoTreeRoot tree)
     {
         var url = tree.GetLeafString("A201");
         var hashstr = ByteConverter.Hex(tree.GetLeafBytes("22"));
@@ -434,45 +447,77 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParsePicture(ProtoTreeRoot tree)
+    private static BaseChain ParseCommonElem(ProtoTreeRoot tree)
     {
-        var url = tree.GetLeafString("8201");
-        var hashstr = ByteConverter.Hex(tree.GetLeafBytes("6A"));
-
-        var width = (uint) tree.GetLeafVar("B001");
-        var height = (uint) tree.GetLeafVar("B801");
-        var length = (uint) tree.GetLeafVar("C801");
-        var imgtype = ImageType.JPG;
-
-        // hmm not sure
-        if (tree.TryGetLeafVar("A001", out var type))
+        switch(tree.GetLeafVar("08"))
         {
-            imgtype = (ImageType) type;
+            case 3:
+                var picRoot = tree.GetLeaf<ProtoTreeRoot>("12");
+                if (picRoot.TryGetLeaf("0A", out var groupPicTree)) 
+                    return ParseFlash((ProtoTreeRoot)groupPicTree, ParseMode.Group);
+                else
+                    return ParseFlash(picRoot.GetLeaf<ProtoTreeRoot>("12"), ParseMode.Friend);
+            
+            default:
+            case 2:
+            case 33:
+                throw new NotImplementedException();
         }
+    }
 
+    /// <summary>
+    /// Process image chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    private static FlashImageChain ParseFlash(ProtoTreeRoot tree, ParseMode mode)
+        => FlashImageChain.CreateFromImageChain(ParseImage(tree, mode));
+
+    /// <summary>
+    /// Process image chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    private static ImageChain ParseImage(ProtoTreeRoot tree, ParseMode mode)
+    {
+        if (mode == ParseMode.Friend)
+        {
+            var hashstr = ByteConverter.Hex(tree.GetLeafBytes("3A"));
+            
+            if (tree.TryGetLeafString("7A", out var url))
+                url = $"https://c2cpicdw.qpic.cn{url}";
+            else if(tree.TryGetLeafString("52", out url))
+                url = $"https://c2cpicdw.qpic.cn/offpic_new/0/{url}/0";
+            
+            var imgtype = tree.TryGetLeafVar
+                ("A001", out var type) ? (ImageType)type : ImageType.JPG;
+
+            return ImageChain.Create(
+                url ?? "", hashstr, hashstr,
+                (uint)tree.GetLeafVar("48"),
+                (uint)tree.GetLeafVar("40"),
+                (uint)tree.GetLeafVar("10"),
+                imgtype);
+        }
         else
         {
-            // Try get image type
-            // from file extension
-            var split = tree.GetLeafString("12").Split('.');
+            var hash = ByteConverter.Hex(tree.GetLeafBytes("6A"));
+            var width = (uint) tree.GetLeafVar("B001");
+            var height = (uint) tree.GetLeafVar("B801");
+            var length = (uint) tree.GetLeafVar("C801");
 
-            if (split.Length == 2)
-            {
-                imgtype = split[1] switch
-                {
-                    "jpg" => ImageType.JPG,
-                    "png" => ImageType.PNG,
-                    "bmp" => ImageType.BMP,
-                    "gif" => ImageType.GIF,
-                    "webp" => ImageType.WEBP,
-                    _ => ImageType.JPG
-                };
-            }
+            var imgtype = tree.TryGetLeafVar
+                ("A001", out var type) ? (ImageType)type : ImageType.JPG;
+
+            if (!tree.TryGetLeafString("8201", out var url))
+                url = $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{hash}/0";
+
+            // Create image chain
+            return ImageChain.Create(url, hash,
+                hash, width, height, length, imgtype);
         }
-
-        // Create image chain
-        return ImageChain.Create(url, hashstr,
-            hashstr, width, height, length, imgtype);
     }
 
     /// <summary>
@@ -480,26 +525,29 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseText(ProtoTreeRoot tree)
-    {
-        // At chain
-        if (tree.TryGetLeafBytes("1A", out var leaf))
-        {
-            var at = ByteConverter.BytesToUInt32(leaf
-                .Skip(7).Take(4).ToArray(), 0, Endian.Big);
+    private static TextChain ParseText(ProtoTreeRoot tree)
+        => TextChain.Create(tree.GetLeafString("0A"));
 
-            return AtChain.Create(at);
-        }
-
-        // Plain text chain
-        return TextChain.Create(tree.GetLeafString("0A"));
-    }
+    /// <summary>
+    /// Process Text and At chain
+    /// </summary>
+    /// <param name="leaf"></param>
+    /// <returns></returns>
+    private static AtChain ParseAt(byte[] leaf)
+        => AtChain.Create(ByteConverter.BytesToUInt32(leaf.Skip(7).Take(4).ToArray(), 0, Endian.Big));
 
     /// <summary>
     /// Process QFace chain
     /// </summary>
     /// <param name="tree"></param>
     /// <returns></returns>
-    private static BaseChain ParseQFace(ProtoTreeRoot tree)
+    private static QFaceChain ParseQFace(ProtoTreeRoot tree)
         => QFaceChain.Create((uint) tree.GetLeafVar("08"));
+
+    internal enum ParseMode
+    {
+        Group,
+
+        Friend
+    }
 }

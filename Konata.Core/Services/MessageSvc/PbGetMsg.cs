@@ -15,8 +15,8 @@ using Konata.Core.Common;
 
 namespace Konata.Core.Services.MessageSvc;
 
-[Service("MessageSvc.PbGetMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 [EventSubscribe(typeof(PbGetMessageEvent))]
+[Service("MessageSvc.PbGetMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
 	protected override bool Parse(SSOFrame input,
