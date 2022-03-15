@@ -16,6 +16,14 @@
         <RepositoryType>Git</RepositoryType>
     </PropertyGroup>
 
+    <!-- Files -->
+    <ItemGroup>
+        <Folder Include="Common" />
+        <Folder Include="UtilTest\JceStruct" />
+        <Folder Include="UtilTest\Protobuf" />
+    </ItemGroup>
+
+    <!-- References -->
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
         <PackageReference Include="NUnit" Version="3.13.2" />
@@ -23,11 +31,8 @@
         <PackageReference Include="coverlet.collector" Version="3.1.0" />
         <ProjectReference Include="..\Konata.Core\Konata.Core.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Common" />
-        <Folder Include="UtilTest\JceStruct" />
-        <Folder Include="UtilTest\Protobuf" />
-    </ItemGroup>
-
+    
+    <!-- Impory build targets -->
+    <Import Project="..\Targets\*.targets"/>
+    
 </Project>

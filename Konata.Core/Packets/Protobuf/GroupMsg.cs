@@ -5,7 +5,7 @@ namespace Konata.Core.Packets.Protobuf;
 
 internal class GroupMsg : ProtoTreeRoot
 {
-    public GroupMsg(uint groupUin, ProtoTreeRoot chain)
+    public GroupMsg(uint groupUin, byte[] chain)
     {
         AddTree("0A", (root) =>
         {
@@ -22,7 +22,7 @@ internal class GroupMsg : ProtoTreeRoot
         });
 
         // Add message content node
-        AddTree("1A", (message) => { message.AddTree("0A", (_) => _.AddTree(chain)); });
+        AddTree("1A", message => message.AddLeafBytes("0A", chain));
 
         // Add random request id
         AddLeafVar("20", new Random().Next(1000, 65536));

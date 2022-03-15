@@ -185,7 +185,7 @@ internal class PacketComponent : InternalComponent
                 if (!SSOFrame.Create(attr.Command, attr.PacketType, sequence,
                         attr.NeedTgtToken ? ConfigComponent.KeyStore.Session.TgtToken : null,
                         _serviceSequence.Session, wupBuffer, out var ssoFrame))
-                    throw new Exception("Create service message failed.");
+                    throw new Exception("Create sso frame failed.");
 
                 // Build to srevice message
                 if (!ServiceMessage.Create(ssoFrame, attr.AuthType, Bot.Uin,

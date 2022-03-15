@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Konata.Core.Message.Model;
-using Konata.Core.Utils.Extensions;
+﻿using System.Linq;
+using System.Text;
+using System.Collections.Generic;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
+using Konata.Core.Message.Model;
 
 namespace Konata.Core.Message;
 
@@ -17,39 +17,37 @@ internal static class MessagePacker
     public static byte[] PackUp(MessageChain input)
     {
         var root = new ProtoTreeRoot();
+        foreach (var chain in input.Chains)
         {
-            foreach (var chain in input.Chains)
+            switch (chain)
             {
-                switch (chain)
-                {
-                    case TextChain textChain:
-                        ConstructPlainTextChain(root, textChain);
-                        break;
+                case TextChain textChain:
+                    ConstructText(root, textChain);
+                    break;
 
-                    case AtChain atChain:
-                        ConstructAtChain(root, atChain);
-                        break;
+                case AtChain atChain:
+                    ConstructAt(root, atChain);
+                    break;
 
-                    case QFaceChain qfaceChain:
-                        ConstructQFaceChain(root, qfaceChain);
-                        break;
+                case QFaceChain qfaceChain:
+                    ConstructQFace(root, qfaceChain);
+                    break;
 
-                    case ImageChain imageChain:
-                        ConstructImageChain(root, imageChain);
-                        break;
+                case ImageChain imageChain:
+                    ConstructImage(root, imageChain);
+                    break;
 
-                    case RecordChain recordChain:
-                        ConstructRecordChain(root, recordChain);
-                        break;
+                case RecordChain recordChain:
+                    ConstructRecord(root, recordChain);
+                    break;
 
-                    case XmlChain xmlChain:
-                        ConstructXmlChain(root, xmlChain);
-                        break;
+                case XmlChain xmlChain:
+                    ConstructXml(root, xmlChain);
+                    break;
 
-                    case JsonChain jsonChain:
-                        ConstructJsonChain(root, jsonChain);
-                        break;
-                }
+                case JsonChain jsonChain:
+                    ConstructJson(root, jsonChain);
+                    break;
             }
         }
 
@@ -127,6 +125,48 @@ internal static class MessagePacker
         return ProtoTreeRoot.Serialize(tree).GetBytes();
     }
 
+    public static MessageChain UnPack(ProtoTreeRoot root)
+    {
+        BaseChain chain;
+        var builder = new MessageBuilder();
+
+        root.ForEach((_, __) =>
+        {
+            switch (_)
+            {
+                // Messages
+                case "12":
+                    ((ProtoTreeRoot) __).ForEach((key, value) =>
+                    {
+                        chain = key switch
+                        {
+                            "0A" => ParseText((ProtoTreeRoot) value),
+                            "12" => ParseQFace((ProtoTreeRoot) value),
+                            "42" => ParsePicture((ProtoTreeRoot) value),
+                            "62" => ParseXml((ProtoTreeRoot) value),
+                            "9A01" => ParseShortVideo((ProtoTreeRoot) value),
+                            "9A03" => ParseJson((ProtoTreeRoot) value),
+                            "EA02" => ParseReply((ProtoTreeRoot) value),
+                            _ => null
+                        };
+
+                        if (chain != null) builder.Add(chain);
+                    });
+                    break;
+
+                // Audio message
+                case "22":
+                {
+                    chain = ParseRecord((ProtoTreeRoot) __);
+                    if (chain != null) builder.Add(chain);
+                    break;
+                }
+            }
+        });
+
+        return builder.Build();
+    }
+
     private static void ConstructSource(ProtoTreeRoot root, SourceInfo source)
     {
         // Message source
@@ -171,7 +211,7 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructJsonChain(ProtoTreeRoot root, JsonChain chain)
+    private static void ConstructJson(ProtoTreeRoot root, JsonChain chain)
     {
         // Compress the content
         var deflate = Compression.ZCompress(chain.Content);
@@ -194,7 +234,7 @@ internal static class MessagePacker
         ConstructPBReserved(root, 2153, 116581);
     }
 
-    private static void ConstructXmlChain(ProtoTreeRoot root, XmlChain chain)
+    private static void ConstructXml(ProtoTreeRoot root, XmlChain chain)
     {
         // Compress the content
         var deflate = Compression.ZCompress(chain.Content);
@@ -216,7 +256,7 @@ internal static class MessagePacker
         ConstructPBReserved(root, 0, 65536);
     }
 
-    private static void ConstructPlainTextChain(ProtoTreeRoot root, TextChain chain)
+    private static void ConstructText(ProtoTreeRoot root, TextChain chain)
     {
         // @formatter:off
         root.AddTree("12", (leaf) =>
@@ -229,7 +269,7 @@ internal static class MessagePacker
         // @formatter:on
     }
 
-    private static void ConstructAtChain(ProtoTreeRoot root, AtChain chain)
+    private static void ConstructAt(ProtoTreeRoot root, AtChain chain)
     {
         // Construct parameters
         var data = new ByteBuffer();
@@ -252,7 +292,7 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructRecordChain(ProtoTreeRoot root, RecordChain chain)
+    private static void ConstructRecord(ProtoTreeRoot root, RecordChain chain)
     {
         root.AddTree("22", (_) =>
         {
@@ -275,7 +315,7 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructImageChain(ProtoTreeRoot root, ImageChain chain)
+    private static void ConstructImage(ProtoTreeRoot root, ImageChain chain)
     {
         root.AddTree("12", (leaf) =>
         {
@@ -302,7 +342,7 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructQFaceChain(ProtoTreeRoot root, QFaceChain chain)
+    private static void ConstructQFace(ProtoTreeRoot root, QFaceChain chain)
     {
         // @formatter:off
         root.AddTree("12", (leaf) =>
@@ -315,8 +355,151 @@ internal static class MessagePacker
         // @formatter:on
     }
 
+    /// <summary>
+    /// Process json chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseJson(ProtoTreeRoot tree)
+    {
+        var bytes = tree.GetLeafBytes("0A");
+        var json = Compression.ZDecompress(bytes[1..]);
+        return JsonChain.Create(Encoding.UTF8.GetString(json));
+    }
 
-    // public static MessageChain PackUp(byte[] chain)
-    // {
-    // }
+    /// <summary>
+    /// Process xml chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseXml(ProtoTreeRoot tree)
+    {
+        var bytes = tree.GetLeafBytes("0A");
+        var xml = Compression.ZDecompress(bytes[1..]);
+        return XmlChain.Create(Encoding.UTF8.GetString(xml));
+    }
+
+    /// <summary>
+    /// Process reply chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseReply(ProtoTreeRoot tree)
+    {
+        var messageId = (uint) tree.GetLeafVar("08");
+        var replyUin = (uint) tree.GetLeafVar("10");
+        var replyTime = (uint) tree.GetLeafVar("18");
+
+        // TODO:
+        // Parse original chain 0x2A
+
+        return ReplyChain.Create(messageId, replyUin, replyTime);
+    }
+
+    /// <summary>
+    /// Process short video chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseShortVideo(ProtoTreeRoot tree)
+    {
+        var width = (uint) tree.GetLeafVar("38");
+        var height = (uint) tree.GetLeafVar("40");
+        var hashstr = ByteConverter.Hex(tree.GetLeafBytes("12"));
+        var storage = tree.GetLeafString("1A");
+        var duration = (uint) tree.GetLeafVar("28");
+
+        return VideoChain.Create(hashstr, hashstr,
+            storage, width, height, duration);
+    }
+
+    /// <summary>
+    /// Process record chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseRecord(ProtoTreeRoot tree)
+    {
+        var url = tree.GetLeafString("A201");
+        var hashstr = ByteConverter.Hex(tree.GetLeafBytes("22"));
+
+        if (!url.StartsWith("http"))
+            url = "http://grouptalk.c2c.qq.com" + url;
+
+        return RecordChain.Create(url, hashstr, hashstr);
+    }
+
+    /// <summary>
+    /// Process image chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParsePicture(ProtoTreeRoot tree)
+    {
+        var url = tree.GetLeafString("8201");
+        var hashstr = ByteConverter.Hex(tree.GetLeafBytes("6A"));
+
+        var width = (uint) tree.GetLeafVar("B001");
+        var height = (uint) tree.GetLeafVar("B801");
+        var length = (uint) tree.GetLeafVar("C801");
+        var imgtype = ImageType.JPG;
+
+        // hmm not sure
+        if (tree.TryGetLeafVar("A001", out var type))
+        {
+            imgtype = (ImageType) type;
+        }
+
+        else
+        {
+            // Try get image type
+            // from file extension
+            var split = tree.GetLeafString("12").Split('.');
+
+            if (split.Length == 2)
+            {
+                imgtype = split[1] switch
+                {
+                    "jpg" => ImageType.JPG,
+                    "png" => ImageType.PNG,
+                    "bmp" => ImageType.BMP,
+                    "gif" => ImageType.GIF,
+                    "webp" => ImageType.WEBP,
+                    _ => ImageType.JPG
+                };
+            }
+        }
+
+        // Create image chain
+        return ImageChain.Create(url, hashstr,
+            hashstr, width, height, length, imgtype);
+    }
+
+    /// <summary>
+    /// Process Text and At chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseText(ProtoTreeRoot tree)
+    {
+        // At chain
+        if (tree.TryGetLeafBytes("1A", out var leaf))
+        {
+            var at = ByteConverter.BytesToUInt32(leaf
+                .Skip(7).Take(4).ToArray(), 0, Endian.Big);
+
+            return AtChain.Create(at);
+        }
+
+        // Plain text chain
+        return TextChain.Create(tree.GetLeafString("0A"));
+    }
+
+    /// <summary>
+    /// Process QFace chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static BaseChain ParseQFace(ProtoTreeRoot tree)
+        => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 }

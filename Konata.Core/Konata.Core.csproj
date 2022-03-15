@@ -26,12 +26,6 @@
         <DocumentationFile>$(ProjectDir)bin\Konata.Core.xml</DocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="" />
-        <None Include="..\LICENSE" Pack="true" PackagePath="" />
-        <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png" />
-    </ItemGroup>
-
     <!-- File definition -->
     <PropertyGroup>
         <Version>$(PackageVersion)</Version>
@@ -41,57 +35,19 @@
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
 
+    <!-- Files -->
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+        <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png" />
+    </ItemGroup>
+    
     <!-- References -->
     <ItemGroup>
         <PackageReference Include="Konata.Codec" Version="1.3.1" />
     </ItemGroup>
 
-    <!-- Get Build Stamp -->
-    <Target Name="GetBuildStamp" BeforeTargets="GenerateBuildStamp" Condition="'$(BuildHash)' == ''">
-        <PropertyGroup>
-            <BuildStampFile>$(IntermediateOutputPath)BuildStamp</BuildStampFile>
-        </PropertyGroup>
-
-        <PropertyGroup>
-            <BuildDate>$([System.DateTime]::Now.ToString(r))</BuildDate>
-        </PropertyGroup>
-
-        <!-- Git Branch -->
-        <Exec Command="git -C $(ProjectDir) rev-parse --abbrev-ref HEAD &gt; $(BuildStampFile)" />
-
-        <!-- Git Commit Hash -->
-        <Exec Command="git -C $(ProjectDir) rev-parse HEAD &gt;&gt; $(BuildStampFile)" />
-
-        <!--Build Date -->
-        <Exec Command="echo $(BuildDate) &gt;&gt; $(BuildStampFile)" />
-
-        <ReadLinesFromFile File="$(BuildStampFile)">
-            <Output TaskParameter="Lines" ItemName="Stamp" />
-        </ReadLinesFromFile>
-
-        <PropertyGroup>
-            <BuildStamp>@(Stamp)</BuildStamp>
-        </PropertyGroup>
-    </Target>
-
-    <!-- Generate Build Stamp -->
-    <Target Name="GenerateBuildStamp" BeforeTargets="CoreCompile">
-        <PropertyGroup>
-            <CustomAssemblyInfoFile>$(IntermediateOutputPath)CustomAssemblyInfo.cs</CustomAssemblyInfoFile>
-        </PropertyGroup>
-
-        <ItemGroup>
-            <Compile Include="$(CustomAssemblyInfoFile)" />
-        </ItemGroup>
-
-        <ItemGroup>
-            <AssemblyAttributes Include="AssemblyMetadata">
-                <_Parameter1>BuildStamp</_Parameter1>
-                <_Parameter2>$(BuildStamp)</_Parameter2>
-            </AssemblyAttributes>
-        </ItemGroup>
-
-        <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)" />
-    </Target>
+    <!-- Impory build targets -->
+    <Import Project="..\Targets\*.targets"/>
 
 </Project>
