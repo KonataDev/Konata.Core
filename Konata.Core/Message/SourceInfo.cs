@@ -25,14 +25,14 @@ public class SourceInfo
     public uint MessageTime { get; }
 
     /// <summary>
-    /// Id
+    /// Sequence
     /// </summary>
-    public uint MessageId { get; }
+    public uint MessageSeq { get; }
 
     /// <summary>
-    /// Uniseq
+    /// Uuid
     /// </summary>
-    public uint MessageUniSeq { get; }
+    public uint MessageUuid { get; }
 
     /// <summary>
     /// Construct fake source info
@@ -44,8 +44,8 @@ public class SourceInfo
     {
         SourceUin = sourceUin;
         SourceName = sourceName;
-        MessageId = 0;
-        MessageUniSeq = 0;
+        MessageSeq = 0;
+        MessageUuid = 0;
         MessageTime = (uint) (messageTime.ToUniversalTime().Epoch() / 1000);
     }
 
@@ -67,8 +67,8 @@ public class SourceInfo
         SourceUin = e.MemberUin;
         SourceName = e.MemberCard;
         MessageTime = e.MessageTime;
-        MessageUniSeq = e.MessageSeq;
-        MessageId = e.MessageId;
+        MessageUuid = e.MessageUuid;
+        MessageSeq = e.MessageSequence;
     }
 
     /// <summary>

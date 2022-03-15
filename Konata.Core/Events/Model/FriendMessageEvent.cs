@@ -27,10 +27,28 @@ public class FriendMessageEvent : ProtocolEvent
     public MessageChain Message { get; private set; }
 
     /// <summary>
-    /// <b>[In]</b> <br/>
-    /// Sync cookie <br/>
+    /// <b>[Out]</b> <br/>
+    /// Message sequence <br/>
     /// </summary>
-    internal byte[] SyncCookie { get; private set; }
+    public uint MessageSequence { get; private set; }
+
+    /// <summary>
+    /// <b>[Out]</b> <br/>
+    /// Message rand <br/>
+    /// </summary>
+    public uint MessageRand {get; private set;}
+
+    /// <summary>
+    /// <b>[Out]</b> <br/>
+    /// Message time <br/>
+    /// </summary>
+    public uint MessageTime { get; private set; }
+
+    /// <summary>
+    /// <b>[Out]</b> <br/>
+    /// Message uuid <br/>
+    /// </summary>
+    public uint MessageUuid { get; private set; }
 
     /// <summary>
     /// <b>[Opt] [Out]</b> <br/>
@@ -84,42 +102,11 @@ public class FriendMessageEvent : ProtocolEvent
     /// <summary>
     /// Construct event push
     /// </summary>
-    /// <returns></returns>
-    internal static FriendMessageEvent Push()
-        => new(0);
-
-    /// <summary>
-    /// Set friend uin
-    /// </summary>
     /// <param name="friendUin"></param>
-    internal void SetFriendUin(uint friendUin)
-        => FriendUin = friendUin;
-
-    /// <summary>
-    /// Set message 
-    /// </summary>
-    /// <param name="message"></param>
-    internal void SetMessage(MessageChain message)
-        => Message = message;
-
-    /// <summary>
-    /// Set slice info
-    /// </summary>
-    /// <param name="sliceTotal"></param>
-    /// <param name="sliceIndex"></param>
-    /// <param name="sliceFlags"></param>
-    internal void SetSliceInfo(uint sliceTotal,
-        uint sliceIndex, uint sliceFlags)
-    {
-        SliceTotal = sliceTotal;
-        SliceIndex = sliceIndex;
-        SliceFlags = sliceFlags;
-    }
-
-    /// <summary>
-    /// Set sync cookie
-    /// </summary>
-    /// <param name="syncCookie"></param>
-    internal void SetSyncCookie(byte[] syncCookie)
-        => SyncCookie = syncCookie;
+    /// <param name="selfUin"></param>
+    /// <param name="messageChain"></param>
+    /// <returns></returns>
+    internal static FriendMessageEvent Push(uint friendUin, uint selfUin,
+        MessageChain messageChain)
+        => new(friendUin, selfUin, messageChain);
 }

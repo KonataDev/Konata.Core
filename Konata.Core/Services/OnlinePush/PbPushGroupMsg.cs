@@ -24,9 +24,10 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
             var sourceRoot = root.PathTo<ProtoTreeRoot>("0A.0A");
             {
                 message.SetMemberUin((uint) sourceRoot.GetLeafVar("08"));
-                message.SetMessageId((uint) sourceRoot.GetLeafVar("28"));
+                message.SetMessageSequence((uint) sourceRoot.GetLeafVar("28"));
                 message.SetMessageTime((uint) sourceRoot.GetLeafVar("30"));
-                message.SetMessageUniSeq((uint) sourceRoot.GetLeafVar("38"));
+                message.SetMessageUuid((uint) sourceRoot.GetLeafVar("38"));
+                message.SetMessageRand((uint) root.PathTo<ProtoVarInt>("0A.1A.0A.0A.18"));
 
                 sourceRoot = sourceRoot.PathTo<ProtoTreeRoot>("4A");
                 {
@@ -62,8 +63,8 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
             }
 
             // Parse message content
-            var chains = MessagePacker.UnPack
-                (root.PathTo<ProtoTreeRoot>("0A.1A.0A"));
+            var chains = MessagePacker.UnPack(root
+                .PathTo<ProtoTreeRoot>("0A.1A.0A"), MessagePacker.ParseMode.Group);
             {
                 message.SetMessage(chains);
                 message.SetSessionSequence(input.Sequence);

@@ -20,7 +20,6 @@ using Konata.Core.Utils;
 namespace Konata.Core.Logics.Model;
 
 [EventSubscribe(typeof(GroupMessageEvent))]
-[EventSubscribe(typeof(FriendMessageEvent))]
 [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
 internal class MessagingLogic : BaseLogic
 {
@@ -35,11 +34,6 @@ internal class MessagingLogic : BaseLogic
     {
         switch (e)
         {
-            // Received a private message
-            case FriendMessageEvent friend:
-                SyncPrivateCookie(friend);
-                break;
-
             // Received a group message
             case GroupMessageEvent group:
                 ConfirmReadGroupMessage(Context, group);
@@ -438,20 +432,10 @@ internal class MessagingLogic : BaseLogic
         }
     }
 
-    /// <summary>
-    /// Update the local sync cookie
-    /// </summary>
-    /// <param name="e"></param>
-    private void SyncPrivateCookie(FriendMessageEvent e)
-    {
-        ConfigComponent.SyncCookie = e.SyncCookie;
-        Context.LogI(TAG, $"New cookie synced => {ByteConverter.Hex(e.SyncCookie)}");
-    }
-
     #region Stub methods
 
     private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
-        => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageId, e.SessionSequence));
+        => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.MessageSequence, e.SessionSequence));
 
     private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
         => context.SendPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));

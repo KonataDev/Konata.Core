@@ -39,9 +39,15 @@ public class GroupMessageEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Message id <br/>
+    /// Message sequence <br/>
     /// </summary>
-    public uint MessageId { get; private set; }
+    public uint MessageSequence { get; private set; }
+
+    /// <summary>
+    /// <b>[Out]</b> <br/>
+    /// Message rand <br/>
+    /// </summary>
+    public uint MessageRand {get; private set;}
 
     /// <summary>
     /// <b>[Out]</b> <br/>
@@ -51,9 +57,9 @@ public class GroupMessageEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Message seq <br/>
+    /// Message uuid <br/>
     /// </summary>
-    public uint MessageSeq { get; private set; }
+    public uint MessageUuid { get; private set; }
 
     /// <summary>
     /// <b>[Opt] [Out]</b> <br/>
@@ -121,23 +127,30 @@ public class GroupMessageEvent : ProtocolEvent
     /// <summary>
     /// Set message id
     /// </summary>
-    /// <param name="messageId"></param>
-    internal void SetMessageId(uint messageId)
-        => MessageId = messageId;
+    /// <param name="sequence"></param>
+    internal void SetMessageSequence(uint sequence)
+        => MessageSequence = sequence;
+
+    /// <summary>
+    /// Set message rand
+    /// </summary>
+    /// <param name="rand"></param>
+    internal void SetMessageRand(uint rand)
+        => MessageRand = rand;
 
     /// <summary>
     /// Set message time
     /// </summary>
-    /// <param name="messageTime"></param>
-    internal void SetMessageTime(uint messageTime)
-        => MessageTime = messageTime;
+    /// <param name="time"></param>
+    internal void SetMessageTime(uint time)
+        => MessageTime = time;
 
     /// <summary>
-    /// Set message time
+    /// Set message uuid
     /// </summary>
-    /// <param name="seq"></param>
-    internal void SetMessageUniSeq(uint seq)
-        => MessageSeq = seq;
+    /// <param name="uuid"></param>
+    internal void SetMessageUuid(uint uuid)
+        => MessageUuid = uuid;
 
     /// <summary>
     /// Set message 
