@@ -39,45 +39,43 @@ public class GroupMessageEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[Out]</b> <br/>
+    /// Source info <br/>
+    /// </summary>
+    public SourceInfo SourceInfo{ get; private set; }
+
+    /// <summary>
+    /// <b>[Out]</b> <br/>
     /// Message sequence <br/>
     /// </summary>
-    public uint MessageSequence { get; private set; }
+    public uint MessageSequence
+        => SourceInfo.MessageSeq;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Message rand <br/>
     /// </summary>
-    public uint MessageRand {get; private set;}
+    public uint MessageRand
+        => SourceInfo.MessageRand;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Message time <br/>
     /// </summary>
-    public uint MessageTime { get; private set; }
+    public uint MessageTime
+        => SourceInfo.MessageTime;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Message uuid <br/>
     /// </summary>
-    public uint MessageUuid { get; private set; }
+    public uint MessageUuid
+        => SourceInfo.MessageUuid;
 
     /// <summary>
     /// <b>[Opt] [Out]</b> <br/>
     /// Total slice count <br/>
     /// </summary>
-    public uint SliceTotal { get; private set; }
-
-    /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Current slice id <br/>
-    /// </summary>
-    public uint SliceIndex { get; private set; }
-
-    /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Slice flags <br/>
-    /// </summary>
-    public uint SliceFlags { get; private set; }
+    internal SliceControl SliceInfo { get; private set; }
 
     private GroupMessageEvent(uint groupUin, uint selfUin,
         MessageChain messageChain) : base(6000, true)
@@ -162,16 +160,9 @@ public class GroupMessageEvent : ProtocolEvent
     /// <summary>
     /// Set slice info
     /// </summary>
-    /// <param name="sliceTotal"></param>
-    /// <param name="sliceIndex"></param>
-    /// <param name="sliceFlags"></param>
-    internal void SetSliceInfo(uint sliceTotal,
-        uint sliceIndex, uint sliceFlags)
-    {
-        SliceTotal = sliceTotal;
-        SliceIndex = sliceIndex;
-        SliceFlags = sliceFlags;
-    }
+    /// <param name="slice"></param>
+    internal void SetSliceInfo(SliceControl slice)
+        => SliceInfo = slice;
 
     /// <summary>
     /// Set member uin

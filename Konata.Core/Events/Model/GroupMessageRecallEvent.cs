@@ -1,4 +1,6 @@
-﻿// ReSharper disable MemberCanBePrivate.Global
+﻿using Konata.Core.Message;
+
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Konata.Core.Events.Model;
@@ -12,35 +14,22 @@ public class GroupMessageRecallEvent : ProtocolEvent
     public uint GroupUin { get; }
 
     /// <summary>
-    /// <b>[In] [Out]</b> <br/>
-    /// Member uin <br/>
-    /// </summary>
-    public uint MemberUin { get; }
-
-    /// <summary>
     /// <b>[Opt] [Out]</b> <br/>
     /// Operator uin <br/>
     /// </summary>
     public uint OperatorUin { get; }
 
     /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Recall suffix <br/>
+    /// <b>[In] [Out]</b> <br/>
+    /// Source Info <br/>
     /// </summary>
-    public string RecallSuffix { get; }
+    public SourceInfo SourceInfo { get; }
 
-    /// <summary>
-    /// <b>[In]</b> <br/>
-    /// Message id <br/>
-    /// </summary>
-    public uint MessageId { get; }
-
-    private GroupMessageRecallEvent(uint groupUin, uint memberUin,
-        uint messageId) : base(2000, true)
+    private GroupMessageRecallEvent(uint groupUin, SourceInfo sourceInfo) 
+        : base(2000, true)
     {
         GroupUin = groupUin;
-        MemberUin = memberUin;
-        MessageId = messageId;
+        SourceInfo = sourceInfo;
     }
 
     private GroupMessageRecallEvent(int resultCode)
@@ -48,24 +37,22 @@ public class GroupMessageRecallEvent : ProtocolEvent
     {
     }
 
-    private GroupMessageRecallEvent(uint groupUin, uint memberUin,
-        uint operatorUin, string recallSuffix) : base(0)
+    private GroupMessageRecallEvent(uint groupUin, uint operatorUin,
+        SourceInfo sourceInfo) : base(0)
     {
         GroupUin = groupUin;
-        MemberUin = memberUin;
         OperatorUin = operatorUin;
-        RecallSuffix = recallSuffix;
+        SourceInfo = sourceInfo;
     }
 
     /// <summary>
     /// Construct event request
     /// </summary>
     /// <param name="groupUin"></param>
-    /// <param name="memberUin"></param>
-    /// <param name="messageId"></param>
+    /// <param name="sourceInfo"></param>
     /// <returns></returns>
     internal static GroupMessageRecallEvent Create(uint groupUin,
-        uint memberUin, uint messageId) => new(groupUin, memberUin, messageId);
+        SourceInfo sourceInfo) => new(groupUin, sourceInfo);
 
     /// <summary>
     /// Construct event result
@@ -79,10 +66,9 @@ public class GroupMessageRecallEvent : ProtocolEvent
     /// Construct event push
     /// </summary>
     /// <param name="groupUin"></param>
-    /// <param name="memberUin"></param>
     /// <param name="operatorUin"></param>
-    /// <param name="recallSuffix"></param>
+    /// <param name="sourceInfo"></param>
     /// <returns></returns>
-    internal static GroupMessageRecallEvent Push(uint groupUin, uint memberUin,
-        uint operatorUin, string recallSuffix) => new(groupUin, memberUin, operatorUin, recallSuffix);
+    internal static GroupMessageRecallEvent Push(uint groupUin, uint operatorUin,
+        SourceInfo sourceInfo) => new(groupUin, operatorUin, sourceInfo);
 }

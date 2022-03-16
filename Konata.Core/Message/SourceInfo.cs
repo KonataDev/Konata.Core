@@ -35,6 +35,11 @@ public class SourceInfo
     public uint MessageUuid { get; }
 
     /// <summary>
+    /// Rand
+    /// </summary>
+    public uint MessageRand { get; }
+
+    /// <summary>
     /// Construct fake source info
     /// </summary>
     /// <param name="sourceUin"></param>
@@ -59,32 +64,14 @@ public class SourceInfo
     {
     }
 
-    /// <summary>
-    /// Construct source info from group message
-    /// </summary>
-    private SourceInfo(GroupMessageEvent e)
+    private SourceInfo(uint sourceUin, uint msgSequence, uint msgRand, uint msgTime)
     {
-        SourceUin = e.MemberUin;
-        SourceName = e.MemberCard;
-        MessageTime = e.MessageTime;
-        MessageUuid = e.MessageUuid;
-        MessageSeq = e.MessageSequence;
+        SourceUin = sourceUin;
+        MessageSeq = msgSequence;
+        MessageRand = msgRand;
+        MessageTime = msgTime;
     }
 
-    /// <summary>
-    /// Construct source info from group message
-    /// </summary>
-    /// <param name="e"></param>
-    /// <returns></returns>
-    public static SourceInfo From(GroupMessageEvent e)
-        => new(e);
-
-    /// <summary>
-    /// Construct source info from friend message
-    /// TODO Friend name
-    /// </summary>
-    /// <param name="e"></param>
-    /// <returns></returns>
-    public static SourceInfo From(FriendMessageEvent e)
-        => new(e.FriendUin, "", e.EventTime);
+    internal static SourceInfo From(uint sourceUin, uint msgSequence, uint msgRand, uint msgTime)
+        => new(sourceUin, msgSequence, msgRand, msgTime);
 }

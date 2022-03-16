@@ -58,8 +58,8 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
             {
                 var total = (uint) sliceInfoRoot.GetLeafVar("08");
                 var index = (uint) sliceInfoRoot.GetLeafVar("10");
-                var flags = (uint) sliceInfoRoot.GetLeafVar("18");
-                message.SetSliceInfo(total, index, flags);
+                var id = (uint) sliceInfoRoot.GetLeafVar("18");
+                message.SetSliceInfo(SliceControl.Create(total, index, id));
             }
 
             // Parse message content

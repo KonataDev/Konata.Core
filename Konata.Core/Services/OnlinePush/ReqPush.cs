@@ -10,6 +10,7 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.JceStruct;
 using Konata.Core.Utils.JceStruct.Model;
 using Konata.Core.Utils.Protobuf;
+using Konata.Core.Message;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedParameter.Local
@@ -199,9 +200,11 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
             // Group recall message
             0x11, (key, src, buf) =>
             {
-                var recallSuffix = "";
                 uint operatorUin;
                 uint affectedUin;
+                uint msgSequence;
+                uint msgRand;
+                uint msgTime;
 
                 // Length
                 buf.EatBytes(2);
@@ -211,21 +214,19 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
                 {
                     var info5A = (ProtoTreeRoot) recallTree.GetLeaf("5A");
                     var info1A = (ProtoTreeRoot) info5A.GetLeaf("1A");
-                    var info4A = (ProtoTreeRoot) info5A.GetLeaf("4A");
                     {
                         operatorUin = (uint) info5A.GetLeafVar("08");
                         affectedUin = (uint) info1A.GetLeafVar("30");
-                    }
-
-                    if (info4A.TryGetLeafString("12", out var str))
-                    {
-                        recallSuffix = str;
+                        msgSequence = (uint) info1A.GetLeafVar("08");
+                        msgTime = (uint) info1A.GetLeafVar("10");
+                        msgRand = (uint) info1A.GetLeafVar("18");
                     }
                 }
 
+                var sourceInfo = new SourceInfo(affectedUin, msgSequence, msgRand, msgTime);
+
                 // Construct event
-                return GroupMessageRecallEvent.Push(src,
-                    affectedUin, operatorUin, recallSuffix);
+                return GroupMessageRecallEvent.Push(src, operatorUin, sourceInfo);
             }
         },
 
