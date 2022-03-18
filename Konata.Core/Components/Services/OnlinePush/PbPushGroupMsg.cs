@@ -18,9 +18,11 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
         BotKeyStore keystore, out GroupMessageEvent output)
     {
         var message = GroupMessageEvent.Result(0);
+        var source = new MessageStruct(MessageStruct.SourceType.Group);
+
+        message.SetMessageStruct(source);
         message.SetSessionSequence(input.Sequence);
 
-        var source = new MessageStruct(MessageStruct.SourceType.Group);
         var root = ProtoTreeRoot.Deserialize(input.Payload, true);
         {
             // Parse message source information

@@ -156,14 +156,14 @@ public class MessageStruct
     /// </summary>
     /// <param name="uin"></param>
     internal void SetReceiverUin(uint uin)
-        => Receiver = (uin, Sender.Name ?? "");
+        => Receiver = (uin, Receiver.Name ?? "");
 
     /// <summary>
     /// Set receiver name
     /// </summary>
     /// <param name="name"></param>
     internal void SetReceiverName(string name)
-        => Receiver = (Sender.Uin, name);
+        => Receiver = (Receiver.Uin, name);
 
     /// <summary>
     /// Set message

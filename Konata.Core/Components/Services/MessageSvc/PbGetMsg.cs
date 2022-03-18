@@ -63,7 +63,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 			}
 		}
 
-	Finish:
+		Finish:
 		output = PbGetMessageEvent.Result(0, cookie, push);
 		return true;
 	}
