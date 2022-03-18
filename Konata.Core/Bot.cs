@@ -374,7 +374,7 @@ public class Bot : BaseEntity, IDisposable
         {
             OnLog?.Invoke(sender, LogEvent.Create("Bot",
                 LogLevel.Verbose, $"[Group]{e.GroupUin} " +
-                                  $"[Member]{e.MemberUin} {e.Message}"));
+                                  $"[Member]{e.MemberUin} {e.Message.Chain}"));
         };
 
         // Default group mute handler
