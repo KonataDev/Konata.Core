@@ -9,14 +9,12 @@ namespace Konata.Core.Utils.Protobuf;
 internal class ProtobufDecoder
 {
     private readonly List<byte[]> _raw;
-    private bool _isTree = true;
-    private bool _isNumber;
-    private long _valueAsNumber;
-    private readonly Dictionary<uint, (ProtoType, List<byte[]>)> _leaves = new (); // <tag, (type, raw)>
+    private long? _valueAsNumber;
+    private readonly Dictionary<uint, (ProtoType, List<byte[]>)> _leaves = new();
 
     private ProtobufDecoder(byte[] raw)
     {
-        _raw = new (){raw};
+        _raw = new(){raw};
     }
     
     private ProtobufDecoder(List<byte[]> raw)
@@ -41,6 +39,8 @@ internal class ProtobufDecoder
 
     public byte[] AsBytes()
     {
+        if (_valueAsNumber != null)
+            throw new Exception("Number can not be read as LengthDelimited");
         return _raw.First();
     }
 
@@ -51,48 +51,40 @@ internal class ProtobufDecoder
 
     public long AsNumber()
     {
-        if (!_isNumber)
-            throw new Exception("A tree can not be converted to a number");
-        return _valueAsNumber;
+        if (_valueAsNumber == null)
+            throw new Exception("LengthDelimited can not be read as Number");
+        return (long) _valueAsNumber;
     }
 
     public ProtobufDecoder this[uint tag]
     {
         get
         {
-            if (!_isTree)
-                throw new Exception("A number can not be decoded as a tree");
+            if (_valueAsNumber != null)
+                throw new Exception("Number can not be read as LengthDelimited");
             if (!_leaves.ContainsKey(tag))
                 _setLeaves();
             if (!_leaves.ContainsKey(tag))
-                throw new Exception("This tree does not contain tag: " + tag.ToString());
+                throw new Exception("This LengthDelimited does not contain tag: " + tag.ToString());
             var (type, list) = _leaves[tag];
             var raw = list.First();
             var pbDecoder = new ProtobufDecoder(list);
             switch (type)
             {
                 case ProtoType.VarInt:
-                    pbDecoder._isTree = false;
-                    pbDecoder._isNumber = true;
                     pbDecoder._valueAsNumber = ProtoVarInt.Create(raw).Value;
                     break;
 
                 case ProtoType.Bit32:
-                    pbDecoder._isTree = false;
-                    pbDecoder._isNumber = true;
                     pbDecoder._valueAsNumber = ProtoBit32.Create(raw).Value;
                     break;
 
                 case ProtoType.Bit64:
-                    pbDecoder._isTree = false;
-                    pbDecoder._isNumber = true;
                     pbDecoder._valueAsNumber = ProtoBit64.Create(raw).Value;
                     break;
 
                 default:
                 case ProtoType.LengthDelimited:
-                    pbDecoder._isTree = true;
-                    pbDecoder._isNumber = false;
                     break;
             }
             return pbDecoder;
