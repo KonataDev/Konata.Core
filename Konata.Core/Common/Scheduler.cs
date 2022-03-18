@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Core.Components.Model;
+using Konata.Core.Components;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global

@@ -41,7 +41,7 @@ internal class MessagingLogic : BaseLogic
 
         // Forward messages to userend
         Context.PostEventToEntity(e);
-        return Task.CompletedTask; 
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -267,11 +267,11 @@ internal class MessagingLogic : BaseLogic
         {
             var preview = "";
             var limit = 4;
-            foreach (var (info, chain) in upload.Messages)
+            foreach (var msgstu in upload.Messages)
             {
                 if (--limit < 0) break;
                 preview += "<title size=\"26\" color=\"#777777\" maxLines=\"2\" lineSpace=\"12\">" +
-                           $"{info.Sender.Name}: {chain.Chains[0]?.ToPreviewString()}</title>";
+                           $"{msgstu.Sender.Name}: {msgstu.Chain[0]?.ToPreviewString()}</title>";
             }
 
             return preview;
@@ -404,14 +404,14 @@ internal class MessagingLogic : BaseLogic
             if (upload == null) return true;
 
             // Upload
-            foreach (var (source, chain) in upload.Messages)
+            foreach (var msgstu in upload.Messages)
             {
                 // Wait for tasks done
                 var results = await Task.WhenAll(
-                    SearchImageAndUpload(uin, chain, true),
-                    SearchRecordAndUpload(uin, chain),
-                    SearchMultiMsgAndUpload(uin, chain),
-                    SearchAt(uin, chain)
+                    SearchImageAndUpload(uin, msgstu.Chain, true),
+                    SearchRecordAndUpload(uin, msgstu.Chain),
+                    SearchMultiMsgAndUpload(uin, msgstu.Chain),
+                    SearchAt(uin, msgstu.Chain)
                 );
 
                 // Check results

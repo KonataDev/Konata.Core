@@ -7,9 +7,9 @@ using Konata.Core.Entity;
 using Konata.Core.Message;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
+using Konata.Core.Components;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
-using Konata.Core.Components.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message.Model;
 
@@ -401,8 +401,7 @@ public class Bot : BaseEntity, IDisposable
         {
             OnLog?.Invoke(sender, LogEvent.Create("Bot",
                 LogLevel.Verbose, $"[Group Recall]{e.GroupUin} " +
-                                  $"[Messageid]{e.MessageId} " +
-                                  $"[Member]{e.MemberUin}"));
+                                  $"[Member]{e.OperatorUin}"));
         };
 
         // Default group promote handler
