@@ -76,3 +76,27 @@ internal class BaseComponent
 
     #endregion
 }
+
+internal class InternalComponent : BaseComponent
+{
+    public Bot Bot
+        => (Bot) Entity;
+
+    public ConfigComponent ConfigComponent
+        => Bot.ConfigComponent;
+
+    public BusinessComponent BusinessComponent
+        => Bot.BusinessComponent;
+
+    public PacketComponent PacketComponent
+        => Bot.PacketComponent;
+
+    public SocketComponent SocketComponent
+        => Bot.SocketComponent;
+
+    public ScheduleComponent ScheduleComponent
+        => Bot.ScheduleComponent;
+
+    public HighwayComponent HighwayComponent
+        => Bot.HighwayComponent;
+}
