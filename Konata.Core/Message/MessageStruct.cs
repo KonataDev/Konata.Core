@@ -22,7 +22,7 @@ public class MessageStruct
     /// <summary>
     /// Uuid
     /// </summary>
-    public uint Uuid { get; private set; }
+    public long Uuid { get; private set; }
 
     /// <summary>
     /// Random
@@ -112,7 +112,7 @@ public class MessageStruct
     /// <param name="rand"></param>
     /// <param name="time"></param>
     /// <param name="uuid"></param>
-    internal void SetSourceInfo(uint squence, uint rand, uint time, uint uuid)
+    internal void SetSourceInfo(uint squence, uint rand, uint time, long uuid)
     {
         Sequence = squence;
         Random = rand;

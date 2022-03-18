@@ -31,7 +31,7 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
                 var uin = (uint) sourceRoot.GetLeafVar("08");
                 var sequence = (uint) sourceRoot.GetLeafVar("28");
                 var time = (uint) sourceRoot.GetLeafVar("30");
-                var uuid = (uint) sourceRoot.GetLeafVar("38");
+                var uuid = sourceRoot.GetLeafVar("38");
                 var rand = (uint) root.PathTo<ProtoVarInt>("0A.1A.0A.0A.18");
 
                 source.SetSourceInfo(sequence, rand, time, uuid);

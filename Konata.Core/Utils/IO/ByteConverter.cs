@@ -8,10 +8,12 @@ internal enum Endian
     /// 大端
     /// </summary>
     Big,
+
     /// <summary>
     /// 小端
     /// </summary>
     Little,
+
     /// <summary>
     /// 随运行时主机
     /// </summary>
@@ -23,10 +25,11 @@ internal enum Endian
 /// </summary>
 internal static class ByteConverter
 {
-    public static Endian DefaultEndian { get; set; } 
+    public static Endian DefaultEndian { get; set; }
         = BitConverter.IsLittleEndian ? Endian.Little : Endian.Big;
 
     #region Value2Bytes
+
     /// <summary>
     /// 布尔转bytes
     /// </summary>
@@ -36,7 +39,7 @@ internal static class ByteConverter
     /// <returns></returns>
     public static byte[] BoolToBytes(bool value, uint length, Endian endian = Endian.FollowMachine)
     {
-        if ((int)endian == (int)Endian.FollowMachine)
+        if ((int) endian == (int) Endian.FollowMachine)
         {
             endian = DefaultEndian;
         }
@@ -46,17 +49,18 @@ internal static class ByteConverter
         {
             result[endian == Endian.Little ? 0 : length - 1] = 1;
         }
+
         return result;
     }
 
     public static byte[] Int8ToBytes(sbyte value)
     {
-        return new byte[] { (byte)value };
+        return new byte[] {(byte) value};
     }
 
     public static byte[] UInt8ToBytes(byte value)
     {
-        return new byte[] { value };
+        return new byte[] {value};
     }
 
     public static byte[] Int16ToBytes(short value, Endian endian)
@@ -66,8 +70,10 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
+
     public static byte[] Int16ToBytes(short value)
     {
         return Int16ToBytes(value, DefaultEndian);
@@ -80,6 +86,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -95,6 +102,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -110,6 +118,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -125,6 +134,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -140,6 +150,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -155,6 +166,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -170,6 +182,7 @@ internal static class ByteConverter
         {
             Array.Reverse(result);
         }
+
         return result;
     }
 
@@ -181,6 +194,7 @@ internal static class ByteConverter
     #endregion
 
     #region Bytes2Value
+
     public static bool BytesToBool(byte[] buffer, uint startIndex, uint length, Endian endian)
     {
         return buffer[endian == Endian.Little ? startIndex : startIndex + length - 1] > 0;
@@ -194,12 +208,12 @@ internal static class ByteConverter
     [Obsolete]
     public static sbyte BytesToInt8(byte[] buffer, uint startIndex, Endian endian)
     {
-        return (sbyte)buffer[startIndex];
+        return (sbyte) buffer[startIndex];
     }
 
     public static sbyte BytesToInt8(byte[] buffer, uint startIndex)
     {
-        return (sbyte)buffer[startIndex];
+        return (sbyte) buffer[startIndex];
     }
 
     [Obsolete]
@@ -221,7 +235,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToInt16(buffer, (int)startIndex);
+            return BitConverter.ToInt16(buffer, (int) startIndex);
         }
     }
 
@@ -238,7 +252,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToUInt16(buffer, (int)startIndex);
+            return BitConverter.ToUInt16(buffer, (int) startIndex);
         }
     }
 
@@ -255,7 +269,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToInt32(buffer, (int)startIndex);
+            return BitConverter.ToInt32(buffer, (int) startIndex);
         }
     }
 
@@ -272,7 +286,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToUInt32(buffer, (int)startIndex);
+            return BitConverter.ToUInt32(buffer, (int) startIndex);
         }
     }
 
@@ -289,7 +303,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToInt64(buffer, (int)startIndex);
+            return BitConverter.ToInt64(buffer, (int) startIndex);
         }
     }
 
@@ -306,7 +320,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToUInt64(buffer, (int)startIndex);
+            return BitConverter.ToUInt64(buffer, (int) startIndex);
         }
     }
 
@@ -323,7 +337,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToSingle(buffer, (int)startIndex);
+            return BitConverter.ToSingle(buffer, (int) startIndex);
         }
     }
 
@@ -340,7 +354,7 @@ internal static class ByteConverter
         }
         else
         {
-            return BitConverter.ToDouble(buffer, (int)startIndex);
+            return BitConverter.ToDouble(buffer, (int) startIndex);
         }
     }
 
@@ -359,7 +373,7 @@ internal static class ByteConverter
     private static byte[] PickBytes(in byte[] buffer, uint startIndex, int length)
     {
         byte[] temp = new byte[length];
-        Buffer.BlockCopy(buffer, (int)startIndex, temp, 0, length);
+        Buffer.BlockCopy(buffer, (int) startIndex, temp, 0, length);
         Array.Reverse(temp);
         return temp;
     }
@@ -371,7 +385,8 @@ internal static class ByteConverter
 
         for (int i = varint.Length - 1; i >= 0; --i)
         {
-            number |= (varint[i] & 0b01111111) << (i * 7);
+            number <<= 7;
+            number |= varint[i] & 0b01111111;
         }
 
         return number;
@@ -389,17 +404,17 @@ internal static class ByteConverter
 
             do
             {
-                buffer[len] = (byte)((number & 127) | 128);
+                buffer[len] = (byte) ((number & 127) | 128);
                 number >>= 7;
                 ++len;
             } while (number > 127);
 
-            buffer[len] = (byte)number;
+            buffer[len] = (byte) number;
             Array.Resize(ref buffer, len + 1);
         }
         else
         {
-            buffer = new byte[1] { (byte)number };
+            buffer = new byte[1] {(byte) number};
         }
 
         return buffer;
@@ -421,6 +436,7 @@ internal static class ByteConverter
         {
             bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
         }
+
         return bytes;
     }
 

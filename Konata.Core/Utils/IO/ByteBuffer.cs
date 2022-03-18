@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Konata.Core.Utils.IO;
 
 /// <summary>
