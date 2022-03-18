@@ -13,7 +13,7 @@ public class MultiMsgChain : XmlChain
     /// <summary>
     /// Messages
     /// </summary>
-    internal List<(SourceInfo info, MessageChain chain)> Messages { get; }
+    internal List<MessageStruct> Messages { get; }
 
     /// <summary>
     /// Multimsg up information
@@ -39,36 +39,11 @@ public class MultiMsgChain : XmlChain
     /// <summary>
     /// Add message
     /// </summary>
-    /// <param name="sourceInfo"></param>
-    /// <param name="chain"></param>
+    /// <param name="reference"></param>
     /// <returns></returns>
-    public MultiMsgChain AddMessage(SourceInfo sourceInfo, MessageChain chain)
+    public MultiMsgChain AddMessage(MessageStruct reference)
     {
-        Messages.Add((sourceInfo, chain));
-        return this;
-    }
-
-    /// <summary>
-    /// Add message
-    /// </summary>
-    /// <param name="sourceInfo"></param>
-    /// <param name="chain"></param>
-    /// <returns></returns>
-    public MultiMsgChain AddMessage(SourceInfo sourceInfo, BaseChain chain)
-    {
-        Messages.Add((sourceInfo, new MessageChain(chain)));
-        return this;
-    }
-
-    /// <summary>
-    /// Add message
-    /// </summary>
-    /// <param name="sourceInfo"></param>
-    /// <param name="builder"></param>
-    /// <returns></returns>
-    public MultiMsgChain AddMessage(SourceInfo sourceInfo, MessageBuilder builder)
-    {
-        Messages.Add((sourceInfo, builder.Build()));
+        Messages.Add((reference));
         return this;
     }
 

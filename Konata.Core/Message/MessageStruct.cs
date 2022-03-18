@@ -7,38 +7,38 @@ using Konata.Core.Utils.Extensions;
 
 namespace Konata.Core.Message;
 
-public class MessageInformation
+public class MessageStruct
 {
     /// <summary>
     /// Time
     /// </summary>
-    public uint Time { get; }
+    public uint Time { get; private set; }
 
     /// <summary>
     /// Sequence
     /// </summary>
-    public uint Sequence { get; }
+    public uint Sequence { get; private set; }
 
     /// <summary>
     /// Uuid
     /// </summary>
-    public uint Uuid { get; }
+    public uint Uuid { get; private set; }
 
     /// <summary>
     /// Random
     /// </summary>
-    public uint Random { get; }
+    public uint Random { get; private set; }
 
     /// <summary>
     /// Source type
     /// </summary>
-    public SourceType Type { get; }
+    public SourceType Type { get; private set; }
 
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Message chain <br/>
     /// </summary>
-    public MessageChain Chain { get; }
+    public MessageChain Chain { get; private set; }
 
     /// <summary>
     /// <b>[In] [Out]</b>     <br/>
@@ -64,39 +64,56 @@ public class MessageInformation
     /// <param name="uin"></param>
     /// <param name="name"></param>
     /// <param name="messageTime"></param>
-    public MessageInformation(uint uin, string name, DateTime messageTime)
+    public MessageStruct(uint uin, string name, DateTime messageTime)
     {
         Sender = (uin, name);
         Time = (uint) (messageTime.ToUniversalTime().Epoch() / 1000);
     }
 
     /// <summary>
-    /// Construct message information
+    /// Construct message information for message outgoing
     /// </summary>
     /// <param name="senderUin"></param>
     /// <param name="senderName"></param>
     /// <param name="receiverUin"></param>
     /// <param name="chain"></param>
-    internal MessageInformation(uint senderUin, string senderName,
+    internal MessageStruct(uint senderUin, string senderName,
         uint receiverUin, MessageChain chain)
     {
         Chain = chain;
         Sender = (senderUin, senderName);
+        Receiver = (receiverUin, "");
     }
+
+    /// <summary>
+    /// Construct message information for message incoming
+    /// </summary>
+    /// <param name="type"></param>
+    internal MessageStruct(SourceType type) => Type = type;
 
     /// <summary>
     /// Construct fake source info
     /// </summary>
     /// <param name="uin"></param>
     /// <param name="name"></param>
-    public MessageInformation(uint uin, string name)
-        : this(uin, name, DateTime.Now)
+    /// <param name="chain"></param>
+    /// <param name="type"></param>
+    public MessageStruct(uint uin, string name, MessageChain chain,
+        SourceType type = SourceType.Group) : this(uin, name, DateTime.Now)
     {
+        Type = type;
+        Chain = chain;
     }
 
-    private MessageInformation(uint uin, uint squence, uint rand, uint time, uint uuid)
+    /// <summary>
+    /// Set source info
+    /// </summary>
+    /// <param name="squence"></param>
+    /// <param name="rand"></param>
+    /// <param name="time"></param>
+    /// <param name="uuid"></param>
+    internal void SetSourceInfo(uint squence, uint rand, uint time, uint uuid)
     {
-        Uin = uin;
         Sequence = squence;
         Random = rand;
         Time = time;
@@ -104,12 +121,26 @@ public class MessageInformation
     }
 
     /// <summary>
-    /// Set member info
+    /// Set sender info
     /// </summary>
     /// <param name="uin"></param>
     /// <param name="name"></param>
     internal void SetSenderInfo(uint uin, string name)
         => Sender = (uin, name);
+
+    /// <summary>
+    /// Set sender uin
+    /// </summary>
+    /// <param name="uin"></param>
+    internal void SetSenderUin(uint uin)
+        => Sender = (uin, Sender.Name ?? "");
+
+    /// <summary>
+    /// Set sender name
+    /// </summary>
+    /// <param name="name"></param>
+    internal void SetSenderName(string name)
+        => Sender = (Sender.Uin, name);
 
     /// <summary>
     /// Set group info
@@ -119,4 +150,25 @@ public class MessageInformation
     /// 
     internal void SetReceiverInfo(uint uin, string name)
         => Receiver = (uin, name);
+
+    /// <summary>
+    /// Set receiver uin
+    /// </summary>
+    /// <param name="uin"></param>
+    internal void SetReceiverUin(uint uin)
+        => Receiver = (uin, Sender.Name ?? "");
+
+    /// <summary>
+    /// Set receiver name
+    /// </summary>
+    /// <param name="name"></param>
+    internal void SetReceiverName(string name)
+        => Receiver = (Sender.Uin, name);
+
+    /// <summary>
+    /// Set message
+    /// </summary>
+    /// <param name="chain"></param>
+    internal void SetMessage(MessageChain chain)
+        => Chain = chain;
 }

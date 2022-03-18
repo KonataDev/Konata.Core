@@ -60,41 +60,41 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static byte[] PackMultiMsg(List<(SourceInfo, MessageChain)> input)
+    public static byte[] PackMultiMsg(List<MessageStruct> input)
     {
         var newClientMsgs = new ProtoTreeRoot();
         var compatiableMsgs = new ProtoTreeRoot();
         var multiMsgExpanded = new ProtoTreeRoot();
 
-        foreach (var (source, chain) in input)
+        foreach (var msgstu in input)
         {
             // Check if multimsg chain
-            var isMultiMsg = chain.Count == 1 &&
-                             chain.FirstOrDefault() is MultiMsgChain;
+            var isMultiMsg = msgstu.Chain.Count == 1 &&
+                             msgstu.Chain.FirstOrDefault() is MultiMsgChain;
 
             compatiableMsgs.AddTree("0A", _ =>
             {
                 // Message source
-                _.AddTree("0A", __ => ConstructSource(__, source));
+                _.AddTree("0A", __ => ConstructSource(__, msgstu));
 
                 // Message content
                 _.AddTree("1A", __ => __.AddLeafBytes("0A", isMultiMsg
                     ? PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))
-                    : PackUp(chain)));
+                    : PackUp(msgstu.Chain)));
             });
 
             newClientMsgs.AddTree("0A", _ =>
             {
                 // Message source
-                _.AddTree("0A", __ => ConstructSource(__, source));
+                _.AddTree("0A", __ => ConstructSource(__, msgstu));
 
                 // Message content
-                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(chain)));
+                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(msgstu.Chain)));
             });
 
             if (isMultiMsg)
             {
-                var multiMsg = chain.GetChain<MultiMsgChain>();
+                var multiMsg = msgstu.Chain.GetChain<MultiMsgChain>();
                 multiMsgExpanded.AddTree("12", _ =>
                 {
                     _.AddLeafString("0A", multiMsg.Guid);
@@ -104,8 +104,8 @@ internal static class MessagePacker
                         {
                             __.AddTree("0A", ___ =>
                             {
-                                ___.AddTree("0A", ____ => ConstructSource(____, subchain.info));
-                                ___.AddTree("1A", ____ => ____.AddLeafBytes("0A", PackUp(subchain.chain)));
+                                ___.AddTree("0A", ____ => ConstructSource(____, subchain));
+                                ___.AddTree("1A", ____ => ____.AddLeafBytes("0A", PackUp(subchain.Chain)));
                             });
                         }
                     });
@@ -180,22 +180,22 @@ internal static class MessagePacker
         return builder.Build();
     }
 
-    private static void ConstructSource(ProtoTreeRoot root, SourceInfo source)
+    private static void ConstructSource(ProtoTreeRoot root, MessageStruct source)
     {
         // Message source
-        root.AddLeafVar("08", source.SourceUin); // Source uin
+        root.AddLeafVar("08", source.Sender.Uin); // Source uin
         root.AddLeafVar("18", 82); // Type
-        root.AddLeafVar("28", source.MessageSeq); // Sequence
-        root.AddLeafVar("30", source.MessageTime); // Time stamp
-        root.AddLeafVar("38", source.MessageUuid); // Uniseq
+        root.AddLeafVar("28", source.Sequence); // Sequence
+        root.AddLeafVar("30", source.Time); // Time stamp
+        root.AddLeafVar("38", source.Uuid); // Uniseq
 
         // Multimsg from group
         if (true)
         {
             root.AddTree("4A", _ =>
             {
-                _.AddLeafVar("08", source.SourceUin);
-                _.AddLeafString("22", source.SourceName);
+                _.AddLeafVar("08", source.Sender.Uin);
+                _.AddLeafString("22", source.Sender.Name);
             });
         }
 
