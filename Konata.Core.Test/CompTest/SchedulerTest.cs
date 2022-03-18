@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using Konata.Core.Components.Model;
+using Konata.Core.Components;
 using NUnit.Framework;
 
 namespace Konata.Core.Test.CompTest;
