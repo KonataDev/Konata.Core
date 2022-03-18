@@ -14,45 +14,86 @@ public class GroupMessageRecallEvent : ProtocolEvent
     public uint GroupUin { get; }
 
     /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
+    /// <b>[Out]</b> <br/>
     /// Operator uin <br/>
     /// </summary>
     public uint OperatorUin { get; }
-
+    
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
-    /// Source Info <br/>
+    /// Operator uin <br/>
     /// </summary>
-    public SourceInfo SourceInfo { get; }
+    public uint AffectedUin { get; }
+    
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Operator uin <br/>
+    /// </summary>
+    public uint Sequence { get; }
+    
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Operator uin <br/>
+    /// </summary>
+    public uint Random { get; }
+    
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Operator uin <br/>
+    /// </summary>
+    public uint Time { get; }
 
-    private GroupMessageRecallEvent(uint groupUin, SourceInfo sourceInfo) 
+    /// <summary>
+    /// Recalling a message
+    /// </summary>
+    /// <param name="groupUin"></param>
+    /// <param name="messageStruct"></param>
+    private GroupMessageRecallEvent(uint groupUin, MessageStruct messageStruct)
         : base(2000, true)
     {
         GroupUin = groupUin;
-        SourceInfo = sourceInfo;
+        Sequence = messageStruct.Sequence;
+        Random = messageStruct.Random;
+        Time = messageStruct.Time;
     }
 
+    /// <summary>
+    /// Recall result
+    /// </summary>
+    /// <param name="resultCode"></param>
     private GroupMessageRecallEvent(int resultCode)
         : base(resultCode)
     {
     }
 
-    private GroupMessageRecallEvent(uint groupUin, uint operatorUin,
-        SourceInfo sourceInfo) : base(0)
+    /// <summary>
+    /// Push recall
+    /// </summary>
+    /// <param name="groupUin"></param>
+    /// <param name="operatorUin"></param>
+    /// <param name="affectedUin"></param>
+    /// <param name="sequence"></param>
+    /// <param name="rand"></param>
+    /// <param name="time"></param>
+    private GroupMessageRecallEvent(uint groupUin, uint operatorUin, uint affectedUin,
+        uint sequence, uint rand, uint time) : base(0)
     {
         GroupUin = groupUin;
         OperatorUin = operatorUin;
-        SourceInfo = sourceInfo;
+        AffectedUin = affectedUin;
+        Sequence = sequence;
+        Random = rand;
+        Time = time;
     }
 
     /// <summary>
     /// Construct event request
     /// </summary>
     /// <param name="groupUin"></param>
-    /// <param name="sourceInfo"></param>
+    /// <param name="messageStruct"></param>
     /// <returns></returns>
     internal static GroupMessageRecallEvent Create(uint groupUin,
-        SourceInfo sourceInfo) => new(groupUin, sourceInfo);
+        MessageStruct messageStruct) => new(groupUin, messageStruct);
 
     /// <summary>
     /// Construct event result
@@ -67,8 +108,11 @@ public class GroupMessageRecallEvent : ProtocolEvent
     /// </summary>
     /// <param name="groupUin"></param>
     /// <param name="operatorUin"></param>
-    /// <param name="sourceInfo"></param>
+    /// <param name="affectedUin"></param>
+    /// <param name="sequence"></param>
+    /// <param name="rand"></param>
+    /// <param name="time"></param>
     /// <returns></returns>
-    internal static GroupMessageRecallEvent Push(uint groupUin, uint operatorUin,
-        SourceInfo sourceInfo) => new(groupUin, operatorUin, sourceInfo);
+    internal static GroupMessageRecallEvent Push(uint groupUin, uint operatorUin, uint affectedUin, uint sequence, uint rand, uint time)
+        => new(groupUin, operatorUin, affectedUin, sequence, rand, time);
 }

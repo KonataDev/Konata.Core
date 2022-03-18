@@ -8,81 +8,56 @@ namespace Konata.Core.Events.Model;
 public class GroupMessageEvent : ProtocolEvent
 {
     /// <summary>
-    /// <b>[In] [Out]</b>     <br/>
+    /// <b>[In] [Out]</b> <br/>
     /// Group uin
     /// </summary>
-    public uint GroupUin { get; private set; }
+    public uint GroupUin
+        => Message.Receiver.Uin;
 
     /// <summary>
-    /// <b>[Out]</b>          <br/>
+    /// <b>[Out]</b> <br/>
     /// Group name
     /// </summary>
-    public string GroupName { get; private set; }
+    public string GroupName
+        => Message.Receiver.Name;
 
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Member uin <br/>
     /// </summary>
-    public uint MemberUin { get; private set; }
+    public uint MemberUin
+        => Message.Sender.Uin;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Member card name <br/>
     /// </summary>
-    public string MemberCard { get; private set; }
+    public string MemberCard
+        => Message.Sender.Name;
 
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Message chain <br/>
     /// </summary>
-    public MessageChain Message { get; private set; }
+    public MessageChain Chain
+        => Message.Chain;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Source info <br/>
+    /// Message <br/>
     /// </summary>
-    public SourceInfo SourceInfo{ get; private set; }
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message sequence <br/>
-    /// </summary>
-    public uint MessageSequence
-        => SourceInfo.MessageSeq;
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message rand <br/>
-    /// </summary>
-    public uint MessageRand
-        => SourceInfo.MessageRand;
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message time <br/>
-    /// </summary>
-    public uint MessageTime
-        => SourceInfo.MessageTime;
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message uuid <br/>
-    /// </summary>
-    public uint MessageUuid
-        => SourceInfo.MessageUuid;
+    public MessageStruct Message { get; private set; }
 
     /// <summary>
     /// <b>[Opt] [Out]</b> <br/>
-    /// Total slice count <br/>
+    /// Slice control <br/>
     /// </summary>
-    internal SliceControl SliceInfo { get; private set; }
+    internal MessageSlice SliceInfo { get; private set; }
 
     private GroupMessageEvent(uint groupUin, uint selfUin,
         MessageChain messageChain) : base(6000, true)
     {
-        GroupUin = groupUin;
-        MemberUin = selfUin;
-        Message = messageChain;
+        Message = new MessageStruct(selfUin, "", groupUin, messageChain);
     }
 
     private GroupMessageEvent(int resultCode)
@@ -109,72 +84,16 @@ public class GroupMessageEvent : ProtocolEvent
         => new(resultCode);
 
     /// <summary>
-    /// Set group name
+    /// Set message struct
     /// </summary>
-    /// <param name="groupName"></param>
-    internal void SetGroupName(string groupName)
-        => GroupName = groupName;
-
-    /// <summary>
-    /// Set group uin
-    /// </summary>
-    /// <param name="groupUin"></param>
-    internal void SetGroupUin(uint groupUin)
-        => GroupUin = groupUin;
-
-    /// <summary>
-    /// Set message id
-    /// </summary>
-    /// <param name="sequence"></param>
-    internal void SetMessageSequence(uint sequence)
-        => MessageSequence = sequence;
-
-    /// <summary>
-    /// Set message rand
-    /// </summary>
-    /// <param name="rand"></param>
-    internal void SetMessageRand(uint rand)
-        => MessageRand = rand;
-
-    /// <summary>
-    /// Set message time
-    /// </summary>
-    /// <param name="time"></param>
-    internal void SetMessageTime(uint time)
-        => MessageTime = time;
-
-    /// <summary>
-    /// Set message uuid
-    /// </summary>
-    /// <param name="uuid"></param>
-    internal void SetMessageUuid(uint uuid)
-        => MessageUuid = uuid;
-
-    /// <summary>
-    /// Set message 
-    /// </summary>
-    /// <param name="message"></param>
-    internal void SetMessage(MessageChain message)
-        => Message = message;
+    /// <param name="s"></param>
+    internal void SetMessageStruct(MessageStruct s)
+        => Message = s;
 
     /// <summary>
     /// Set slice info
     /// </summary>
-    /// <param name="slice"></param>
-    internal void SetSliceInfo(SliceControl slice)
-        => SliceInfo = slice;
-
-    /// <summary>
-    /// Set member uin
-    /// </summary>
-    /// <param name="memberUin"></param>
-    internal void SetMemberUin(uint memberUin)
-        => MemberUin = memberUin;
-
-    /// <summary>
-    /// Set member card
-    /// </summary>
-    /// <param name="memberCard"></param>
-    internal void SetMemberCard(string memberCard)
-        => MemberCard = memberCard;
+    /// <param name="messageSlice"></param>
+    internal void SetSliceInfo(MessageSlice messageSlice)
+        => SliceInfo = messageSlice;
 }

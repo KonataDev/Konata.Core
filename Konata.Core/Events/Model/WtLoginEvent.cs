@@ -2,7 +2,7 @@
 
 namespace Konata.Core.Events.Model;
 
-public class WtLoginEvent : ProtocolEvent
+internal class WtLoginEvent : ProtocolEvent
 {
     public enum Type
     {
