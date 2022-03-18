@@ -20,10 +20,10 @@ internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
         BotKeyStore keystore, out PushTransMsgEvent output)
     {
         ProtocolEvent innerEvent = null;
-        var tree = new ProtoTreeRoot(input.Payload.GetBytes(), true);
-        var type = tree.GetLeafVar("18");
-        var buf = new ByteBuffer(tree.GetLeafBytes("52"));
-        var svrip = tree.GetLeafVar("58");
+        var pb = ProtobufDecoder.Create(input.Payload.GetBytes());
+        var type = pb[3].AsNumber();
+        var buf = pb[10].AsBuffer();
+        var svrip = pb[11].AsNumber();
         buf.TakeUintBE(out var groupUin);
         buf.EatBytes(1);
 
