@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
+﻿using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
-using Konata.Core.Utils.Extensions;
+using NUnit.Framework;
 
-namespace Konata.Core.Test.UtilTest;
+namespace Konata.Core.Test.UtilTest.Protobuf;
 
 public class PbTest
 {

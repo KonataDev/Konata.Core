@@ -55,7 +55,8 @@ public class MessageStruct
     public enum SourceType
     {
         Group,
-        Friend
+        Friend,
+        Stranger
     }
 
     /// <summary>

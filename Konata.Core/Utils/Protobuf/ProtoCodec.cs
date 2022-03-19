@@ -133,4 +133,7 @@ internal class ProtobufDecoder
     }
 
     public static ProtobufDecoder Create(byte[] raw) => new(raw);
+    
+    public static ProtobufDecoder Create(ByteBuffer b) => new(b.GetBytes());
+
 }

@@ -82,7 +82,14 @@ public class GroupMessageEvent : ProtocolEvent
     /// <returns></returns>
     internal static GroupMessageEvent Result(int resultCode)
         => new(resultCode);
-
+    
+    /// <summary>
+    /// Construct event push
+    /// </summary>
+    /// <returns></returns>
+    internal static GroupMessageEvent Push()
+        => new(0);
+    
     /// <summary>
     /// Set message struct
     /// </summary>

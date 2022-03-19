@@ -20,7 +20,6 @@
     <ItemGroup>
         <Folder Include="Common" />
         <Folder Include="UtilTest\JceStruct" />
-        <Folder Include="UtilTest\Protobuf" />
     </ItemGroup>
 
     <!-- References -->
@@ -33,6 +32,6 @@
     </ItemGroup>
     
     <!-- Impory build targets -->
-    <Import Project="..\Targets\*.targets"/>
+    <Import Project="..\Targets\*.targets" />
     
 </Project>
