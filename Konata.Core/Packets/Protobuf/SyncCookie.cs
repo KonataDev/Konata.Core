@@ -1,17 +1,26 @@
-﻿using Konata.Core.Utils.Protobuf;
+﻿using System;
+using Konata.Core.Utils.Protobuf;
+
+// ReSharper disable UseDeconstructionOnParameter
 
 namespace Konata.Core.Packets.Protobuf;
 
 internal class SyncCookie : ProtoTreeRoot
 {
-    public SyncCookie(long timeStamp)
+    public SyncCookie((uint, uint) consts)
     {
-        AddLeafVar("08", timeStamp);
-        AddLeafVar("10", timeStamp);
-        AddLeafVar("28", 2267374858);
-        AddLeafVar("48", 1657171111);
-        AddLeafVar("58", 1828320251);
-        AddLeafVar("68", timeStamp);
+        var epoch = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var random = new Random();
+
+        AddLeafVar("08", epoch);
+        AddLeafVar("10", epoch);
+        AddLeafVar("18", consts.Item1);
+        AddLeafVar("20", consts.Item2);
+        AddLeafVar("28", random.Next());
+        AddLeafVar("48", random.Next());
+        AddLeafVar("58", random.Next());
+        AddLeafVar("60", consts.Item1 & 0xFF);
+        AddLeafVar("68", epoch);
         AddLeafVar("70", 0);
     }
 }

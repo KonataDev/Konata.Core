@@ -436,11 +436,11 @@ internal class MessagingLogic : BaseLogic
     private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
         => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.Message.Sequence, e.SessionSequence));
 
-    private static Task<GroupMessageEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
-        => context.SendPacket<GroupMessageEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
+    private static Task<ProtocolEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
+        => context.SendPacket<ProtocolEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));
 
-    private static Task<FriendMessageEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
-        => context.SendPacket<FriendMessageEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
+    private static Task<ProtocolEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
+        => context.SendPacket<ProtocolEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
 
     private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
         => context.SendPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));

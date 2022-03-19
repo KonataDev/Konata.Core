@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
-using Konata.Core.Utils.Ecdh;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -86,7 +86,9 @@ public class BotKeyStore
         Session.GSecret ??= MakeGSecret(imei, Session.DSecret, null);
 
         // Make sync cookie for syncing message
-        Account.SyncCookie = MakeSyncCookie();
+        var cookie = MakeSyncCookie();
+        Account.SyncCookie = cookie.Cookie;
+        Account.SyncCookieConsts = cookie.Consts;
 
         // Roll a randkey
         KeyStub.RandKey = MakeRandKey(16);
@@ -154,11 +156,20 @@ public class BotKeyStore
     /// Make sync cookie
     /// </summary>
     /// <returns></returns>
-    private static byte[] MakeSyncCookie()
+    private static ((uint, uint) Consts, byte[] Cookie) MakeSyncCookie()
     {
-        return ProtoTreeRoot.Serialize(new SyncCookie
-            (DateTimeOffset.UtcNow.ToUnixTimeSeconds())).GetBytes();
+        // Make constants
+        var seeds = MakeRandomSeeds();
+        var random = new Random(seeds);
+
+        var const1 = (uint) random.Next(int.MinValue, int.MaxValue);
+        var const2 = (uint) random.Next(int.MinValue, int.MaxValue);
+        var cookie = ProtoTreeRoot.Serialize(new SyncCookie((const1, const2))).GetBytes();
+        return ((const1, const2), cookie);
     }
+
+    private static int MakeRandomSeeds()
+        => new Random().Next();
 
     /// <summary>
     /// Make random key
@@ -206,9 +217,14 @@ public class Account
         = new byte[] { };
 
     /// <summary>
-    /// 
+    /// Sync cookie
     /// </summary>
     internal byte[] SyncCookie { get; set; }
+
+    /// <summary>
+    /// Sync cookie const
+    /// </summary>
+    internal (uint, uint) SyncCookieConsts { get; set; }
 }
 
 /// <summary>
@@ -311,24 +327,4 @@ internal class KeyStub
         0xE2, 0xED, 0x53, 0x77, 0xAD, 0xFD, 0x99, 0x83,
         0x56, 0xEB, 0x8B, 0x4C, 0x62, 0x7C, 0x22, 0xC4
     };
-
-    // /// <summary>
-    // /// Default share key
-    // /// </summary>
-    // internal byte[] ShareKey { get; set; } =
-    // {
-    //     0x4D, 0xA0, 0xF6, 0x14, 0xFC, 0x9F, 0x29, 0xC2,
-    //     0x05, 0x4C, 0x77, 0x04, 0x8A, 0x65, 0x66, 0xD7
-    // };
-    //
-    // /// <summary>
-    // /// Default public key
-    // /// </summary>
-    // internal byte[] PublicKey { get; set; } =
-    // {
-    //     0x02, 0x0B, 0x03, 0xCF, 0x3D, 0x99, 0x54, 0x1F,
-    //     0x29, 0xFF, 0xEC, 0x28, 0x1B, 0xEB, 0xBD, 0x4E,
-    //     0xA2, 0x11, 0x29, 0x2A, 0xC1, 0xF5, 0x3D, 0x71,
-    //     0x28
-    // };
 }

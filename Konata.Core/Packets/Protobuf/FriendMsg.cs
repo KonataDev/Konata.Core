@@ -3,14 +3,14 @@ using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf;
 
-internal class GroupMsg : ProtoTreeRoot
+internal class FriendMsg : ProtoTreeRoot
 {
-    public GroupMsg(uint groupUin, byte[] chain)
+    public FriendMsg(uint friendUin, (uint, uint) consts, byte[] chain)
     {
         AddTree("0A", (root) =>
         {
             // Add source node
-            root.AddTree("12", _ => _.AddLeafVar("08", groupUin));
+            root.AddTree("0A", _ => _.AddLeafVar("08", friendUin));
         });
 
         // Add slice node
@@ -29,6 +29,9 @@ internal class GroupMsg : ProtoTreeRoot
 
         // Add ramdom bytes
         AddLeafVar("28", new Random().Next(int.MaxValue));
+
+        // Unknown flag
+        AddTree("32", new SyncCookie(consts));
 
         // Unknown flag
         AddLeafVar("40", 0);
