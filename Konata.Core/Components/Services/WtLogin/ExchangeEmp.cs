@@ -20,7 +20,7 @@ using Konata.Core.Utils.Crypto;
 namespace Konata.Core.Components.Services.WtLogin;
 
 [EventSubscribe(typeof(WtLoginEvent))]
-[Service("wtlogin.exchange_emp", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Selfhold)]
+[Service("wtlogin.exchange_emp", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Session)]
 internal class ExchangeEmp : BaseService<WtLoginEvent>
 {
     protected override bool Parse(SSOFrame input,

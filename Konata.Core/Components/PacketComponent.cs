@@ -167,8 +167,9 @@ internal class PacketComponent : InternalComponent
             // Allocate a new sequence
             var sequence = attr.SeqMode switch
             {
-                SequenceMode.Selfhold => _serviceSequence.GetSessionSequence(attr.Command),
+                SequenceMode.Session => _serviceSequence.GetSessionSequence(attr.Command),
                 SequenceMode.Managed => _serviceSequence.GetNewSequence(),
+                SequenceMode.EventBased => protocolEvent.SessionSequence,
                 _ => throw new NotSupportedException()
             };
 

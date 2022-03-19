@@ -9,7 +9,7 @@ using Konata.Core.Common;
 namespace Konata.Core.Components.Services.PbMessageSvc;
 
 [EventSubscribe(typeof(GroupMessageReadEvent))]
-[Service("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Selfhold)]
+[Service("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.EventBased)]
 internal class PbMsgReadReport : BaseService<GroupMessageReadEvent>
 {
     protected override bool Build(int sequence, GroupMessageReadEvent input,

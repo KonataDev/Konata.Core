@@ -53,5 +53,6 @@ internal class ServiceAttribute : Attribute
 internal enum SequenceMode
 {
     Managed = 0,
-    Selfhold
+    Session = 1,
+    EventBased = 2
 }

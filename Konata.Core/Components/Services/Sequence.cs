@@ -49,7 +49,7 @@ internal class Sequence
         if (_sessionSequence.TryAdd(service, sequence))
             return sequence;
 
-        throw new Exception("Get service sequence failed.");
+        throw new Exception($"Get service sequence failed. {service}");
     }
 
     /// <summary>
