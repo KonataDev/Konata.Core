@@ -165,9 +165,14 @@ internal class ScheduleComponent : InternalComponent
                     ? int.MaxValue
                     : minInterval;
 
-                // Reset event and wait
-                _taskNotify.Reset();
-                _taskNotify.WaitOne(sleepTime);
+                // Note: If the sleep time less than zero
+                // We need to run the task immediately
+                if (sleepTime >= 0)
+                {
+                    // Reset event and wait
+                    _taskNotify.Reset();
+                    _taskNotify.WaitOne(sleepTime);
+                }
             }
             var passedTime = (int) ((DateTime.Now - startTime).TotalSeconds * 1000);
 
@@ -177,7 +182,7 @@ internal class ScheduleComponent : InternalComponent
 
             // Calculate the remain
             todoList.Clear();
-            for (int i = taskTable.Count - 1; i >= 0; --i)
+            for (var i = taskTable.Count - 1; i >= 0; --i)
             {
                 // Reduce the interval
                 taskTable[i].RemainInterval -= passedTime;

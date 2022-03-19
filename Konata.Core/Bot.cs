@@ -374,7 +374,7 @@ public class Bot : BaseEntity, IDisposable
         {
             OnLog?.Invoke(sender, LogEvent.Create("Bot",
                 LogLevel.Verbose, $"[Group]{e.GroupUin} " +
-                                  $"[Member]{e.MemberUin} {e.Message.Chain}"));
+                                  $"[Member]{e.MemberUin} {e.Chain}"));
         };
 
         // Default group mute handler
@@ -426,7 +426,7 @@ public class Bot : BaseEntity, IDisposable
         OnFriendMessage += (sender, e) =>
         {
             OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Message}"));
+                LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Chain}"));
         };
 
         // Default friend message recall handler
