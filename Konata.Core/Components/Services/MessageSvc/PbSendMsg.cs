@@ -17,21 +17,15 @@ internal class PbSendMsg : BaseService<GroupMessageEvent>
     protected override bool Parse(SSOFrame input,
         BotKeyStore keystore, out GroupMessageEvent output)
     {
-        var tree = new ProtoTreeRoot
-            (input.Payload.GetBytes(), true);
-        {
-            output = GroupMessageEvent
-                .Result(((int) tree.GetLeafVar("08")));
-        }
-
+        var pb = ProtobufDecoder.Create(input.Payload);
+        output = GroupMessageEvent.Result((int) pb[1].AsNumber());
         return true;
     }
 
     protected override bool Build(int sequence, GroupMessageEvent input,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output.PutProtoNode(new GroupMsg
-            (input.GroupUin, MessagePacker.PackUp(input.Message.Chain)));
+        output.PutProtoNode(new GroupMsg(input.GroupUin, MessagePacker.PackUp(input.Message.Chain)));
         return true;
     }
 }

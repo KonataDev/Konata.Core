@@ -18,62 +18,28 @@ public class FriendMessageEvent : ProtocolEvent
     /// <b>[In]</b> <br/>
     /// Friend uin <br/>
     /// </summary>
-    public uint FriendUin { get; private set; }
+    public uint FriendUin => Message.Receiver.Uin == SelfUin
+        ? Message.Sender.Uin
+        : Message.Receiver.Uin;
 
     /// <summary>
-    /// <b>[In]</b> <br/>
+    /// <b>[In] [Out]</b> <br/>
     /// Message chain <br/>
     /// </summary>
-    public MessageChain Message { get; private set; }
+    public MessageChain Chain
+        => Message.Chain;
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Message sequence <br/>
+    /// Message <br/>
     /// </summary>
-    public uint MessageSequence { get; private set; }
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message rand <br/>
-    /// </summary>
-    public uint MessageRand {get; private set;}
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message time <br/>
-    /// </summary>
-    public uint MessageTime { get; private set; }
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
-    /// Message uuid <br/>
-    /// </summary>
-    public uint MessageUuid { get; private set; }
-
-    /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Total slice count <br/>
-    /// </summary>
-    public uint SliceTotal { get; private set; }
-
-    /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Current slice id <br/>
-    /// </summary>
-    public uint SliceIndex { get; private set; }
-
-    /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Slice flags <br/>
-    /// </summary>
-    public uint SliceFlags { get; private set; }
+    public MessageStruct Message { get; private set; }
 
     private FriendMessageEvent(uint friendUin, uint selfUin,
         MessageChain messageChain) : base(2000, true)
     {
-        FriendUin = friendUin;
         SelfUin = selfUin;
-        Message = messageChain;
+        Message = new MessageStruct(selfUin, "", friendUin, messageChain);
     }
 
     private FriendMessageEvent(int resultCode)
@@ -100,13 +66,23 @@ public class FriendMessageEvent : ProtocolEvent
         => new(resultCode);
 
     /// <summary>
-    /// Construct event push
+    /// Construct event result
     /// </summary>
-    /// <param name="friendUin"></param>
-    /// <param name="selfUin"></param>
-    /// <param name="messageChain"></param>
     /// <returns></returns>
-    internal static FriendMessageEvent Push(uint friendUin, uint selfUin,
-        MessageChain messageChain)
-        => new(friendUin, selfUin, messageChain);
+    internal static FriendMessageEvent Push()
+        => new(0);
+
+    /// <summary>
+    /// Set message struct
+    /// </summary>
+    /// <param name="s"></param>
+    internal void SetMessageStruct(MessageStruct s)
+        => Message = s;
+
+    /// <summary>
+    /// Set self uin
+    /// </summary>
+    /// <param name="selfUin"></param>
+    internal void SetSelfUin(uint selfUin)
+        => SelfUin = selfUin;
 }

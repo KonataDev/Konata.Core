@@ -17,7 +17,7 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
     protected override bool Parse(SSOFrame input,
         BotKeyStore keystore, out GroupMessageEvent output)
     {
-        var message = GroupMessageEvent.Result(0);
+        var message = GroupMessageEvent.Push();
         var source = new MessageStruct(MessageStruct.SourceType.Group);
 
         message.SetMessageStruct(source);
