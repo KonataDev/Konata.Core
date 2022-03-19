@@ -6,6 +6,9 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
 
+// ReSharper disable InvertIf
+// ReSharper disable ConvertIfStatementToReturnStatement
+
 namespace Konata.Core.Message;
 
 internal static class MessagePacker
@@ -147,7 +150,7 @@ internal static class MessagePacker
                     {
                         chain = subkey switch
                         {
-                            "0A" => subval.TryGetLeafBytes("1A", out var at) ? ParseAt(at) : ParseText(subval),
+                            "0A" => ParseTextOrAt(subval),
                             "12" => ParseQFace(subval),
                             "42" => ParseImage(subval, ParseMode.Group),
                             "62" => ParseXml(subval),
@@ -368,6 +371,16 @@ internal static class MessagePacker
         // @formatter:on
     }
 
+    private static BaseChain ParseTextOrAt(ProtoTreeRoot root)
+    {
+        if (root.TryGetLeafBytes("1A", out var at))
+        {
+            // Fix issue #111
+            if (at.Length > 0) return ParseAt(at);
+        }
+        return ParseText(root);
+    }
+
     /// <summary>
     /// Process json chain
     /// </summary>
@@ -449,15 +462,15 @@ internal static class MessagePacker
     /// <returns></returns>
     private static BaseChain ParseCommonElem(ProtoTreeRoot tree)
     {
-        switch(tree.GetLeafVar("08"))
+        switch (tree.GetLeafVar("08"))
         {
             case 3:
                 var picRoot = tree.GetLeaf<ProtoTreeRoot>("12");
-                if (picRoot.TryGetLeaf("0A", out var groupPicTree)) 
-                    return ParseFlash((ProtoTreeRoot)groupPicTree, ParseMode.Group);
+                if (picRoot.TryGetLeaf("0A", out var groupPicTree))
+                    return ParseFlash((ProtoTreeRoot) groupPicTree, ParseMode.Group);
                 else
                     return ParseFlash(picRoot.GetLeaf<ProtoTreeRoot>("12"), ParseMode.Friend);
-            
+
             default:
             case 2:
             case 33:
@@ -485,20 +498,22 @@ internal static class MessagePacker
         if (mode == ParseMode.Friend)
         {
             var hashstr = ByteConverter.Hex(tree.GetLeafBytes("3A"));
-            
+
             if (tree.TryGetLeafString("7A", out var url))
                 url = $"https://c2cpicdw.qpic.cn{url}";
-            else if(tree.TryGetLeafString("52", out url))
+            else if (tree.TryGetLeafString("52", out url))
                 url = $"https://c2cpicdw.qpic.cn/offpic_new/0/{url}/0";
-            
+
             var imgtype = tree.TryGetLeafVar
-                ("A001", out var type) ? (ImageType)type : ImageType.JPG;
+                ("A001", out var type)
+                ? (ImageType) type
+                : ImageType.JPG;
 
             return ImageChain.Create(
                 url ?? "", hashstr, hashstr,
-                (uint)tree.GetLeafVar("48"),
-                (uint)tree.GetLeafVar("40"),
-                (uint)tree.GetLeafVar("10"),
+                (uint) tree.GetLeafVar("48"),
+                (uint) tree.GetLeafVar("40"),
+                (uint) tree.GetLeafVar("10"),
                 imgtype);
         }
         else
@@ -509,7 +524,9 @@ internal static class MessagePacker
             var length = (uint) tree.GetLeafVar("C801");
 
             var imgtype = tree.TryGetLeafVar
-                ("A001", out var type) ? (ImageType)type : ImageType.JPG;
+                ("A001", out var type)
+                ? (ImageType) type
+                : ImageType.JPG;
 
             if (!tree.TryGetLeafString("8201", out var url))
                 url = $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{hash}/0";
