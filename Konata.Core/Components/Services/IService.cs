@@ -1,4 +1,5 @@
-﻿using Konata.Core.Common;
+﻿using System.Collections.Generic;
+using Konata.Core.Common;
 using Konata.Core.Events;
 using Konata.Core.Packets;
 
@@ -15,8 +16,9 @@ internal interface IService
     /// <param name="input"></param>
     /// <param name="keystore"></param>
     /// <param name="output"></param>
+    /// <param name="extra"></param>
     /// <returns></returns>
-    bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output);
+    bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output, out List<ProtocolEvent> extra);
 
     /// <summary>
     /// Build packet

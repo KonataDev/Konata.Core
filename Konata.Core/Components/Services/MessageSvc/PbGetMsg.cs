@@ -18,15 +18,12 @@ namespace Konata.Core.Components.Services.MessageSvc;
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
     protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out PbGetMessageEvent output)
+        BotKeyStore keystore, out ProtocolEvent output, List<ProtocolEvent> extra)
     {
         var root = ProtoTreeRoot.Deserialize(input.Payload, true);
 
         // Get sync cookie 
         root.TryGetLeafBytes("1A", out var cookie);
-
-        // Get push events
-        var push = new List<ProtocolEvent>();
 
         var root2A = root.GetLeaves<ProtoTreeRoot>("2A");
         if (root2A == null) goto Finish;
@@ -46,7 +43,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                         case NotifyType.FriendMessage:
                         case NotifyType.FriendMessageSingle:
                         case NotifyType.FriendPttMessage:
-                            push.Add(OnProcessMessage(keystore.Account.Uin, j));
+                            extra.Add(OnProcessMessage(keystore.Account.Uin, j));
                             break;
 
                         case NotifyType.StrangerMessage:
@@ -64,7 +61,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
         }
 
         Finish:
-        output = PbGetMessageEvent.Result(0, cookie, push);
+        output = PbGetMessageEvent.Result(0, cookie);
         return true;
     }
 
