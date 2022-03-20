@@ -378,6 +378,7 @@ internal static class MessagePacker
             // Fix issue #111
             if (at.Length > 0) return ParseAt(at);
         }
+
         return ParseText(root);
     }
 
@@ -464,6 +465,7 @@ internal static class MessagePacker
     {
         switch (tree.GetLeafVar("08"))
         {
+            // Flash picture
             case 3:
                 var picRoot = tree.GetLeaf<ProtoTreeRoot>("12");
                 if (picRoot.TryGetLeaf("0A", out var groupPicTree))
@@ -471,9 +473,12 @@ internal static class MessagePacker
                 else
                     return ParseFlash(picRoot.GetLeaf<ProtoTreeRoot>("12"), ParseMode.Friend);
 
+            // Parse qface
+            case 33:
+                return ParseQFace(tree.GetLeaf<ProtoTreeRoot>("12"));
+
             default:
             case 2:
-            case 33:
                 throw new NotImplementedException();
         }
     }

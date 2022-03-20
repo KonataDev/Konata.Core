@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Konata.Core.Attributes;
-using Konata.Core.Components;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
