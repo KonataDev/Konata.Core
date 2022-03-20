@@ -477,6 +477,10 @@ internal static class MessagePacker
             case 33:
                 return ParseQFace(tree.GetLeaf<ProtoTreeRoot>("12"));
 
+            // Parse big qface
+            case 37:
+                return ParseBigQFace(tree.GetLeaf<ProtoTreeRoot>("12"));
+
             default:
             case 2:
                 throw new NotImplementedException();
@@ -566,10 +570,17 @@ internal static class MessagePacker
     private static QFaceChain ParseQFace(ProtoTreeRoot tree)
         => QFaceChain.Create((uint) tree.GetLeafVar("08"));
 
+    /// <summary>
+    /// Process Big QFace chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    private static QFaceChain ParseBigQFace(ProtoTreeRoot tree)
+        => QFaceChain.Create((uint) tree.GetLeafVar("18"), true);
+
     internal enum ParseMode
     {
         Group,
-
         Friend
     }
 }
