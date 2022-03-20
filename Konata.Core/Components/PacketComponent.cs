@@ -23,7 +23,7 @@ namespace Konata.Core.Components;
 internal class PacketComponent : InternalComponent
 {
     private const string TAG = "PacketComponent";
-    
+
     private readonly Sequence _serviceSequence;
     private readonly Dictionary<string, IService> _services;
     private readonly ConcurrentDictionary<int, KonataTask> _pendingRequests;
@@ -127,13 +127,16 @@ internal class PacketComponent : InternalComponent
         {
             // Translate bytes to ProtocolEvent 
             if (service.Parse(ssoFrame, ConfigComponent.KeyStore,
-                    out var outEvent) && outEvent != null)
+                    out var outEvent, out var outExtra) && outEvent != null)
             {
                 // Set result
                 if (isPending) request.Finish(outEvent);
 
                 // Pass this message to business
                 else PushBusiness(BusinessComponent, outEvent);
+
+                // Pass extra messages to business
+                PushBusiness(BusinessComponent, outExtra);
             }
             else
             {
@@ -223,8 +226,14 @@ internal class PacketComponent : InternalComponent
 
     #region Stub methods
 
-    private static void PushBusiness(BusinessComponent context, BaseEvent anyEvent)
-        => context.SendEvent<BusinessComponent>(anyEvent);
+    private static void PushBusiness(BusinessComponent context, List<ProtocolEvent> anyEvent)
+    {
+        foreach (var i in anyEvent)
+            context.PostEvent<BusinessComponent>(i);
+    }
+
+    private static void PushBusiness(BusinessComponent context, ProtocolEvent anyEvent)
+        => context.PostEvent<BusinessComponent>(anyEvent);
 
     #endregion
 }

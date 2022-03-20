@@ -6,6 +6,7 @@ using Konata.Core.Events.Model;
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InconsistentNaming
 
 namespace Konata.Core.Components.Logics.Model;
 
@@ -122,7 +123,7 @@ internal class PushEventLogic : BaseLogic
             case NotifyType.FriendIncreaseSingle:
                 // ProfileService.Pb.ReqSystemMsgNew.Friend
                 break;
-            
+
             default:
             case NotifyType.BlackListUpdate:
                 break;
@@ -132,10 +133,6 @@ internal class PushEventLogic : BaseLogic
     private async Task OnPullNewMessage()
     {
         var result = await PullMessage(Context, ConfigComponent.SyncCookie);
-
-        // Push these events to userend
-        foreach (var e in result.InnerEvent)
-            Context.PostEventToEntity(e);
 
         // Update sync cookie
         if (result.SyncCookie != null)
