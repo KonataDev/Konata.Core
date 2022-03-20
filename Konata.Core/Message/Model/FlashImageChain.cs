@@ -1,15 +1,11 @@
-﻿using System;
-using System.IO;
-using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Crypto;
-using Konata.Core.Events.Model;
-using Konata.Core.Utils.FileFormat;
+﻿using System.IO;
 
 // ReSharper disable InvertIf
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 
 namespace Konata.Core.Message.Model;
 
@@ -45,7 +41,7 @@ public class FlashImageChain : ImageChain
     /// <param name="filepath"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static new ImageChain CreateFromFile(string filepath)
+    public new static ImageChain CreateFromFile(string filepath)
         => ImageChain.CreateFromFile(filepath);
 
     /// <summary>
@@ -54,7 +50,7 @@ public class FlashImageChain : ImageChain
     /// </summary>
     /// <param name="base64"></param>
     /// <returns></returns>
-    public static new ImageChain CreateFromBase64(string base64)
+    public new static ImageChain CreateFromBase64(string base64)
         => ImageChain.CreateFromBase64(base64);
 
     /// <summary>
@@ -62,7 +58,7 @@ public class FlashImageChain : ImageChain
     /// </summary>
     /// <param name="url"></param>
     /// <returns></returns>
-    public static new ImageChain CreateFromURL(string url)
+    public new static ImageChain CreateFromURL(string url)
         => ImageChain.CreateFromURL(url);
 
     /// <summary>
