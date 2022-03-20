@@ -43,7 +43,7 @@ public class MultiMsgChain : XmlChain
     /// <returns></returns>
     public MultiMsgChain AddMessage(MessageStruct reference)
     {
-        Messages.Add((reference));
+        Messages.Add(reference);
         return this;
     }
 

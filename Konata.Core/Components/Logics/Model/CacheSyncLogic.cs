@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Components;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
