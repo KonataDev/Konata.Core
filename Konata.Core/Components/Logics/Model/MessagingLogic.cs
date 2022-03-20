@@ -31,14 +31,6 @@ internal class MessagingLogic : BaseLogic
 
     public override Task Incoming(ProtocolEvent e)
     {
-        switch (e)
-        {
-            // Received a group message
-            case GroupMessageEvent group:
-                ConfirmReadGroupMessage(Context, group);
-                break;
-        }
-
         // Forward messages to userend
         Context.PostEventToEntity(e);
         return Task.CompletedTask;
