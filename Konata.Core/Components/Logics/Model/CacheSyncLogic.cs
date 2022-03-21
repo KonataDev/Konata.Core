@@ -32,7 +32,7 @@ internal class CacheSyncLogic : BaseLogic
         {
             // Bot is online
             case OnlineStatusEvent {EventType: OnlineStatusEvent.Type.Online}:
-                await Task.WhenAll(SyncGroupList(), SyncFriendList());
+                await Task.WhenAll(SyncGroupList(), SyncFriendList(), SyncGuildInfo());
                 return;
 
             // New group message coming
@@ -164,6 +164,11 @@ internal class CacheSyncLogic : BaseLogic
                           $"Total {friendCount} friends.");
 
         return true;
+    }
+
+    private async Task SyncGuildInfo()
+    {
+        await PullGroupMemberList(Context);
     }
 
     /// <summary>
@@ -317,6 +322,9 @@ internal class CacheSyncLogic : BaseLogic
 
     private static Task<PullGroupMemberListEvent> PullGroupMemberList(BusinessComponent context, uint groupUin, ulong groupCode, uint nextUin)
         => context.SendPacket<PullGroupMemberListEvent>(PullGroupMemberListEvent.Create(context.Bot.Uin, groupUin, groupCode, nextUin));
+
+    private static Task<GuildSyncFirstView> PullGroupMemberList(BusinessComponent context)
+        => context.SendPacket<GuildSyncFirstView>(GuildSyncFirstView.Create());
 
     #endregion
 }
