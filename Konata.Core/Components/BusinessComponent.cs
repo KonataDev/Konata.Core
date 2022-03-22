@@ -71,6 +71,10 @@ internal class BusinessComponent : InternalComponent
                 case PushEventLogic pushEv:
                     PushEvent = pushEv;
                     break;
+                
+                case VoiceLogic voice:
+                    VoiceClient = voice;
+                    break;
             }
         });
     }
@@ -136,6 +140,8 @@ internal class BusinessComponent : InternalComponent
     internal CacheSyncLogic CacheSync { get; private set; }
 
     internal PushEventLogic PushEvent { get; private set; }
+    
+    internal VoiceLogic VoiceClient { get; private set; }
 
     #endregion
 

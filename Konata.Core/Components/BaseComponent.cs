@@ -33,15 +33,15 @@ internal class BaseComponent
     /// Post event (async with none return value)
     /// </summary>
     /// <param name="anyEvent"></param>
-    /// <typeparam name="TEvent"></typeparam>
-    public void PostEvent<TEvent>(BaseEvent anyEvent)
-        where TEvent : BaseComponent => Entity?.PostEvent<TEvent>(anyEvent);
+    /// <typeparam name="TComp"></typeparam>
+    public void PostEvent<TComp>(BaseEvent anyEvent)
+        where TComp : BaseComponent => Entity?.PostEvent<TComp>(anyEvent);
 
     public void BroadcastEvent(BaseEvent anyEvent)
         => Entity?.BroadcastEvent(anyEvent);
 
-    public T GetComponent<T>()
-        where T : BaseComponent => Entity.GetComponent<T>();
+    public TComp GetComponent<TComp>()
+        where TComp : BaseComponent => Entity.GetComponent<TComp>();
 
     public virtual void OnInit()
     {

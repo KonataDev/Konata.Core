@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
@@ -445,6 +446,9 @@ internal class MessagingLogic : BaseLogic
 
     private static Task<MultiMsgApplyUpEvent> MultiMsgApplyUp(BusinessComponent context, uint destUin, byte[] packed)
         => context.SendPacket<MultiMsgApplyUpEvent>(MultiMsgApplyUpEvent.Create(destUin, packed));
+
+    private static Task<SharpSvrEvent> CallFriend(BusinessComponent context, uint friendUin)
+        => context.SendPacket<SharpSvrEvent>(SharpSvrEvent.CallOut(context.Bot.Uin, friendUin));
 
     #endregion
 }

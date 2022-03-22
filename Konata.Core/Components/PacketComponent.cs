@@ -172,7 +172,10 @@ internal class PacketComponent : InternalComponent
             {
                 SequenceMode.Session => _serviceSequence.GetSessionSequence(attr.Command),
                 SequenceMode.Managed => _serviceSequence.GetNewSequence(),
-                SequenceMode.EventBased => protocolEvent.SessionSequence,
+                SequenceMode.EventBased => protocolEvent.SessionSequence == 0
+                    ? _serviceSequence.GetNewSequence()
+                    : protocolEvent.SessionSequence,
+
                 _ => throw new NotSupportedException()
             };
 

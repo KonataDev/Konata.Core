@@ -247,6 +247,9 @@ public class Bot : BaseEntity, IDisposable
     public Task<BotMember> GetGroupMemberInfo(uint groupUin, uint memberUin, bool forceUpdate = false)
         => BusinessComponent.CacheSync.GetGroupMemberInfo(groupUin, memberUin, forceUpdate);
 
+    public Task<bool> CallFriend(uint friendUin)
+        => BusinessComponent.VoiceClient.CallFriend(friendUin);
+    
     /// <summary>
     /// Get csrf token <br/>
     /// </summary>
