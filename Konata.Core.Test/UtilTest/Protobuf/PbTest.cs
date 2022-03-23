@@ -23,8 +23,8 @@ public class PbTest
     [Test]
     public void TestPbDecoder2()
     { 
-        var buf = "10 9a 05 21 a4 70 3d 0a d7 a3 0a 40 32 09 6b 6b 6b 6b 6b 6c 6c 6c 6c 42 0d 0a 03 31 32 33 18 a4 13 2a 03 01 03 05 4a 08 08 f8 06 12 03 39 39 39 4a 08 08 ab 04 12 03 6b 6b 6b".UnHex();
-        var pb = ProtobufDecoder.Create(buf);
+        var bytes = "10 9a 05 21 a4 70 3d 0a d7 a3 0a 40 32 09 6b 6b 6b 6b 6b 6c 6c 6c 6c 42 0d 0a 03 31 32 33 18 a4 13 2a 03 01 03 05 4a 08 08 f8 06 12 03 39 39 39 4a 08 08 ab 04 12 03 6b 6b 6b".UnHex();
+        var pb = ProtobufDecoder.Create(bytes);
         Assert.AreEqual(pb[2].AsNumber(), 666);
         Assert.AreEqual(pb[6].AsString(), "kkkkkllll");
         Assert.AreEqual(pb[8][1].AsString(), "123");
@@ -34,5 +34,27 @@ public class PbTest
         Assert.AreEqual(list[0][2].AsString(), "999");
         Assert.AreEqual(list[1][1].AsNumber(), 555);
         Assert.AreEqual(list[1][2].AsString(), "kkk");
+    }
+
+    [Test]
+    public void TestPbEncoder1()
+    {
+        var encoder = ProtobufEncoder.Create();
+        // encoder.AddLeafVarInt(1, 666)
+        //     .AddLeafString(2, "555")
+        //     .AddLeafString(3, "t1")
+        //     .AddLeafString(3, "t2");
+
+        encoder[1] = 666;
+        encoder[2] = "555";
+        encoder[3] = "t1";
+        encoder[3] = "t2";
+
+        var bytes = encoder.Marshal();
+        var decoder = ProtobufDecoder.Create(bytes);
+        Assert.AreEqual(decoder[1].AsNumber(), 666);
+        Assert.AreEqual(decoder[2].AsString(), "555");
+        Assert.AreEqual(decoder[3].AsLeaves()[0].AsString(), "t1");
+        Assert.AreEqual(decoder[3].AsLeaves()[1].AsString(), "t2");
     }
 }

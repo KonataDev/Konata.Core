@@ -6,6 +6,110 @@ using Konata.Core.Utils.Protobuf.ProtoModel;
 
 namespace Konata.Core.Utils.Protobuf;
 
+internal class ProtobufEncoder
+{
+    private readonly Dictionary<uint, (ProtoType, List<byte[]>)> _leaves = new();
+
+    private ProtobufEncoder() { }
+
+    public byte[] Marshal()
+    {
+        var buf = new ByteBuffer();
+        foreach (var node in _leaves)
+        {
+            var tag = node.Key;
+            var (type, list) = node.Value;
+            var tagType = tag << 3 | (uint) type;
+            list.ForEach(data =>
+            {
+                buf.PutBytes(ByteConverter.NumberToVarint(tagType));
+                if (type == ProtoType.LengthDelimited)
+                    buf.PutBytes(ByteConverter.NumberToVarint(data.Length));
+                buf.PutBytes(data);
+            });
+        }
+
+        return buf.GetBytes();
+    }
+
+    private void _save(uint tag, ProtoType type, byte[] data)
+    {
+        if (!_leaves.ContainsKey(tag))
+            _leaves.Add(tag, (type, new()));
+        var (_, list) = _leaves[tag];
+        list.Add(data);
+    }
+    
+    public ProtobufEncoder AddLeafVarInt(uint tag, long value)
+    {
+        _save(tag, ProtoType.VarInt, ByteConverter.NumberToVarint(value));
+        return this;
+    }
+
+    public ProtobufEncoder AddLeafString(uint tag, string value)
+    {
+        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value));
+        return this;
+    }
+    
+    public ProtobufEncoder AddLeafBytes(uint tag, byte[] value)
+    {
+        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value));
+        return this;
+    }
+    
+    public ProtobufEncoder AddLeafBuffer(uint tag, ByteBuffer value)
+    {
+        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value.GetBytes()));
+        return this;
+    }
+
+    public object this[uint tag]
+    {
+        set
+        {
+            switch (value)
+            {
+                case byte b:
+                    AddLeafVarInt(tag, b);
+                    break;
+                case short s:
+                    AddLeafVarInt(tag, s);
+                    break;
+                case ushort us:
+                    AddLeafVarInt(tag, us);
+                    break;
+                case int i:
+                    AddLeafVarInt(tag, i);
+                    break;
+                case uint ui:
+                    AddLeafVarInt(tag, ui);
+                    break;
+                case long l:
+                    AddLeafVarInt(tag, l);
+                    break;
+                case string str:
+                    AddLeafString(tag, str);
+                    break;
+                case byte[] bytes:
+                    AddLeafBytes(tag, bytes);
+                    break;
+                case ByteBuffer buf:
+                    AddLeafBuffer(tag, buf);
+                    break;
+                case ProtobufEncoder pbEncoder:
+                    AddLeafBytes(tag, pbEncoder.Marshal());
+                    break;
+                default:
+                    throw new Exception("Unsupported type");
+            }
+        }
+    }
+
+    public static ProtobufEncoder Create()
+        => new();
+}
+
 internal class ProtobufDecoder
 {
     private readonly List<byte[]> _raw;
@@ -62,7 +166,7 @@ internal class ProtobufDecoder
         {
             if (_valueAsNumber != null)
                 throw new Exception("Number can not be read as LengthDelimited");
-            if (!_leaves.ContainsKey(tag))
+            if (_leaves.Count == 0)
                 _setLeaves();
             if (!_leaves.ContainsKey(tag))
                 throw new Exception("This LengthDelimited does not contain tag: " + tag.ToString());
@@ -97,9 +201,9 @@ internal class ProtobufDecoder
         {
             while (buffer.RemainLength > 0)
             {
-                var tagtype = ProtoVarInt.Create(buffer.TakeVarIntBytes(out var _)).Value;
-                var tag = (uint) (tagtype >> 3);
-                var type = (ProtoType) (tagtype & 0b111);
+                var tagType = ProtoVarInt.Create(buffer.TakeVarIntBytes(out var _)).Value;
+                var tag = (uint) (tagType >> 3);
+                var type = (ProtoType) (tagType & 0b111);
                 var raw = new byte[0];
 
                 switch (type)
