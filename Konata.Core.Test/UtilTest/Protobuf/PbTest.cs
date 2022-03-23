@@ -1,4 +1,5 @@
-﻿using Konata.Core.Utils.Extensions;
+﻿using System;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
 using NUnit.Framework;
 
@@ -50,11 +51,19 @@ public class PbTest
         encoder[3] = "t1";
         encoder[3] = "t2";
 
+        encoder[4] = ((Func<byte[]>)(() =>
+        {
+            var e = ProtobufEncoder.Create();
+            e[5] = 100;
+            return e.Marshal();
+        }))(); 
+
         var bytes = encoder.Marshal();
         var decoder = ProtobufDecoder.Create(bytes);
         Assert.AreEqual(decoder[1].AsNumber(), 666);
         Assert.AreEqual(decoder[2].AsString(), "555");
         Assert.AreEqual(decoder[3].AsLeaves()[0].AsString(), "t1");
         Assert.AreEqual(decoder[3].AsLeaves()[1].AsString(), "t2");
+        Assert.AreEqual(decoder[4][5].AsNumber(), 100);
     }
 }
