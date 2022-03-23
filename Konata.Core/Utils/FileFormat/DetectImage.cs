@@ -6,12 +6,12 @@ internal static partial class FileFormat
 {
     public enum ImageFormat
     {
-        UNKNOWN,
-        JPG,
-        PNG,
-        GIF,
-        BMP,
-        WEBP,
+        Unknown,
+        Jpg,
+        Png,
+        Gif,
+        Bmp,
+        Webp,
     }
 
     /// <summary>
@@ -32,29 +32,29 @@ internal static partial class FileFormat
             // ÿØ JFIF
             if (value >> 16 == 0xFFD8)
             {
-                type = ImageFormat.JPG;
-                return DetectJPG(buffer, out width, out height);
+                type = ImageFormat.Jpg;
+                return DetectJpg(buffer, out width, out height);
             }
 
             // ‰PNG
             if (value == 0x89504E47)
             {
-                type = ImageFormat.PNG;
-                return DetectPNG(buffer, out width, out height);
+                type = ImageFormat.Png;
+                return DetectPng(buffer, out width, out height);
             }
 
             // GIF
             if (value >> 8 == 0x474946)
             {
-                type = ImageFormat.GIF;
-                return DetectGIF(buffer, out width, out height);
+                type = ImageFormat.Gif;
+                return DetectGif(buffer, out width, out height);
             }
 
             // BM
             if (value >> 16 == 0x424D)
             {
-                type = ImageFormat.BMP;
-                return DetectBMP(buffer, out width, out height);
+                type = ImageFormat.Bmp;
+                return DetectBmp(buffer, out width, out height);
             }
 
             // RIFF
@@ -64,18 +64,18 @@ internal static partial class FileFormat
                 buffer.PeekUintBE(8, out value);
                 if (value == 0x57454250)
                 {
-                    type = ImageFormat.WEBP;
-                    return DetectWEBP(buffer, out width, out height);
+                    type = ImageFormat.Webp;
+                    return DetectWebp(buffer, out width, out height);
                 }
             }
         }
 
         width = height = 0;
-        type = ImageFormat.UNKNOWN;
+        type = ImageFormat.Unknown;
         return false;
     }
 
-    private static bool DetectJPG(ByteBuffer buffer,
+    private static bool DetectJpg(ByteBuffer buffer,
         out uint width, out uint height)
     {
         // FF D8
@@ -126,7 +126,7 @@ internal static partial class FileFormat
         return true;
     }
 
-    private static bool DetectPNG(ByteBuffer buffer,
+    private static bool DetectPng(ByteBuffer buffer,
         out uint width, out uint height)
     {
         buffer.PeekUintBE(0x10, out width);
@@ -134,7 +134,7 @@ internal static partial class FileFormat
         return true;
     }
 
-    private static bool DetectGIF(ByteBuffer buffer,
+    private static bool DetectGif(ByteBuffer buffer,
         out uint width, out uint height)
     {
         buffer.PeekUshortLE(0x06, out var w);
@@ -144,7 +144,7 @@ internal static partial class FileFormat
         return true;
     }
 
-    private static bool DetectBMP(ByteBuffer buffer,
+    private static bool DetectBmp(ByteBuffer buffer,
         out uint width, out uint height)
     {
         buffer.PeekUintLE(0x12, out width);
@@ -152,7 +152,7 @@ internal static partial class FileFormat
         return true;
     }
 
-    private static bool DetectWEBP(ByteBuffer buffer,
+    private static bool DetectWebp(ByteBuffer buffer,
         out uint width, out uint height)
     {
         buffer.PeekUshortLE(0x1A, out var w);

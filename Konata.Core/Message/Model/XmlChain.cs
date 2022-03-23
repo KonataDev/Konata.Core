@@ -7,7 +7,7 @@ public class XmlChain : BaseChain
     /// <summary>
     /// Xml content
     /// </summary>
-    public string Content { get; private set; }
+    public string Content { get; internal set; }
 
     internal XmlChain(string xml)
         : base(ChainType.Xml, ChainMode.Singleton)

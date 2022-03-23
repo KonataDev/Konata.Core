@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Konata.Core.Attributes;
@@ -8,7 +9,6 @@ using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets;
-using Konata.Core.Utils;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
 
@@ -45,17 +45,18 @@ internal class MessagingLogic : BaseLogic
     /// <exception cref="MessagingException"></exception>
     public async Task<bool> SendFriendMessage(uint friendUin, MessageChain message)
     {
-        // Wait for tasks done
-        var results = await Task.WhenAll(
-            SearchImageAndUpload(friendUin, message, false)
-        );
+        // Wait for upload done
+        var results = await UploadResources(friendUin, message, false);
 
         // Check results
         if (results.Contains(false))
         {
             // Task failed
             throw new MessagingException("Send friend message failed: Task failed.\n" +
-                                         $"uploadImage => {results[0]}\n");
+                                         $"checkAtChain => {results[0]}, " +
+                                         $"uploadImage => {results[1]}, " +
+                                         $"uploadRecord => {results[2]}, " +
+                                         $"uploadMultiMsg => {results[3]}");
         }
 
         // Send the message
@@ -76,23 +77,18 @@ internal class MessagingLogic : BaseLogic
     /// <exception cref="MessagingException"></exception>
     public async Task<bool> SendGroupMessage(uint groupUin, MessageChain message)
     {
-        // Wait for tasks done
-        var results = await Task.WhenAll(
-            SearchImageAndUpload(groupUin, message, true),
-            SearchRecordAndUpload(groupUin, message),
-            SearchMultiMsgAndUpload(groupUin, message),
-            SearchAt(groupUin, message)
-        );
+        // Wait for upload done
+        var results = await UploadResources(groupUin, message, true);
 
         // Check results
         if (results.Contains(false))
         {
             // Some task failed
             throw new MessagingException("Send group message failed: Task failed.\n" +
-                                         $"uploadImage => {results[0]}, " +
-                                         $"uploadRecord => {results[1]}, " +
-                                         $"uploadMultiMsg => {results[2]}, " +
-                                         $"checkAtChain => {results[3]}");
+                                         $"checkAtChain => {results[0]}, " +
+                                         $"uploadImage => {results[1]}, " +
+                                         $"uploadRecord => {results[2]}, " +
+                                         $"uploadMultiMsg => {results[3]}");
         }
 
         // Send the message
@@ -104,28 +100,111 @@ internal class MessagingLogic : BaseLogic
         }
     }
 
+    #region Resource upload logics
+
     /// <summary>
-    /// Search at
+    /// Upload resources
     /// </summary>
     /// <param name="uin"></param>
     /// <param name="message"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
-    private async Task<bool> SearchAt(uint uin, MessageChain message)
+    /// <exception cref="FailedToUploadException"></exception>
+    private async Task<bool[]> UploadResources(uint uin, MessageChain message, bool isGroup)
     {
-        // Find the at chains
-        foreach (var i in message.Chains)
-        {
-            // Process the relationship
-            // between group and member
-            if (i.Type != BaseChain.ChainType.At) continue;
-            var chain = (AtChain) i;
+        var atChains = new List<AtChain>();
+        var imageChains = new List<ImageChain>();
+        var recordChains = new List<RecordChain>();
+        var sideMultiMsgs = new List<MultiMsgChain>();
+        MultiMsgChain mainMultiMsg = null;
 
+        // Recursively enumerate chains
+        // to collect resources for uploading
+        void CollectResources(MessageChain msgs)
+        {
+            foreach (var item in msgs)
+            {
+                switch (item)
+                {
+                    case AtChain at:
+                        atChains.Add(at);
+                        break;
+
+                    case ImageChain img:
+                        imageChains.Add(img);
+                        break;
+
+                    case RecordChain rec:
+                        recordChains.Add(rec);
+                        break;
+
+                    case MultiMsgChain mul:
+
+                        // ref the first multi msg chain
+                        if (mainMultiMsg == null) mainMultiMsg = mul;
+
+                        // side multimsgs
+                        else sideMultiMsgs.Add(mul);
+
+                        // Continue enumeration
+                        foreach (var i in mul.Messages) CollectResources(i.Chain);
+
+                        break;
+                }
+            }
+        }
+
+        // Collect resources
+        CollectResources(message);
+
+        try
+        {
+            // Batch up
+            var tasks = await Task.WhenAll(
+                // Replace at chain display name
+                SearchAt(atChains, uin, isGroup),
+
+                // Upload images
+                UploadImages(imageChains, uin, isGroup),
+
+                // Upload records
+                UploadRecords(recordChains, uin, isGroup),
+
+                // Placeholder for multisg
+                Task.FromResult(false)
+            );
+
+            // Upload multi message
+            tasks[^1] = mainMultiMsg == null
+                        || await UploadMultiMsg(mainMultiMsg, sideMultiMsgs, uin, isGroup);
+
+            return tasks;
+        }
+        catch (Exception e)
+        {
+            // oops
+            throw new FailedToUploadException(e);
+        }
+    }
+
+    /// <summary>
+    /// Search at
+    /// </summary>
+    /// <param name="chains"></param>
+    /// <param name="uin"></param>
+    /// <param name="isGroup"></param>
+    /// <returns></returns>
+    private async Task<bool> SearchAt(List<AtChain> chains, uint uin, bool isGroup)
+    {
+        // Ignore
+        if (!isGroup) return true;
+
+        // Find the at chains
+        foreach (var i in chains)
+        {
             // If uin is zero
             // meant to ping all the members
-            if (chain.AtUin == 0)
-            {
-                chain.DisplayString = "@全体成员";
-            }
+            if (i.AtUin == 0) i.DisplayString = "@全体成员";
 
             // None zero,
             // Then check the relationship
@@ -133,9 +212,9 @@ internal class MessagingLogic : BaseLogic
             {
                 // Okay we've got it
                 if (ConfigComponent.TryGetMemberInfo
-                        (uin, chain.AtUin, out var member))
+                        (uin, i.AtUin, out var member))
                 {
-                    chain.DisplayString = $"@{member.NickName}";
+                    i.DisplayString = $"@{member.NickName}";
                 }
 
                 // F! We might have to pull
@@ -149,18 +228,18 @@ internal class MessagingLogic : BaseLogic
                         if (await Context.CacheSync.SyncGroupMemberList(uin))
                         {
                             // Okay try again
-                            chain.DisplayString = ConfigComponent.TryGetMemberInfo
-                                (uin, chain.AtUin, out member)
+                            i.DisplayString = ConfigComponent.TryGetMemberInfo
+                                (uin, i.AtUin, out member)
                                 ? $"@{member.NickName}"
-                                : $"@{chain.AtUin}";
+                                : $"@{i.AtUin}";
                         }
 
                         // F? Sync failed
-                        else chain.DisplayString = $"@{chain.AtUin}";
+                        else i.DisplayString = $"@{i.AtUin}";
                     }
 
                     // F? The wrong user
-                    else chain.DisplayString = $"@{chain.AtUin}";
+                    else i.DisplayString = $"@{i.AtUin}";
                 }
             }
         }
@@ -171,11 +250,14 @@ internal class MessagingLogic : BaseLogic
     /// <summary>
     /// Upload image manually
     /// </summary>
+    /// <param name="image"></param>
+    /// <param name="uin"></param>
+    /// <param name="c2c"></param>
     /// <returns></returns>
-    public async Task<bool> UploadImage(ImageChain image, bool c2c, uint uin)
+    public async Task<bool> UploadImage(ImageChain image, uint uin, bool c2c)
     {
         var images = new List<ImageChain> {image};
-        var result = await UploadImages(images, c2c, uin);
+        var result = await UploadImages(images, uin, c2c);
         {
             if (!result) return false;
             {
@@ -191,25 +273,26 @@ internal class MessagingLogic : BaseLogic
     /// Upload images
     /// </summary>
     /// <param name="image"></param>
-    /// <param name="c2c"></param>
     /// <param name="uin"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
-    private async Task<bool> UploadImages(List<ImageChain> image, bool c2c, uint uin)
+    private async Task<bool> UploadImages(List<ImageChain> image, uint uin, bool isGroup)
     {
         // 1. Request ImageStore.GroupPicUp
         // 2. Upload the image via highway
         // 3. Return false while failed to upload
 
-        if (c2c)
+        // Return true if no image to load
+        if (image.Count <= 0) return true;
+
+        if (isGroup)
         {
             // Request image upload
             var result = await GroupPicUp(Context, uin, image);
             {
                 // Set upload data
                 for (var i = 0; i < image.Count; ++i)
-                {
                     image[i].SetPicUpInfo(result.UploadInfo[i]);
-                }
             }
 
             // Highway image upload
@@ -229,15 +312,18 @@ internal class MessagingLogic : BaseLogic
     }
 
     /// <summary>
-    /// Upload multimsgs
+    /// Upload multimsg
     /// </summary>
     /// <param name="uin"></param>
-    /// <param name="upload"></param>
+    /// <param name="main"></param>
+    /// <param name="sides"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
-    private async Task<bool> UploadMultiMsgs(uint uin, MultiMsgChain upload)
+    private async Task<bool> UploadMultiMsg(MultiMsgChain main,
+        List<MultiMsgChain> sides, uint uin, bool isGroup)
     {
         // Chain packup
-        var packed = MessagePacker.PackMultiMsg(upload.Messages);
+        var packed = MessagePacker.PackMultiMsg(main, sides);
         if (packed == null) return false;
 
         // Compressing the data
@@ -248,97 +334,40 @@ internal class MessagingLogic : BaseLogic
         if (result.ResultCode != 0) return false;
         {
             // Setup the highway info
-            upload.SetMultiMsgUpInfo(result.UploadInfo, packed);
+            main.SetMultiMsgUpInfo(result.UploadInfo, packed);
         }
 
         // Highway multimsg upload
-        if (!await HighwayComponent.MultiMsgUp
-                (uin, Context.Bot.Uin, upload)) return false;
-
-        string GetPreviewString()
-        {
-            var preview = "";
-            var limit = 4;
-            foreach (var msgstu in upload.Messages)
-            {
-                if (--limit < 0) break;
-                preview += "<title size=\"26\" color=\"#777777\" maxLines=\"2\" lineSpace=\"12\">" +
-                           $"{msgstu.Sender.Name}: {msgstu.Chain[0]?.ToPreviewString()}</title>";
-            }
-
-            return preview;
-        }
-
-        // Update chain
-        upload.SetGuid(Guid.Generate());
-        upload.SetContent(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-
-            // Msg
-            "<msg serviceID=\"35\" templateID=\"1\" action=\"viewMultiMsg\" brief=\"[聊天记录]\" " +
-            $"m_resid=\"{upload.MultiMsgUpInfo.MsgResId}\" " +
-            $"m_fileName=\"{upload.Guid}\" tSum=\"1\" sourceMsgId=\"0\" " +
-            "url=\"\" flag=\"3\" adverSign=\"0\" multiMsgFlag=\"0\">" +
-
-            // Message preview
-            "<item layout=\"1\" advertiser_id=\"0\" aid=\"0\">" +
-            "<title size=\"34\" maxLines=\"2\" lineSpace=\"12\">转发的聊天记录</title>" +
-            GetPreviewString() +
-            "<hr hidden=\"false\" style=\"0\" />" +
-            $"<summary size=\"26\" color=\"#777777\">查看{upload.Messages.Count}条转发消息</summary>" +
-            "</item>" +
-
-            // Banner
-            "<source name=\"聊天记录\" icon=\"\" action=\"\" appid=\"-1\" />" +
-            "</msg>"
-        );
+        if (!await HighwayComponent.MultiMsgUp(uin, Context.Bot.Uin, main)) return false;
 
         return true;
     }
 
     /// <summary>
-    /// Search image and upload
-    /// </summary>
-    /// <param name="uin"><b>[In]</b> Uin</param>
-    /// <param name="message"><b>[In]</b> The message chain</param>
-    /// <param name="c2c"><b>[In]</b> Group or Private </param>
-    private async Task<bool> SearchImageAndUpload(uint uin, MessageChain message, bool c2c)
-    {
-        // Find the image chain
-        var upload = message.FindChain<ImageChain>();
-        {
-            // No image
-            if (upload.Count <= 0) return true;
-            return await UploadImages(upload, c2c, uin);
-        }
-    }
-
-    /// <summary>
     /// Upload the records
     /// </summary>
+    /// <param name="message"></param>
+    /// <param name="uin"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
-    private async Task<bool> SearchRecordAndUpload(uint uin, MessageChain message)
+    private async Task<bool> UploadRecords(List<RecordChain> message, uint uin, bool isGroup)
     {
-        // Find the record chain
-        var upload = message.GetChain<RecordChain>();
+        // Return false if audio configuration not enabled
+        if (!ConfigComponent.GlobalConfig.EnableAudio)
         {
-            // No records
-            if (upload == null) return true;
+            Context.LogW(TAG, "The audio function is currently disabled. " +
+                              "Lack of codec library.");
+            return false;
+        }
 
-            // Return false if audio configuration not enabled
-            if (!ConfigComponent.GlobalConfig.EnableAudio)
-            {
-                Context.LogW(TAG, "The audio function is currently disabled. " +
-                                  "Lack of codec library.");
-                return false;
-            }
-
+        foreach (var i in message)
+        {
             // Upload record via highway
             if (ConfigComponent.HighwayConfig != null)
             {
                 // Setup the highway info
                 Context.LogV(TAG, "Uploading record file via highway.");
-                upload.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
+                i.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
                 {
                     Host = ConfigComponent.HighwayConfig.Server.Host,
                     Port = ConfigComponent.HighwayConfig.Server.Port,
@@ -347,14 +376,14 @@ internal class MessagingLogic : BaseLogic
 
                 // Upload the record
                 return await HighwayComponent
-                    .GroupPttUp(uin, Context.Bot.Uin, upload);
+                    .GroupPttUp(uin, Context.Bot.Uin, i);
             }
 
             // Upload record via http
             Context.LogV(TAG, "Uploading record file via http.");
-            var result = await GroupPttUp(Context, uin, upload);
+            var result = await GroupPttUp(Context, uin, i);
             var retdata = await Http.Post($"http://{result.UploadInfo.Host}" +
-                                          $":{result.UploadInfo.Port}/", upload.FileData,
+                                          $":{result.UploadInfo.Port}/", i.FileData,
                 // Request header
                 new Dictionary<string, string>
                 {
@@ -368,60 +397,23 @@ internal class MessagingLogic : BaseLogic
                     {"ver", "4679"},
                     {"ukey", ByteConverter.Hex(result.UploadInfo.Ukey)},
                     {"filekey", result.UploadInfo.FileKey},
-                    {"filesize", upload.FileLength.ToString()},
-                    {"bmd5", upload.FileHash},
+                    {"filesize", i.FileLength.ToString()},
+                    {"bmd5", i.FileHash},
                     {"mType", "pttDu"},
-                    {"voice_encodec", $"{(int) upload.RecordType}"}
+                    {"voice_encodec", $"{(int) i.RecordType}"}
                 });
 
             // Set upload info
-            upload.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo);
+            i.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo);
 
             Context.LogV(TAG, "Recored uploaded.");
             Context.LogV(TAG, ByteConverter.Hex(retdata));
-            return true;
         }
+
+        return true;
     }
 
-    /// <summary>
-    /// Upload the multimsg
-    /// </summary>
-    /// <returns></returns>
-    private async Task<bool> SearchMultiMsgAndUpload(uint uin, MessageChain message)
-    {
-        // Find the multimsg chain
-        var upload = message.GetChain<MultiMsgChain>();
-        {
-            // No multimsg
-            if (upload == null) return true;
-
-            // Upload
-            foreach (var msgstu in upload.Messages)
-            {
-                // Wait for tasks done
-                var results = await Task.WhenAll(
-                    SearchImageAndUpload(uin, msgstu.Chain, true),
-                    SearchRecordAndUpload(uin, msgstu.Chain),
-                    SearchMultiMsgAndUpload(uin, msgstu.Chain),
-                    SearchAt(uin, msgstu.Chain)
-                );
-
-                // Check results
-                if (results.Contains(false))
-                {
-                    // Some task failed
-                    throw new MessagingException("Send group message failed: Task failed.\n" +
-                                                 $"uploadImage => {results[0]}, " +
-                                                 $"uploadRecord => {results[1]}, " +
-                                                 $"uploadMultiMsg => {results[2]}, " +
-                                                 $"checkAtChain => {results[3]}");
-                }
-            }
-
-            // Upload
-            return await UploadMultiMsgs(uin, upload);
-        }
-    }
+    #endregion
 
     #region Stub methods
 

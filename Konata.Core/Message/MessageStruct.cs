@@ -104,6 +104,10 @@ public class MessageStruct
     {
         Type = type;
         Chain = chain;
+
+        var rand = new Random();
+        Random = (uint)rand.Next();
+        Uuid =  rand.Next();
     }
 
     /// <summary>

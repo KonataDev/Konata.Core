@@ -10,6 +10,7 @@ using Konata.Core.Utils.FileFormat;
 
 #pragma warning disable CS8509
 
+// ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantAssignment
 // ReSharper disable InvertIf
 // ReSharper disable RedundantCaseLabel
@@ -80,16 +81,16 @@ public class RecordChain : BaseChain
     }
 
     private RecordChain(byte[] data, uint timesec,
-        byte[] md5, string md5str, RecordType type)
+        byte[] md5, string md5Str, RecordType type)
         : base(ChainType.Record, ChainMode.Singleton)
     {
         FileData = data;
         FileLength = (uint) data.Length;
         TimeSeconds = timesec;
         HashData = md5;
-        FileHash = md5str;
+        FileHash = md5Str;
         RecordType = type;
-        FileName = $"{md5str}.amr";
+        FileName = $"{md5Str}.amr";
     }
 
     /// <summary>
@@ -127,7 +128,7 @@ public class RecordChain : BaseChain
         // Detect image type
         if (FileFormat.DetectAudio(audio, out var type))
         {
-            var audioType = RecordType.SILK;
+            var audioType = RecordType.Silk;
             var audioData = Array.Empty<byte>();
             var audioTime = 0U;
 
@@ -138,7 +139,7 @@ public class RecordChain : BaseChain
                 // We no need to convert it
                 case FileFormat.AudioFormat.AMR:
                     audioData = audio;
-                    audioType = RecordType.AMR;
+                    audioType = RecordType.Amr;
 
                     // Estimated time
                     audioTime = (uint) audio.Length / 1607;
@@ -148,7 +149,7 @@ public class RecordChain : BaseChain
                 // Silk v3 for tx use
                 case FileFormat.AudioFormat.TENSILKV3:
                     audioData = audio;
-                    audioType = RecordType.SILK;
+                    audioType = RecordType.Silk;
 
                     // Estimated time
                     audioTime = (uint) audio.Length / 2394;
@@ -159,7 +160,7 @@ public class RecordChain : BaseChain
                 // and remove 0xFFFF end for it
                 case FileFormat.AudioFormat.SILKV3:
                 {
-                    audioType = RecordType.SILK;
+                    audioType = RecordType.Silk;
                     audioData = new byte[] {0x02}
                         .Concat(audio[..^2]).ToArray();
 
@@ -206,9 +207,9 @@ public class RecordChain : BaseChain
                     if (!audioPipeline.Start().Result) return null;
                     {
                         // Set audio information
-                        audioType = RecordType.SILK;
+                        audioType = RecordType.Silk;
                         audioData = outputStream.ToArray();
-                        audioTime = (uint) audioPipeline.GetAudioTime();
+                        audioTime = (uint) Math.Ceiling(audioPipeline.GetAudioTime());
                         audioPipeline.Dispose();
                     }
 
@@ -217,12 +218,12 @@ public class RecordChain : BaseChain
             }
 
             // Audio MD5
-            var audioMD5 = audioData.Md5();
-            var audioMD5Str = audioMD5.ToHex().ToUpper();
+            var audioMd5 = audioData.Md5();
+            var audioMd5Str = audioMd5.ToHex().ToUpper();
             if (audioTime == 0) audioTime = 1;
 
             return new RecordChain(audioData, audioTime,
-                audioMD5, audioMD5Str, audioType);
+                audioMd5, audioMd5Str, audioType);
         }
 
         return null;
@@ -252,6 +253,14 @@ public class RecordChain : BaseChain
     public static RecordChain CreateFromBase64(string base64)
         => Create(ByteConverter.UnBase64(base64));
 
+    /// <summary>
+    /// Create a record chain from url (limit 10MB)
+    /// </summary>
+    /// <param name="url"></param>
+    /// <returns></returns>
+    public static RecordChain CreateFromUrl(string url)
+        => Create(Utils.Network.Http.Get(url, limitLen: 1048576 * 10).Result);
+    
     /// <summary>
     /// Parse the code
     /// </summary>
@@ -283,7 +292,7 @@ public class RecordChain : BaseChain
     public override string ToString()
         => "[KQ:record," +
            $"file={FileName}]";
-    
+
     internal override string ToPreviewString()
         => "[语音]";
 }
@@ -293,6 +302,6 @@ public class RecordChain : BaseChain
 /// </summary>
 public enum RecordType
 {
-    AMR = 0,
-    SILK = 1,
+    Amr = 0,
+    Silk = 1,
 }

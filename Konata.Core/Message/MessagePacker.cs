@@ -61,49 +61,50 @@ internal static class MessagePacker
     /// <summary>
     /// Pack up multi msg to byte
     /// </summary>
-    /// <param name="input"></param>
+    /// <param name="main"></param>
+    /// <param name="sides"></param>
     /// <returns></returns>
-    public static byte[] PackMultiMsg(List<MessageStruct> input)
+    public static byte[] PackMultiMsg(MultiMsgChain main, List<MultiMsgChain> sides)
     {
         var newClientMsgs = new ProtoTreeRoot();
         var compatiableMsgs = new ProtoTreeRoot();
-        var multiMsgExpanded = new ProtoTreeRoot();
+        var flatMultiMsgs = new ProtoTreeRoot();
 
-        foreach (var msgstu in input)
+        // For old device compatibility
+        compatiableMsgs.AddTree("0A", _ =>
         {
-            // Check if multimsg chain
-            var isMultiMsg = msgstu.Chain.Count == 1 &&
-                             msgstu.Chain.FirstOrDefault() is MultiMsgChain;
+            // Message source
+            _.AddTree("0A", __ => ConstructSource(__, main.Messages[0]));
 
-            compatiableMsgs.AddTree("0A", _ =>
-            {
-                // Message source
-                _.AddTree("0A", __ => ConstructSource(__, msgstu));
-
-                // Message content
-                _.AddTree("1A", __ => __.AddLeafBytes("0A", isMultiMsg
-                    ? PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))
-                    : PackUp(msgstu.Chain)));
-            });
-
+            // Message content
+            _.AddTree("1A", __ => __.AddLeafBytes("0A",
+                PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))));
+        });
+        
+        // Construct root multimsg
+        foreach (var i in main)
+        {
             newClientMsgs.AddTree("0A", _ =>
             {
                 // Message source
-                _.AddTree("0A", __ => ConstructSource(__, msgstu));
+                _.AddTree("0A", __ => ConstructSource(__, i));
 
                 // Message content
-                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(msgstu.Chain)));
+                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(i.Chain)));
             });
-
-            if (isMultiMsg)
+        }
+        
+        // Construct multimsg reference table
+        if (sides.Count > 0)
+        {
+            foreach (var i in sides)
             {
-                var multiMsg = msgstu.Chain.GetChain<MultiMsgChain>();
-                multiMsgExpanded.AddTree("12", _ =>
+                flatMultiMsgs.AddTree("12", _ =>
                 {
-                    _.AddLeafString("0A", multiMsg.Guid);
+                    _.AddLeafString("0A", i.FileName);
                     _.AddTree("12", __ =>
                     {
-                        foreach (var subchain in multiMsg.Messages)
+                        foreach (var subchain in i.Messages)
                         {
                             __.AddTree("0A", ___ =>
                             {
@@ -119,7 +120,7 @@ internal static class MessagePacker
         // Construct multimsg tree
         var tree = new ProtoTreeRoot();
         tree.AddTree(compatiableMsgs);
-        tree.AddTree(multiMsgExpanded);
+        tree.AddTree(flatMultiMsgs);
         tree.AddTree("12", _ =>
         {
             _.AddLeafString("0A", "MultiMsg");
@@ -193,7 +194,7 @@ internal static class MessagePacker
         root.AddLeafVar("38", source.Uuid); // Uniseq
 
         // Multimsg from group
-        if (true)
+        if (source.Type == MessageStruct.SourceType.Group)
         {
             root.AddTree("4A", _ =>
             {
@@ -203,14 +204,14 @@ internal static class MessagePacker
         }
 
         // __.AddLeafString("38", 82); // Name
-        // __.AddTree("A201", ___ =>
-        // { 
-        //     ___.AddLeafVar("08", 0);
-        //     ___.AddLeafBytes("10", null);
-        // });
+        root.AddTree("A201", _ =>
+        { 
+            _.AddLeafVar("08", 0);
+            _.AddLeafVar("10", source.Uuid);
+        });
     }
 
-    private static void ConstructPBReserved(ProtoTreeRoot root, int v8801, int v78)
+    private static void ConstructPbReserved(ProtoTreeRoot root, int v8801, int v78)
     {
         root.AddTree("12", (_) =>
         {
@@ -247,7 +248,7 @@ internal static class MessagePacker
             });
         });
 
-        ConstructPBReserved(root, 2153, 116581);
+        ConstructPbReserved(root, 2153, 116581);
     }
 
     private static void ConstructXml(ProtoTreeRoot root, XmlChain chain)
@@ -269,7 +270,7 @@ internal static class MessagePacker
             });
         });
 
-        ConstructPBReserved(root, 0, 65536);
+        ConstructPbReserved(root, 0, 65536);
     }
 
     private static void ConstructText(ProtoTreeRoot root, TextChain chain)
@@ -516,7 +517,7 @@ internal static class MessagePacker
             var imgtype = tree.TryGetLeafVar
                 ("A001", out var type)
                 ? (ImageType) type
-                : ImageType.JPG;
+                : ImageType.Jpg;
 
             return ImageChain.Create(
                 url ?? "", hashstr, hashstr,
@@ -535,7 +536,7 @@ internal static class MessagePacker
             var imgtype = tree.TryGetLeafVar
                 ("A001", out var type)
                 ? (ImageType) type
-                : ImageType.JPG;
+                : ImageType.Jpg;
 
             if (!tree.TryGetLeafString("8201", out var url))
                 url = $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{hash}/0";

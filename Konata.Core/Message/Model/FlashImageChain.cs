@@ -59,7 +59,7 @@ public class FlashImageChain : ImageChain
     /// <param name="url"></param>
     /// <returns></returns>
     public new static ImageChain CreateFromURL(string url)
-        => ImageChain.CreateFromURL(url);
+        => ImageChain.CreateFromUrl(url);
 
     /// <summary>
     /// Create a flash image chain

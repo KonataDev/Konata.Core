@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Konata.Core.Message.Model;
@@ -9,7 +10,7 @@ using Konata.Core.Message.Model;
 
 namespace Konata.Core.Message;
 
-public class MessageBuilder
+public class MessageBuilder : IEnumerable
 {
     private MessageChain _chain;
 
@@ -252,5 +253,10 @@ public class MessageBuilder
             z._chain.AddRange(y._chain.Chains);
         }
         return z;
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        throw new System.NotImplementedException();
     }
 }

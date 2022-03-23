@@ -6,10 +6,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Utils.FileFormat;
 
 // ReSharper disable InvertIf
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
-// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace Konata.Core.Message.Model;
 
@@ -82,7 +79,7 @@ public class ImageChain : BaseChain
     }
 
     protected ImageChain(byte[] data, uint width,
-        uint height, byte[] md5, string md5str, ImageType type)
+        uint height, byte[] md5, string md5Str, ImageType type)
         : base(ChainType.Image, ChainMode.Multiple)
     {
         FileData = data;
@@ -90,9 +87,9 @@ public class ImageChain : BaseChain
         Width = width;
         Height = height;
         HashData = md5;
-        FileHash = md5str;
+        FileHash = md5Str;
         ImageType = type;
-        FileName = md5str;
+        FileName = md5Str;
     }
 
     /// <summary>
@@ -146,21 +143,21 @@ public class ImageChain : BaseChain
             // Image type
             var imageType = type switch
             {
-                FileFormat.ImageFormat.JPG => ImageType.JPG,
-                FileFormat.ImageFormat.PNG => ImageType.PNG,
-                FileFormat.ImageFormat.GIF => ImageType.GIF,
-                FileFormat.ImageFormat.BMP => ImageType.BMP,
-                FileFormat.ImageFormat.WEBP => ImageType.WEBP,
+                FileFormat.ImageFormat.Jpg => ImageType.Jpg,
+                FileFormat.ImageFormat.Png => ImageType.Png,
+                FileFormat.ImageFormat.Gif => ImageType.Gif,
+                FileFormat.ImageFormat.Bmp => ImageType.Bmp,
+                FileFormat.ImageFormat.Webp => ImageType.Webp,
                 _ => throw new NotImplementedException(),
             };
 
             // Image MD5
-            var imageMD5 = new Md5Cryptor().Encrypt(image);
-            var imageMD5Str = ByteConverter.Hex(imageMD5).ToUpper();
+            var imageMd5 = new Md5Cryptor().Encrypt(image);
+            var imageMd5Str = ByteConverter.Hex(imageMd5).ToUpper();
 
             // Create chain
             return new ImageChain(image, width,
-                height, imageMD5, imageMD5Str, imageType);
+                height, imageMd5, imageMd5Str, imageType);
         }
 
         return null;
@@ -195,7 +192,7 @@ public class ImageChain : BaseChain
     /// </summary>
     /// <param name="url"></param>
     /// <returns></returns>
-    public static ImageChain CreateFromURL(string url)
+    public static ImageChain CreateFromUrl(string url)
         => Create(Utils.Network.Http.Get(url, limitLen: 1048576 * 10).Result);
 
     /// <summary>
@@ -220,7 +217,7 @@ public class ImageChain : BaseChain
             if (file.StartsWith("http://")
                 || file.StartsWith("https://"))
             {
-                return CreateFromURL(file);
+                return CreateFromUrl(file);
             }
 
             // Create from base64
@@ -268,14 +265,14 @@ public class ImageChain : BaseChain
 /// </summary>
 public enum ImageType
 {
-    INVALID = 1,
-    FACE = 4,
-    JPG = 1000,
-    PNG = 1001,
-    WEBP = 1002,
-    PJPEG = 1003,
-    SHARPP = 1004,
-    BMP = 1005,
-    GIF = 2000,
-    APNG = 2001
+    Invalid = 1,
+    Face = 4,
+    Jpg = 1000,
+    Png = 1001,
+    Webp = 1002,
+    Pjpeg = 1003,
+    Sharpp = 1004,
+    Bmp = 1005,
+    Gif = 2000,
+    Apng = 2001
 }

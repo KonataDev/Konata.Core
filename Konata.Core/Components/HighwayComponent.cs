@@ -13,6 +13,7 @@ using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.TcpSocket;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable MergeIntoPattern
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident

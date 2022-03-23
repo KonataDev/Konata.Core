@@ -180,7 +180,7 @@ public class Bot : BaseEntity, IDisposable
         => BusinessComponent.Operation.GroupLeave(groupUin);
 
     /// <summary>
-    /// Send the message to a given group
+    /// Send message to the group
     /// </summary>
     /// <param name="groupUin"><b>[In]</b> Group uin. </param>
     /// <param name="builder"><b>[In]</b> Message chain builder. </param>
@@ -188,6 +188,26 @@ public class Bot : BaseEntity, IDisposable
     /// <exception cref="MessagingException"></exception>
     public Task<bool> SendGroupMessage(uint groupUin, MessageBuilder builder)
         => BusinessComponent.Messaging.SendGroupMessage(groupUin, builder.Build());
+
+    /// <summary>
+    /// Send message to the group
+    /// </summary>
+    /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+    /// <param name="message"><b>[In]</b> Text message. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    public Task<bool> SendGroupMessage(uint groupUin, string message)
+        => SendGroupMessage(groupUin, new MessageBuilder(message));
+
+    /// <summary>
+    /// Send message to the group
+    /// </summary>
+    /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+    /// <param name="chains"><b>[In]</b> Message chains. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    public Task<bool> SendGroupMessage(uint groupUin, params BaseChain[] chains)
+        => SendGroupMessage(groupUin, new MessageBuilder(chains));
 
     /// <summary>
     /// Send the message to a friend
@@ -200,13 +220,33 @@ public class Bot : BaseEntity, IDisposable
         => BusinessComponent.Messaging.SendFriendMessage(friendUin, builder.Build());
 
     /// <summary>
+    /// Send the message to a friend
+    /// </summary>
+    /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
+    /// <param name="message"><b>[In]</b> Text message. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    public Task<bool> SendFriendMessage(uint friendUin, string message)
+        => SendFriendMessage(friendUin, new MessageBuilder(message));
+
+    /// <summary>
+    /// Send the message to a friend
+    /// </summary>
+    /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
+    /// <param name="chains"><b>[In]</b> Message chains. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    public Task<bool> SendFriendMessage(uint friendUin, params BaseChain[] chains)
+        => SendFriendMessage(friendUin, new MessageBuilder(chains));
+
+    /// <summary>
     /// Upload the image manually
     /// </summary>
     /// <param name="image"><b>[In]</b> Image to upload. </param>
     /// <param name="groupUin"><b>[In]</b> Group uin. </param>
     /// <returns></returns>
     public Task<bool> UploadGroupImage(ImageChain image, uint groupUin)
-        => BusinessComponent.Messaging.UploadImage(image, true, groupUin);
+        => BusinessComponent.Messaging.UploadImage(image, groupUin, true);
 
     /// <summary>
     /// Get group list
