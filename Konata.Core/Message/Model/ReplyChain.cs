@@ -2,6 +2,8 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
+using Konata.Core.Utils.IO;
+
 namespace Konata.Core.Message.Model;
 
 public class ReplyChain : BaseChain
@@ -9,59 +11,57 @@ public class ReplyChain : BaseChain
     /// <summary>
     /// Reply uin
     /// </summary>
-    public uint ReplyUin { get; }
+    internal uint Uin { get; }
 
     /// <summary>
-    /// Message id
+    /// Sequence of reply message
     /// </summary>
-    public uint SourceId { get; }
+    internal uint Sequence { get; }
 
     /// <summary>
-    /// Reply time
+    /// Uuid of reply message
     /// </summary>
-    public uint ReplyTime { get; }
+    internal long Uuid { get; }
 
     /// <summary>
-    /// Reply source
+    /// Time of reply message
     /// </summary>
-    public BaseChain Source { get; }
+    internal uint Time { get; }
 
     /// <summary>
-    /// Reply content
+    /// Reply message preview
     /// </summary>
-    public BaseChain Content { get; }
+    internal string Preview { get; }
 
-    private ReplyChain(uint sourceId, uint replyUin, uint replyTime)
+    private ReplyChain(uint uin, uint sequence, long uuid, uint time, string preview)
         : base(ChainType.Reply, ChainMode.Singletag)
     {
-        SourceId = sourceId;
-        ReplyUin = replyUin;
-        ReplyTime = replyTime;
+        Uin = uin;
+        Sequence = sequence;
+        Uuid = uuid;
+        Time = time;
+        Preview = preview;
     }
 
     /// <summary>
     /// Create a reply chain
     /// </summary>
-    /// <param name="sourceId"></param>
-    /// <param name="replyUin"></param>
-    /// <param name="replyTime"></param>
+    /// <param name="reference"></param>
     /// <returns></returns>
-    internal static ReplyChain Create(uint sourceId, uint replyUin, uint replyTime)
-    {
-        return new(sourceId, replyUin, replyTime);
-    }
+    public static ReplyChain Create(MessageStruct reference)
+        => new(reference.Sender.Uin, reference.Sequence, reference.Uuid, reference.Time, reference.Chain.ToPreviewString());
 
     /// <summary>
     /// Create a reply chain
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="reply"></param>
+    /// <param name="uin"></param>
+    /// <param name="sequence"></param>
+    /// <param name="uuid"></param>
+    /// <param name="time"></param>
+    /// <param name="preview"></param>
     /// <returns></returns>
-    internal static ReplyChain Create(BaseChain source, BaseChain reply)
-    {
-        // TODO
-        return null;
-    }
+    internal static ReplyChain Create(uint uin, uint sequence, long uuid, uint time, string preview)
+        => new(uin, sequence, uuid, time, preview);
 
     /// <summary>
     /// Parse the code
@@ -73,18 +73,22 @@ public class ReplyChain : BaseChain
         var args = GetArgs(code);
         {
             var qq = uint.Parse(args["qq"]);
-            var source = uint.Parse(args["id"]);
+            var seq = uint.Parse(args["seq"]);
+            var uuid = long.Parse(args["uuid"]);
             var time = uint.Parse(args["time"]);
+            var content = ByteConverter.UnBase64String(args["content"]);
 
-            return Create(source, qq, time);
+            return Create(qq, seq, uuid, time, content);
         }
     }
 
     public override string ToString()
         => $"[KQ:reply," +
-           $"qq={ReplyUin}," +
-           $"id={SourceId}," +
-           $"time={ReplyTime}]";
+           $"qq={Uin}," +
+           $"seq={Sequence}," +
+           $"uuid={Uuid}," +
+           $"time={Time}," +
+           $"content={Preview}]";
 
     internal override string ToPreviewString()
         => "[回复]";

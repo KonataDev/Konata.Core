@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
+using Konata.Core.Utils.Protobuf.ProtoModel;
 
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToReturnStatement
@@ -52,6 +53,10 @@ internal static class MessagePacker
                 case JsonChain jsonChain:
                     ConstructJson(root, jsonChain);
                     break;
+
+                case ReplyChain replyChain:
+                    ConstructReply(root, replyChain);
+                    break;
             }
         }
 
@@ -80,7 +85,7 @@ internal static class MessagePacker
             _.AddTree("1A", __ => __.AddLeafBytes("0A",
                 PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))));
         });
-        
+
         // Construct root multimsg
         foreach (var i in main)
         {
@@ -93,7 +98,7 @@ internal static class MessagePacker
                 _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(i.Chain)));
             });
         }
-        
+
         // Construct multimsg reference table
         if (sides.Count > 0)
         {
@@ -205,7 +210,7 @@ internal static class MessagePacker
 
         // __.AddLeafString("38", 82); // Name
         root.AddTree("A201", _ =>
-        { 
+        {
             _.AddLeafVar("08", 0);
             _.AddLeafVar("10", source.Uuid);
         });
@@ -305,6 +310,39 @@ internal static class MessagePacker
             {
                 _.AddLeafString("0A", chain.DisplayString);
                 _.AddLeafBytes("1A", data.GetBytes());
+            });
+        });
+    }
+
+    private static void ConstructReply(ProtoTreeRoot root, ReplyChain chain)
+    {
+        root.AddTree("12", (_) =>
+        {
+            _.AddTree("EA02", __ =>
+            {
+                __.AddLeafVar("08", chain.Sequence);
+                __.AddLeafVar("10", chain.Uin);
+                __.AddLeafVar("18", chain.Time);
+                __.AddLeafVar("20", 1);
+
+                __.AddTree("2A", ___ => ___.AddTree("0A",
+                    ____ => ____.AddLeafString("0A", chain.Preview)));
+
+                __.AddLeafVar("30", 0);
+
+                __.AddTree("42", ___ =>
+                {
+                    ___.AddLeafVar("10", 1);
+                    ___.AddLeafVar("18", chain.Uuid);
+                    ___.AddTree("2A", ____ =>
+                    {
+                        ____.AddLeafVar("08", chain.Sequence);
+                        ____.AddLeafVar("10", chain.Sequence);
+                        ____.AddLeafVar("18", chain.Sequence);
+                    });
+                });
+
+                __.AddLeafVar("50", 0);
             });
         });
     }
@@ -414,14 +452,13 @@ internal static class MessagePacker
     /// <returns></returns>
     private static ReplyChain ParseReply(ProtoTreeRoot tree)
     {
-        var messageId = (uint) tree.GetLeafVar("08");
-        var replyUin = (uint) tree.GetLeafVar("10");
-        var replyTime = (uint) tree.GetLeafVar("18");
-
-        // TODO:
-        // Parse original chain 0x2A
-
-        return ReplyChain.Create(messageId, replyUin, replyTime);
+        var seq = (uint) tree.GetLeafVar("08");
+        var uin = (uint) tree.GetLeafVar("10");
+        var time = (uint) tree.GetLeafVar("18");
+        var uuid = tree.PathTo<ProtoVarInt>("42.18");
+        var preview = tree.PathTo<ProtoLengthDelimited>("2A.0A.0A").ToString();
+    
+        return ReplyChain.Create(uin, seq, uuid, time, preview);
     }
 
     /// <summary>

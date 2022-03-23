@@ -20,7 +20,7 @@ public class AtChain : BaseChain
     /// </summary>
     /// <param name="memberUin"></param>
     /// <returns></returns>
-    internal static AtChain Create(uint memberUin)
+    public static AtChain Create(uint memberUin)
         => new(memberUin);
 
     /// <summary>

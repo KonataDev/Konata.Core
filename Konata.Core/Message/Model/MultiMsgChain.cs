@@ -64,12 +64,6 @@ public class MultiMsgChain : XmlChain, IEnumerable<MessageStruct>
     public void Add(((uint uin, string name) source, string text) message)
         => Add((message.source, new MessageChain(TextChain.Create(message.text))));
     
-    // private MultiMsgChain(string xml, string guid) : base(xml)
-    // {
-    //     Messages = new();
-    //     Type = ChainType.MultiMsg;
-    // }
-
     /// <summary>
     /// Add message
     /// </summary>

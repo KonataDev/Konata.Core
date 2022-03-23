@@ -52,6 +52,13 @@ public class MessageChain : IEnumerable<BaseChain>
         => Chains.Aggregate("", (current, element) => current + element);
 
     /// <summary>
+    /// Convert chain to preview string
+    /// </summary>
+    /// <returns></returns>
+    internal string ToPreviewString()
+        => Chains.Aggregate("", (current, element) => current + element.ToPreviewString());
+
+    /// <summary>
     /// Find chains
     /// </summary>
     /// <typeparam name="TChain"></typeparam>

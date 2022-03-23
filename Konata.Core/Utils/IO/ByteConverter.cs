@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Konata.Core.Utils.IO;
 
@@ -441,12 +442,11 @@ internal static class ByteConverter
     }
 
     public static string Base64(byte[] data)
-    {
-        return Convert.ToBase64String(data, Base64FormattingOptions.None);
-    }
+        => Convert.ToBase64String(data, Base64FormattingOptions.None);
 
     public static byte[] UnBase64(string base64)
-    {
-        return Convert.FromBase64String(base64);
-    }
+        => Convert.FromBase64String(base64);
+
+    public static string UnBase64String(string base64)
+        => Encoding.UTF8.GetString(UnBase64(base64));
 }

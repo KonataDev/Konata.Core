@@ -22,4 +22,13 @@ internal static class StringExt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte[] Atob(this string data)
         => ByteConverter.UnBase64(data);
+    
+    /// <summary>
+    /// Convert base64 string to plain string
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string Atoa(this string data)
+        => ByteConverter.UnBase64String(data);
 }
