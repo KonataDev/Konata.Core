@@ -1,10 +1,5 @@
 ﻿using System.IO;
 
-// ReSharper disable InvertIf
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
-// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
 namespace Konata.Core.Message.Model;
@@ -12,27 +7,22 @@ namespace Konata.Core.Message.Model;
 public class FlashImageChain : ImageChain
 {
     private FlashImageChain(ImageChain chain)
-        : base(chain.ImageUrl, chain.FileName, chain.FileHash, 
-        chain.Width,chain.Height, chain.FileLength, chain.ImageType)
     {
         Type = ChainType.Flash;
         Mode = ChainMode.Singleton;
-    }
 
-    protected FlashImageChain(string url, string fileName,
-        string fileHash, uint width, uint height, uint length, ImageType type)
-        : base(url, fileName, fileHash, width, height, length, type)
-    {
-        Type = ChainType.Flash;
-        Mode = ChainMode.Singleton;
-    }
+        ImageUrl = chain.ImageUrl;
+        FileData = chain.FileData;
+        FileLength = chain.FileLength;
+        Width = chain.Width;
+        Height = chain.Height;
+        HashData = chain.HashData;
+        FileHash = chain.FileHash;
+        ImageType = chain.ImageType;
+        FileName = chain.FileName;
 
-    protected FlashImageChain(byte[] data, uint width,
-        uint height, byte[] md5, string md5str, ImageType type)
-        : base(data, width, height, md5, md5str, type)
-    {
-        Type = ChainType.Flash;
-        Mode = ChainMode.Singleton;
+        if (chain.PicUpInfo != null)
+            SetPicUpInfo(chain.PicUpInfo);
     }
 
     /// <summary>
@@ -41,8 +31,8 @@ public class FlashImageChain : ImageChain
     /// <param name="filepath"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public new static ImageChain CreateFromFile(string filepath)
-        => ImageChain.CreateFromFile(filepath);
+    public new static FlashImageChain CreateFromFile(string filepath)
+        => new(ImageChain.CreateFromFile(filepath));
 
     /// <summary>
     /// Create a flash image chain from plain base64 <br />
@@ -50,16 +40,16 @@ public class FlashImageChain : ImageChain
     /// </summary>
     /// <param name="base64"></param>
     /// <returns></returns>
-    public new static ImageChain CreateFromBase64(string base64)
-        => ImageChain.CreateFromBase64(base64);
+    public new static FlashImageChain CreateFromBase64(string base64)
+        => new(ImageChain.CreateFromBase64(base64));
 
     /// <summary>
     /// Create a flash image chain from url (limit 10MB)
     /// </summary>
     /// <param name="url"></param>
     /// <returns></returns>
-    public new static ImageChain CreateFromURL(string url)
-        => ImageChain.CreateFromUrl(url);
+    public new static FlashImageChain CreateFromUrl(string url)
+        => new(ImageChain.CreateFromUrl(url));
 
     /// <summary>
     /// Create a flash image chain
@@ -75,8 +65,8 @@ public class FlashImageChain : ImageChain
     /// </summary>
     /// <param name="code"></param>
     /// <returns></returns>
-    internal static new ImageChain Parse(string code)
-       => ImageChain.Parse(code);
+    internal new static FlashImageChain Parse(string code)
+        => CreateFromImageChain(ImageChain.Parse(code));
 
     public override string ToString()
         => $"[KQ:flash," +
@@ -85,8 +75,7 @@ public class FlashImageChain : ImageChain
            $"height={Height}," +
            $"length={FileLength}," +
            $"type={(int) ImageType}]";
-    
+
     internal override string ToPreviewString()
         => "[闪照]";
-
 }

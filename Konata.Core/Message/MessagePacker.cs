@@ -372,29 +372,44 @@ internal static class MessagePacker
 
     private static void ConstructImage(ProtoTreeRoot root, ImageChain chain)
     {
-        root.AddTree("12", (leaf) =>
+        var image = new ProtoTreeRoot();
         {
-            leaf.AddTree("42", (_) =>
+            image.AddLeafString("12", chain.FileName);
+            image.AddLeafVar("38", chain.PicUpInfo.Ip);
+            image.AddLeafVar("40", chain.PicUpInfo.UploadId);
+            image.AddLeafVar("48", chain.PicUpInfo.Port);
+            image.AddLeafVar("50", 66);
+            //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
+            image.AddLeafVar("60", 1);
+            image.AddLeafBytes("6A", chain.HashData);
+            image.AddLeafVar("A001", (long) chain.ImageType);
+            image.AddLeafVar("B001", chain.Width);
+            image.AddLeafVar("B801", chain.Height);
+            image.AddLeafVar("C001", 200); // TODO: Unknown
+            image.AddLeafVar("C801", chain.FileLength);
+            image.AddLeafVar("D001", 0);
+            image.AddLeafVar("E801", 0);
+            image.AddLeafVar("F001", 0);
+            image.AddTree("9202", __ => __.AddLeafVar("78", 2));
+        }
+
+        // Is not a flash image
+        if (chain is not FlashImageChain)
+        {
+            root.AddTree("12", _ => _.AddTree("42", image));
+            return;
+        }
+
+        var flash = new ProtoTreeRoot();
+        {
+            flash.AddTree("AA03", _ =>
             {
-                _.AddLeafString("12", chain.FileName);
-                _.AddLeafVar("38", chain.PicUpInfo.Ip);
-                _.AddLeafVar("40", chain.PicUpInfo.UploadId);
-                _.AddLeafVar("48", chain.PicUpInfo.Port);
-                _.AddLeafVar("50", 66);
-                //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
-                _.AddLeafVar("60", 1);
-                _.AddLeafBytes("6A", chain.HashData);
-                _.AddLeafVar("A001", (long) chain.ImageType);
-                _.AddLeafVar("B001", chain.Width);
-                _.AddLeafVar("B801", chain.Height);
-                _.AddLeafVar("C001", 200); // TODO: Unknown
-                _.AddLeafVar("C801", chain.FileLength);
-                _.AddLeafVar("D001", 0);
-                _.AddLeafVar("E801", 0);
-                _.AddLeafVar("F001", 0);
-                _.AddTree("9202", __ => __.AddLeafVar("78", 2));
+                _.AddLeafVar("08", 3);
+                _.AddTree("12", __ => __.AddTree("0A", image));
             });
-        });
+        }
+        root.AddTree("12", flash);
+        ConstructText(root, TextChain.Create("[闪照]请使用新版手机QQ查看闪照。"));
     }
 
     private static void ConstructQFace(ProtoTreeRoot root, QFaceChain chain)
@@ -457,7 +472,7 @@ internal static class MessagePacker
         var time = (uint) tree.GetLeafVar("18");
         var uuid = tree.PathTo<ProtoVarInt>("42.18");
         var preview = tree.PathTo<ProtoLengthDelimited>("2A.0A.0A").ToString();
-    
+
         return ReplyChain.Create(uin, seq, uuid, time, preview);
     }
 

@@ -414,6 +414,7 @@ internal class WtExchangeLogic : BaseLogic
 
             _onlineType = OnlineStatusEvent.Type.Offline;
             if (await Login()) ScheduleComponent.Cancel(ScheduleReLogin);
+            else Context.LogW(TAG, "ReLogin failed?");
         }
         catch (TimeoutException e)
         {

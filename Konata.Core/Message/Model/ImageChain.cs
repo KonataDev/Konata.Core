@@ -15,54 +15,58 @@ public class ImageChain : BaseChain
     /// <summary>
     /// Image Url
     /// </summary>
-    public string ImageUrl { get; private set; }
+    public string ImageUrl { get; protected set; }
 
     /// <summary>
     /// File name
     /// </summary>
-    public string FileName { get; }
+    public string FileName { get; protected set; }
 
     /// <summary>
     /// File hash
     /// </summary>
-    public string FileHash { get; }
+    public string FileHash { get; protected set; }
 
     /// <summary>
     /// MD5 byte[]
     /// </summary>
-    public byte[] HashData { get; private set; }
+    public byte[] HashData { get; protected set; }
 
     /// <summary>
     /// Image data
     /// </summary>
-    public byte[] FileData { get; }
+    public byte[] FileData { get; protected set; }
 
     /// <summary>
     /// Image data length
     /// </summary>
-    public uint FileLength { get; private set; }
+    public uint FileLength { get; protected set; }
 
     /// <summary>
     /// Image width
     /// </summary>
-    public uint Width { get; private set; }
+    public uint Width { get; protected set; }
 
     /// <summary>
     /// Image height
     /// </summary>
-    public uint Height { get; private set; }
+    public uint Height { get; protected set; }
 
     /// <summary>
     /// Image type
     /// </summary>
-    public ImageType ImageType { get; private set; }
+    public ImageType ImageType { get; protected set; }
 
     /// <summary>
     /// Picup information
     /// </summary>
     internal PicUpInfo PicUpInfo { get; private set; }
 
-    protected ImageChain(string url, string fileName,
+    protected ImageChain() : base(ChainType.Image, ChainMode.Multiple)
+    {
+    }
+
+    private ImageChain(string url, string fileName,
         string fileHash, uint width, uint height, uint length, ImageType type)
         : base(ChainType.Image, ChainMode.Multiple)
     {
@@ -78,7 +82,7 @@ public class ImageChain : BaseChain
         HashData = ByteConverter.UnHex(fileHash);
     }
 
-    protected ImageChain(byte[] data, uint width,
+    private ImageChain(byte[] data, uint width,
         uint height, byte[] md5, string md5Str, ImageType type)
         : base(ChainType.Image, ChainMode.Multiple)
     {
@@ -255,7 +259,7 @@ public class ImageChain : BaseChain
            $"height={Height}," +
            $"length={FileLength}," +
            $"type={(int) ImageType}]";
-    
+
     internal override string ToPreviewString()
         => "[图片]";
 }

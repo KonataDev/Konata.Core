@@ -47,6 +47,9 @@ public class MessageBuilder : IEnumerable
         Text(text);
     }
 
+    public IEnumerator GetEnumerator()
+        => _chain.GetEnumerator();
+    
     /// <summary>
     /// Build a message chain
     /// </summary>
@@ -101,7 +104,7 @@ public class MessageBuilder : IEnumerable
         var builder = new MessageBuilder();
         {
             var regexp = new Regex
-                (@"\[KQ:(at|image|face|bface|record|video|reply|json|xml).*?\]");
+                (@"\[KQ:(at|image|flash|face|bface|record|video|reply|json|xml).*?\]");
 
             // Match pattern
             var matches = regexp.Matches(message);
@@ -123,6 +126,7 @@ public class MessageBuilder : IEnumerable
                     {
                         "at" => AtChain.Parse(i.Value),
                         "image" => ImageChain.Parse(i.Value),
+                        "flash" => FlashImageChain.Parse(i.Value),
                         "face" => QFaceChain.Parse(i.Value),
                         "bface" => BFaceChain.Parse(i.Value),
                         "record" => RecordChain.Parse(i.Value),
@@ -253,10 +257,5 @@ public class MessageBuilder : IEnumerable
             z._chain.AddRange(y._chain.Chains);
         }
         return z;
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        throw new System.NotImplementedException();
     }
 }
