@@ -1,0 +1,23 @@
+<Project>
+	
+    <!-- Generate CI Build Tag -->
+    <Target Name="CIBuild" BeforeTargets="CoreCompile" Condition="'$(ISCIBUILD)' == 'TRUE'">
+        <PropertyGroup>
+            <CustomAssemblyInfoFile>$(IntermediateOutputPath)CInfo.cs</CustomAssemblyInfoFile>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <Compile Include="$(CustomAssemblyInfoFile)" />
+        </ItemGroup>
+
+        <ItemGroup>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>CIBuild</_Parameter1>
+                <_Parameter2>True</_Parameter2>
+            </AssemblyAttributes>
+        </ItemGroup>
+
+        <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)" />
+    </Target>
+    
+</Project>

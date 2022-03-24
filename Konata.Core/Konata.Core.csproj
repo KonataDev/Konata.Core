@@ -3,7 +3,7 @@
     <!-- Language features -->
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFrameworks>netstandard2.1;net50;net60</TargetFrameworks>
     </PropertyGroup>
 
     <!-- Package definition -->
@@ -21,7 +21,7 @@
         <RepositoryType>Git</RepositoryType>
         <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
 
-        <NoWarn>1701;1702;1591</NoWarn>
+        <NoWarn>1701;1702;1591;0612</NoWarn>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <DocumentationFile>$(ProjectDir)bin\Konata.Core.xml</DocumentationFile>
     </PropertyGroup>

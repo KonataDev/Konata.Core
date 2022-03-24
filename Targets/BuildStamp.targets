@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
     
     <!-- Get Build Stamp -->
-    <Target Name="GetBuildStamp" BeforeTargets="GenerateBuildStamp" Condition="'$(BuildHash)' == ''">
+    <Target Name="GetBuildStamp" BeforeTargets="CoreCompile" Condition="'$(BuildHash)' == ''">
         
         <PropertyGroup>
             <BuildDate>$([System.DateTime]::Now.ToString(r))</BuildDate>
@@ -27,9 +27,9 @@
     </Target>
 
     <!-- Generate Build Stamp -->
-    <Target Name="GenerateBuildStamp" BeforeTargets="CoreCompile">
+    <Target Name="GenerateBuildStamp" AfterTargets="GetBuildStamp">
         <PropertyGroup>
-            <CustomAssemblyInfoFile>$(IntermediateOutputPath)CustomAssemblyInfo.cs</CustomAssemblyInfoFile>
+            <CustomAssemblyInfoFile>$(IntermediateOutputPath)Build.cs</CustomAssemblyInfoFile>
         </PropertyGroup>
 
         <ItemGroup>

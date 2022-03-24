@@ -6,6 +6,7 @@ using Konata.Core.Packets.Protobuf;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Protobuf;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -128,20 +129,12 @@ public class BotKeyStore
         {
             var random = new Random();
             var seedTable = new byte[16];
+            RandomNumberGenerator.Fill(seedTable);
 
-            bool RandBoolean()
+            for (var i = 0; i < seedTable.Length; ++i)
             {
-                return random.Next(0, 1) == 1;
-            }
-
-            using (var securityRandom = new RNGCryptoServiceProvider())
-            {
-                securityRandom.GetBytes(seedTable);
-            }
-
-            for (int i = 0; i < seedTable.Length; ++i)
-            {
-                seedTable[i] = (byte) (Math.Abs(seedTable[i] % 26) + (RandBoolean() ? 97 : 65));
+                seedTable[i] = (byte) (Math.Abs(seedTable[i] % 26) 
+                                       + (random.Next(0, 1) == 1 ? 97 : 65));
             }
 
             return Encoding.UTF8.GetString(seedTable);
