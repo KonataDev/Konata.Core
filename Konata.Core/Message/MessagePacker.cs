@@ -414,15 +414,30 @@ internal static class MessagePacker
 
     private static void ConstructQFace(ProtoTreeRoot root, QFaceChain chain)
     {
-        // @formatter:off
-        root.AddTree("12", (leaf) =>
+        if (!chain.Big)
         {
-            leaf.AddTree("12", (_) =>
+            root.AddTree("12", _ => _.AddTree
+                ("12", __ => __.AddLeafVar("08", chain.FaceId)));
+            return;
+        }
+
+        root.AddTree("12", _ => _.AddTree("AA03", __ =>
+        {
+            __.AddLeafVar("08", 37);
+            __.AddTree("12", ___ =>
             {
-                _.AddLeafVar("08", chain.FaceId);
+                ___.AddLeafString("0A", "1");
+                ___.AddLeafString("12", chain.BigFaceId);
+                ___.AddLeafVar("18", chain.FaceId);
+                ___.AddLeafVar("20", 1);
+                ___.AddLeafVar("28", 1);
+                ___.AddLeafString("32", "");
+                ___.AddLeafString("3A", chain.FaceName);
+                ___.AddLeafString("42", "");
+                ___.AddLeafVar("48", 1);
             });
-        });
-        // @formatter:on
+            __.AddLeafVar("18", 1);
+        }));
     }
 
     private static BaseChain ParseTextOrAt(ProtoTreeRoot root)
@@ -621,7 +636,7 @@ internal static class MessagePacker
     /// <param name="tree"></param>
     /// <returns></returns>
     private static QFaceChain ParseQFace(ProtoTreeRoot tree)
-        => QFaceChain.Create((uint) tree.GetLeafVar("08"));
+        => QFaceChain.Create((int) tree.GetLeafVar("08"));
 
     /// <summary>
     /// Process Big QFace chain
@@ -629,7 +644,7 @@ internal static class MessagePacker
     /// <param name="tree"></param>
     /// <returns></returns>
     private static QFaceChain ParseBigQFace(ProtoTreeRoot tree)
-        => QFaceChain.Create((uint) tree.GetLeafVar("18"), true);
+        => QFaceChain.Create((int) tree.GetLeafVar("18"), true);
 
     internal enum ParseMode
     {

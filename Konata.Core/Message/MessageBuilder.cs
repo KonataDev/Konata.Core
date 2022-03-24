@@ -210,7 +210,7 @@ public class MessageBuilder : IEnumerable
     /// </summary>
     /// <param name="faceId"></param>
     /// <returns></returns>
-    public MessageBuilder QFace(uint faceId)
+    public MessageBuilder QFace(int faceId)
     {
         _chain.Add(QFaceChain.Create(faceId));
         return this;
