@@ -423,20 +423,37 @@ internal static class MessagePacker
 
         root.AddTree("12", _ => _.AddTree("AA03", __ =>
         {
-            __.AddLeafVar("08", 37);
-            __.AddTree("12", ___ =>
+            // Big qface
+            if (chain.Big)
             {
-                ___.AddLeafString("0A", "1");
-                ___.AddLeafString("12", chain.BigFaceId);
-                ___.AddLeafVar("18", chain.FaceId);
-                ___.AddLeafVar("20", 1);
-                ___.AddLeafVar("28", 1);
-                ___.AddLeafString("32", "");
-                ___.AddLeafString("3A", chain.FaceName);
-                ___.AddLeafString("42", "");
-                ___.AddLeafVar("48", 1);
-            });
-            __.AddLeafVar("18", 1);
+                __.AddLeafVar("08", 37);
+                __.AddTree("12", ___ =>
+                {
+                    ___.AddLeafString("0A", "1");
+                    ___.AddLeafString("12", chain.BigFaceId);
+                    ___.AddLeafVar("18", chain.FaceId);
+                    ___.AddLeafVar("20", 1);
+                    ___.AddLeafVar("28", 1);
+                    ___.AddLeafString("32", "");
+                    ___.AddLeafString("3A", chain.FaceName);
+                    ___.AddLeafString("42", "");
+                    ___.AddLeafVar("48", 1);
+                });
+                __.AddLeafVar("18", 1);
+            }
+
+            // New qface
+            else
+            {
+                __.AddLeafVar("08", 33);
+                __.AddTree("12", ___ =>
+                {
+                    ___.AddLeafVar("08", chain.FaceId);
+                    ___.AddLeafString("12", chain.FaceName);
+                    ___.AddLeafString("1A", chain.FaceName);
+                });
+                __.AddLeafVar("18", 1);
+            }
         }));
     }
 
