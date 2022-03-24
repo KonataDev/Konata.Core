@@ -1,113 +1,86 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf.ProtoModel;
 
 namespace Konata.Core.Utils.Protobuf;
 
-internal class ProtobufEncoder
+internal class Proto
 {
-    private readonly Dictionary<uint, (ProtoType, List<byte[]>)> _leaves = new();
-
-    private ProtobufEncoder() { }
-
-    public byte[] Marshal()
+    private static void _encode(ByteBuffer writer, int tag, object value)
     {
-        var buf = new ByteBuffer();
-        foreach (var node in _leaves)
+        if (value == null)
+            return;
+
+        switch (value)
+        {
+            case byte:
+            case short:
+            case ushort:
+            case int:
+            case uint:
+            case long:
+                goto Varint;
+            case string str:
+                value = ProtoLengthDelimited.Create(str).Value;
+                goto LengthDelimited;
+            case ByteBuffer buf:
+                value = buf.GetBytes();
+                goto LengthDelimited;
+            case byte[]:
+                goto LengthDelimited;
+            case Tree t:
+                value = Encode(t);
+                goto LengthDelimited;
+            default:
+                throw new Exception("Unsupported type");
+        }
+
+        LengthDelimited:
+            writer.PutBytes(ByteConverter.NumberToVarint(tag << 3 | 2));
+            var bytes = (byte[]) value;
+            var len = ByteConverter.NumberToVarint(bytes.Length);
+            writer.PutBytes(len);
+            writer.PutBytes(bytes);
+            return;
+
+        Varint:
+            writer.PutBytes(ByteConverter.NumberToVarint(tag << 3 | 0));
+            writer.PutBytes(ByteConverter.NumberToVarint(Convert.ToInt64(value)));
+    }
+
+    public static byte[] Encode(Tree tree)
+    {
+        var writer = new ByteBuffer();
+        foreach (var node in tree)
         {
             var tag = node.Key;
-            var (type, list) = node.Value;
-            var tagType = tag << 3 | (uint) type;
-            list.ForEach(data =>
+            var value = node.Value;
+            if (value is Proto.List)
             {
-                buf.PutBytes(ByteConverter.NumberToVarint(tagType));
-                if (type == ProtoType.LengthDelimited)
-                    buf.PutBytes(ByteConverter.NumberToVarint(data.Length));
-                buf.PutBytes(data);
-            });
-        }
-
-        return buf.GetBytes();
-    }
-
-    private void _save(uint tag, ProtoType type, byte[] data)
-    {
-        if (!_leaves.ContainsKey(tag))
-            _leaves.Add(tag, (type, new()));
-        var (_, list) = _leaves[tag];
-        list.Add(data);
-    }
-    
-    public ProtobufEncoder AddLeafVarInt(uint tag, long value)
-    {
-        _save(tag, ProtoType.VarInt, ByteConverter.NumberToVarint(value));
-        return this;
-    }
-
-    public ProtobufEncoder AddLeafString(uint tag, string value)
-    {
-        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value));
-        return this;
-    }
-    
-    public ProtobufEncoder AddLeafBytes(uint tag, byte[] value)
-    {
-        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value));
-        return this;
-    }
-    
-    public ProtobufEncoder AddLeafBuffer(uint tag, ByteBuffer value)
-    {
-        _save(tag, ProtoType.LengthDelimited, ProtoLengthDelimited.Create(value.GetBytes()));
-        return this;
-    }
-
-    public object this[uint tag]
-    {
-        set
-        {
-            switch (value)
+                ((Proto.List) value).ForEach(val => {
+                    _encode(writer, tag, val);
+                });
+            }
+            else
             {
-                case byte b:
-                    AddLeafVarInt(tag, b);
-                    break;
-                case short s:
-                    AddLeafVarInt(tag, s);
-                    break;
-                case ushort us:
-                    AddLeafVarInt(tag, us);
-                    break;
-                case int i:
-                    AddLeafVarInt(tag, i);
-                    break;
-                case uint ui:
-                    AddLeafVarInt(tag, ui);
-                    break;
-                case long l:
-                    AddLeafVarInt(tag, l);
-                    break;
-                case string str:
-                    AddLeafString(tag, str);
-                    break;
-                case byte[] bytes:
-                    AddLeafBytes(tag, bytes);
-                    break;
-                case ByteBuffer buf:
-                    AddLeafBuffer(tag, buf);
-                    break;
-                case ProtobufEncoder pbEncoder:
-                    AddLeafBytes(tag, pbEncoder.Marshal());
-                    break;
-                default:
-                    throw new Exception("Unsupported type");
+                _encode(writer, tag, value);
             }
         }
+        return writer.GetBytes();
     }
 
-    public static ProtobufEncoder Create()
-        => new();
+    
+    public class Tree : Dictionary<int, object>
+    {
+
+    }
+    public class List : List<object>
+    {
+
+    }
 }
 
 internal class ProtobufDecoder
@@ -239,5 +212,4 @@ internal class ProtobufDecoder
     public static ProtobufDecoder Create(byte[] raw) => new(raw);
     
     public static ProtobufDecoder Create(ByteBuffer b) => new(b.GetBytes());
-
 }

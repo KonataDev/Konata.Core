@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
 using NUnit.Framework;
@@ -37,33 +38,77 @@ public class PbTest
         Assert.AreEqual(list[1][2].AsString(), "kkk");
     }
 
+    public byte[] TestPbEncoderNew()
+    {
+        var tree = new Proto.Tree
+        {
+            {1, 123},
+            {2, "111"},
+            {3, 5555555555555566},
+            {4,  new Proto.Tree
+            { 
+                {5, "1"},
+                {7, 555556666},
+                {8, new Proto.List
+                {
+                    new Proto.Tree
+                    {
+                        {1, 3},
+                        {2, 4}
+                    },
+                    new Proto.Tree
+                    {
+                        {2, "5"},
+                        {6, 3333}
+                    }
+                }}
+            }},
+        };
+
+        return Proto.Encode(tree);
+    }
+
+    public byte[] TestPbEncoderOld()
+    {
+        var tree2 = new ProtoTreeRoot();
+        {
+            tree2.AddLeafVar("08", 123);
+            tree2.AddLeafString("12", "111");
+            tree2.AddLeafVar("18", 5555555555555566);
+            tree2.AddTree("22", _ =>
+            {
+                _.AddLeafString("2A", "1");
+                _.AddLeafVar("38", 555556666);
+                _.AddTree("42", __=>
+                {
+                    __.AddLeafVar("08", 3);
+                    __.AddLeafVar("10", 4);
+                });
+                _.AddTree("42", __=>{
+                    __.AddLeafString("12", "5");
+                    __.AddLeafVar("30", 3333);
+                });
+            });
+        }
+
+        return ProtoTreeRoot.Serialize(tree2).GetBytes();
+    }
+
     [Test]
     public void TestPbEncoder1()
+        => Assert.AreEqual(TestPbEncoderNew(), TestPbEncoderOld());
+
+    [Test]
+    public void TestBenchNew()
     {
-        var encoder = ProtobufEncoder.Create();
-        // encoder.AddLeafVarInt(1, 666)
-        //     .AddLeafString(2, "555")
-        //     .AddLeafString(3, "t1")
-        //     .AddLeafString(3, "t2");
+        for(var i = 0; i< 100000; ++i)
+            TestPbEncoderNew();
+    }
 
-        encoder[1] = 666;
-        encoder[2] = "555";
-        encoder[3] = "t1";
-        encoder[3] = "t2";
-
-        encoder[4] = ((Func<byte[]>)(() =>
-        {
-            var e = ProtobufEncoder.Create();
-            e[5] = 100;
-            return e.Marshal();
-        }))(); 
-
-        var bytes = encoder.Marshal();
-        var decoder = ProtobufDecoder.Create(bytes);
-        Assert.AreEqual(decoder[1].AsNumber(), 666);
-        Assert.AreEqual(decoder[2].AsString(), "555");
-        Assert.AreEqual(decoder[3].AsLeaves()[0].AsString(), "t1");
-        Assert.AreEqual(decoder[3].AsLeaves()[1].AsString(), "t2");
-        Assert.AreEqual(decoder[4][5].AsNumber(), 100);
+    [Test]
+    public void TestBenchOld()
+    {
+        for(var i = 0; i< 100000; ++i)
+            TestPbEncoderOld();
     }
 }
