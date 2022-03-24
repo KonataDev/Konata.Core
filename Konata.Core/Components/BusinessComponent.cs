@@ -84,7 +84,7 @@ internal class BusinessComponent : InternalComponent
     public override void OnStart()
     {
         _taskTimeout = ConfigComponent.GlobalConfig.DefaultTimeout;
-        
+
         if (_taskTimeout <= 2000)
         {
             LogW(TAG, "The timeout you configured is less than 2000ms, " +
@@ -163,17 +163,14 @@ internal class BusinessComponent : InternalComponent
 
     #region Utils
 
-    public async Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent, int timeout)
+    public async Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
         where TEvent : ProtocolEvent
     {
-        var task = timeout == 0
-            ? Entity.SendEvent<PacketComponent>(anyEvent)
-            : Entity.SendEvent<PacketComponent>(anyEvent, _taskTimeout);
+        var task = anyEvent.WaitForResponse
+            ? Entity.SendEvent<PacketComponent>(anyEvent, _taskTimeout)
+            : Entity.SendEvent<PacketComponent>(anyEvent);
         return (TEvent) await task;
     }
-
-    public Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
-        where TEvent : ProtocolEvent => SendPacket<TEvent>(anyEvent, _taskTimeout);
 
     public void PostPacket(ProtocolEvent anyEvent)
         => Entity.PostEvent<PacketComponent>(anyEvent);
