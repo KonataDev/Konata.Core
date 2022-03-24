@@ -21,7 +21,7 @@ public class GroupModifyMemberCardEvent : ProtocolEvent
     public string MemberCard { get; }
 
     private GroupModifyMemberCardEvent(uint groupUin,
-        uint memberUin, string memberCard) : base(2000, true)
+        uint memberUin, string memberCard) : base(true)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;

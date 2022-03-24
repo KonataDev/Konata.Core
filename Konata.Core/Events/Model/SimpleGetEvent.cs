@@ -20,7 +20,7 @@ internal class SimpleGetEvent : ProtocolEvent
     /// </summary>
     public string Ip { get; }
 
-    private SimpleGetEvent() : base(6000, true)
+    private SimpleGetEvent() : base(true)
     {
     }
 

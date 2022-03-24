@@ -21,7 +21,7 @@ public class GroupPromoteAdminEvent : ProtocolEvent
     public bool ToggleType { get; }
 
     private GroupPromoteAdminEvent(uint groupUin,
-        uint memberUin, bool toggleType) : base(2000, true)
+        uint memberUin, bool toggleType) : base(true)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;

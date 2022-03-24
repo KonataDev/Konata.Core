@@ -18,25 +18,25 @@ public class GroupMessageRecallEvent : ProtocolEvent
     /// Operator uin <br/>
     /// </summary>
     public uint OperatorUin { get; }
-    
+
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Operator uin <br/>
     /// </summary>
     public uint AffectedUin { get; }
-    
+
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Operator uin <br/>
     /// </summary>
     public uint Sequence { get; }
-    
+
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Operator uin <br/>
     /// </summary>
     public uint Random { get; }
-    
+
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
     /// Operator uin <br/>
@@ -49,7 +49,7 @@ public class GroupMessageRecallEvent : ProtocolEvent
     /// <param name="groupUin"></param>
     /// <param name="messageStruct"></param>
     private GroupMessageRecallEvent(uint groupUin, MessageStruct messageStruct)
-        : base(2000, true)
+        : base(true)
     {
         GroupUin = groupUin;
         Sequence = messageStruct.Sequence;

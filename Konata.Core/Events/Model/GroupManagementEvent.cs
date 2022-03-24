@@ -21,7 +21,7 @@ internal class GroupManagementEvent : ProtocolEvent
     public uint SelfUin { get; }
 
     private GroupManagementEvent(ulong groupCode,
-        uint selfUin, bool dismiss) : base(6000, true)
+        uint selfUin, bool dismiss) : base(true)
     {
         GroupCode = groupCode;
         SelfUin = selfUin;

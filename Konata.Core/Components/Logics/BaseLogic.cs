@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Konata.Core.Components;
 using Konata.Core.Events;
 
 namespace Konata.Core.Components.Logics;

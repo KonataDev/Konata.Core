@@ -108,13 +108,13 @@ internal class WtLoginEvent : ProtocolEvent
     public string CaptchaResult { get; }
 
     private WtLoginEvent(Type eventType)
-        : base(6000, true)
+        : base(true)
     {
         EventType = eventType;
     }
 
     private WtLoginEvent(Type eventType, string captcha)
-        : base(6000, true)
+        : base(true)
     {
         EventType = eventType;
         CaptchaResult = captcha;
@@ -248,7 +248,7 @@ internal class WtLoginEvent : ProtocolEvent
         => new(resultCode, Type.LoginDenied, reason);
 
     internal static WtLoginEvent ResultNotImplemented(int resultCode, string reason)
-        => new(Type.NotImplemented) {ResultCode = resultCode, EventMessage = reason, WaitForResponse = false, Timeout = 0};
+        => new(Type.NotImplemented) {ResultCode = resultCode, EventMessage = reason, WaitForResponse = false};
 }
 
 public class CaptchaEvent : BaseEvent

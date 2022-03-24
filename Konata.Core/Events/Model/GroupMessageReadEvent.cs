@@ -15,7 +15,7 @@ internal class GroupMessageReadEvent : ProtocolEvent
     public uint RequestId { get; }
 
     private GroupMessageReadEvent(uint groupUin,
-        uint requestId, int sessionSeq) : base(0, false)
+        uint requestId, int sessionSeq) : base(false)
     {
         GroupUin = groupUin;
         RequestId = requestId;

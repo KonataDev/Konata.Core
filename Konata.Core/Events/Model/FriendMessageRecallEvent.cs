@@ -23,7 +23,7 @@ public class FriendMessageRecallEvent : ProtocolEvent
     public uint MessageId { get; }
 
     private FriendMessageRecallEvent(uint friendUin,
-        uint messageId) : base(2000, true)
+        uint messageId) : base(true)
     {
         FriendUin = friendUin;
         MessageId = messageId;

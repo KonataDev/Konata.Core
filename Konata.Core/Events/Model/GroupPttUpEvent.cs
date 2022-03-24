@@ -32,7 +32,7 @@ public class GroupPttUpEvent : ProtocolEvent
     public PttUpInfo UploadInfo { get; }
 
     private GroupPttUpEvent(uint groupUin, uint selfUin,
-        RecordChain uploadRecord) : base(6000, true)
+        RecordChain uploadRecord) : base(true)
     {
         GroupUin = groupUin;
         SelfUin = selfUin;

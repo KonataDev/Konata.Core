@@ -418,7 +418,7 @@ internal class MessagingLogic : BaseLogic
     #region Stub methods
 
     private static void ConfirmReadGroupMessage(BusinessComponent context, GroupMessageEvent e)
-        => context.SendPacket(GroupMessageReadEvent.Create(e.GroupUin, e.Message.Sequence, e.SessionSequence));
+        => context.PostPacket(GroupMessageReadEvent.Create(e.GroupUin, e.Message.Sequence, e.SessionSequence));
 
     private static Task<ProtocolEvent> SendGroupMessage(BusinessComponent context, uint groupUin, MessageChain message)
         => context.SendPacket<ProtocolEvent>(GroupMessageEvent.Create(groupUin, context.Bot.Uin, message));

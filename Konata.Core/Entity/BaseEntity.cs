@@ -95,6 +95,7 @@ public class BaseEntity
 
         component.Entity = this;
         _componentDict.Add(component.GetType(), component);
+        component.OnLoad();
     }
 
     /// <summary>
@@ -107,6 +108,14 @@ public class BaseEntity
 
         _componentDict[type].OnDestroy();
         _componentDict.Remove(type);
+    }
+
+    /// <summary>
+    /// Start components
+    /// </summary>
+    internal void StartAllComponents()
+    {
+        foreach (var i in _componentDict) i.Value.OnStart();
     }
 
     /// <summary>

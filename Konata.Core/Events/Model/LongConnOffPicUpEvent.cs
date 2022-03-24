@@ -21,7 +21,7 @@ public class LongConnOffPicUpEvent : ProtocolEvent
     public List<ImageChain> UploadImages { get; }
 
     private LongConnOffPicUpEvent(uint selfUin,
-        List<ImageChain> uploadImages) : base(6000, true)
+        List<ImageChain> uploadImages) : base(true)
     {
         SelfUin = selfUin;
         UploadImages = uploadImages;

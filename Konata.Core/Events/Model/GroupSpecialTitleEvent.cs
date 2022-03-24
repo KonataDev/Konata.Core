@@ -27,7 +27,7 @@ public class GroupSpecialTitleEvent : ProtocolEvent
     public string SpecialTitle { get; }
 
     private GroupSpecialTitleEvent(uint groupUin, uint memberUin,
-        string specialTitle, uint expiredTime) : base(2000, true)
+        string specialTitle, uint expiredTime) : base(true)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;

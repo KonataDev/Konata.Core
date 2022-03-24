@@ -42,7 +42,7 @@ public class PullFriendListEvent : ProtocolEvent
     public List<BotFriend> FriendInfo { get; }
 
     private PullFriendListEvent(uint selfUin,
-        uint startIndex, uint limitNum) : base(2000, true)
+        uint startIndex, uint limitNum) : base(true)
     {
         SelfUin = selfUin;
         StartIndex = startIndex;

@@ -2,13 +2,11 @@
 
 public class CheckHeartbeatEvent : ProtocolEvent
 {
-    private CheckHeartbeatEvent()
-        : base(10000, true)
+    private CheckHeartbeatEvent() : base(true)
     {
     }
 
-    private CheckHeartbeatEvent(int resultCode)
-        : base(resultCode)
+    private CheckHeartbeatEvent(int resultCode) : base(resultCode)
     {
     }
 

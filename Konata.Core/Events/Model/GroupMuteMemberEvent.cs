@@ -31,7 +31,7 @@ public class GroupMuteMemberEvent : ProtocolEvent
     public uint TimeSeconds { get; }
 
     private GroupMuteMemberEvent(uint groupUin,
-        uint memberUin, uint timeSeconds) : base(2000, true)
+        uint memberUin, uint timeSeconds) : base(true)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;

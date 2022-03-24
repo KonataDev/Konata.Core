@@ -18,7 +18,7 @@ public class PullGroupListEvent : ProtocolEvent
     public List<BotGroup> GroupInfo { get; }
 
     private PullGroupListEvent(uint selfUin)
-        : base(2000, true)
+        : base(true)
     {
         SelfUin = selfUin;
     }

@@ -30,7 +30,7 @@ public class GroupPicUpEvent : ProtocolEvent
     public List<PicUpInfo> UploadInfo { get; }
 
     private GroupPicUpEvent(uint groupUin, uint selfUin,
-        List<ImageChain> uploadImages) : base(6000, true)
+        List<ImageChain> uploadImages) : base(true)
     {
         GroupUin = groupUin;
         SelfUin = selfUin;

@@ -55,7 +55,7 @@ public class GroupMessageEvent : ProtocolEvent
     internal MessageSlice SliceInfo { get; private set; }
 
     private GroupMessageEvent(uint groupUin, uint selfUin,
-        MessageChain messageChain) : base(6000, true)
+        MessageChain messageChain) : base(true)
     {
         Message = new MessageStruct(selfUin, "", groupUin, messageChain);
     }
@@ -82,14 +82,14 @@ public class GroupMessageEvent : ProtocolEvent
     /// <returns></returns>
     internal static GroupMessageEvent Result(int resultCode)
         => new(resultCode);
-    
+
     /// <summary>
     /// Construct event push
     /// </summary>
     /// <returns></returns>
     internal static GroupMessageEvent Push()
         => new(0);
-    
+
     /// <summary>
     /// Set message struct
     /// </summary>

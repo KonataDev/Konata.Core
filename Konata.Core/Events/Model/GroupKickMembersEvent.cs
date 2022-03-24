@@ -21,7 +21,7 @@ public class GroupKickMembersEvent : ProtocolEvent
     public bool ToggleType { get; }
 
     private GroupKickMembersEvent(uint groupUin,
-        uint[] membersUin, bool toggleType) : base(2000, true)
+        uint[] membersUin, bool toggleType) : base(true)
     {
         GroupUin = groupUin;
         MembersUin = membersUin;

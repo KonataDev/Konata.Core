@@ -50,6 +50,9 @@ public class Bot : BaseEntity, IDisposable
 
         // Setup event handlers
         InitializeHandlers();
+        
+        // Start components
+        StartAllComponents();
     }
 
     public void Dispose()

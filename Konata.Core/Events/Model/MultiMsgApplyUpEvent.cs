@@ -25,7 +25,7 @@ internal class MultiMsgApplyUpEvent : ProtocolEvent
     public MultiMsgUpInfo UploadInfo { get; }
 
     private MultiMsgApplyUpEvent(uint destUin, uint packedLen, byte[] md5Hash)
-        : base(6000, true)
+        : base(true)
     {
         DestUin = destUin;
         Md5Hash = md5Hash;

@@ -7,12 +7,12 @@ internal class FunCallSvrCallEvent : ProtocolEvent
     /// </summary>
     public uint CallUin { get; }
 
-    private FunCallSvrCallEvent(uint callUin) : base(6000, true)
+    private FunCallSvrCallEvent(uint callUin) : base(true)
     {
         CallUin = callUin;
     }
-    
-    private FunCallSvrCallEvent(int resultCode) 
+
+    private FunCallSvrCallEvent(int resultCode)
         : base(resultCode)
     {
     }

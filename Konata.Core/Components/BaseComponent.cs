@@ -10,7 +10,7 @@ namespace Konata.Core.Components;
 internal class BaseComponent
 {
     public BaseEntity Entity { get; set; }
- 
+
     public virtual Task<bool> OnHandleEvent(BaseEvent anyEvent)
         => Task.FromResult(false);
 
@@ -37,13 +37,26 @@ internal class BaseComponent
     public void PostEvent<TEvent>(BaseEvent anyEvent)
         where TEvent : BaseComponent => Entity?.PostEvent<TEvent>(anyEvent);
 
+    /// <summary>
+    /// Broadcast event
+    /// </summary>
+    /// <param name="anyEvent"></param>
     public void BroadcastEvent(BaseEvent anyEvent)
         => Entity?.BroadcastEvent(anyEvent);
 
+    /// <summary>
+    /// Get component
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public T GetComponent<T>()
         where T : BaseComponent => Entity.GetComponent<T>();
 
-    public virtual void OnInit()
+    public virtual void OnLoad()
+    {
+    }
+
+    public virtual void OnStart()
     {
     }
 

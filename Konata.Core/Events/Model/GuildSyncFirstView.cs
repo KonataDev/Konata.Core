@@ -7,7 +7,7 @@ internal class GuildSyncFirstView : ProtocolEvent
 {
     public long GuildId { get; }
 
-    private GuildSyncFirstView() : base(6000, true)
+    private GuildSyncFirstView() : base(true)
     {
     }
 

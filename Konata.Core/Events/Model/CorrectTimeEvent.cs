@@ -8,7 +8,7 @@ internal class CorrectTimeEvent : ProtocolEvent
     /// </summary>
     public uint ServerTime { get; }
 
-    private CorrectTimeEvent() : base(6000, true)
+    private CorrectTimeEvent() : base(true)
     {
     }
 

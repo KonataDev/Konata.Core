@@ -36,7 +36,7 @@ public class FriendMessageEvent : ProtocolEvent
     public MessageStruct Message { get; private set; }
 
     private FriendMessageEvent(uint friendUin, uint selfUin,
-        MessageChain messageChain) : base(2000, true)
+        MessageChain messageChain) : base(true)
     {
         SelfUin = selfUin;
         Message = new MessageStruct(selfUin, "", friendUin, messageChain);

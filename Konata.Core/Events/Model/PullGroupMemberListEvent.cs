@@ -54,7 +54,7 @@ public class PullGroupMemberListEvent : ProtocolEvent
     public List<BotMember> MemberInfo { get; }
 
     private PullGroupMemberListEvent(uint selfUin, uint groupUin,
-        ulong groupCode, uint nextUin) : base(6000, true)
+        ulong groupCode, uint nextUin) : base(true)
     {
         SelfUin = selfUin;
         GroupUin = groupUin;

@@ -10,6 +10,7 @@ using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Utils;
 
+// ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -20,11 +21,16 @@ internal class BusinessComponent : InternalComponent
 {
     private const string TAG = "BusinessComponent";
     private readonly Dictionary<Type, List<BaseLogic>> _businessLogics;
+    private int _taskTimeout;
 
     public BusinessComponent()
     {
+        _taskTimeout = 0;
         _businessLogics = new();
+    }
 
+    public override void OnLoad()
+    {
         // Load all business logics
         Reflection.EnumAttributes<BusinessLogicAttribute>((type, _) =>
         {
@@ -73,6 +79,22 @@ internal class BusinessComponent : InternalComponent
                     break;
             }
         });
+    }
+
+    public override void OnStart()
+    {
+        _taskTimeout = ConfigComponent.GlobalConfig.DefaultTimeout;
+        
+        if (_taskTimeout <= 2000)
+        {
+            LogW(TAG, "The timeout you configured is less than 2000ms, " +
+                      "this can cause server communication chances to fail. Force reseted to 6000ms.");
+            _taskTimeout = 6000;
+        }
+    }
+
+    public override void OnDestroy()
+    {
     }
 
     /// <summary>
@@ -146,20 +168,15 @@ internal class BusinessComponent : InternalComponent
     {
         var task = timeout == 0
             ? Entity.SendEvent<PacketComponent>(anyEvent)
-            : Entity.SendEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
+            : Entity.SendEvent<PacketComponent>(anyEvent, _taskTimeout);
         return (TEvent) await task;
     }
 
     public Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
-        where TEvent : ProtocolEvent => SendPacket<TEvent>(anyEvent, anyEvent.Timeout);
+        where TEvent : ProtocolEvent => SendPacket<TEvent>(anyEvent, _taskTimeout);
 
-    public async void SendPacket(ProtocolEvent anyEvent)
-    {
-        var task = anyEvent.Timeout == 0
-            ? Entity.SendEvent<PacketComponent>(anyEvent)
-            : Entity.SendEvent<PacketComponent>(anyEvent, anyEvent.Timeout);
-        await task;
-    }
+    public void PostPacket(ProtocolEvent anyEvent)
+        => Entity.PostEvent<PacketComponent>(anyEvent);
 
     #endregion
 }

@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace Konata.Core.Common
 {
     /// <summary>
@@ -32,6 +33,11 @@ namespace Konata.Core.Common
         /// </summary>
         public int HighwayChunkSize { get; set; }
 
+        /// <summary>
+        /// Default net timeout
+        /// </summary>
+        public int DefaultTimeout { get; set; }
+
         #endregion
 
         #region Audio
@@ -55,7 +61,8 @@ namespace Konata.Core.Common
                 TryReconnect = true,
                 CustomHost = null,
                 HighwayChunkSize = 4096,
-                EnableAudio = false
+                EnableAudio = false,
+                DefaultTimeout = 6000
             };
         }
     }

@@ -63,7 +63,7 @@ public class OnlineStatusEvent : ProtocolEvent
     public bool IsKickPC { get; }
 
     private OnlineStatusEvent(Type eventType, SubType subType)
-        : base(6000, true)
+        : base(true)
     {
     }
 
@@ -87,7 +87,7 @@ public class OnlineStatusEvent : ProtocolEvent
     /// <param name="eventType"></param>
     /// <returns></returns>
     internal static OnlineStatusEvent Create(Type eventType)
-        => new(eventType) {WaitForResponse = true, Timeout = 6000};
+        => new(eventType) {WaitForResponse = true};
 
     /// <summary>
     /// Construct event result

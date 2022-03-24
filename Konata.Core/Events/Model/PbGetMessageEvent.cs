@@ -15,7 +15,7 @@ internal class PbGetMessageEvent : ProtocolEvent
     // public List<ProtocolEvent> InnerEvent { get; }
 
     private PbGetMessageEvent(byte[] syncCookie)
-        : base(6000, true)
+        : base(true)
     {
         SyncCookie = syncCookie;
     }

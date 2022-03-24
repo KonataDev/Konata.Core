@@ -44,7 +44,7 @@ public class OnlineRespPushEvent : ProtocolEvent
     /// </summary>
     public int UnknownV32 { get; }
 
-    private OnlineRespPushEvent(uint selfUin, OnlineReqPushEvent original) : base(0, false)
+    private OnlineRespPushEvent(uint selfUin, OnlineReqPushEvent original) : base(false)
     {
         SelfUin = selfUin;
         RequestId = original.RequestId;
@@ -55,7 +55,7 @@ public class OnlineRespPushEvent : ProtocolEvent
         UnknownV32 = original.UnknownV32;
     }
 
-    private OnlineRespPushEvent(uint selfUin, PushTransMsgEvent original) : base(0, false)
+    private OnlineRespPushEvent(uint selfUin, PushTransMsgEvent original) : base(false)
     {
         SelfUin = selfUin;
         RequestId = original.RequestId;
