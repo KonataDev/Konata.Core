@@ -414,7 +414,8 @@ internal static class MessagePacker
 
     private static void ConstructQFace(ProtoTreeRoot root, QFaceChain chain)
     {
-        if (!chain.Big)
+        // Legacy qface
+        if (!chain.Big && chain.FaceId <= 255)
         {
             root.AddTree("12", _ => _.AddTree
                 ("12", __ => __.AddLeafVar("08", chain.FaceId)));
@@ -455,6 +456,8 @@ internal static class MessagePacker
                 __.AddLeafVar("18", 1);
             }
         }));
+
+        ConstructText(root, TextChain.Create($"{chain.FaceName} 请使用最新版手机QQ体验新功能"));
     }
 
     private static BaseChain ParseTextOrAt(ProtoTreeRoot root)
