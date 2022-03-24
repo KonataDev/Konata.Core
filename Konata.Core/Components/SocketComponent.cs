@@ -20,6 +20,8 @@ using Konata.Core.Utils.TcpSocket;
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ParameterTypeCanBeEnumerable.Global
+// ReSharper disable ConvertToConstant.Local
+// ReSharper disable InconsistentNaming
 
 namespace Konata.Core.Components;
 
@@ -101,16 +103,16 @@ internal class SocketComponent : InternalComponent, IClientListener
             while (tryQueue.Count > 0)
             {
                 var pop = (((string, int ) Host, long Latency)) tryQueue.Dequeue();
-                var (Addr, Port) = pop.Host;
+                var (addr, port) = pop.Host;
 
                 // Connect
-                LogI(TAG, $"Try Connecting {Addr}:{Port}.");
-                var result = await _tcpClient.Connect(Addr, Port);
+                LogI(TAG, $"Try Connecting {addr}:{port}.");
+                var result = await _tcpClient.Connect(addr, port);
 
                 // Try next server
                 if (result) return true;
                 {
-                    LogI(TAG, $"Failed to connecting to {Addr}:{Port}.");
+                    LogI(TAG, $"Failed to connecting to {addr}:{port}.");
                     await _tcpClient.Disconnect();
                 }
             }
@@ -214,11 +216,12 @@ internal class SocketComponent : InternalComponent, IClientListener
     private async Task<IEnumerable<ServerInfo>> GetServerList()
     {
         // Make request packet
+        var encKey = "F0441F5FF42DA58FDCF7949ABA62D411".UnHex();
         var reqUrl = "https://configsvr.msf.3g.qq.com/configsvr/serverlist.jsp";
         var reqBuf = new PacketBase();
         {
             reqBuf.EnterBarrierEncrypted(ByteBuffer.Prefix.None,
-                Endian.FollowMachine, TeaCryptor.Instance, "F0441F5FF42DA58FDCF7949ABA62D411".UnHex());
+                Endian.FollowMachine, TeaCryptor.Instance, encKey);
             {
                 var body = new SvcReqHttpServerListReq();
                 reqBuf.PutUintBE(body.Length + 4);
@@ -232,8 +235,7 @@ internal class SocketComponent : InternalComponent, IClientListener
             // Request server list
             var response = await Http.Post(reqUrl, reqBuf.GetBytes());
             {
-                var rspBuf = new PacketBase(response, TeaCryptor.Instance,
-                    "F0441F5FF42DA58FDCF7949ABA62D411".UnHex());
+                var rspBuf = new PacketBase(response, TeaCryptor.Instance, encKey);
                 {
                     rspBuf.EatBytes(4);
                     return new SvcRspHttpServerListRsp(rspBuf.TakeAllBytes(out _)).Servers;

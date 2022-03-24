@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
@@ -21,7 +20,6 @@ internal class WtExchangeLogic : BaseLogic
     private const string TAG = "WtXchg Logic";
     private const string SchedulePullMessage = "Logic.WtXchg.PullMessage";
     private const string ScheduleCheckConnection = "Logic.WtXchg.CheckConnection";
-    private const string ScheduleReLogin = "Logic.WtXchg.ReLogin";
 
     private OnlineStatusEvent.Type _onlineType;
     private TaskCompletionSource<WtLoginEvent> _userOperation;
@@ -141,7 +139,7 @@ internal class WtExchangeLogic : BaseLogic
                     case WtLoginEvent.Type.RefreshSmsFailed:
                         Context.LogW(TAG, "Send sms failed, Konata " +
                                           "will resend the sms after 60 sec.");
-                        Thread.Sleep(60 * 1000);
+                        await Task.Delay(60 * 1000);
                         wtStatus = await WtRefreshSmsCode(Context);
                         break;
 
@@ -339,7 +337,7 @@ internal class WtExchangeLogic : BaseLogic
             // Check heartbeat
             await CheckHeartbeat(Context);
         }
-        catch (TimeoutException e)
+        catch (Exception e)
         {
             Context.LogW(TAG, "The client was offline.");
             Context.LogE(TAG, e);
@@ -371,7 +369,7 @@ internal class WtExchangeLogic : BaseLogic
                 }
 
                 // Relogin
-                ScheduleComponent.Interval(ScheduleReLogin, 10 * 1000, 6, OnReConnect);
+                OnReConnect();
             }
         }
     }
@@ -390,7 +388,7 @@ internal class WtExchangeLogic : BaseLogic
             var result = await PullMessage(Context);
             await Context.PushEvent.Incoming(result);
         }
-        catch (TimeoutException)
+        catch (Exception)
         {
             Context.LogW(TAG, "Connection lost? " +
                               "Let me check the connection.");
@@ -406,21 +404,34 @@ internal class WtExchangeLogic : BaseLogic
     /// </summary>
     private async void OnReConnect()
     {
-        try
+        var retry = 0;
+        
+        while (true)
         {
-            // Close socket
-            if (SocketComponent.Connected)
-                await SocketComponent.Disconnect("Try Relogin");
+            Context.LogV(TAG, $"Try reconnecting, tried {++retry} times.");
 
-            _onlineType = OnlineStatusEvent.Type.Offline;
-            if (await Login()) ScheduleComponent.Cancel(ScheduleReLogin);
-            else Context.LogW(TAG, "ReLogin failed?");
+            try
+            {
+                // Close socket
+                if (SocketComponent.Connected)
+                    await SocketComponent.Disconnect("Try Relogin");
+
+                // Turn bot to offline
+                _onlineType = OnlineStatusEvent.Type.Offline;
+
+                // Try login
+                if (await Login()) break;
+
+                Context.LogW(TAG, "ReLogin failed? Retry again after 10s.");
+                await Task.Delay(10 * 1000);
+            }
+            catch (Exception e)
+            {
+                Context.LogE(TAG, e);
+            }
         }
-        catch (TimeoutException e)
-        {
-            Context.LogW(TAG, "ReLogin failed?");
-            Context.LogE(TAG, e);
-        }
+
+        Context.LogI(TAG, "Bot has been restored from offline.");
     }
 
     #region Stub methods

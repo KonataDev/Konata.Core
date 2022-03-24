@@ -125,6 +125,7 @@ internal class AsyncClient
             _socketInstance.Disconnect(false);
         {
             // And clanup
+            _packetLen = 0;
             _recvStream.SetLength(0);
             _socketInstance.Dispose();
             _socketInstance = null;
