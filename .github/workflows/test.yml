@@ -23,5 +23,5 @@ jobs:
       run: dotnet restore
       
     # Test
-    - name: Build
+    - name: Test
       run: dotnet test
