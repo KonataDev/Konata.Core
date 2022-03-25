@@ -29,15 +29,15 @@ public class EcdhTest
         }
     }
 
-    [Test]
-    public void TestPublicUnpack()
-    {
-        var ecdh = new ECDiffieHellman(EllipticCurve.SecP192k1);
-        var pubComp = ecdh.UnpackPublic(ecdh.GetPublicKeyPacked(true));
-        var pubUncomp = ecdh.UnpackPublic(ecdh.GetPublicKeyPacked());
-        {
-            if (pubComp.X == pubUncomp.X && pubComp.Y == pubUncomp.Y) Assert.Pass();
-            Assert.Fail();
-        }
-    }
+    // [Test]
+    // public void TestPublicUnpack()
+    // {
+    //     var ecdh = new ECDiffieHellman(EllipticCurve.SecP192k1);
+    //     var pubComp = ecdh.UnpackPublic(ecdh.GetPublicKeyPacked(true));
+    //     var pubUncomp = ecdh.UnpackPublic(ecdh.GetPublicKeyPacked());
+    //     {
+    //         if (pubComp.X == pubUncomp.X && pubComp.Y == pubUncomp.Y) Assert.Pass();
+    //         Assert.Fail();
+    //     }
+    // }
 }
