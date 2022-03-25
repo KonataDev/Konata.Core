@@ -505,7 +505,7 @@ internal static class MessagePacker
         var seq = (uint) tree.GetLeafVar("08");
         var uin = (uint) tree.GetLeafVar("10");
         var time = (uint) tree.GetLeafVar("18");
-        var uuid = tree.PathTo<ProtoVarInt>("42.18");
+        var uuid = tree.TryPathTo<ProtoVarInt>("42.18");
         var preview = tree.PathTo<ProtoLengthDelimited>("2A.0A.0A").ToString();
 
         return ReplyChain.Create(uin, seq, uuid, time, preview);

@@ -263,13 +263,28 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
     }
 
     public void ForEach<TValue>(Action<string, TValue> callback)
-        => ForEach((s, p) => callback(s, (TValue)p));
+        => ForEach((s, p) => callback(s, (TValue) p));
 
     public IProtoType PathTo(string leafPath)
         => PathTo(this, leafPath);
 
     public T PathTo<T>(string leafPath)
         where T : IProtoType => (T) PathTo(this, leafPath);
+
+    public IProtoType TryPathTo(string leafPath)
+    {
+        try
+        {
+            return PathTo(this, leafPath);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public T TryPathTo<T>(string leafPath)
+        where T : IProtoType => (T) TryPathTo(leafPath);
 
     #endregion
 
