@@ -271,20 +271,20 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
     public T PathTo<T>(string leafPath)
         where T : IProtoType => (T) PathTo(this, leafPath);
 
-    public IProtoType TryPathTo(string leafPath)
+    public bool TryPathTo<T>(string leafPath, out T leaf)
+        where T : IProtoType
     {
         try
         {
-            return PathTo(this, leafPath);
+            leaf = (T) PathTo(this, leafPath);
+            return true;
         }
         catch (Exception e)
         {
-            return null;
+            leaf = default;
+            return false;
         }
     }
-
-    public T TryPathTo<T>(string leafPath)
-        where T : IProtoType => (T) TryPathTo(leafPath);
 
     #endregion
 
