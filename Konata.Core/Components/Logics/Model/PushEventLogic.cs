@@ -130,7 +130,7 @@ internal class PushEventLogic : BaseLogic
         }
     }
 
-    private async Task OnPullNewMessage()
+    internal async Task OnPullNewMessage()
     {
         var result = await PullMessage(Context, ConfigComponent.SyncCookie);
 

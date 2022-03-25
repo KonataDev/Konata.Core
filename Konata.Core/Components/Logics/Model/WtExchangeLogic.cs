@@ -385,8 +385,7 @@ internal class WtExchangeLogic : BaseLogic
         try
         {
             // Get new message
-            var result = await PullMessage(Context);
-            await Context.PushEvent.Incoming(result);
+            await Context.PushEvent.OnPullNewMessage();
         }
         catch (Exception)
         {
@@ -456,9 +455,6 @@ internal class WtExchangeLogic : BaseLogic
 
     private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context)
         => context.SendPacket<CheckHeartbeatEvent>(CheckHeartbeatEvent.Create());
-
-    private static Task<PbGetMessageEvent> PullMessage(BusinessComponent context)
-        => context.SendPacket<PbGetMessageEvent>(PbGetMessageEvent.Create(context.ConfigComponent.SyncCookie));
 
     #endregion
 }
