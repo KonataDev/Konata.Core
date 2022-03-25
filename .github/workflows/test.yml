@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     # Checkout
@@ -22,6 +22,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       
-    # Build
+    # Test
     - name: Build
       run: dotnet test
