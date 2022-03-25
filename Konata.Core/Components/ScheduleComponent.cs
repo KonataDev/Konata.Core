@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Konata.Core.Attributes;
 
+// ReSharper disable InvertIf
 // ReSharper disable FunctionNeverReturns
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core.Components;
 
@@ -97,7 +99,6 @@ internal class ScheduleComponent : InternalComponent
     /// </summary>
     private void SchedulerThread()
     {
-        bool needUpdate;
         int minInterval;
         DateTime startTime;
         List<Schedule> todoList;
@@ -107,7 +108,6 @@ internal class ScheduleComponent : InternalComponent
             todoList = new();
             taskTable = new();
             taskSorter = new();
-            needUpdate = false;
 
             // Scheduler steps
             while (!_taskThreadExit)
@@ -121,7 +121,7 @@ internal class ScheduleComponent : InternalComponent
         // Select the task
         void Update()
         {
-            if (needUpdate)
+            if (_taskDict.Count != taskTable.Count)
             {
                 // Try get the new tasks from outside
                 foreach (var (key, value) in _taskDict)
@@ -139,8 +139,8 @@ internal class ScheduleComponent : InternalComponent
                     }
                 }
 
-                // Mark as no need
-                needUpdate = false;
+                // // Mark as no need
+                // needUpdate = false;
             }
 
             // Sort the task
@@ -169,16 +169,16 @@ internal class ScheduleComponent : InternalComponent
                 // We need to run the task immediately
                 if (sleepTime >= 0)
                 {
+                    // Cache broken 
+                    // Please ref issue #129
+                    if (_taskDict.Count != taskTable.Count) return;
+
                     // Reset event and wait
                     _taskNotify.Reset();
                     _taskNotify.WaitOne(sleepTime);
                 }
             }
             var passedTime = (int) ((DateTime.Now - startTime).TotalSeconds * 1000);
-
-            // If the thread woke up ahead of the minInterval
-            // So that means a new task has joined
-            needUpdate = passedTime < minInterval || minInterval == 0;
 
             // Calculate the remain
             todoList.Clear();
