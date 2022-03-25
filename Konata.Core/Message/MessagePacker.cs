@@ -441,6 +441,8 @@ internal static class MessagePacker
                     ___.AddLeafVar("48", 1);
                 });
                 __.AddLeafVar("18", 1);
+                
+                ConstructText(root, TextChain.Create($"{chain.FaceName} 请使用最新版手机QQ体验新功能"));
             }
 
             // New qface
@@ -456,8 +458,6 @@ internal static class MessagePacker
                 __.AddLeafVar("18", 1);
             }
         }));
-
-        ConstructText(root, TextChain.Create($"{chain.FaceName} 请使用最新版手机QQ体验新功能"));
     }
 
     private static BaseChain ParseTextOrAt(ProtoTreeRoot root)
