@@ -285,11 +285,8 @@ internal class HighwayComponent : InternalComponent
         private async Task<HwResponse> SendRequest
             (PicUp request, byte[] body = null)
         {
-            var data = HwRequest.Create(request, body);
-            Console.WriteLine(data.ToHex());
-
             // Send HwRequest
-            await Send(data);
+            await Send(HwRequest.Create(request, body));
             {
                 // Wait for the response
                 _requestAwaiter.Reset();
