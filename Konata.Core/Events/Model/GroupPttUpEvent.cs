@@ -1,4 +1,5 @@
-﻿using Konata.Core.Message.Model;
+﻿using System;
+using Konata.Core.Message.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -71,7 +72,7 @@ public class PttUpInfo
 
     public string FileKey { get; set; }
 
-    public uint UploadId { get; set; }
+    public object UploadId { get; set; }
 
     public byte[] UploadTicket { get; set; }
 }

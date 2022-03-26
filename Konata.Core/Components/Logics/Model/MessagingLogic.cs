@@ -363,6 +363,13 @@ internal class MessagingLogic : BaseLogic
             return false;
         }
 
+        // Check if no highway server
+        if (ConfigComponent.HighwayConfig == null)
+        {
+            Context.LogW(TAG, "Highway server not present.");
+            return false;
+        }
+        
         foreach (var i in message)
         {
             // Upload record via highway
@@ -379,40 +386,11 @@ internal class MessagingLogic : BaseLogic
 
                 // Upload the record
                 return await HighwayComponent
-                    .GroupPttUp(uin, Context.Bot.Uin, i);
+                    .PttUp(uin, Context.Bot.Uin, i, isGroup);
             }
-
-            // Upload record via http
-            Context.LogV(TAG, "Uploading record file via http.");
-            var result = await GroupPttUp(Context, uin, i);
-            var retdata = await Http.Post($"http://{result.UploadInfo.Host}" +
-                                          $":{result.UploadInfo.Port}/", i.FileData,
-                // Request header
-                new Dictionary<string, string>
-                {
-                    {"User-Agent", $"QQ/{AppInfo.AppBuildVer} CFNetwork/1126"},
-                    {"Net-Type", "Wifi"}
-                },
-
-                // Search params
-                new Dictionary<string, string>
-                {
-                    {"ver", "4679"},
-                    {"ukey", ByteConverter.Hex(result.UploadInfo.Ukey)},
-                    {"filekey", result.UploadInfo.FileKey},
-                    {"filesize", i.FileLength.ToString()},
-                    {"bmd5", i.FileHash},
-                    {"mType", "pttDu"},
-                    {"voice_encodec", $"{(int) i.RecordType}"}
-                });
-
-            // Set upload info
-            i.SetPttUpInfo(Context.Bot.Uin, result.UploadInfo);
-
-            Context.LogV(TAG, "Recored uploaded.");
-            Context.LogV(TAG, ByteConverter.Hex(retdata));
         }
-
+        
+        Context.LogV(TAG, "Recored uploaded.");
         return true;
     }
 

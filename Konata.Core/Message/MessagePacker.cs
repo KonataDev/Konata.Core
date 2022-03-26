@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf.ProtoModel;
 
 // ReSharper disable InvertIf
@@ -44,7 +45,7 @@ internal static class MessagePacker
                     break;
 
                 case RecordChain recordChain:
-                    ConstructRecord(root, recordChain);
+                    ConstructRecord(root, recordChain, mode);
                     break;
 
                 case XmlChain xmlChain:
@@ -349,7 +350,7 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructRecord(ProtoTreeRoot root, RecordChain chain)
+    private static void ConstructRecord(ProtoTreeRoot root, RecordChain chain, Mode mode)
     {
         root.AddTree("22", (_) =>
         {
@@ -358,17 +359,26 @@ internal static class MessagePacker
             _.AddLeafBytes("22", chain.HashData);
             _.AddLeafString("2A", chain.FileName);
             _.AddLeafVar("30", chain.FileLength);
-            _.AddLeafVar("40", chain.PttUpInfo.UploadId);
             _.AddLeafVar("58", 1);
-            _.AddLeafString("9201", chain.PttUpInfo.FileKey);
-            _.AddLeafVar("9801", chain.TimeSeconds);
-            _.AddLeafVar("E801", 1);
-            _.AddTree("F201", __ =>
+
+            if (mode == Mode.Group)
             {
-                __.AddLeafVar("08", 0);
-                __.AddLeafVar("28", 0);
-                __.AddLeafVar("38", 0);
-            });
+                _.AddLeafVar("40", (uint) chain.PttUpInfo.UploadId);
+                _.AddLeafString("9201", chain.PttUpInfo.FileKey);
+                _.AddLeafVar("9801", chain.TimeSeconds);
+                _.AddLeafVar("E801", 1);
+                _.AddTree("F201", __ =>
+                {
+                    __.AddLeafVar("08", 0);
+                    __.AddLeafVar("28", 0);
+                    __.AddLeafVar("38", 0);
+                });
+            }
+            else
+            {
+                _.AddLeafString("1A", chain.PttUpInfo.FileKey);
+                _.AddLeafBytes("3A", "0308000400000001090004000000030A0006080028003800".UnHex());
+            }
         });
     }
 

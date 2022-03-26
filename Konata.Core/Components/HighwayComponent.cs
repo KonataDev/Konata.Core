@@ -11,6 +11,7 @@ using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Protobuf;
+using Konata.Core.Utils.Protobuf.ProtoModel;
 using Konata.Core.Utils.TcpSocket;
 
 // ReSharper disable InconsistentNaming
@@ -31,6 +32,7 @@ internal class HighwayComponent : InternalComponent
     /// </summary>
     /// <param name="selfUin"></param>
     /// <param name="upload"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
     public async Task<bool> PicDataUp(uint selfUin,
         IEnumerable<ImageChain> upload, bool isGroup)
@@ -83,7 +85,7 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             chain.MultiMsgUpInfo.UploadTicket,
             ProtoTreeRoot.Serialize(data).GetBytes(),
-            Packets.Protobuf.Highway.PicUp.CommandId.MultiMsgDataUp
+            PicUp.CommandId.MultiMsgDataUp
         );
 
         LogV(TAG, "Task queued, " +
@@ -100,14 +102,15 @@ internal class HighwayComponent : InternalComponent
     }
 
     /// <summary>
-    /// Upload group record
+    /// Upload record
     /// </summary>
-    /// <param name="groupUin"></param>
+    /// <param name="destUin"></param>
     /// <param name="selfUin"></param>
     /// <param name="upload"></param>
+    /// <param name="isGroup"></param>
     /// <returns></returns>
-    public async Task<bool> GroupPttUp(uint groupUin,
-        uint selfUin, RecordChain upload)
+    public async Task<bool> PttUp(uint destUin,
+        uint selfUin, RecordChain upload, bool isGroup)
     {
         var task = HighwayClient.Upload(
             upload.PttUpInfo.Host,
@@ -115,8 +118,8 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             upload.PttUpInfo.UploadTicket,
             upload.FileData,
-            Packets.Protobuf.Highway.PicUp.CommandId.GroupPttDataUp,
-            new GroupPttUpRequest(groupUin, selfUin, upload)
+            isGroup ? PicUp.CommandId.GroupPttDataUp : PicUp.CommandId.FriendPttDataUp,
+            isGroup ? new GroupPttUpRequest(destUin, selfUin, upload) : new FriendPttUpRequest(destUin, selfUin, upload)
         );
 
         LogV(TAG, "Task queued, " +
@@ -125,204 +128,220 @@ internal class HighwayComponent : InternalComponent
         // Wait for tasks
         var results = await task;
         {
-            // Get ptt id and token
-            var uploadInfo = (ProtoTreeRoot) results.PathTo("3A.2A");
+            // Assert result is ok
+            var code = results.PathTo<ProtoVarInt>("18");
+            if (code != 0) return false;
+
+            if (isGroup)
             {
+                // Group ptt id and token
+                var uploadInfo = results.PathTo<ProtoTreeRoot>("3A.2A");
                 upload.PttUpInfo.FileKey = uploadInfo.GetLeafString("5A");
                 upload.PttUpInfo.UploadId = (uint) uploadInfo.GetLeafVar("40");
             }
 
+            else
+            {
+                // Friend ptt id and token
+                var uploadInfo = results.PathTo<ProtoTreeRoot>("3A.3A");
+                upload.PttUpInfo.FileKey = uploadInfo.GetLeafString("D205");
+                upload.PttUpInfo.UploadId = uploadInfo.GetLeafBytes("A206");
+            }
+
             return true;
         }
     }
-}
 
-internal class HighwayClient
-    : AsyncClient, IClientListener
-{
-    private readonly uint _peer;
-    private readonly byte[] _ticket;
-    private int _sequence;
-    private readonly Md5Cryptor _md5Cryptor;
-
-    // We no need to use a dict to storage
-    // the pending requests, cuz there's only
-    // one request pending in the same time
-    private HwResponse _hwResponse;
-    private readonly ManualResetEvent _requestAwaiter;
-
-    private HighwayClient(uint peer, byte[] ticket)
+    internal class HighwayClient
+        : AsyncClient, IClientListener
     {
-        _peer = peer;
-        _ticket = ticket;
-        _sequence = new Random().Next(0x2333, 0x7090);
-        _hwResponse = default;
-        _requestAwaiter = new(false);
-        _md5Cryptor = new();
-    }
+        private readonly uint _peer;
+        private readonly byte[] _ticket;
+        private int _sequence;
+        private readonly Md5Cryptor _md5Cryptor;
 
-    /// <summary>
-    /// Upload data
-    /// </summary>
-    /// <param name="host"></param>
-    /// <param name="port"></param>
-    /// <param name="chunk"></param>
-    /// <param name="peer"></param>
-    /// <param name="ticket"></param>
-    /// <param name="data"></param>
-    /// <param name="cmdId"></param>
-    /// <param name="extend"></param>
-    /// <returns></returns>
-    public static async Task<HwResponse> Upload(string host, int port, int chunk,
-        uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
-    {
-        HwResponse lastResponse = null;
-        var datamd5 = data.Md5();
+        // We no need to use a dict to storage
+        // the pending requests, cuz there's only
+        // one request pending in the same time
+        private HwResponse _hwResponse;
+        private readonly ManualResetEvent _requestAwaiter;
 
-        var client = new HighwayClient(peer, ticket);
-        client.SetListener(client);
+        private HighwayClient(uint peer, byte[] ticket)
         {
-            // Connect to server
-            if (!await client.Connect(host, port)) return null;
+            _peer = peer;
+            _ticket = ticket;
+            _sequence = new Random().Next(0x2333, 0x7090);
+            _hwResponse = default;
+            _requestAwaiter = new(false);
+            _md5Cryptor = new();
+        }
 
-            // Hello Im coming
-            if (!await client.Echo()) return null;
+        /// <summary>
+        /// Upload data
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="chunk"></param>
+        /// <param name="peer"></param>
+        /// <param name="ticket"></param>
+        /// <param name="data"></param>
+        /// <param name="cmdId"></param>
+        /// <param name="extend"></param>
+        /// <returns></returns>
+        public static async Task<HwResponse> Upload(string host, int port, int chunk,
+            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
+        {
+            HwResponse lastResponse = null;
+            var datamd5 = data.Md5();
 
-            // Send the dataup
-            var i = 0;
-            while (i < data.Length)
+            var client = new HighwayClient(peer, ticket);
+            client.SetListener(client);
             {
-                // The remain
-                if (data.Length - i < chunk)
-                {
-                    chunk = data.Length - i;
-                }
+                // Connect to server
+                if (!await client.Connect(host, port)) return null;
 
-                // DataUp
-                lastResponse = await client.DataUp
-                    (data, datamd5, i, chunk, cmdId, extend);
-                {
-                    if (lastResponse == null) return null;
-                }
+                // Hello Im coming
+                if (!await client.Echo()) return null;
 
-                i += chunk;
+                // Send the dataup
+                var i = 0;
+                while (i < data.Length)
+                {
+                    // The remain
+                    if (data.Length - i < chunk)
+                    {
+                        chunk = data.Length - i;
+                    }
+
+                    // DataUp
+                    lastResponse = await client.DataUp
+                        (data, datamd5, i, chunk, cmdId, extend);
+                    {
+                        if (lastResponse == null) return null;
+                    }
+
+                    i += chunk;
+                }
+            }
+
+            // Disconnect after send finish
+            await client.Disconnect();
+            return lastResponse;
+        }
+
+        /// <summary>
+        /// Send Im coming
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> Echo()
+        {
+            // Send request
+            var result = await SendRequest
+                (new PicUpEcho(_peer, _sequence));
+            {
+                // No response
+                if (result == null) return false;
+
+                // Assert checks
+                if (result.Command != PicUpEcho.Command) return false;
+                if (result.PeerUin != _peer) return false;
+
+                return true;
             }
         }
 
-        // Disconnect after send finish
-        await client.Disconnect();
-        return lastResponse;
-    }
-
-    /// <summary>
-    /// Send Im coming
-    /// </summary>
-    /// <returns></returns>
-    private async Task<bool> Echo()
-    {
-        // Send request
-        var result = await SendRequest
-            (new PicUpEcho(_peer, _sequence));
+        /// <summary>
+        /// Data Up
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="dataMd5"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <param name="cmdId"></param>
+        /// <param name="extend"></param>
+        /// <returns></returns>
+        private async Task<HwResponse> DataUp(byte[] data, byte[] dataMd5,
+            int offset, int length, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
         {
-            // No response
-            if (result == null) return false;
+            // Calculate chunk
+            var chunk = data[offset..(offset + length)];
+            var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
-            // Assert checks
-            if (result.Command != PicUpEcho.Command) return false;
-            if (result.PeerUin != _peer) return false;
+            // Send request
+            var result = await SendRequest(new PicUpDataUp(cmdId, _peer, _sequence,
+                _ticket, data.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
+            {
+                // No response
+                if (result == null) return null;
 
-            return true;
-        }
-    }
+                // Assert checks
+                if (result.Command != PicUpDataUp.Command) return null;
+                if (result.PeerUin != _peer) return null;
 
-    /// <summary>
-    /// Data Up
-    /// </summary>
-    /// <param name="data"></param>
-    /// <param name="dataMd5"></param>
-    /// <param name="offset"></param>
-    /// <param name="length"></param>
-    /// <param name="cmdId"></param>
-    /// <param name="extend"></param>
-    /// <returns></returns>
-    private async Task<HwResponse> DataUp(byte[] data, byte[] dataMd5,
-        int offset, int length, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
-    {
-        // Calculate chunk
-        var chunk = data[offset..(offset + length)];
-        var chunkMD5 = _md5Cryptor.Encrypt(chunk);
-
-        // Send request
-        var result = await SendRequest(new PicUpDataUp(cmdId, _peer, _sequence,
-            _ticket, data.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
-        {
-            // No response
-            if (result == null) return null;
-
-            // Assert checks
-            if (result.Command != PicUpDataUp.Command) return null;
-            if (result.PeerUin != _peer) return null;
-
-            return result;
-        }
-    }
-
-    private async Task<HwResponse> SendRequest
-        (PicUp request, byte[] body = null)
-    {
-        // Send HwRequest
-        await Send(HwRequest.Create(request, body));
-        {
-            // Wait for the response
-            _requestAwaiter.Reset();
-            await Task.Run(() => _requestAwaiter.WaitOne());
+                return result;
+            }
         }
 
-        _sequence++;
-        return _hwResponse;
-    }
-
-    /// <summary>
-    /// Dissect a packet
-    /// </summary>
-    /// <param name="data"></param>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    public uint OnStreamDissect(byte[] data, uint length)
-    {
-        // 28
-        // 00 00 00 10
-        // 00 00 00 E9
-        if (length < 9) return 0;
-
-        // Get the header
-        var header = ByteConverter
-            .BytesToUInt32(data, 1, Endian.Big);
-        var databody = ByteConverter
-            .BytesToUInt32(data, 1 + 4, Endian.Big);
-
-        // Calculate the length
-        // 0x28 + 8 + h + b + 0x29
-        return 1 + 4 + 4 + header + databody + 1;
-    }
-
-    public void OnRecvPacket(byte[] data)
-    {
-        try
+        private async Task<HwResponse> SendRequest
+            (PicUp request, byte[] body = null)
         {
-            // Parse the data to HwResponse
-            _hwResponse = HwResponse.Parse(data);
-            _requestAwaiter.Set();
-        }
-        catch
-        {
-            // Cleanup
-            _hwResponse = null;
-            _requestAwaiter.Set();
-        }
-    }
+            var data = HwRequest.Create(request, body);
+            Console.WriteLine(data.ToHex());
 
-    public void OnDisconnect()
-    {
+            // Send HwRequest
+            await Send(data);
+            {
+                // Wait for the response
+                _requestAwaiter.Reset();
+                await Task.Run(() => _requestAwaiter.WaitOne());
+            }
+
+            _sequence++;
+            return _hwResponse;
+        }
+
+        /// <summary>
+        /// Dissect a packet
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public uint OnStreamDissect(byte[] data, uint length)
+        {
+            // 28
+            // 00 00 00 10
+            // 00 00 00 E9
+            if (length < 9) return 0;
+
+            // Get the header
+            var header = ByteConverter
+                .BytesToUInt32(data, 1, Endian.Big);
+            var databody = ByteConverter
+                .BytesToUInt32(data, 1 + 4, Endian.Big);
+
+            // Calculate the length
+            // 0x28 + 8 + h + b + 0x29
+            return 1 + 4 + 4 + header + databody + 1;
+        }
+
+        public void OnRecvPacket(byte[] data)
+        {
+            try
+            {
+                // Parse the data to HwResponse
+                _hwResponse = HwResponse.Parse(data);
+                _requestAwaiter.Set();
+            }
+            catch
+            {
+                // Cleanup
+                _hwResponse = null;
+                _requestAwaiter.Set();
+            }
+        }
+
+        public void OnDisconnect()
+        {
+        }
     }
 }

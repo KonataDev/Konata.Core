@@ -19,7 +19,7 @@ internal class PushReq : BaseService<PushConfigEvent>
             if (push.ServerList.Count == 0) return false;
 
             output = PushConfigEvent.Push(push.ServerList[0].Host,
-                push.ServerList[1].Port, push.Ticket);
+                push.ServerList[0].Port, push.Ticket);
         }
 
         return true;

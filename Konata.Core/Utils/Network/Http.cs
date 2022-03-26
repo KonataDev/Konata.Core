@@ -25,6 +25,7 @@ internal static class Http
         {
             request.Timeout = timeout;
             request.ReadWriteTimeout = timeout;
+            request.MaximumAutomaticRedirections = 50;
             request.AutomaticDecompression =
                 DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
