@@ -2,7 +2,7 @@
 
 namespace Konata.Core.Events.Model;
 
-public class ReqMSFOfflineEvent : ProtocolEvent
+internal class ReqMSFOfflineEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[Out]</b> <br/>

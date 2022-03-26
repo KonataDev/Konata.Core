@@ -88,7 +88,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
             var rand = (uint) root.PathTo<ProtoVarInt>("1A.0A.0A.18");
 
             var chains = MessagePacker.UnPack(root.PathTo
-                <ProtoTreeRoot>("1A.0A"), MessagePacker.ParseMode.Friend);
+                <ProtoTreeRoot>("1A.0A"), MessagePacker.Mode.Friend);
 
             context.SetMessage(chains);
             context.SetSenderInfo(fromUin, "");

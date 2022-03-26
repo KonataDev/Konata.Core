@@ -32,8 +32,8 @@ internal class HighwayComponent : InternalComponent
     /// <param name="selfUin"></param>
     /// <param name="upload"></param>
     /// <returns></returns>
-    public async Task<bool> GroupPicUp(uint selfUin,
-        IEnumerable<ImageChain> upload)
+    public async Task<bool> PicDataUp(uint selfUin,
+        IEnumerable<ImageChain> upload, bool isGroup)
     {
         // Get upload config
         var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
@@ -51,7 +51,7 @@ internal class HighwayComponent : InternalComponent
                     chunksize, selfUin,
                     i.PicUpInfo.UploadTicket,
                     i.FileData,
-                    PicUp.CommandId.GroupPicDataUp
+                    isGroup ? PicUp.CommandId.GroupPicDataUp : PicUp.CommandId.FriendPicDataUp
                 ));
             }
         }
@@ -62,15 +62,6 @@ internal class HighwayComponent : InternalComponent
         // Wait for tasks
         var results = await Task.WhenAll(tasks);
         return results.Count(i => i != null) == results.Length;
-    }
-
-    /// <summary>
-    /// Upload private images
-    /// </summary>
-    /// <returns></returns>
-    public async Task<bool> OffPicUp()
-    {
-        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -92,7 +83,7 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             chain.MultiMsgUpInfo.UploadTicket,
             ProtoTreeRoot.Serialize(data).GetBytes(),
-            PicUp.CommandId.MultiMsgDataUp
+            Packets.Protobuf.Highway.PicUp.CommandId.MultiMsgDataUp
         );
 
         LogV(TAG, "Task queued, " +
@@ -124,7 +115,7 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             upload.PttUpInfo.UploadTicket,
             upload.FileData,
-            PicUp.CommandId.GroupPttDataUp,
+            Packets.Protobuf.Highway.PicUp.CommandId.GroupPttDataUp,
             new GroupPttUpRequest(groupUin, selfUin, upload)
         );
 

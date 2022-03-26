@@ -45,7 +45,7 @@ internal class WtExchangeLogic : BaseLogic
             // Online status changed
             _onlineType = status.EventType;
         }
-
+        
         _heartbeatCounter++;
         return Task.CompletedTask;
     }

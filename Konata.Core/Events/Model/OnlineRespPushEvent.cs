@@ -1,6 +1,6 @@
 ﻿namespace Konata.Core.Events.Model;
 
-public class OnlineRespPushEvent : ProtocolEvent
+internal class OnlineRespPushEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[In]</b> <br/>

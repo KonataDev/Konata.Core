@@ -3,7 +3,7 @@ using Konata.Core.Common;
 
 namespace Konata.Core.Events.Model;
 
-public class PullGroupListEvent : ProtocolEvent
+internal class PullGroupListEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[In]</b> <br/>

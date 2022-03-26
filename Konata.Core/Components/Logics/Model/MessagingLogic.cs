@@ -296,18 +296,20 @@ internal class MessagingLogic : BaseLogic
             }
 
             // Highway image upload
-            return await HighwayComponent
-                .GroupPicUp(Context.Bot.Uin, image);
+            return await HighwayComponent.PicDataUp(Context.Bot.Uin, image, true);
         }
         else
         {
-            // TODO:
-            // Off picup
+            // Request image upload
+            var result = await OffPicUp(Context, uin, image);
+            {
+                // Set upload data
+                for (var i = 0; i < image.Count; ++i)
+                    image[i].SetPicUpInfo(result.UploadInfo[i]);
+            }
 
-            // var result = await PrivateOffPicUp(Context, uin, upload);
-
-            // Image upload for private messages
-            return await HighwayComponent.OffPicUp();
+            // Highway image upload
+            return await HighwayComponent.PicDataUp(Context.Bot.Uin, image, false);
         }
     }
 
@@ -323,10 +325,11 @@ internal class MessagingLogic : BaseLogic
         List<MultiMsgChain> sides, uint uin, bool isGroup)
     {
         // Chain packup
-        var packed = MessagePacker.PackMultiMsg(main, sides);
-        if (packed == null) return false;
+        var packed = MessagePacker.PackMultiMsg(main, sides, 
+            isGroup ? MessagePacker.Mode.Group : MessagePacker.Mode.Friend);
 
         // Compressing the data
+        if (packed == null) return false;
         packed = Compression.GZip(packed);
 
         // Request apply up
@@ -426,14 +429,14 @@ internal class MessagingLogic : BaseLogic
     private static Task<ProtocolEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
         => context.SendPacket<ProtocolEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
 
-    private static Task<GroupPicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
-        => context.SendPacket<GroupPicUpEvent>(GroupPicUpEvent.Create(groupUin, context.Bot.Uin, images));
+    private static Task<PicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
+        => context.SendPacket<PicUpEvent>(PicUpEvent.GroupUp(groupUin, context.Bot.Uin, images));
+
+    private static Task<PicUpEvent> OffPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
+        => context.SendPacket<PicUpEvent>(PicUpEvent.OffUp(groupUin, context.Bot.Uin, images));
 
     private static Task<GroupPttUpEvent> GroupPttUp(BusinessComponent context, uint groupUin, RecordChain record)
         => context.SendPacket<GroupPttUpEvent>(GroupPttUpEvent.Create(groupUin, context.Bot.Uin, record));
-
-    private static Task<LongConnOffPicUpEvent> LongConnOffPicUp(BusinessComponent context, uint friendUin, List<ImageChain> images)
-        => context.SendPacket<LongConnOffPicUpEvent>(LongConnOffPicUpEvent.Create(context.Bot.Uin, images));
 
     private static Task<MultiMsgApplyUpEvent> MultiMsgApplyUp(BusinessComponent context, uint destUin, byte[] packed)
         => context.SendPacket<MultiMsgApplyUpEvent>(MultiMsgApplyUpEvent.Create(destUin, packed));

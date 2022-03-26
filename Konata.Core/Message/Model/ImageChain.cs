@@ -100,7 +100,7 @@ public class ImageChain : BaseChain
     /// Set PicUp info
     /// </summary>
     /// <param name="info"></param>
-    public void SetPicUpInfo(PicUpInfo info)
+    internal void SetPicUpInfo(PicUpInfo info)
     {
         PicUpInfo = info;
 

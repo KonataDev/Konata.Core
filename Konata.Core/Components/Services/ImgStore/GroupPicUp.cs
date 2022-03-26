@@ -15,12 +15,12 @@ using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Components.Services.ImgStore;
 
-[EventSubscribe(typeof(GroupPicUpEvent))]
+[EventSubscribe(typeof(PicUpEvent))]
 [Service("ImgStore.GroupPicUp", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
-internal class GroupPicUp : BaseService<GroupPicUpEvent>
+internal class GroupPicUp : BaseService<PicUpEvent>
 {
     protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out GroupPicUpEvent output)
+        BotKeyStore keystore, out PicUpEvent output)
     {
         var tree = new ProtoTreeRoot(input.Payload.GetBytes(), true);
         {
@@ -44,11 +44,11 @@ internal class GroupPicUp : BaseService<GroupPicUpEvent>
                 // We can do not upload the image again
                 if (cached)
                 {
+                    info.UseCached = true;
                     info.Ip = (uint) i.GetLeafVar("30");
-                    info.Host = NetTool.UintToIPBE((uint) i.GetLeafVar("30"));
+                    info.Host = NetTool.UintToIPBE(info.Ip);
                     info.Port = (int) i.GetLeafVar("38");
                     info.UploadId = (uint) i.GetLeafVar("48");
-                    info.UseCached = true;
 
                     // Cached info
                     var imginfo = i.GetLeaf<ProtoTreeRoot>("2A");
@@ -68,27 +68,28 @@ internal class GroupPicUp : BaseService<GroupPicUpEvent>
                 // upload the iamge
                 else
                 {
+                    info.UseCached = false;
                     info.Ip = (uint) i.GetLeafVar("30");
-                    info.Host = NetTool.UintToIPBE((uint) i.GetLeafVar("30"));
+                    info.Host = NetTool.UintToIPBE(info.Ip);
                     info.Port = (int) i.GetLeafVar("38");
                     info.UploadId = (uint) i.GetLeafVar("48");
                     info.UploadTicket = i.GetLeafBytes("42");
-                    info.UseCached = false;
                 }
 
                 uploadInfo.Add(info);
             }
 
             // Construct event
-            output = GroupPicUpEvent.Result(0, uploadInfo);
+            output = PicUpEvent.Result(0, uploadInfo);
             return true;
         }
     }
 
-    protected override bool Build(int sequence, GroupPicUpEvent input,
+    protected override bool Build(int sequence, PicUpEvent input,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output.PutProtoNode(new GroupPicUpRequest(input.GroupUin, input.SelfUin, input.UploadImages));
+        if (input.Mode != UpMode.GroupUp) return false;
+        output.PutProtoNode(new GroupPicUpRequest(input.DestUin, input.SelfUin, input.UploadImages));
         return true;
     }
 }

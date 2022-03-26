@@ -18,8 +18,9 @@ internal static class MessagePacker
     /// Pack up message chain to byte
     /// </summary>
     /// <param name="input"></param>
+    /// <param name="mode"></param>
     /// <returns></returns>
-    public static byte[] PackUp(MessageChain input)
+    public static byte[] PackUp(MessageChain input, Mode mode)
     {
         var root = new ProtoTreeRoot();
         foreach (var chain in input.Chains)
@@ -39,7 +40,7 @@ internal static class MessagePacker
                     break;
 
                 case ImageChain imageChain:
-                    ConstructImage(root, imageChain);
+                    ConstructImage(root, imageChain, mode);
                     break;
 
                 case RecordChain recordChain:
@@ -68,8 +69,9 @@ internal static class MessagePacker
     /// </summary>
     /// <param name="main"></param>
     /// <param name="sides"></param>
+    /// <param name="mode"></param>
     /// <returns></returns>
-    public static byte[] PackMultiMsg(MultiMsgChain main, List<MultiMsgChain> sides)
+    public static byte[] PackMultiMsg(MultiMsgChain main, List<MultiMsgChain> sides, Mode mode)
     {
         var newClientMsgs = new ProtoTreeRoot();
         var compatiableMsgs = new ProtoTreeRoot();
@@ -83,7 +85,7 @@ internal static class MessagePacker
 
             // Message content
             _.AddTree("1A", __ => __.AddLeafBytes("0A",
-                PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")))));
+                PackUp(new(TextChain.Create("[合并转发]请升级新版本查看")), mode)));
         });
 
         // Construct root multimsg
@@ -95,7 +97,7 @@ internal static class MessagePacker
                 _.AddTree("0A", __ => ConstructSource(__, i));
 
                 // Message content
-                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(i.Chain)));
+                _.AddTree("1A", __ => __.AddLeafBytes("0A", PackUp(i.Chain, mode)));
             });
         }
 
@@ -114,7 +116,7 @@ internal static class MessagePacker
                             __.AddTree("0A", ___ =>
                             {
                                 ___.AddTree("0A", ____ => ConstructSource(____, subchain));
-                                ___.AddTree("1A", ____ => ____.AddLeafBytes("0A", PackUp(subchain.Chain)));
+                                ___.AddTree("1A", ____ => ____.AddLeafBytes("0A", PackUp(subchain.Chain, mode)));
                             });
                         }
                     });
@@ -141,7 +143,7 @@ internal static class MessagePacker
     /// <param name="root"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    public static MessageChain UnPack(ProtoTreeRoot root, ParseMode mode)
+    public static MessageChain UnPack(ProtoTreeRoot root, Mode mode)
     {
         BaseChain chain;
         var builder = new MessageBuilder();
@@ -158,7 +160,7 @@ internal static class MessagePacker
                         {
                             "0A" => ParseTextOrAt(subval),
                             "12" => ParseQFace(subval),
-                            "42" => ParseImage(subval, ParseMode.Group),
+                            "42" => ParseImage(subval, Mode.Group),
                             "62" => ParseXml(subval),
                             "9A01" => ParseShortVideo(subval),
                             "9A03" => ParseJson(subval),
@@ -167,7 +169,7 @@ internal static class MessagePacker
                             "AA03" => ParseCommonElem(subval),
 
                             // Friend image
-                            "22" => ParseImage(subval, ParseMode.Friend),
+                            "22" => ParseImage(subval, Mode.Friend),
 
                             _ => null
                         };
@@ -370,33 +372,52 @@ internal static class MessagePacker
         });
     }
 
-    private static void ConstructImage(ProtoTreeRoot root, ImageChain chain)
+    private static void ConstructImage(ProtoTreeRoot root, ImageChain chain, Mode mode)
     {
         var image = new ProtoTreeRoot();
         {
-            image.AddLeafString("12", chain.FileName);
-            image.AddLeafVar("38", chain.PicUpInfo.Ip);
-            image.AddLeafVar("40", chain.PicUpInfo.UploadId);
-            image.AddLeafVar("48", chain.PicUpInfo.Port);
-            image.AddLeafVar("50", 66);
-            //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
-            image.AddLeafVar("60", 1);
-            image.AddLeafBytes("6A", chain.HashData);
-            image.AddLeafVar("A001", (long) chain.ImageType);
-            image.AddLeafVar("B001", chain.Width);
-            image.AddLeafVar("B801", chain.Height);
-            image.AddLeafVar("C001", 200); // TODO: Unknown
-            image.AddLeafVar("C801", chain.FileLength);
-            image.AddLeafVar("D001", 0);
-            image.AddLeafVar("E801", 0);
-            image.AddLeafVar("F001", 0);
-            image.AddTree("9202", __ => __.AddLeafVar("78", 2));
+            if (mode == Mode.Group)
+            {
+                image.AddLeafString("12", chain.FileName);
+                image.AddLeafVar("38", chain.PicUpInfo.Ip);
+                image.AddLeafVar("40", (uint) chain.PicUpInfo.UploadId);
+                image.AddLeafVar("48", chain.PicUpInfo.Port);
+                image.AddLeafVar("50", 66);
+                //_.AddLeafString("5A", "e3vEdCESKrkycKTZ"); // TODO: Unknown
+                image.AddLeafVar("60", 1);
+                image.AddLeafBytes("6A", chain.HashData);
+                image.AddLeafVar("A001", (long) chain.ImageType);
+                image.AddLeafVar("B001", chain.Width);
+                image.AddLeafVar("B801", chain.Height);
+                image.AddLeafVar("C001", 200); // TODO: Unknown
+                image.AddLeafVar("C801", chain.FileLength);
+                image.AddLeafVar("D001", 0);
+                image.AddLeafVar("E801", 0);
+                image.AddLeafVar("F001", 0);
+                image.AddTree("9202", __ => __.AddLeafVar("78", 2));
+            }
+
+            else
+            {
+                image.AddLeafString("0A", chain.FileName);
+                image.AddLeafVar("10", chain.FileLength);
+                image.AddLeafString("1A", (string) chain.PicUpInfo.UploadId);
+                // image.AddLeafBytes("22", );
+                image.AddLeafVar("28", (long) chain.ImageType);
+                image.AddLeafBytes("3A", chain.HashData);
+                image.AddLeafVar("40", chain.Width);
+                image.AddLeafVar("48", chain.Height);
+                image.AddLeafString("52", (string) chain.PicUpInfo.UploadId);
+                // image.AddLeafBytes("5A", );
+                image.AddTree("EA01", __ => __.AddLeafVar("08", 1)); // as face
+            }
         }
 
         // Is not a flash image
         if (chain is not FlashImageChain)
         {
-            root.AddTree("12", _ => _.AddTree("42", image));
+            root.AddTree("12", _ => _.AddTree
+                (mode == Mode.Group ? "42" : "22", image));
             return;
         }
 
@@ -405,7 +426,8 @@ internal static class MessagePacker
             flash.AddTree("AA03", _ =>
             {
                 _.AddLeafVar("08", 3);
-                _.AddTree("12", __ => __.AddTree("0A", image));
+                _.AddTree("12", __ => __.AddTree
+                    (mode == Mode.Group ? "0A" : "12", image));
             });
         }
         root.AddTree("12", flash);
@@ -441,7 +463,7 @@ internal static class MessagePacker
                     ___.AddLeafVar("48", 1);
                 });
                 __.AddLeafVar("18", 1);
-                
+
                 ConstructText(root, TextChain.Create($"{chain.FaceName} 请使用最新版手机QQ体验新功能"));
             }
 
@@ -557,9 +579,9 @@ internal static class MessagePacker
             case 3:
                 var picRoot = tree.GetLeaf<ProtoTreeRoot>("12");
                 if (picRoot.TryGetLeaf("0A", out var groupPicTree))
-                    return ParseFlash((ProtoTreeRoot) groupPicTree, ParseMode.Group);
+                    return ParseFlash((ProtoTreeRoot) groupPicTree, Mode.Group);
                 else
-                    return ParseFlash(picRoot.GetLeaf<ProtoTreeRoot>("12"), ParseMode.Friend);
+                    return ParseFlash(picRoot.GetLeaf<ProtoTreeRoot>("12"), Mode.Friend);
 
             // Parse qface
             case 33:
@@ -581,7 +603,7 @@ internal static class MessagePacker
     /// <param name="tree"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    private static FlashImageChain ParseFlash(ProtoTreeRoot tree, ParseMode mode)
+    private static FlashImageChain ParseFlash(ProtoTreeRoot tree, Mode mode)
         => FlashImageChain.CreateFromImageChain(ParseImage(tree, mode));
 
     /// <summary>
@@ -590,9 +612,9 @@ internal static class MessagePacker
     /// <param name="tree"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    private static ImageChain ParseImage(ProtoTreeRoot tree, ParseMode mode)
+    private static ImageChain ParseImage(ProtoTreeRoot tree, Mode mode)
     {
-        if (mode == ParseMode.Friend)
+        if (mode == Mode.Friend)
         {
             var hashstr = ByteConverter.Hex(tree.GetLeafBytes("3A"));
 
@@ -666,7 +688,7 @@ internal static class MessagePacker
     private static QFaceChain ParseBigQFace(ProtoTreeRoot tree)
         => QFaceChain.Create((int) tree.GetLeafVar("18"), true);
 
-    internal enum ParseMode
+    internal enum Mode
     {
         Group,
         Friend

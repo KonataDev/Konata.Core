@@ -3,13 +3,15 @@ using Konata.Core.Message.Model;
 
 namespace Konata.Core.Events.Model;
 
-public class GroupPicUpEvent : ProtocolEvent
+internal class PicUpEvent : ProtocolEvent
 {
     /// <summary>s
     /// <b>[In]</b> <br/>
-    /// Group uin <br/>
+    /// Destnation uin <br/>
+    /// [UpMode.GroupUp] Group uin <br/>
+    /// [UpMode.OffUp] Friend uin <br/>
     /// </summary>
-    public uint GroupUin { get; }
+    public uint DestUin { get; }
 
     /// <summary>s
     /// <b>[In]</b> <br/>
@@ -27,17 +29,24 @@ public class GroupPicUpEvent : ProtocolEvent
     /// <b>[In] [Out]</b> <br/>
     /// Image upload info <br/>
     /// </summary>
-    public List<PicUpInfo> UploadInfo { get; }
+    internal List<PicUpInfo> UploadInfo { get; }
 
-    private GroupPicUpEvent(uint groupUin, uint selfUin,
+    /// <summary>
+    ///  <b>[In]</b> <br/>
+    /// Image upload mode
+    /// </summary>
+    internal UpMode Mode { get; }
+
+    private PicUpEvent(uint destUin, uint selfUin, UpMode mode,
         List<ImageChain> uploadImages) : base(true)
     {
-        GroupUin = groupUin;
+        DestUin = destUin;
         SelfUin = selfUin;
         UploadImages = uploadImages;
+        Mode = mode;
     }
 
-    private GroupPicUpEvent(int resultCode,
+    private PicUpEvent(int resultCode,
         List<PicUpInfo> uploadInfo) : base(resultCode)
     {
         UploadInfo = uploadInfo;
@@ -50,8 +59,18 @@ public class GroupPicUpEvent : ProtocolEvent
     /// <param name="selfUin"></param>
     /// <param name="uploadImages"></param>
     /// <returns></returns>
-    internal static GroupPicUpEvent Create(uint groupUin, uint selfUin,
-        List<ImageChain> uploadImages) => new(groupUin, selfUin, uploadImages);
+    internal static PicUpEvent GroupUp(uint groupUin, uint selfUin,
+        List<ImageChain> uploadImages) => new(groupUin, selfUin, UpMode.GroupUp, uploadImages);
+
+    /// <summary>
+    /// Construct event request
+    /// </summary>
+    /// <param name="friendUin"></param>
+    /// <param name="selfUin"></param>
+    /// <param name="uploadImages"></param>
+    /// <returns></returns>
+    internal static PicUpEvent OffUp(uint friendUin, uint selfUin,
+        List<ImageChain> uploadImages) => new(friendUin, selfUin, UpMode.OffUp, uploadImages);
 
     /// <summary>
     /// Construct event result
@@ -59,11 +78,11 @@ public class GroupPicUpEvent : ProtocolEvent
     /// <param name="resultCode"></param>
     /// <param name="uploadInfo"></param>
     /// <returns></returns>
-    internal static GroupPicUpEvent Result(int resultCode,
+    internal static PicUpEvent Result(int resultCode,
         List<PicUpInfo> uploadInfo) => new(resultCode, uploadInfo);
 }
 
-public class PicUpInfo
+internal class PicUpInfo
 {
     public uint Ip { get; set; }
 
@@ -71,7 +90,7 @@ public class PicUpInfo
 
     public int Port { get; set; }
 
-    public uint UploadId { get; set; }
+    public object UploadId { get; set; }
 
     public byte[] UploadTicket { get; set; }
 
@@ -80,7 +99,7 @@ public class PicUpInfo
     public CachedPicInfo CachedInfo { get; set; }
 }
 
-public class CachedPicInfo
+internal class CachedPicInfo
 {
     public ImageType Type { get; set; }
 
@@ -91,4 +110,10 @@ public class CachedPicInfo
     public uint Height { get; set; }
 
     public uint Length { get; set; }
+}
+
+internal enum UpMode
+{
+    GroupUp,
+    OffUp
 }

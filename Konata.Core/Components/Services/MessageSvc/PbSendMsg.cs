@@ -30,12 +30,13 @@ internal class PbSendMsg : BaseService<ProtocolEvent>
         switch (input)
         {
             case GroupMessageEvent gme:
-                output.PutProtoNode(new GroupMsg(gme.GroupUin, MessagePacker.PackUp(gme.Message.Chain)));
+                output.PutProtoNode(new GroupMsg(gme.GroupUin, 
+                    MessagePacker.PackUp(gme.Message.Chain, MessagePacker.Mode.Group)));
                 break;
 
             case FriendMessageEvent fme:
                 output.PutProtoNode(new FriendMsg(fme.FriendUin,
-                    keystore.Account.SyncCookieConsts, MessagePacker.PackUp(fme.Chain)));
+                    keystore.Account.SyncCookieConsts, MessagePacker.PackUp(fme.Chain, MessagePacker.Mode.Friend)));
                 break;
         }
 
