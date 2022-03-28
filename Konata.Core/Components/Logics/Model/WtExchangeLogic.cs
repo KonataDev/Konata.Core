@@ -420,14 +420,14 @@ internal class WtExchangeLogic : BaseLogic
 
                 // Try login
                 if (await Login()) break;
-
-                Context.LogW(TAG, "ReLogin failed? Retry again after 10s.");
-                await Task.Delay(10 * 1000);
             }
             catch (Exception e)
             {
                 Context.LogE(TAG, e);
             }
+            
+            Context.LogW(TAG, "ReLogin failed? Retry again after 10s.");
+            await Task.Delay(10 * 1000);
         }
 
         Context.LogI(TAG, "Bot has been restored from offline.");

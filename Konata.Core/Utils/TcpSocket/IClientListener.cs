@@ -1,4 +1,6 @@
-﻿namespace Konata.Core.Utils.TcpSocket;
+﻿using System;
+
+namespace Konata.Core.Utils.TcpSocket;
 
 internal interface IClientListener
 {
@@ -18,4 +20,9 @@ internal interface IClientListener
     /// On client disconnect
     /// </summary>
     public void OnDisconnect();
+
+    /// <summary>
+    /// On socket error
+    /// </summary>
+    public void OnSocketError(Exception e);
 }

@@ -340,5 +340,9 @@ internal class HighwayComponent : InternalComponent
         public void OnDisconnect()
         {
         }
+
+        public void OnSocketError(Exception e)
+        {
+        }
     }
 }

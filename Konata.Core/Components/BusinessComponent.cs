@@ -163,13 +163,25 @@ internal class BusinessComponent : InternalComponent
 
     #region Utils
 
-    public async Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
+    public Task<TEvent> SendPacket<TEvent>(ProtocolEvent anyEvent)
         where TEvent : ProtocolEvent
     {
-        var task = anyEvent.WaitForResponse
-            ? Entity.SendEvent<PacketComponent>(anyEvent, _taskTimeout)
-            : Entity.SendEvent<PacketComponent>(anyEvent);
-        return (TEvent) await task;
+        var handle = new TaskCompletionSource<TEvent>();
+        {
+            // Execute task
+            var task = anyEvent.WaitForResponse
+                ? Entity.SendEvent<PacketComponent>(anyEvent, _taskTimeout)
+                : Entity.SendEvent<PacketComponent>(anyEvent);
+
+            // Force to cast result type
+            task.ContinueWith(t =>
+            {
+                if (t.IsFaulted) handle.TrySetException(t.Exception!.InnerExceptions);
+                else if (t.IsCanceled) handle.TrySetCanceled();
+                else handle.SetResult((TEvent) t.Result);
+            }, TaskContinuationOptions.ExecuteSynchronously);
+        }
+        return handle.Task;
     }
 
     public void PostPacket(ProtocolEvent anyEvent)

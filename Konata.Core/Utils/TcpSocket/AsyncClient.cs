@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable RedundantAssignment
@@ -21,8 +24,9 @@ internal class AsyncClient
 
     private int _socketIp;
     private string _socketHost;
-    private FeaturedSocket _socketInstance;
+    private FuturedSocket _socketInstance;
 
+    private Thread _recvThread;
     private IClientListener _listener;
     private readonly MemoryStream _recvStream;
     private readonly byte[] _recvBuffer;
@@ -83,187 +87,152 @@ internal class AsyncClient
         // Cleanup
         await Disconnect();
 
-        // Create socket
-        _socketInstance = new FeaturedSocket(AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.Tcp);
+        try
         {
-            _socketInstance.ReceiveTimeout = 100;
-        }
+            // Create socket
+            _socketInstance = new FuturedSocket(AddressFamily.InterNetwork,
+                SocketType.Stream, ProtocolType.Tcp);
 
-        // Connect to the server
-        static void callback(IAsyncResult result) => ((FeaturedSocket) result.AsyncState).EndConnect(result);
-        if (!_socketInstance.TryConnect(_socketHost, _socketIp, callback, _socketInstance))
-        {
-            return false;
-        }
+            // Connect to the server
+            if (!await _socketInstance.Connect(_socketHost, _socketIp))
+                return false;
 
+            // Not connected
+            if (!_socketInstance.Connected) return false;
 
-        // Connected
-        if (_socketInstance.Connected)
-        {
-            // Begin receive data Asynchronously
-            new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
-                _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
-
+            // Start receive the data
+            _recvThread = new(BeginReceive);
+            _recvThread.Start();
             return true;
         }
-
-        return false;
+        catch (Exception e)
+        {
+            _listener?.OnSocketError(e);
+            return false;
+        }
     }
 
     /// <summary>
     /// Disconnect
     /// </summary>
     /// <returns></returns>
-    public Task<bool> Disconnect()
+    public async Task<bool> Disconnect()
     {
-        // Not connected
-        if (_socketInstance == null) return Task.FromResult(true);
-
-        // Disconnect
-        if (_socketInstance.Connected)
-            _socketInstance.Disconnect(false);
+        try
         {
+            // Not connected
+            if (_socketInstance == null)
+                return true;
+
+            // Disconnect
+            if (_socketInstance.Connected)
+                await _socketInstance.Disconnect();
+
             // And clanup
             _packetLen = 0;
             _recvStream.SetLength(0);
             _socketInstance.Dispose();
             _socketInstance = null;
-        }
 
-        _listener?.OnDisconnect();
-        return Task.FromResult(true);
+            _listener?.OnDisconnect();
+            _recvThread.Join();
+            return true;
+        }
+        catch (Exception e)
+        {
+            _listener?.OnSocketError(e);
+            return false;
+        }
     }
 
     /// <summary>
     /// Send data
     /// </summary>
     /// <param name="buffer"></param>
+    /// <param name="timeout"></param>
     /// <returns></returns>
-    public Task<bool> Send(ReadOnlyMemory<byte> buffer)
+    public async Task<bool> Send(byte[] buffer, int timeout = -1)
     {
-        // Not connected
-        if (_socketInstance == null) return Task.FromResult(false);
-        if (!_socketInstance.Connected) return Task.FromResult(false);
-
-        // Send the data
-        _socketInstance.BeginSend(buffer.ToArray(), 0, buffer.Length, SocketFlags.None,
-            r => ((FeaturedSocket) r.AsyncState).EndSend(r), _socketInstance).AsyncWaitHandle.WaitOne();
-
-        return Task.FromResult(true);
+        try
+        {
+            // Send the data
+            if (_socketInstance is not {Connected: true}) return false;
+            return await _socketInstance.Send(buffer, timeout) == buffer.Length;
+        }
+        catch (Exception e)
+        {
+            _listener?.OnSocketError(e);
+            return false;
+        }
     }
 
     /// <summary>
     /// Recv the data
     /// </summary>
-    private void BeginReceive(IAsyncResult result)
+    private async void BeginReceive()
     {
         var recvLen = 0;
-
         try
         {
-            // Not connected
-            if (!_socketInstance.Connected)
+            while (_socketInstance.Connected)
             {
-                Disconnect();
-                return;
-            }
+                // Receiving the data
+                recvLen = await _socketInstance.Receive(_recvBuffer);
+                if (recvLen == 0) continue;
 
-            // Receiving the data
-            recvLen = _socketInstance.EndReceive(result);
-
-            // Write to stream
-            _recvStream.Write(_recvBuffer, 0, recvLen);
-            {
-                if (recvLen == 0) goto Final;
-
-                // Dissect the packet length
-                DissectNext:
-                if (_packetLen == 0)
+                // Write to stream
+                _recvStream.Write(_recvBuffer, 0, recvLen);
                 {
-                    _packetLen = _listener.OnStreamDissect
-                        (_recvStream.GetBuffer(), (uint) _recvStream.Length);
-                }
-
-                // Cut down one packet
-                if (_packetLen > 0 &&
-                    _recvStream.Length >= _packetLen)
-                {
-                    // Read data from stream
-                    var packetBuf = new byte[_packetLen];
+                    // Dissect the packet length
+                    DissectNext:
+                    if (_packetLen == 0)
                     {
-                        _recvStream.Seek(0, SeekOrigin.Begin);
-                        _recvStream.Read(packetBuf, 0, (int) _packetLen);
-
-                        // Move the remaining data ahead
-                        var streamBuf = _recvStream.GetBuffer();
-                        var streamLen = _recvStream.Length - _recvStream.Position;
-
-                        if (streamLen > 0)
-                        {
-                            Array.Copy(streamBuf, _recvStream.Position, streamBuf, 0, streamLen);
-                            {
-                                _recvStream.SetLength(streamLen);
-                                _recvStream.Seek(streamLen, SeekOrigin.Begin);
-                            }
-                        }
-                        else _recvStream.SetLength(0);
-
-                        // Reset
-                        _packetLen = 0;
+                        _packetLen = _listener.OnStreamDissect
+                            (_recvStream.GetBuffer(), (uint) _recvStream.Length);
                     }
 
-                    // Call on recv packet
-                    _listener.OnRecvPacket(packetBuf);
+                    // Cut down one packet
+                    if (_packetLen > 0 &&
+                        _recvStream.Length >= _packetLen)
+                    {
+                        // Read data from stream
+                        var packetBuf = new byte[_packetLen];
+                        {
+                            _recvStream.Seek(0, SeekOrigin.Begin);
+                            _recvStream.Read(packetBuf, 0, (int) _packetLen);
 
-                    // Dissect next packet
-                    if (_recvStream.Length > 0) goto DissectNext;
+                            // Move the remaining data ahead
+                            var streamBuf = _recvStream.GetBuffer();
+                            var streamLen = _recvStream.Length - _recvStream.Position;
+
+                            if (streamLen > 0)
+                            {
+                                Array.Copy(streamBuf, _recvStream.Position, streamBuf, 0, streamLen);
+                                {
+                                    _recvStream.SetLength(streamLen);
+                                    _recvStream.Seek(streamLen, SeekOrigin.Begin);
+                                }
+                            }
+                            else _recvStream.SetLength(0);
+
+                            // Reset
+                            _packetLen = 0;
+                        }
+
+                        // Call on recv packet
+                        _listener.OnRecvPacket(packetBuf);
+
+                        // Dissect next packet
+                        if (_recvStream.Length > 0) goto DissectNext;
+                    }
                 }
             }
-
-            // Start a new task to continue receive new data
-            // and complete current task
-            // to prevent recursive function invoke
-            // which leads to memory leak
-            //
-            // See: Issue (#95)
-            Final:
-            new Task(() => _socketInstance.BeginReceive(_recvBuffer, 0,
-                _recvBuffer.Length, SocketFlags.None, BeginReceive, null)).Start();
         }
 
         // Catch exceptions
-        catch (Exception)
+        catch (Exception e)
         {
-            Disconnect();
+            _listener.OnSocketError(e);
         }
-    }
-}
-
-internal class FeaturedSocket : Socket
-{
-    public FeaturedSocket(AddressFamily addressFamily, SocketType socketType,
-        ProtocolType protocolType) : base(addressFamily, socketType, protocolType)
-    {
-    }
-
-    public bool TryConnect(string host, int port, AsyncCallback requestCallback, object state)
-    {
-        BeginConnect(host, port, requestCallback, state).AsyncWaitHandle.WaitOne();
-        return this.Connected;
-    }
-
-    public new bool EndConnect(IAsyncResult result)
-    {
-        try
-        {
-            base.EndConnect(result);
-        }
-        catch
-        {
-            return false;
-        }
-
-        return true;
     }
 }

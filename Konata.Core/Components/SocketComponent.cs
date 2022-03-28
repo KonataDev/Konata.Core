@@ -181,11 +181,14 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// On disconnect
     /// </summary>
     public void OnDisconnect()
-    {
-        // Push offline
-        // PushOffline(this, "Client disconnected.");
-        LogI(TAG, "Client disconnected.");
-    }
+        => LogI(TAG, "Client disconnected.");
+
+    /// <summary>
+    /// On socket error
+    /// </summary>
+    /// <param name="e"></param>
+    public void OnSocketError(Exception e)
+        => LogE(TAG, e);
 
     /// <summary>
     /// Event handler
@@ -194,19 +197,19 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// <returns></returns>
     public override async Task<bool> OnHandleEvent(BaseEvent anyEvent)
     {
-        if (anyEvent is PacketEvent packetEvent)
+        if (anyEvent is not PacketEvent packetEvent)
         {
-            // Not connected
-            if (_tcpClient is not {Connected: true})
-                LogW(TAG, "Calling SendData method after socket disconnected.");
-
-            // Send data
-            await _tcpClient.Send(packetEvent.Buffer);
-            // LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
+            LogW(TAG, "Unsupported event received.");
+            return false;
         }
-        else LogW(TAG, "Unsupported event received.");
 
-        return false;
+        // Not connected
+        if (_tcpClient is not {Connected: true})
+            LogW(TAG, "Calling SendData method after socket disconnected.");
+
+        // Send data
+        return await _tcpClient.Send(packetEvent.Buffer);
+        // LogV(TAG, $"Send data => \n  {ByteConverter.Hex(packetEvent.Buffer, true)}");
     }
 
     /// <summary>

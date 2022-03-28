@@ -132,16 +132,16 @@ public class BaseEntity
     /// </summary>
     /// <param name="anyEvent"></param>
     /// <param name="timeout"></param>
-    /// <typeparam name="TComponent"></typeparam>
+    /// <typeparam name="TComp"></typeparam>
     /// <returns></returns>
-    internal Task<BaseEvent> SendEvent<TComponent>(BaseEvent anyEvent, int timeout = 0)
-        where TComponent : BaseComponent
+    internal Task<BaseEvent> SendEvent<TComp>(BaseEvent anyEvent, int timeout = 0)
+        where TComp : BaseComponent
     {
         // Create a task
         var task = new KonataTask(anyEvent, timeout);
-        var compoment = GetComponent<TComponent>();
+        var compoment = GetComponent<TComp>();
 
-        ThreadPool.QueueUserWorkItem(async _ =>
+        Task.Run(async () =>
         {
             try
             {
@@ -175,7 +175,7 @@ public class BaseEntity
         var task = new KonataTask(anyEvent);
         var compoment = GetComponent<TComponent>();
 
-        ThreadPool.QueueUserWorkItem(async _ =>
+        Task.Run(async () =>
         {
             try
             {

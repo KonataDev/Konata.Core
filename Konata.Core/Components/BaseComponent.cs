@@ -24,10 +24,10 @@ internal class BaseComponent
     /// Send event (async with a return value)
     /// </summary>
     /// <param name="anyEvent"></param>
-    /// <typeparam name="TEvent"></typeparam>
+    /// <typeparam name="TComp"></typeparam>
     /// <returns></returns>
-    public Task<BaseEvent> SendEvent<TEvent>(BaseEvent anyEvent)
-        where TEvent : BaseComponent => Entity?.SendEvent<TEvent>(anyEvent);
+    public Task<BaseEvent> SendEvent<TComp>(BaseEvent anyEvent)
+        where TComp : BaseComponent => Entity?.SendEvent<TComp>(anyEvent);
 
     /// <summary>
     /// Post event (async with none return value)
