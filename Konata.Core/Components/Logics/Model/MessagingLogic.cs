@@ -325,7 +325,7 @@ internal class MessagingLogic : BaseLogic
         List<MultiMsgChain> sides, uint uin, bool isGroup)
     {
         // Chain packup
-        var packed = MessagePacker.PackMultiMsg(main, sides, 
+        var packed = MessagePacker.PackMultiMsg(main, sides,
             isGroup ? MessagePacker.Mode.Group : MessagePacker.Mode.Friend);
 
         // Compressing the data
@@ -355,6 +355,9 @@ internal class MessagingLogic : BaseLogic
     /// <returns></returns>
     private async Task<bool> UploadRecords(List<RecordChain> message, uint uin, bool isGroup)
     {
+        // No need to upload
+        if (message.Count == 0) return true;
+
         // Return false if audio configuration not enabled
         if (!ConfigComponent.GlobalConfig.EnableAudio)
         {
@@ -369,27 +372,23 @@ internal class MessagingLogic : BaseLogic
             Context.LogW(TAG, "Highway server not present.");
             return false;
         }
-        
+
         foreach (var i in message)
         {
-            // Upload record via highway
-            if (ConfigComponent.HighwayConfig != null)
+            // Setup the highway info
+            Context.LogV(TAG, "Uploading record file via highway.");
+            i.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
             {
-                // Setup the highway info
-                Context.LogV(TAG, "Uploading record file via highway.");
-                i.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
-                {
-                    Host = ConfigComponent.HighwayConfig.Server.Host,
-                    Port = ConfigComponent.HighwayConfig.Server.Port,
-                    UploadTicket = ConfigComponent.HighwayConfig.Ticket,
-                });
+                Host = ConfigComponent.HighwayConfig.Server.Host,
+                Port = ConfigComponent.HighwayConfig.Server.Port,
+                UploadTicket = ConfigComponent.HighwayConfig.Ticket,
+            });
 
-                // Upload the record
-                return await HighwayComponent
-                    .PttUp(uin, Context.Bot.Uin, i, isGroup);
-            }
+            // Upload the record
+            return await HighwayComponent
+                .PttUp(uin, Context.Bot.Uin, i, isGroup);
         }
-        
+
         Context.LogV(TAG, "Recored uploaded.");
         return true;
     }
