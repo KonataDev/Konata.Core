@@ -23,4 +23,13 @@ public class ArrayExtTest
 
         Assert.AreEqual(slices.Length, 5);
     }
+    
+    [Test]
+    public void CreateSlicesFromList2()
+    {
+        var array = new List<int> {1};
+        var slices = array.Slices(2);
+
+        Assert.AreEqual(slices.Length, 1);
+    }
 }
