@@ -183,6 +183,16 @@ public class Bot : BaseEntity, IDisposable
         => BusinessComponent.Operation.GroupLeave(groupUin);
 
     /// <summary>
+    /// Poke Group Member
+    /// </summary>
+    /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+    /// <param name="memberUin"><b>[In]</b> Member uin. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="OperationFailedException"></exception>
+    public Task<bool> SendGroupPoke(uint groupUin, uint memberUin)
+        => BusinessComponent.Operation.GroupPoke(groupUin, memberUin);
+
+    /// <summary>
     /// Send message to the group
     /// </summary>
     /// <param name="groupUin"><b>[In]</b> Group uin. </param>

@@ -216,6 +216,27 @@ internal class OperationLogic : BaseLogic
         }
     }
 
+    /// <summary>
+    /// Poke Group Member
+    /// </summary>
+    /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
+    /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="OperationFailedException"></exception>
+    public async Task<bool> GroupPoke(uint groupUin, uint memberUin)
+    {
+        var result = await GroupPoke(Context, groupUin, memberUin);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-2,
+                    $"Failed to poke member: Assert failed. Ret => {result.ResultCode}");
+            }
+
+            return true;
+        }
+    }
+
     #region Stub methods
 
     private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
@@ -232,6 +253,9 @@ internal class OperationLogic : BaseLogic
 
     private static Task<GroupManagementEvent> GroupLeave(BusinessComponent context, ulong groupCode, bool dismiss)
         => context.SendPacket<GroupManagementEvent>(GroupManagementEvent.Create(groupCode, context.Bot.Uin, dismiss));
+
+    private static Task<GroupPokeEvent> GroupPoke(BusinessComponent context, uint groupUin, uint memberUin)
+        => context.SendPacket<GroupPokeEvent>(GroupPokeEvent.Create(groupUin, memberUin));
 
     #endregion
 }

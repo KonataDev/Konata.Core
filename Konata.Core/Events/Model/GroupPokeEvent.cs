@@ -35,6 +35,12 @@ public class GroupPokeEvent : ProtocolEvent
     /// </summary>
     public string ActionSuffix { get; }
 
+    private GroupPokeEvent(uint groupUin, uint memberUin) : base(0)
+    {
+        GroupUin = groupUin;
+        MemberUin = memberUin;
+    }
+
     private GroupPokeEvent(uint groupUin, uint memberUin, uint operatorUin,
         string actionPrefix, string actionSuffix) : base(0)
     {
@@ -43,6 +49,11 @@ public class GroupPokeEvent : ProtocolEvent
         OperatorUin = operatorUin;
         ActionPrefix = actionPrefix;
         ActionSuffix = actionSuffix;
+    }
+
+    private GroupPokeEvent(int resultCode)
+        : base(resultCode)
+    {
     }
 
     /// <summary>
@@ -56,4 +67,21 @@ public class GroupPokeEvent : ProtocolEvent
     /// <returns></returns>
     internal static GroupPokeEvent Push(uint groupUin, uint memberUin, uint operatorUin,
         string actionPrefix, string actionSuffix) => new(groupUin, memberUin, operatorUin, actionPrefix, actionSuffix);
+
+    /// <summary>
+    /// Construct event push
+    /// </summary>
+    /// <param name="groupUin"></param>
+    /// <param name="memberUin"></param>
+    /// <returns></returns>
+    internal static GroupPokeEvent Create(uint groupUin, uint memberUin)
+        => new(groupUin, memberUin);
+
+    /// <summary>
+    /// Construct event result
+    /// </summary>
+    /// <param name="resultCode"></param>
+    /// <returns></returns>
+    internal static GroupPokeEvent Result(int resultCode)
+        => new(resultCode);
 }
