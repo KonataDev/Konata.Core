@@ -8,9 +8,8 @@ using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
-using Konata.Core.Packets;
+using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Network;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable SuggestBaseTypeForParameter
@@ -278,39 +277,32 @@ internal class MessagingLogic : BaseLogic
     /// <returns></returns>
     private async Task<bool> UploadImages(List<ImageChain> image, uint uin, bool isGroup)
     {
-        // 1. Request ImageStore.GroupPicUp
+        // 1. Request ImageStore.GroupPicUp/OffPicUp
         // 2. Upload the image via highway
         // 3. Return false while failed to upload
 
         // Return true if no image to load
         if (image.Count <= 0) return true;
 
-        if (isGroup)
+        var blocks = image.Slices(20);
+        foreach (var item in blocks)
         {
+            var block = item.ToList();
+            
             // Request image upload
-            var result = await GroupPicUp(Context, uin, image);
-            {
-                // Set upload data
-                for (var i = 0; i < image.Count; ++i)
-                    image[i].SetPicUpInfo(result.UploadInfo[i]);
-            }
+            var result = isGroup
+                ? await GroupPicUp(Context, uin, block)
+                : await OffPicUp(Context, uin, block);
+
+            // Set upload data
+            for (var i = 0; i < block.Count; ++i)
+                block[i].SetPicUpInfo(result.UploadInfo[i]);
 
             // Highway image upload
-            return await HighwayComponent.PicDataUp(Context.Bot.Uin, image, true);
+            await HighwayComponent.PicDataUp(Context.Bot.Uin, block, isGroup);
         }
-        else
-        {
-            // Request image upload
-            var result = await OffPicUp(Context, uin, image);
-            {
-                // Set upload data
-                for (var i = 0; i < image.Count; ++i)
-                    image[i].SetPicUpInfo(result.UploadInfo[i]);
-            }
 
-            // Highway image upload
-            return await HighwayComponent.PicDataUp(Context.Bot.Uin, image, false);
-        }
+        return true;
     }
 
     /// <summary>
