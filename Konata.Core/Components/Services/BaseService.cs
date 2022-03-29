@@ -29,7 +29,7 @@ internal abstract class BaseService<TEvent> : IService
     /// <param name="output"></param>
     /// <param name="extra"></param>
     /// <returns></returns>
-    protected virtual bool Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output, List<ProtocolEvent> extra)
+    protected virtual bool Parse(SSOFrame input, BotKeyStore keystore, out TEvent output, List<ProtocolEvent> extra)
     {
         output = null;
         if (Parse(input, keystore, out var x))
@@ -61,7 +61,7 @@ internal abstract class BaseService<TEvent> : IService
         output = null;
         extra = new List<ProtocolEvent>();
 
-        if (Parse(input, keystore, out output, extra)) return true;
+        if (Parse(input, keystore, out var x, extra)) output = x;
         return output != null;
     }
 }

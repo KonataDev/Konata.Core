@@ -29,7 +29,7 @@ internal class OperationLogic : BaseLogic
 
     public override Task Incoming(ProtocolEvent e)
     {
-        return Task.CompletedTask; 
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -59,8 +59,8 @@ internal class OperationLogic : BaseLogic
         }
 
         // Promote member to admin
-        var result = await GroupPromoteAdmin
-            (Context, groupUin, memberUin, toggleAdmin);
+        var args = GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin);
+        var result = await Context.SendPacket<GroupPromoteAdminEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -99,8 +99,8 @@ internal class OperationLogic : BaseLogic
         }
 
         // Mute a member
-        var result = await GroupMuteMember
-            (Context, groupUin, memberUin, timeSeconds);
+        var args = GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds);
+        var result = await Context.SendPacket<GroupMuteMemberEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -138,8 +138,8 @@ internal class OperationLogic : BaseLogic
         }
 
         // Kick a member
-        var result = await GroupKickMember
-            (Context, groupUin, memberUin, preventRequest);
+        var args = GroupKickMemberEvent.Create(groupUin, memberUin, 0, preventRequest);
+        var result = await Context.SendPacket<GroupKickMemberEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -178,8 +178,8 @@ internal class OperationLogic : BaseLogic
         }
 
         // Set special title
-        var result = await GroupSetSpecialTitle
-            (Context, groupUin, memberUin, specialTitle, expiredTime);
+        var args = GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime);
+        var result = await Context.SendPacket<GroupSpecialTitleEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -204,7 +204,8 @@ internal class OperationLogic : BaseLogic
         if (groupCode == 0) throw new OperationFailedException(-1, "Failed to lave group: Lack group code.");
 
         // Leave group
-        var result = await GroupLeave(Context, groupCode, false);
+        var args = GroupLeaveEvent.Create(groupCode, Context.Bot.Uin, false);
+        var result = await Context.SendPacket<GroupLeaveEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -225,11 +226,12 @@ internal class OperationLogic : BaseLogic
     /// <exception cref="OperationFailedException"></exception>
     public async Task<bool> GroupPoke(uint groupUin, uint memberUin)
     {
-        var result = await GroupPoke(Context, groupUin, memberUin);
+        var args = GroupPokeEvent.Create(groupUin, memberUin);
+        var result = await Context.SendPacket<ProtocolEvent>(args);
         {
             if (result.ResultCode != 0)
             {
-                throw new OperationFailedException(-2,
+                throw new OperationFailedException(-1,
                     $"Failed to poke member: Assert failed. Ret => {result.ResultCode}");
             }
 
@@ -237,25 +239,24 @@ internal class OperationLogic : BaseLogic
         }
     }
 
-    #region Stub methods
+    /// <summary>
+    /// Poke Friend
+    /// </summary>
+    /// <param name="friendUin"><b>[In]</b> Friend uin being operated. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="OperationFailedException"></exception>
+    public async Task<bool> FriendPoke(uint friendUin)
+    {
+        var args = FriendPokeEvent.Create(Context.Bot.Uin, friendUin);
+        var result = await Context.SendPacket<ProtocolEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    $"Failed to poke friend: Assert failed. Ret => {result.ResultCode}");
+            }
 
-    private static Task<GroupPromoteAdminEvent> GroupPromoteAdmin(BusinessComponent context, uint groupUin, uint memberUin, bool toggleAdmin)
-        => context.SendPacket<GroupPromoteAdminEvent>(GroupPromoteAdminEvent.Create(groupUin, memberUin, toggleAdmin));
-
-    private static Task<GroupMuteMemberEvent> GroupMuteMember(BusinessComponent context, uint groupUin, uint memberUin, uint timeSeconds)
-        => context.SendPacket<GroupMuteMemberEvent>(GroupMuteMemberEvent.Create(groupUin, memberUin, timeSeconds));
-
-    private static Task<GroupKickMemberEvent> GroupKickMember(BusinessComponent context, uint groupUin, uint memberUin, bool preventRequest)
-        => context.SendPacket<GroupKickMemberEvent>(GroupKickMemberEvent.Create(groupUin, memberUin, 0, preventRequest));
-
-    private static Task<GroupSpecialTitleEvent> GroupSetSpecialTitle(BusinessComponent context, uint groupUin, uint memberUin, string specialTitle, uint expiredTime)
-        => context.SendPacket<GroupSpecialTitleEvent>(GroupSpecialTitleEvent.Create(groupUin, memberUin, specialTitle, expiredTime));
-
-    private static Task<GroupManagementEvent> GroupLeave(BusinessComponent context, ulong groupCode, bool dismiss)
-        => context.SendPacket<GroupManagementEvent>(GroupManagementEvent.Create(groupCode, context.Bot.Uin, dismiss));
-
-    private static Task<GroupPokeEvent> GroupPoke(BusinessComponent context, uint groupUin, uint memberUin)
-        => context.SendPacket<GroupPokeEvent>(GroupPokeEvent.Create(groupUin, memberUin));
-
-    #endregion
+            return true;
+        }
+    }
 }

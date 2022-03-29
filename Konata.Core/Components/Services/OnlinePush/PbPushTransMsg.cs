@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 
 // ReSharper disable UnusedType.Global
@@ -17,9 +17,8 @@ namespace Konata.Core.Components.Services.OnlinePush;
 internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
 {
     protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out PushTransMsgEvent output)
+        BotKeyStore keystore, out PushTransMsgEvent output, List<ProtocolEvent> extra)
     {
-        ProtocolEvent innerEvent = null;
         var pb = ProtobufDecoder.Create(input.Payload.GetBytes());
         var type = pb[3].AsNumber();
         var buf = pb[10].AsBuffer();
@@ -34,7 +33,7 @@ internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
             {
                 buf.TakeUintBE(out var memberUin);
                 buf.TakeByte(out var set);
-                innerEvent = GroupPromoteAdminEvent.Push(groupUin, memberUin, set > 0);
+                extra.Add(GroupPromoteAdminEvent.Push(groupUin, memberUin, set > 0));
             }
         }
         else if (type == 34)
@@ -53,11 +52,11 @@ internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
                     dismiss = true;
                 buf.TakeUintBE(out operatorUin);
             }
-            innerEvent = GroupKickMemberEvent.Push(groupUin, memberUin, operatorUin, dismiss);
+
+            extra.Add(GroupKickMemberEvent.Push(groupUin, memberUin, operatorUin, dismiss));
         }
 
-        output = PushTransMsgEvent.Push(innerEvent, input.Sequence, (int) svrip);
-
+        output = PushTransMsgEvent.Push(input.Sequence, (int) svrip);
         return true;
     }
 }

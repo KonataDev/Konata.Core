@@ -17,7 +17,6 @@ using Konata.Core.Utils.IO;
 
 namespace Konata.Core.Components.Logics.Model;
 
-[EventSubscribe(typeof(GroupMessageEvent))]
 [BusinessLogic("Messaging Logic", "Responsible for the core messages.")]
 internal class MessagingLogic : BaseLogic
 {
@@ -26,13 +25,6 @@ internal class MessagingLogic : BaseLogic
     internal MessagingLogic(BusinessComponent context)
         : base(context)
     {
-    }
-
-    public override Task Incoming(ProtocolEvent e)
-    {
-        // Forward messages to userend
-        Context.PostEventToEntity(e);
-        return Task.CompletedTask;
     }
 
     /// <summary>

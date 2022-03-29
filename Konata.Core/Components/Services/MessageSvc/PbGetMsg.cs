@@ -18,7 +18,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
     protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out ProtocolEvent output, List<ProtocolEvent> extra)
+        BotKeyStore keystore, out PbGetMessageEvent output, List<ProtocolEvent> extra)
     {
         var root = ProtoTreeRoot.Deserialize(input.Payload, true);
 

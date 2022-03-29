@@ -24,22 +24,25 @@ using FriendPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, JStruct, Pr
 [Service("OnlinePush.ReqPush", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ReqPush : BaseService<OnlineReqPushEvent>
 {
-    protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out OnlineReqPushEvent output)
+    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+        out OnlineReqPushEvent output, List<ProtocolEvent> extra)
     {
         // Parse push event
         var pushMsg = new SvcReqPushMsg(input.Payload.GetBytes());
 
-        // Convert push event to konata event
-        var innerEvent = pushMsg.EventType switch
+        // Process push event
+        var result = pushMsg.EventType switch
         {
             PushType.Group => HandlePushGroupEvent(pushMsg.PushPayload, keystore),
             PushType.Friend => HandlePushFriendEvent(pushMsg.FromSource, pushMsg.PushPayload, keystore),
             _ => null
         };
 
+        // Add to extra events
+        if (result != null) extra.Add(result);
+
         // Construct push event
-        output = OnlineReqPushEvent.Push(innerEvent, pushMsg.packageRequestId, pushMsg.FromSource,
+        output = OnlineReqPushEvent.Push(pushMsg.packageRequestId, pushMsg.FromSource,
             pushMsg.Unknown0x1C, pushMsg.SvrIp, pushMsg.Unknown0x8D, pushMsg.Unknown0x32);
 
         // Set sequence
@@ -63,8 +66,8 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
             buffer.TakeByte(out var messageType);
 
             // Parse events
-            return _groupHandler.ContainsKey(messageType)
-                ? _groupHandler[messageType].Invoke(signInfo, fromGroup, buffer)
+            return GroupHandler.ContainsKey(messageType)
+                ? GroupHandler[messageType].Invoke(signInfo, fromGroup, buffer)
                 : null;
         }
     }
@@ -85,13 +88,13 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
             var messageType = (ushort) tree[0].Number.ValueShort;
 
             // Parse events
-            return _friendHandler.ContainsKey(messageType)
-                ? _friendHandler[messageType].Invoke(signInfo, fromSource, tree)
+            return FriendHandler.ContainsKey(messageType)
+                ? FriendHandler[messageType].Invoke(signInfo, fromSource, tree)
                 : null;
         }
     }
 
-    private static readonly FriendPushHandler _friendHandler = new()
+    private static readonly FriendPushHandler FriendHandler = new()
     {
         {
             // Friend message recall
@@ -193,7 +196,7 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
         }
     };
 
-    private static readonly GroupPushHandler _groupHandler = new()
+    private static readonly GroupPushHandler GroupHandler = new()
     {
         {
             // Group recall message
@@ -223,7 +226,7 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
                 }
 
                 // Construct event
-                return GroupMessageRecallEvent.Push(src, 
+                return GroupMessageRecallEvent.Push(src,
                     operatorUin, affectedUin, msgSequence, msgRand, msgTime);
             }
         },
@@ -248,18 +251,7 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
 
         {
             // Group anonymous settings event
-            0x0E, (key, src, buf) =>
-            {
-                buf.EatBytes(1);
-                buf.TakeUintBE(out var operatorUin);
-                buf.TakeUintBE(out var timeSeconds);
-
-                // Failed to parse
-                if (operatorUin == 0) return null;
-
-                // Construct event
-                return GroupSettingsAnonymousEvent.Push(src, operatorUin, timeSeconds == 0);
-            }
+            0x0E, (key, src, buf) => null
         },
 
         {

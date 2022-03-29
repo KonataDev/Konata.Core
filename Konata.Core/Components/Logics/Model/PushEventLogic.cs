@@ -14,6 +14,19 @@ namespace Konata.Core.Components.Logics.Model;
 [EventSubscribe(typeof(PushNotifyEvent))]
 [EventSubscribe(typeof(OnlineReqPushEvent))]
 [EventSubscribe(typeof(PushTransMsgEvent))]
+
+// Friend Messages
+[EventSubscribe(typeof(FriendPokeEvent))]
+[EventSubscribe(typeof(FriendTypingEvent))]
+[EventSubscribe(typeof(FriendMessageRecallEvent))]
+
+// Group Events
+[EventSubscribe(typeof(GroupPokeEvent))]
+[EventSubscribe(typeof(GroupMuteMemberEvent))]
+[EventSubscribe(typeof(GroupMessageRecallEvent))]
+[EventSubscribe(typeof(GroupKickMemberEvent))]
+[EventSubscribe(typeof(GroupPromoteAdminEvent))]
+[EventSubscribe(typeof(GroupMessageEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
 internal class PushEventLogic : BaseLogic
 {
@@ -40,7 +53,7 @@ internal class PushEventLogic : BaseLogic
 
             // Handle online push trans
             case PushTransMsgEvent transpush:
-                OnPushTransMsg(transpush);
+                await OnPushTransMsg(transpush);
                 break;
 
             // Handle push notify event
@@ -74,28 +87,20 @@ internal class PushEventLogic : BaseLogic
     /// Online push
     /// </summary>
     /// <param name="e"></param>
-    private async Task OnOnlineReqPush(OnlineReqPushEvent e)
+    private Task OnOnlineReqPush(OnlineReqPushEvent e)
     {
-        // Post inner event
-        if (e.InnerEvent != null)
-            Context.PostEventToEntity(e.InnerEvent);
-
-        // Confirm push
-        await ConfrimReqPushEvent(Context, e);
+        var args = OnlineRespPushEvent.Create(Context.Bot.Uin, e);
+        return Context.SendPacket<OnlineRespPushEvent>(args);
     }
 
     /// <summary>
     /// Trans msg push
     /// </summary>
     /// <param name="e"></param>
-    private async void OnPushTransMsg(PushTransMsgEvent e)
+    private Task OnPushTransMsg(PushTransMsgEvent e)
     {
-        // Post inner event
-        if (e.InnerEvent != null)
-            Context.PostEventToEntity(e.InnerEvent);
-
-        // Confirm push
-        await ConfrimPushTransMsgEvent(Context, e);
+        var args = OnlineRespPushEvent.Create(Context.Bot.Uin, e);
+        return Context.SendPacket<OnlineRespPushEvent>(args);
     }
 
     private async Task OnPushNotify(PushNotifyEvent e)
@@ -132,23 +137,12 @@ internal class PushEventLogic : BaseLogic
 
     internal async Task OnPullNewMessage()
     {
-        var result = await PullMessage(Context, ConfigComponent.SyncCookie);
-
-        // Update sync cookie
-        if (result.SyncCookie != null)
-            ConfigComponent.SyncCookie = result.SyncCookie;
+        var args = PbGetMessageEvent.Create(ConfigComponent.SyncCookie);
+        var result = await Context.SendPacket<PbGetMessageEvent>(args);
+        {
+            // Update sync cookie
+            if (result.SyncCookie != null)
+                ConfigComponent.SyncCookie = result.SyncCookie;
+        }
     }
-
-    #region Stub methods
-
-    private static Task<OnlineRespPushEvent> ConfrimReqPushEvent(BusinessComponent context, OnlineReqPushEvent original)
-        => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
-
-    private static Task<OnlineRespPushEvent> ConfrimPushTransMsgEvent(BusinessComponent context, PushTransMsgEvent original)
-        => context.SendPacket<OnlineRespPushEvent>(OnlineRespPushEvent.Create(context.Bot.Uin, original));
-
-    private static Task<PbGetMessageEvent> PullMessage(BusinessComponent context, byte[] syncCookie)
-        => context.SendPacket<PbGetMessageEvent>(PbGetMessageEvent.Create(syncCookie));
-
-    #endregion
 }

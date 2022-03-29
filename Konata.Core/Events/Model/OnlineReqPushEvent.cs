@@ -14,12 +14,6 @@ internal class OnlineReqPushEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Inner event
-    /// </summary>
-    public ProtocolEvent InnerEvent { get; }
-
-    /// <summary>
-    /// <b>[Out]</b> <br/>
     /// From source <br/>
     /// </summary>
     public uint FromSource { get; }
@@ -48,11 +42,10 @@ internal class OnlineReqPushEvent : ProtocolEvent
     /// </summary>
     public int UnknownV32 { get; }
 
-    private OnlineReqPushEvent(ProtocolEvent innerEvent,
-        int requestId, uint fromSource, int v1, int svrip, byte[] v8, int v32) : base(0)
+    private OnlineReqPushEvent(int requestId, uint fromSource, 
+        int v1, int svrip, byte[] v8, int v32) : base(0)
     {
         RequestId = requestId;
-        InnerEvent = innerEvent;
         SvrIp = svrip;
         UnknownV1 = v1;
         UnknownV8 = v8;
@@ -63,7 +56,6 @@ internal class OnlineReqPushEvent : ProtocolEvent
     /// <summary>
     /// Construct event request
     /// </summary>
-    /// <param name="innerEvent"></param>
     /// <param name="requestId"></param>
     /// <param name="fromSource"></param>
     /// <param name="v1"></param>
@@ -71,7 +63,6 @@ internal class OnlineReqPushEvent : ProtocolEvent
     /// <param name="v8"></param>
     /// <param name="v32"></param>
     /// <returns></returns>
-    internal static OnlineReqPushEvent Push(ProtocolEvent innerEvent,
-        int requestId, uint fromSource, int v1, int svrip, byte[] v8, int v32)
-        => new(innerEvent, requestId, fromSource, v1, svrip, v8, v32);
+    internal static OnlineReqPushEvent Push(int requestId, uint fromSource,
+        int v1, int svrip, byte[] v8, int v32) => new(requestId, fromSource, v1, svrip, v8, v32);
 }
