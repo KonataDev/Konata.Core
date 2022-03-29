@@ -13,7 +13,7 @@ using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
-using Konata.Core.Utils.TcpSocket;
+using Konata.Core.Utils.Network.TcpClient;
 
 // ReSharper disable InvertIf
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident

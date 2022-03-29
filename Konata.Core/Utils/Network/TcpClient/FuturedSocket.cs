@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
-namespace Konata.Core.Utils.TcpSocket;
+namespace Konata.Core.Utils.Network.TcpClient;
 
 internal class FuturedSocket : IDisposable
 {

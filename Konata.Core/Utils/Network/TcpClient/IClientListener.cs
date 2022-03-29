@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Utils.TcpSocket;
+namespace Konata.Core.Utils.Network.TcpClient;
 
 internal interface IClientListener
 {

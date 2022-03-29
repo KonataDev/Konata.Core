@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 // ReSharper disable InvertIf
 // ReSharper disable TooWideLocalVariableScope
 
-namespace Konata.Core.Utils.TcpSocket;
+namespace Konata.Core.Utils.Network.TcpClient;
 
 internal class AsyncClient
 {

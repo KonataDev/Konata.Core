@@ -10,9 +10,9 @@ using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
 using Konata.Core.Utils.Extensions;
+using Konata.Core.Utils.Network.TcpClient;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Utils.Protobuf.ProtoModel;
-using Konata.Core.Utils.TcpSocket;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable ConvertIfStatementToReturnStatement
@@ -152,7 +152,7 @@ internal class HighwayComponent : InternalComponent
         }
     }
 
-    internal class HighwayClient
+    private class HighwayClient
         : AsyncClient, IClientListener
     {
         private readonly uint _peer;
