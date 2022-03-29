@@ -288,7 +288,7 @@ internal class MessagingLogic : BaseLogic
         foreach (var item in blocks)
         {
             var block = item.ToList();
-            
+
             // Request image upload
             var result = isGroup
                 ? await GroupPicUp(Context, uin, block)
@@ -299,7 +299,8 @@ internal class MessagingLogic : BaseLogic
                 block[i].SetPicUpInfo(result.UploadInfo[i]);
 
             // Highway image upload
-            await HighwayComponent.PicDataUp(Context.Bot.Uin, block, isGroup);
+            if (!await HighwayComponent.PicDataUp(Context.Bot.Uin, block, isGroup))
+                return false;
         }
 
         return true;
@@ -333,9 +334,7 @@ internal class MessagingLogic : BaseLogic
         }
 
         // Highway multimsg upload
-        if (!await HighwayComponent.MultiMsgUp(uin, Context.Bot.Uin, main)) return false;
-
-        return true;
+        return await HighwayComponent.MultiMsgUp(uin, Context.Bot.Uin, main);
     }
 
     /// <summary>
@@ -348,20 +347,21 @@ internal class MessagingLogic : BaseLogic
     private async Task<bool> UploadRecords(List<RecordChain> message, uint uin, bool isGroup)
     {
         // No need to upload
-        if (message.Count == 0) return true;
+        if (message.Count <= 0) return true;
 
         // Return false if audio configuration not enabled
         if (!ConfigComponent.GlobalConfig.EnableAudio)
         {
-            Context.LogW(TAG, "The audio function is currently disabled. " +
-                              "Lack of codec library.");
+            Context.LogW(TAG, "The audio function is currently disabled. \n" +
+                              "Note: This function lack of codec library 'libSilkCodec', " +
+                              "Please reference https://github.com/KonataDev/libSilkCodec");
             return false;
         }
 
         // Check if no highway server
         if (ConfigComponent.HighwayConfig == null)
         {
-            Context.LogW(TAG, "Highway server not present.");
+            Context.LogW(TAG, "Highway server is not present.");
             return false;
         }
 

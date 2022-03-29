@@ -279,7 +279,7 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
             leaf = (T) PathTo(this, leafPath);
             return true;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             leaf = default;
             return false;
