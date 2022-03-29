@@ -3,7 +3,7 @@
 
 namespace Konata.Core.Events.Model;
 
-internal class GroupDismissEvent : ProtocolEvent
+internal class GroupLeaveEvent : ProtocolEvent
 {
     /// <summary>
     /// Dismiss the group
@@ -20,7 +20,7 @@ internal class GroupDismissEvent : ProtocolEvent
     /// </summary>
     public uint SelfUin { get; }
 
-    private GroupDismissEvent(ulong groupCode,
+    private GroupLeaveEvent(ulong groupCode,
         uint selfUin, bool dismiss) : base(true)
     {
         GroupCode = groupCode;
@@ -28,7 +28,7 @@ internal class GroupDismissEvent : ProtocolEvent
         Dismiss = dismiss;
     }
 
-    private GroupDismissEvent(int resultCode)
+    private GroupLeaveEvent(int resultCode)
         : base(resultCode)
     {
     }
@@ -40,7 +40,7 @@ internal class GroupDismissEvent : ProtocolEvent
     /// <param name="selfUin"></param>
     /// <param name="dismiss"></param>
     /// <returns></returns>
-    public static GroupDismissEvent Create(ulong groupCode,
+    public static GroupLeaveEvent Create(ulong groupCode,
         uint selfUin, bool dismiss) => new(groupCode, selfUin, dismiss);
 
     /// <summary>
@@ -48,6 +48,6 @@ internal class GroupDismissEvent : ProtocolEvent
     /// </summary>
     /// <param name="resultCode"></param>
     /// <returns></returns>
-    internal static GroupDismissEvent Result(int resultCode)
+    internal static GroupLeaveEvent Result(int resultCode)
         => new(resultCode);
 }

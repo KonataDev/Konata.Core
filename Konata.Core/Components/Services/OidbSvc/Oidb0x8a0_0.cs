@@ -5,13 +5,14 @@ using Konata.Core.Packets.Oidb.Model;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable RedundantAssignment
+// ReSharper disable UnusedType.Global
 
 namespace Konata.Core.Components.Services.OidbSvc;
 
 [EventSubscribe(typeof(GroupKickMembersEvent))]
 [Service("OidbSvc.0x8a0_0", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
-// ReSharper disable once UnusedType.Global
 internal class Oidb0x8a0_0 : BaseService<GroupKickMembersEvent>
 {
     protected override bool Parse(SSOFrame input,

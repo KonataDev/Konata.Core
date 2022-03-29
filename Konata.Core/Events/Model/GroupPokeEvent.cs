@@ -35,7 +35,7 @@ public class GroupPokeEvent : ProtocolEvent
     /// </summary>
     public string ActionSuffix { get; }
 
-    private GroupPokeEvent(uint groupUin, uint memberUin) : base(0)
+    private GroupPokeEvent(uint groupUin, uint memberUin) : base(true)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;

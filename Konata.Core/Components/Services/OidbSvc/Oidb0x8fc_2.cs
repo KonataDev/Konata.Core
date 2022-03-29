@@ -6,6 +6,7 @@ using Konata.Core.Common;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable RedundantAssignment
+// ReSharper disable InconsistentNaming
 
 namespace Konata.Core.Components.Services.OidbSvc;
 

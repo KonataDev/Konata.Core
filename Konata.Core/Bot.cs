@@ -253,6 +253,15 @@ public class Bot : BaseEntity, IDisposable
         => SendFriendMessage(friendUin, new MessageBuilder(chains));
 
     /// <summary>
+    /// Poke Friend
+    /// </summary>
+    /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="OperationFailedException"></exception>
+    public Task<bool> SendFriendPoke(uint friendUin)
+        => BusinessComponent.Operation.FriendPoke(friendUin);
+
+    /// <summary>
     /// Upload the image manually
     /// </summary>
     /// <param name="image"><b>[In]</b> Image to upload. </param>
@@ -510,7 +519,7 @@ public class Bot : BaseEntity, IDisposable
     /// <param name="anyEvent"></param>
     internal override void PostEventToEntity(BaseEvent anyEvent)
     {
-        ThreadPool.QueueUserWorkItem(_ =>
+        Task.Run(() =>
         {
             try
             {
