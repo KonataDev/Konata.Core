@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
