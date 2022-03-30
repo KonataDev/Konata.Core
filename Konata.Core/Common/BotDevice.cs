@@ -140,14 +140,14 @@ public class BotDevice
         var randImsi = StringGen.GetRandNumber(15);
 
         // Roll a random system
-        var randOSVer = RandOsVer();
+        var randOsVer = RandOsVer();
         var randGuid = Guid.Generate();
         var randBootId = StringGen.GetRandHex(16, false);
         var randBootLoader = $"KONATA.CORE.{StringGen.GetRandHex(8)}.BOOTLOADER_1_0";
         var randAndroidId = StringGen.GetRandHex(16, false);
         var randIncremental = StringGen.GetRandHex(16, false);
-        var randInnerVersion = $"KONATA.CORE.USERDEBUG.{randOSVer}";
-        var randFringerPrint = $"konata/core/konata:{randOSVer}/" +
+        var randInnerVersion = $"KONATA.CORE.USERDEBUG.{randOsVer}";
+        var randFringerPrint = $"konata/core/konata:{randOsVer}/" +
                                $"{StringGen.GetRandNumber(8)}:user/release-keys";
 
         return new BotDevice
@@ -171,7 +171,7 @@ public class BotDevice
             System = new()
             {
                 Name = "konata",
-                Version = randOSVer,
+                Version = randOsVer,
                 BootId = randBootId,
                 BootLoader = randBootLoader,
                 AndroidId = randAndroidId,
