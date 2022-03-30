@@ -96,71 +96,73 @@ public class Bot : BaseEntity, IDisposable
 
     #region Default Handlers
 
+    public delegate void KonataEvent<in TArgs>(Bot sender, TArgs args);
+
     /// <summary>
     /// Handle log event
     /// </summary>
-    public event EventHandler<LogEvent> OnLog;
+    public event KonataEvent<LogEvent> OnLog;
 
     /// <summary>
     /// Handle captcha event
     /// </summary>
-    public event EventHandler<CaptchaEvent> OnCaptcha;
+    public event KonataEvent<CaptchaEvent> OnCaptcha;
 
     /// <summary>
     /// On online status changed event
     /// </summary>
     [Obsolete("This event will be removed in future.")]
-    public event EventHandler<OnlineStatusEvent> OnOnlineStatusChanged;
+    public event KonataEvent<OnlineStatusEvent> OnOnlineStatusChanged;
 
     /// <summary>
     /// On group message event
     /// </summary>
-    public event EventHandler<GroupMessageEvent> OnGroupMessage;
+    public event KonataEvent<GroupMessageEvent> OnGroupMessage;
 
     /// <summary>
     /// On group mute event
     /// </summary>
-    public event EventHandler<GroupMuteMemberEvent> OnGroupMute;
+    public event KonataEvent<GroupMuteMemberEvent> OnGroupMute;
 
     /// <summary>
     /// On group recall message event
     /// </summary>
-    public event EventHandler<GroupMessageRecallEvent> OnGroupMessageRecall;
+    public event KonataEvent<GroupMessageRecallEvent> OnGroupMessageRecall;
 
     /// <summary>
     /// On group poke event
     /// </summary>
-    public event EventHandler<GroupPokeEvent> OnGroupPoke;
+    public event KonataEvent<GroupPokeEvent> OnGroupPoke;
 
     /// <summary>
     /// On group member decrease event
     /// </summary>
-    public event EventHandler<GroupKickMemberEvent> OnGroupKickMember;
+    public event KonataEvent<GroupKickMemberEvent> OnGroupKickMember;
 
     /// <summary>
     /// On group admin set/unset event
     /// </summary>
-    public event EventHandler<GroupPromoteAdminEvent> OnGroupPromoteAdmin;
+    public event KonataEvent<GroupPromoteAdminEvent> OnGroupPromoteAdmin;
 
     /// <summary>
     /// On friend message event
     /// </summary>
-    public event EventHandler<FriendMessageEvent> OnFriendMessage;
+    public event KonataEvent<FriendMessageEvent> OnFriendMessage;
 
     /// <summary>
     /// On group recall message event
     /// </summary>
-    public event EventHandler<FriendMessageRecallEvent> OnFriendMessageRecall;
+    public event KonataEvent<FriendMessageRecallEvent> OnFriendMessageRecall;
 
     /// <summary>
     /// On friend poke event
     /// </summary>
-    public event EventHandler<FriendPokeEvent> OnFriendPoke;
+    public event KonataEvent<FriendPokeEvent> OnFriendPoke;
 
     /// <summary>
     /// On friend typing event
     /// </summary>
-    public event EventHandler<FriendTypingEvent> OnFriendTyping;
+    public event KonataEvent<FriendTypingEvent> OnFriendTyping;
 
     private Dictionary<Type, Action<BaseEvent>> _dict;
 
