@@ -1,7 +1,7 @@
 ﻿using Konata.Core.Attributes;
 using Konata.Core.Common;
-using Konata.Core.Components;
 
+// ReSharper disable ArgumentsStyleLiteral
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
@@ -17,10 +17,30 @@ public static class BotFather
     /// <param name="device"></param>
     /// <param name="keystore"></param>
     /// <returns></returns>
+    [KonataApi(1, experimental: true)]
     public static Bot Create(BotConfig config, BotDevice device, BotKeyStore keystore)
     {
         var bot = new Bot(config, device, keystore);
         return bot;
+    }
+
+    /// <summary>
+    /// Create a bot instance
+    /// </summary>
+    /// <param name="uin"></param>
+    /// <param name="passwd"></param>
+    /// <param name="config"></param>
+    /// <param name="device"></param>
+    /// <param name="keystore"></param>
+    /// <returns></returns>
+    [KonataApi(1, experimental: true)]
+    public static Bot Create(string uin, string passwd,
+        out BotConfig config, out BotDevice device, out BotKeyStore keystore)
+    {
+        device = BotDevice.Default();
+        config = BotConfig.Default();
+        keystore = new BotKeyStore(uin, passwd);
+        return new Bot(config, device, keystore);
     }
 }
 
