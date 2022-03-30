@@ -35,7 +35,7 @@ internal class Oidb0xed3 : BaseService<ProtocolEvent>
                 return true;
 
             case FriendPokeEvent fpe:
-                output = new OidbCmd0xed3_0(fpe.SelfUin, fpe.FriendUin, true);
+                output = new OidbCmd0xed3_0(fpe.SelfUin, fpe.FriendUin, false);
                 return true;
         }
 
