@@ -22,8 +22,8 @@ internal class AsyncClient
     public bool Connected
         => _socketInstance?.Connected ?? false;
 
-    private int _socketIp;
     private string _socketHost;
+    private ushort _socketPort;
     private FuturedSocket _socketInstance;
 
     private Thread _recvThread;
@@ -61,17 +61,17 @@ internal class AsyncClient
     /// <summary>
     /// Connect to the server
     /// <param name="host"></param>
-    /// <param name="ip"></param>
+    /// <param name="port"></param>
     /// </summary>
     /// <returns></returns>
-    public async Task<bool> Connect(string host, int ip)
+    public async Task<bool> Connect(string host, int port)
     {
         // The client has been connected
         if (_socketInstance != null) return false;
         if (_socketInstance?.Connected ?? false) return true;
         {
-            _socketIp = ip;
             _socketHost = host;
+            _socketPort = (ushort) port;
         }
 
         // Connect to server
@@ -94,7 +94,7 @@ internal class AsyncClient
                 SocketType.Stream, ProtocolType.Tcp);
 
             // Connect to the server
-            if (!await _socketInstance.Connect(_socketHost, _socketIp))
+            if (!await _socketInstance.Connect(_socketHost, _socketPort))
                 return false;
 
             // Not connected

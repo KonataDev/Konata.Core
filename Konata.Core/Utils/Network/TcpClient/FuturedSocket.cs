@@ -28,6 +28,9 @@ internal class FuturedSocket : IDisposable
     public FuturedSocket(AddressFamily family, SocketType type, ProtocolType protocol)
         => InnerSocket = new(family, type, protocol);
 
+    private FuturedSocket(Socket socket)
+        => InnerSocket = socket;
+
     public void Dispose()
         => InnerSocket?.Dispose();
 
@@ -52,6 +55,37 @@ internal class FuturedSocket : IDisposable
         LeaveAsync(tk, args);
 
         return InnerSocket.Connected;
+    }
+
+    /// <summary>
+    /// Turn socket into listen mode and accepts the connections from client
+    /// </summary>
+    /// <param name="ep"></param>
+    /// <param name="maxconn"></param>
+    /// <param name="timeout"></param>
+    /// <returns></returns>
+    public async Task<FuturedSocket> Accept(IPEndPoint ep, int maxconn, int timeout = -1)
+    {
+        if (!InnerSocket.IsBound)
+        {
+            InnerSocket.Bind(ep);
+            InnerSocket.Listen(maxconn);
+        }
+
+        EnterAsync(out var tk, out var args);
+        {
+            args.UserToken = tk;
+            args.RemoteEndPoint = ep;
+            args.Completed += OnCompleted;
+
+            // Accept async
+            if (InnerSocket.AcceptAsync(args))
+                await Task.Run(() => tk.WaitOne(timeout));
+        }
+        LeaveAsync(tk, args);
+
+        if (args.AcceptSocket is not {Connected: true}) return null;
+        return new(args.AcceptSocket);
     }
 
     /// <summary>
@@ -123,7 +157,7 @@ internal class FuturedSocket : IDisposable
 
     #region Overload methods
 
-    public async Task<bool> Connect(string host, int port)
+    public async Task<bool> Connect(string host, ushort port, int timeout = -1)
     {
         // Try parse ipaddress
         if (IPAddress.TryParse(host, out var ipaddr))
@@ -138,8 +172,11 @@ internal class FuturedSocket : IDisposable
         return await Connect(ipList.AddressList[0], port);
     }
 
-    public Task<bool> Connect(IPAddress addr, int port)
-        => Connect(new(addr, port));
+    public Task<bool> Connect(IPAddress addr, ushort port, int timeout = -1)
+        => Connect(new(addr, port), timeout);
+
+    public Task<FuturedSocket> Accept(string ip, ushort port, int maxconn, int timeout = -1)
+        => Accept(new(IPAddress.Parse(ip), port), maxconn, timeout);
 
     public Task<int> Send(string str)
         => Send(Encoding.UTF8.GetBytes(str));
