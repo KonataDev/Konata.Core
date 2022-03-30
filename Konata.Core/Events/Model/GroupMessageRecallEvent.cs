@@ -56,6 +56,20 @@ public class GroupMessageRecallEvent : ProtocolEvent
         Random = messageStruct.Random;
         Time = messageStruct.Time;
     }
+    
+    /// <summary>
+    /// Recalling a message
+    /// </summary>
+    /// <param name="groupUin"></param>
+    /// <param name="sequence"></param>
+    /// /// <param name="random"></param>
+    private GroupMessageRecallEvent(uint groupUin, uint sequence, uint random)
+        : base(true)
+    {
+        GroupUin = groupUin;
+        Sequence = sequence;
+        Random = random;
+    }
 
     /// <summary>
     /// Recall result
@@ -94,6 +108,16 @@ public class GroupMessageRecallEvent : ProtocolEvent
     /// <returns></returns>
     internal static GroupMessageRecallEvent Create(uint groupUin,
         MessageStruct messageStruct) => new(groupUin, messageStruct);
+    
+    /// <summary>
+    /// Construct event request
+    /// </summary>
+    /// <param name="groupUin"></param>
+    /// <param name="sequence"></param>
+    /// /// <param name="random"></param>
+    /// <returns></returns>
+    internal static GroupMessageRecallEvent Create(uint groupUin,
+        uint sequence, uint random) => new(groupUin, sequence, random);
 
     /// <summary>
     /// Construct event result

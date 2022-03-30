@@ -17,16 +17,37 @@ public class FriendMessageRecallEvent : ProtocolEvent
     public string RecallSuffix { get; }
 
     /// <summary>
-    /// <b>[In]</b> <br/>
-    /// Message id <br/>
+    /// <b>[In] [Out]</b> <br/>
+    /// Sequence <br/>
     /// </summary>
-    public uint MessageId { get; }
+    public uint Sequence { get; }
+
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Random <br/>
+    /// </summary>
+    public uint Random { get; }
+
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Uuid <br/>
+    /// </summary>
+    public long Uuid { get; }
+
+    /// <summary>
+    /// <b>[In] [Out]</b> <br/>
+    /// Time <br/>
+    /// </summary>
+    public uint Time { get; }
 
     private FriendMessageRecallEvent(uint friendUin,
-        uint messageId) : base(true)
+        uint sequence, uint random, long uuid, uint time) : base(true)
     {
         FriendUin = friendUin;
-        MessageId = messageId;
+        Sequence = sequence;
+        Random = random;
+        Uuid = uuid;
+        Time = time;
     }
 
     private FriendMessageRecallEvent(int resultCode)
@@ -45,10 +66,13 @@ public class FriendMessageRecallEvent : ProtocolEvent
     /// Construct event request
     /// </summary>
     /// <param name="friendUin"></param>
-    /// <param name="messageId"></param>
+    /// <param name="sequence"></param>
+    /// <param name="random"></param>
+    /// <param name="uuid"></param>
+    /// <param name="time"></param>
     /// <returns></returns>
-    internal static FriendMessageRecallEvent Create
-        (uint friendUin, uint messageId) => new(friendUin, messageId);
+    internal static FriendMessageRecallEvent Create(uint friendUin,
+        uint sequence, uint random, long uuid, uint time) => new(friendUin, sequence, random, uuid, time);
 
     /// <summary>
     /// Construct event result

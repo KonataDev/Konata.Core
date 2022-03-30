@@ -90,6 +90,32 @@ internal class MessagingLogic : BaseLogic
                                          $"Assert failed. Ret => {result.ResultCode}");
         }
     }
+    
+    /// <summary>
+    /// Recall a message
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    /// <exception cref="MessagingException"></exception>
+    public async Task<bool> RecallMessage(MessageStruct message)
+    {
+        ProtocolEvent result = null;
+        if (message.Type == MessageStruct.SourceType.Group)
+        {
+            result = await RecallGroupMessage(Context, message.Receiver.Uin, message.Sequence, message.Random);
+        }
+        else
+        {
+            result = await RecallFriendMessage(Context, message.Receiver.Uin, message.Sequence, message.Random, message.Uuid, message.Time);
+        }
+        
+        
+        if (result.ResultCode == 0) return true;
+        {
+            throw new MessagingException("Recall message failed: " +
+                                         $"Assert failed. Ret => {result.ResultCode}");
+        }
+    }
 
     #region Resource upload logics
 
@@ -389,6 +415,12 @@ internal class MessagingLogic : BaseLogic
 
     private static Task<ProtocolEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
         => context.SendPacket<ProtocolEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
+    
+    private static Task<ProtocolEvent> RecallGroupMessage(BusinessComponent context, uint groupUin, uint sequence, uint random)
+        => context.SendPacket<ProtocolEvent>(GroupMessageRecallEvent.Create(groupUin, sequence, random));
+
+    private static Task<ProtocolEvent> RecallFriendMessage(BusinessComponent context, uint groupUin, uint sequence, uint random, long uuid, uint time)
+        => context.SendPacket<ProtocolEvent>(FriendMessageRecallEvent.Create(groupUin, sequence, random, uuid, time));
 
     private static Task<PicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
         => context.SendPacket<PicUpEvent>(PicUpEvent.GroupUp(groupUin, context.Bot.Uin, images));

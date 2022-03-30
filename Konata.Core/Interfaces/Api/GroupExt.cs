@@ -75,7 +75,7 @@ public static class GroupExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="OperationFailedException"></exception>
     [KonataApi(1)]
-    public static Task<bool> Leave(this Bot bot, uint groupUin)
+    public static Task<bool> GroupLeave(this Bot bot, uint groupUin)
         => bot.BusinessComponent.Operation.GroupLeave(groupUin);
 
     /// <summary>
@@ -87,7 +87,7 @@ public static class GroupExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="OperationFailedException"></exception>
     [KonataApi(1)]
-    public static Task<bool> Poke(this Bot bot, uint groupUin, uint memberUin)
+    public static Task<bool> SendGroupPoke(this Bot bot, uint groupUin, uint memberUin)
         => bot.BusinessComponent.Operation.GroupPoke(groupUin, memberUin);
 
     /// <summary>
@@ -125,6 +125,17 @@ public static class GroupExt
     [KonataApi(1)]
     public static Task<bool> SendGroupMessage(this Bot bot, uint groupUin, params BaseChain[] chains)
         => bot.SendGroupMessage(groupUin, new MessageBuilder(chains));
+
+    /// <summary>
+    /// Recall a message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> Bot instance</param>
+    /// <param name="message"><b>[In]</b> Message struct. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    [KonataApi(1)]
+    public static Task<bool> RecallMessage(this Bot bot, MessageStruct message)
+        => bot.BusinessComponent.Messaging.RecallMessage(message);
 
     /// <summary>
     /// Upload the image manually
