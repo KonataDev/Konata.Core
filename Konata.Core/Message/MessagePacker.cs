@@ -182,7 +182,7 @@ internal static class MessagePacker
                 // Audio message
                 case "22":
                 {
-                    chain = ParseRecord(val);
+                    chain = ParseRecord(val, mode);
                     if (chain != null) builder.Add(chain);
                     break;
                 }
@@ -564,14 +564,23 @@ internal static class MessagePacker
     /// Process record chain
     /// </summary>
     /// <param name="tree"></param>
+    /// <param name="mode"></param>
     /// <returns></returns>
-    private static RecordChain ParseRecord(ProtoTreeRoot tree)
+    private static RecordChain ParseRecord(ProtoTreeRoot tree, Mode mode)
     {
-        var url = tree.GetLeafString("A201");
-        var hashstr = ByteConverter.Hex(tree.GetLeafBytes("22"));
+        // TODO: Fixme
+        // For PC versions <= 909 has no hash str
+        // The result of KQ code will be come to
+        // [KQ:record=]
+        
+        var url = tree.TryGetLeafString("A201", out var x) ? x : "";
+        var hashstr = tree.GetLeafBytes("22").ToHex();
 
-        if (!url.StartsWith("http"))
-            url = "http://grouptalk.c2c.qq.com" + url;
+        if (mode == Mode.Group)
+        {
+            if (!url.StartsWith("http"))
+                url = "http://grouptalk.c2c.qq.com" + url;
+        }
 
         return RecordChain.Create(url, hashstr, hashstr);
     }

@@ -85,7 +85,10 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
             var sequence = (uint) pb.GetLeafVar("28");
             var time = (uint) pb.GetLeafVar("30");
             var uuid = pb.GetLeafVar("38");
-            var rand = (uint) root.PathTo<ProtoVarInt>("1A.0A.0A.18");
+           
+            var rand = !root.TryPathTo<ProtoVarInt>("1A.0A.0A.18", out var x)
+                ? (uint) (uuid & 0xFFFFFFFF)
+                : x;
 
             var chains = MessagePacker.UnPack(root.PathTo
                 <ProtoTreeRoot>("1A.0A"), MessagePacker.Mode.Friend);
