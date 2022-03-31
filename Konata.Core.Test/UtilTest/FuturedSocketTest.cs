@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Konata.Core.Utils.Network.TcpClient;
+using NekoRush.FuturedSocket;
 using NUnit.Framework;
 
 namespace Konata.Core.Test.UtilTest;
