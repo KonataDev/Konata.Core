@@ -13,7 +13,7 @@
         <Copyright>Konata Project (C) $([System.DateTime]::Now.Year)</Copyright>
         <Description>Core implementation for Konata.</Description>
 
-        <PackageVersion>1.2.1-alpha.1</PackageVersion>
+        <PackageVersion>1.2.2-alpha.1</PackageVersion>
         <PackageIcon>icon.png</PackageIcon>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
