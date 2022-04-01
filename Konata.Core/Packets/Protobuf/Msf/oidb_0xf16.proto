@@ -1,0 +1,25 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message oidb_0xf16 {
+  message GroupRemarkInfoReq {  
+    optional uint64 groupCode = 1;
+    optional uint64 groupUin = 2;
+    optional bytes remarkName = 3;
+  }
+
+  message GroupRemarkInfoRsp {  
+    optional uint64 groupCode = 1;
+    optional uint64 groupUin = 2;
+    optional int32 result = 3;
+  }
+
+  message ReqBody {  
+    optional GroupRemarkInfoReq remarkInfoReq = 1;
+  }
+
+  message RspBody {  
+    optional GroupRemarkInfoRsp remarkInfoRsp = 1;
+  }
+}
+

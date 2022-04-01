@@ -1,0 +1,36 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message SubMsgType0xc1 {
+  message MsgBody {  
+    optional bytes fileKey = 1;
+    optional uint64 fromUin = 2;
+    optional uint64 toUin = 3;
+    optional uint32 status = 4;
+    optional uint32 ttl = 5;
+    optional uint32 type = 6;
+    optional uint32 encryptPreheadLength = 7;
+    optional uint32 encryptType = 8;
+    optional bytes encryptKey = 9;
+    optional uint32 readTimes = 10;
+    optional uint32 leftTime = 11;
+    optional NotOnlineImage notOnlineImage = 12;
+  }
+
+  message NotOnlineImage {  
+    optional bytes filePath = 1;
+    optional uint32 fileLen = 2;
+    optional bytes downloadPath = 3;
+    optional bytes oldVerSendFile = 4;
+    optional uint32 imgType = 5;
+    optional bytes previewsImage = 6;
+    optional bytes picMd5 = 7;
+    optional uint32 picHeight = 8;
+    optional uint32 picWidth = 9;
+    optional bytes resId = 10;
+    optional bytes flag = 11;
+    optional string downloadUrl = 12;
+    optional uint32 original = 13;
+  }
+}
+

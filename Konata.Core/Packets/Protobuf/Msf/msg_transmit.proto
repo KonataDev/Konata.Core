@@ -1,0 +1,20 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "msg_comm.proto";
+
+message msg_transmit {
+  message PbMultiMsgItem {  
+    optional string fileName = 1;
+    optional bytes buffer = 2;
+  }
+
+  message PbMultiMsgNew {  
+    repeated msg_comm.Msg msg = 1;
+  }
+
+  message PbMultiMsgTransmit {  
+    repeated msg_comm.Msg msg = 1;
+    repeated PbMultiMsgItem pbItemList = 2;
+  }
+}
+

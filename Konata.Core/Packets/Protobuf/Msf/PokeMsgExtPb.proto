@@ -1,0 +1,9 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message PokeMsgExtPb {
+  message ResvAttr {  
+    optional bytes wording = 1;
+  }
+}
+

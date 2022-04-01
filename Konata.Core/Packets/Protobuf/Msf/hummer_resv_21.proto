@@ -1,0 +1,55 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message hummer_resv_21 {
+  message FileApkInfo {  
+    optional string packageName = 1;
+    optional string version = 2;
+    optional string appName = 3;
+    optional string iconUrl = 4;
+  }
+
+  message FileAssitInfo {  
+    optional uint64 sessionId = 1;
+    optional uint32 groupId = 2;
+    optional uint32 groupIdx = 3;
+    optional uint32 groupCount = 4;
+  }
+
+  message FileImgInfo {  
+    optional uint32 fileWidth = 1;
+    optional uint32 fileHeight = 2;
+  }
+
+  message ForwardExtFileInfo {  
+    optional uint32 fileType = 1;
+    optional uint64 senderUin = 2;
+    optional uint64 receiverUin = 3;
+    optional bytes fileUuid = 4;
+    optional string fileName = 5;
+    optional uint64 fileSize = 6;
+    optional bytes fileSha1 = 7;
+    optional bytes fileMd5 = 8;
+    optional int64 deadTime = 9;
+    optional uint32 imgWidth = 10;
+    optional uint32 imgHeight = 11;
+    optional uint64 videoDuration = 12;
+    optional uint32 busId = 13;
+    optional string fileidcrc = 14;
+  }
+
+  message ResvAttr {  
+    optional FileImgInfo fileImageInfo = 1;
+    optional ForwardExtFileInfo forwardExtFileInfo = 2;
+    optional FileApkInfo fileApkInfo = 3;
+    optional uint32 deviceType = 4;
+    optional FileAssitInfo fileAssistInfo = 5;
+  }
+
+  message XtfSenderInfo {  
+    optional uint32 lanIp = 1;
+    optional uint32 lanPort = 2;
+    optional uint64 lanSrkey = 3;
+  }
+}
+

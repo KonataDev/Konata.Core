@@ -1,0 +1,41 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message InlineKeyboardMsg {
+  message Action {  
+    optional uint32 type = 1;
+    optional Permission permission = 2;
+    optional uint32 clickLimit = 3;
+    optional string unsupportTips = 4;
+    optional string data = 5;
+    optional bool atBotShowChannelList = 6;
+  }
+
+  message Button {  
+    optional string id = 1;
+    optional RenderData renderData = 2;
+    optional Action action = 3;
+  }
+
+  message InlineKeyboard {  
+    repeated Row rows = 1;
+    optional uint64 botAppid = 2;
+  }
+
+  message Permission {  
+    optional uint32 type = 1;
+    repeated string specifyRoleIds = 2;
+    repeated string specifyTinyids = 3;
+  }
+
+  message RenderData {  
+    optional string label = 1;
+    optional string visitedLabel = 2;
+    optional uint32 style = 3;
+  }
+
+  message Row {  
+    repeated Button buttons = 1;
+  }
+}
+

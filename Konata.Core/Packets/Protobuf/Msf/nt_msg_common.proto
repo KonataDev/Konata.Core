@@ -1,0 +1,51 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "im_msg_body.proto";
+
+message nt_msg_common {
+  message C2c {  }
+
+  message ContentHead {  
+    optional uint64 type = 1;
+    optional uint64 subType = 2;
+    optional uint32 c2CCmd = 3;
+    optional uint64 random = 4;
+    optional uint64 seq = 5;
+    optional uint64 time = 6;
+    optional uint32 pkgNum = 7;
+    optional uint32 pkgIndex = 8;
+    optional uint32 divSeq = 9;
+    optional uint32 autoReply = 10;
+    optional uint64 ntMsgSeq = 11;
+    optional uint64 uid = 12;
+  }
+
+  message Group {  
+    optional uint64 groupCode = 1;
+    optional uint32 groupType = 2;
+    optional uint64 groupInfoSeq = 3;
+    optional bytes groupCard = 4;
+    optional uint32 groupCardType = 5;
+    optional uint32 groupLevel = 6;
+    optional bytes groupName = 7;
+    optional bytes extGroupKeyInfo = 8;
+  }
+
+  message Msg {  
+    optional RoutingHead routingHead = 1;
+    optional ContentHead contentHead = 2;
+    optional im_msg_body.MsgBody body = 3;
+  }
+
+  message RoutingHead {  
+    optional uint64 fromUin = 1;
+    optional bytes fromUid = 2;
+    optional uint32 fromAppid = 3;
+    optional uint32 fromInstid = 4;
+    optional uint64 toUin = 5;
+    optional bytes toUid = 6;
+    optional C2c c2C = 7;
+    optional Group group = 8;
+  }
+}
+

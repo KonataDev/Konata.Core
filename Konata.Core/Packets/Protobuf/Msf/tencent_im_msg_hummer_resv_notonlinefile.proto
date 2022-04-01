@@ -1,0 +1,9 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message tencent_im_msg_hummer_resv_notonlinefile {
+  message ResvAttr {  
+    optional bytes crmBuf = 1;
+  }
+}
+

@@ -1,0 +1,27 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message TextMsgExtPb {
+  message ChannelInfo {  
+    optional uint64 guildId = 1;
+    optional uint64 channelId = 2;
+  }
+
+  message ResvAttr {  
+    optional bytes wording = 1;
+    optional uint32 textAnalysisResult = 2;
+    optional uint32 atType = 3;
+    optional uint64 atMemberUin = 4;
+    optional uint64 atMemberTinyid = 5;
+    optional RoleInfo atMemberRoleInfo = 6;
+    optional RoleInfo atRoleInfo = 7;
+    optional ChannelInfo atChannelInfo = 8;
+  }
+
+  message RoleInfo {  
+    optional uint64 id = 1;
+    optional bytes info = 2;
+    optional uint32 flag = 3;
+  }
+}
+

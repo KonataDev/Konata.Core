@@ -1,0 +1,15 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "msg_comm.proto";
+
+message msg_onlinepush {
+  message PbPushMsg {  
+    optional msg_comm.Msg msg = 1;
+    optional int32 svrip = 2;
+    optional bytes pushToken = 3;
+    optional uint32 pingFlag = 4;
+    optional uint32 generalFlag = 9;
+    optional uint64 bindUin = 10;
+  }
+}
+

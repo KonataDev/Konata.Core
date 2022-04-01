@@ -1,0 +1,323 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "im_msg_body.proto";
+
+message hummer_commelem {
+  message MsgElemInfo_servtype1 {  
+    optional bytes rewardId = 1;
+    optional uint64 senderUin = 2;
+    optional uint32 picType = 3;
+    optional uint32 rewardMoney = 4;
+    optional bytes url = 5;
+    optional bytes content = 6;
+    optional uint32 createTimestamp = 7;
+    optional uint32 status = 8;
+    optional uint32 size = 9;
+    optional uint32 videoDuration = 10;
+    optional uint64 seq = 11;
+    optional uint32 rewardTypeExt = 12;
+  }
+
+  message MsgElemInfo_servtype11 {  
+    optional bytes resID = 1;
+    optional bytes resMD5 = 2;
+    optional bytes reserve_Info1 = 3;
+    optional bytes reserve_Info2 = 4;
+    optional uint32 doodleDataOffset = 5;
+    optional uint32 doodleGifId = 6;
+    optional bytes DoodleUrl = 7;
+    optional bytes DoodleMd5 = 8;
+  }
+
+  message MsgElemInfo_servtype13 {  
+    optional uint32 sysHeadId = 1;
+    optional uint32 headFlag = 2;
+  }
+
+  message MsgElemInfo_servtype14 {  
+    optional uint32 id = 1;
+    optional bytes reserve_Info = 2;
+  }
+
+  message MsgElemInfo_servtype15 {  
+    optional bytes vid = 1;
+    optional bytes cover = 2;
+    optional bytes title = 3;
+    optional bytes summary = 4;
+    optional uint64 createTime = 5;
+    optional bytes commentContent = 6;
+    optional uint64 author = 7;
+    optional uint32 ctrVersion = 8;
+  }
+
+  message MsgElemInfo_servtype16 {  
+    optional uint64 uid = 1;
+    optional bytes unionID = 2;
+    optional bytes storyID = 3;
+    optional bytes md5 = 4;
+    optional bytes thumbUrl = 5;
+    optional bytes doodleUrl = 6;
+    optional uint32 videoWidth = 7;
+    optional uint32 videoHeight = 8;
+    optional bytes sourceName = 9;
+    optional bytes sourceActionType = 10;
+    optional bytes sourceActionData = 11;
+    optional uint32 ctrVersion = 12;
+  }
+
+  message MsgElemInfo_servtype18 {  
+    optional uint64 currentAmount = 1;
+    optional uint64 totalAmount = 2;
+    optional bytes listid = 3;
+    optional bytes authKey = 4;
+    optional uint32 number = 5;
+  }
+
+  message MsgElemInfo_servtype19 {  
+    optional bytes data = 1;
+  }
+
+  message MsgElemInfo_servtype2 {  
+    optional uint32 pokeType = 1;
+    optional bytes pokeSummary = 2;
+    optional uint32 hit = 3;
+    optional uint32 vaspokeId = 4;
+    optional bytes vaspokeName = 5;
+    optional bytes vaspokeMinver = 6;
+    optional uint32 pokeStrength = 7;
+    optional uint32 msgType = 8;
+    optional uint32 faceBubbleCount = 9;
+    optional uint32 pokeFlag = 10;
+  }
+
+  message MsgElemInfo_servtype20 {  
+    optional bytes data = 1;
+  }
+
+  message MsgElemInfo_servtype21 {  
+    optional uint32 topicId = 1;
+    optional uint64 confessorUin = 2;
+    optional bytes confessorNick = 3;
+    optional uint32 confessorSex = 4;
+    optional uint32 sysmsgFlag = 5;
+    optional C2CConfessContext c2CConfessCtx = 6;
+    optional bytes topic = 7;
+    optional uint64 confessTime = 8;
+    optional GroupConfessMsg groupConfessMsg = 9;
+    optional GroupConfessContext groupConfessCtx = 10;
+
+    message C2CConfessContext {    
+      optional uint64 confessorUin = 1;
+      optional uint64 confessToUin = 2;
+      optional uint64 sendUin = 3;
+      optional bytes confessorNick = 4;
+      optional bytes confess = 5;
+      optional uint32 bgType = 6;
+      optional uint32 topicId = 7;
+      optional uint64 confessTime = 8;
+      optional uint32 confessorSex = 9;
+      optional uint32 bizType = 10;
+      optional uint32 confessNum = 11;
+      optional uint32 confessToSex = 12;
+    }
+
+    message GroupConfessContext {    
+      optional uint64 confessorUin = 1;
+      optional uint64 confessToUin = 2;
+      optional uint64 sendUin = 3;
+      optional uint32 confessorSex = 4;
+      optional bytes confessToNick = 5;
+      optional bytes topic = 6;
+      optional uint32 topicId = 7;
+      optional uint64 confessTime = 8;
+      optional uint32 confessToNickType = 9;
+      optional bytes confessorNick = 10;
+    }
+
+    message GroupConfessItem {    
+      optional uint32 topicId = 1;
+      optional uint64 confessToUin = 2;
+      optional bytes confessToNick = 3;
+      optional bytes topic = 4;
+      optional uint32 confessToNickType = 5;
+    }
+
+    message GroupConfessMsg {    
+      optional uint64 confessTime = 1;
+      optional uint64 confessorUin = 2;
+      optional uint32 confessorSex = 3;
+      optional uint32 sysmsgFlag = 4;
+      repeated GroupConfessItem confessItems = 5;
+      optional uint32 totalTopicCount = 6;
+    }
+  }
+
+  message MsgElemInfo_servtype23 {  
+    optional uint32 faceType = 1;
+    optional uint32 faceBubbleCount = 2;
+    optional bytes faceSummary = 3;
+    optional uint32 flag = 4;
+    optional bytes others = 5;
+    optional MsgElemInfo_servtype33 yellowFace = 6;
+  }
+
+  message MsgElemInfo_servtype24 {  
+    optional LimitChatEnter limitChatEnter = 1;
+    optional LimitChatExit limitChatExit = 2;
+
+    message LimitChatEnter {    
+      optional bytes tipsWording = 1;
+      optional uint32 leftChatTime = 2;
+      optional uint64 matchTs = 3;
+      optional uint32 matchExpiredTime = 4;
+      optional uint32 c2CExpiredTime = 5;
+      optional uint64 readyTs = 6;
+      optional bytes matchNick = 7;
+    }
+
+    message LimitChatExit {    
+      optional uint32 exitMethod = 1;
+      optional uint64 matchTs = 2;
+    }
+  }
+
+  message MsgElemInfo_servtype27 {  
+    optional im_msg_body.VideoFile videoFile = 1;
+  }
+
+  message MsgElemInfo_servtype29 {  
+    optional bytes luckybagMsg = 1;
+  }
+
+  message MsgElemInfo_servtype3 {  
+    optional im_msg_body.CustomFace flashTroopPic = 1;
+    optional im_msg_body.NotOnlineImage flashC2CPic = 2;
+  }
+
+  message MsgElemInfo_servtype31 {  
+    optional bytes text = 1;
+    optional bytes ext = 2;
+  }
+
+  message MsgElemInfo_servtype33 {  
+    optional uint32 index = 1;
+    optional bytes text = 2;
+    optional bytes compat = 3;
+    optional bytes buf = 4;
+  }
+
+  message MsgElemInfo_servtype34 {  
+    optional bytes fromNickname = 1;
+    optional uint32 pushWindowFlag = 2;
+    optional GameSession gameSession = 3;
+    optional bytes ext = 4;
+
+    message GameSession {    
+      optional bytes fromRoleId = 1;
+      optional bytes fromOpenId = 2;
+      optional bytes toRoleId = 3;
+      optional bytes toOpenId = 4;
+      optional uint64 gameAppid = 5;
+      optional uint64 fromTinyId = 6;
+      optional uint64 toTinyId = 7;
+    }
+  }
+
+  message MsgElemInfo_servtype35 {  
+    optional bytes token = 1;
+    optional bytes globalPadid = 2;
+    optional uint32 getRev = 3;
+    optional uint32 hisEditUinNum = 4;
+  }
+
+  message MsgElemInfo_servtype37 {  
+    optional bytes packid = 1;
+    optional bytes stickerid = 2;
+    optional uint32 qsid = 3;
+    optional uint32 sourcetype = 4;
+    optional uint32 stickertype = 5;
+    optional bytes resultid = 6;
+    optional bytes text = 7;
+    optional bytes surpriseid = 8;
+    optional uint32 randomtype = 9;
+  }
+
+  message MsgElemInfo_servtype38 {  
+    optional bytes reactData = 1;
+    optional bytes replyData = 2;
+  }
+
+  message MsgElemInfo_servtype39 {  
+    optional uint32 actionId = 1;
+    optional bytes actionName = 2;
+    optional uint32 playerNumber = 3;
+    optional uint32 actionType = 4;
+    optional uint64 peerUin = 5;
+    optional bytes picUrl = 6;
+    optional bytes reserveInfo = 7;
+    optional uint32 memeWidth = 8;
+    optional uint32 memeHeight = 9;
+  }
+
+  message MsgElemInfo_servtype4 {  
+    optional uint32 imsgType = 1;
+    optional StoryAioObjMsg stStoryAioObjMsg = 4;
+  }
+
+  message MsgElemInfo_servtype40 {  
+    optional string receiverTinyId = 1;
+    optional uint64 giftNum = 2;
+    optional uint64 giftId = 3;
+    optional string giftName = 4;
+  }
+
+  message MsgElemInfo_servtype42 {  
+    optional string summary = 1;
+    optional string msg = 2;
+    optional uint64 expireTimeMs = 3;
+    optional uint32 schemaType = 4;
+    optional string schema = 5;
+  }
+
+  message MsgElemInfo_servtype44 {  
+    optional bytes text = 1;
+    optional im_msg_body.VideoFile videoFile = 2;
+    optional bytes msgData = 3;
+  }
+
+  message MsgElemInfo_servtype45 {  
+    optional bytes markdown = 1;
+  }
+
+  message MsgElemInfo_servtype46 {  
+    optional bytes inlineKeyboard = 1;
+  }
+
+  message MsgElemInfo_servtype5 {  
+    optional bytes vid = 1;
+    optional bytes cover = 2;
+    optional bytes title = 3;
+    optional bytes summary = 4;
+    optional uint64 createTime = 5;
+    optional bytes commentContent = 6;
+    optional uint64 author = 7;
+  }
+
+  message MsgElemInfo_servtype8 {  
+    optional im_msg_body.DeliverGiftMsg wifiDeliverGiftMsg = 1;
+  }
+
+  message MsgElemInfo_servtype9 {  
+    optional uint32 anchorStatus = 1;
+    optional bytes jumpSchema = 2;
+    optional string anchorNickname = 3;
+    optional bytes anchorHeadUrl = 4;
+    optional string liveTitle = 5;
+  }
+
+  message StoryAioObjMsg {  
+    optional string uiUrl = 1;
+    optional string jmpUrl = 2;
+  }
+}
+

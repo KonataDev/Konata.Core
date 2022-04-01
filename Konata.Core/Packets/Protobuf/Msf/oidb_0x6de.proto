@@ -1,0 +1,42 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message oidb_0x6de {
+  message DevInfo {  
+    optional uint32 appid = 1;
+    optional bytes imei = 2;
+    optional bytes guid = 3;
+    optional bytes vendorid = 4;
+    optional bytes androidid = 5;
+    optional uint32 wifi = 6;
+  }
+
+  message PhoneInfo {  
+    optional uint32 type = 1;
+    optional string countryCode = 2;
+    optional string phone = 3;
+    optional uint32 buStatus = 4;
+  }
+
+  message ReqBody {  
+    optional uint32 src = 1;
+    optional uint32 phoneType = 2;
+    optional string countryCode = 3;
+    optional string phone = 4;
+    optional DevInfo devInfo = 5;
+  }
+
+  message RspBody {  
+    optional uint32 result = 1;
+    optional uint32 src = 2;
+    optional string countryCode = 3;
+    optional string bindingPhone = 4;
+    optional uint32 bindingTime = 5;
+    optional uint32 needUnify = 6;
+    optional uint32 phoneType = 7;
+    repeated PhoneInfo phoneInfo = 8;
+    optional bytes skipUrl = 9;
+    optional bytes vasResult = 10;
+  }
+}
+

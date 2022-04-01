@@ -1,0 +1,19 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message source_msg {
+  message CommentRefer {  
+    optional uint64 rootSeq = 1;
+    optional uint64 parentSeq = 2;
+    optional uint64 referSeq = 3;
+  }
+
+  message ResvAttr {  
+    optional bytes richMsg2 = 1;
+    optional uint32 oriMsgtype = 2;
+    repeated uint64 origUids = 3;
+    optional bytes guildNick = 4;
+    optional CommentRefer commentRefer = 5;
+  }
+}
+

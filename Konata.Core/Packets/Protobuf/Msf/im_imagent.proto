@@ -1,0 +1,38 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "im_msg.proto";
+import "im_common.proto";
+
+message im_imagent {
+  message ImAgentHead {  
+    optional uint32 command = 1;
+    optional uint32 seq = 2;
+    optional uint32 result = 3;
+    optional string err = 4;
+    optional bytes echoBuf = 5;
+    optional im_common.User reqUser = 6;
+    optional Requestinfo reqInfo = 7;
+    optional Signature signature = 8;
+    optional uint32 subCmd = 9;
+    optional uint32 serverIp = 10;
+  }
+
+  message ImAgentPackage {  
+    optional ImAgentHead head = 1;
+    optional im_msg.MsgSendReq sendReq = 11;
+    optional im_msg.MsgSendResp sendResp = 12;
+  }
+
+  message Requestinfo {  
+    optional fixed32 reqIp = 1;
+    optional uint32 reqPort = 2;
+    optional uint32 reqFlag = 3;
+  }
+
+  message Signature {  
+    optional uint32 keyType = 1;
+    optional uint32 sessionAppId = 2;
+    optional bytes sessionKey = 3;
+  }
+}
+

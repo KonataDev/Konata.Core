@@ -1,0 +1,116 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message generalflags {
+  message BotMetaData {  
+    optional uint32 msgSrc = 1;
+    optional uint64 inlineBotAppid = 2;
+    optional uint32 msgType = 3;
+  }
+
+  message MetaData {  
+    optional string dataFrom = 1;
+    optional string extNick = 2;
+  }
+
+  message NTExt {  
+    optional uint64 c2CMsgSeq = 1;
+  }
+
+  message PassThrough {  
+    optional bytes avTerminateExt = 1;
+    optional bytes qqconnectTagName = 2;
+    optional bytes qqconnectMessageExt = 3;
+  }
+
+  message ResvAttr {  
+    optional uint32 globalGroupLevel = 1;
+    optional uint32 nearbyCharmLevel = 2;
+    optional uint64 redbagMsgSenderUin = 3;
+    optional uint32 titleId = 4;
+    optional uint32 robotMsgFlag = 5;
+    optional uint64 wantGiftSenderUin = 6;
+    optional float stickerX = 7;
+    optional float stickerY = 8;
+    optional float stickerWidth = 9;
+    optional float stickerHeight = 10;
+    optional uint32 stickerRotate = 11;
+    optional uint64 stickerHostMsgseq = 12;
+    optional uint64 stickerHostMsguid = 13;
+    optional uint64 stickerHostTime = 14;
+    optional uint32 mobileCustomFont = 15;
+    optional uint32 tailKey = 16;
+    optional uint32 showTailFlag = 17;
+    optional uint32 doutuMsgType = 18;
+    optional uint32 doutuCombo = 19;
+    optional uint32 customFeatureid = 20;
+    optional uint32 goldenMsgType = 21;
+    optional bytes goldenMsgInfo = 22;
+    optional uint32 botMessageClassId = 23;
+    optional bytes subscriptionUrl = 24;
+    optional uint32 pendantDiyId = 25;
+    optional uint32 timedMessage = 26;
+    optional uint32 holidayFlag = 27;
+    optional bytes kplInfo = 29;
+    optional uint32 faceId = 30;
+    optional uint32 diyFontTimestamp = 31;
+    optional uint32 redEnvelopeType = 32;
+    optional bytes shortVideoId = 33;
+    optional uint32 reqFontEffectId = 34;
+    optional uint32 loveLanguageFlag = 35;
+    optional uint32 aioSyncToStoryFlag = 36;
+    optional uint32 uploadImageToQzoneFlag = 37;
+    optional bytes uploadImageToQzoneParam = 39;
+    optional bytes groupConfessSig = 40;
+    optional uint64 subfontId = 41;
+    optional uint32 msgFlagType = 42;
+//    repeated uint32 customFeatureid = 43;
+    optional uint32 richCardNameVer = 44;
+    optional uint32 msgInfoFlag = 47;
+    optional uint32 serviceMsgType = 48;
+    optional uint32 serviceMsgRemindType = 49;
+    optional bytes serviceMsgName = 50;
+    optional uint32 vipType = 51;
+    optional uint32 vipLevel = 52;
+    optional bytes pbPttWaveform = 53;
+    optional uint32 userBigclubLevel = 54;
+    optional uint32 userBigclubFlag = 55;
+    optional uint32 nameplate = 56;
+    optional uint32 autoReply = 57;
+    optional uint32 reqIsBigclubHidden = 58;
+    optional uint32 showInMsgList = 59;
+    optional bytes oacMsgExtend = 60;
+    optional uint32 groupMemberFlagEx2 = 61;
+    optional uint32 groupRingtoneId = 62;
+    optional bytes robotGeneralTrans = 63;
+    optional uint32 troopPobingTemplate = 64;
+    optional bytes hudongMark = 65;
+    optional uint32 groupInfoFlagEx3 = 66;
+    optional uint32 commentFlag = 67;
+    optional uint64 commentLocation = 68;
+    optional bytes passThrough = 69;
+    optional uint32 groupSavedbFlag = 70;
+    optional uint32 nameplateVipType = 71;
+    optional uint32 grayNamePlate = 72;
+    optional bytes userVipInfo = 73;
+    optional uint32 importantMsgType = 74;
+    optional uint32 importantMsgEnum = 75;
+    optional uint32 deviceType = 76;
+    optional uint32 unsafeMsgFlag = 77;
+    optional bytes groupMsgBusiBuf = 78;
+    optional uint32 groupInfoFlagEx4 = 79;
+    optional uint32 kingsHonorLevel = 80;
+    optional uint32 groupRichFlag = 81;
+    optional bytes yuhengTaskMsgBuf = 82;
+    optional bytes tagName = 83;
+    optional bytes messsageExt = 84;
+    optional uint32 compoundMsgFlag = 85;
+    optional bytes transData = 86;
+    optional MetaData gameMetaData = 87;
+    optional uint64 longmsgFlag = 88;
+    optional BotMetaData botMetaData = 89;
+    optional NTExt ntExt = 90;
+//    optional PassThrough passThrough = 2000;
+  }
+}
+

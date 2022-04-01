@@ -1,0 +1,27 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+
+message ResvAttrForGiftMsg {
+  message ActivityGiftInfo {  
+    optional uint32 isActivityGift = 1;
+    optional string textColor = 2;
+    optional string text = 3;
+    optional string url = 4;
+  }
+
+  message InteractGift {  
+    optional bytes interactId = 1;
+  }
+
+  message ResvAttr {  
+    optional int32 sendScore = 1;
+    optional int32 recvScore = 2;
+    optional bytes charmHeroism = 3;
+    optional uint32 buttonFlag = 4;
+    optional uint32 objColor = 5;
+    optional uint32 animationType = 6;
+    optional InteractGift interactGift = 7;
+    optional ActivityGiftInfo activityGiftInfo = 8;
+  }
+}
+

@@ -1,0 +1,18 @@
+syntax = "proto2";
+package Konata.Core.Packets.Msf;
+import "nt_msg_common.proto";
+
+message nt_register_proxy {
+  message GetGroupShareMsgReq {  
+    optional uint64 groupCode = 1;
+  }
+
+  message GetGroupShareMsgRsp {  
+    optional uint32 result = 1;
+    optional bytes errMsg = 2;
+    optional uint64 groupCode = 3;
+    repeated nt_msg_common.Msg msg = 4;
+    repeated uint64 failedSeqs = 5;
+  }
+}
+
