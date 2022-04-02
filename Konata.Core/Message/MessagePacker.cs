@@ -523,7 +523,7 @@ internal static class MessagePacker
     private static XmlChain ParseXml(ProtoTreeRoot tree)
     {
         var bytes = tree.GetLeafBytes("0A");
-        var xml = Compression.ZDecompress(bytes[1..]);
+        var xml = bytes[0] == 1 ? Compression.ZDecompress(bytes[1..]) : bytes[1..];
         return XmlChain.Create(Encoding.UTF8.GetString(xml));
     }
 
