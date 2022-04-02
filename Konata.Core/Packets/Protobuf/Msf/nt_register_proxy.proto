@@ -1,5 +1,5 @@
 syntax = "proto2";
-package Konata.Core.Packets.Msf;
+package Konata.Core.Packets.Protobuf.Msf;
 import "nt_msg_common.proto";
 
 message nt_register_proxy {

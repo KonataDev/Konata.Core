@@ -1,5 +1,5 @@
 syntax = "proto2";
-package Konata.Core.Packets.Msf;
+package Konata.Core.Packets.Protobuf.Msf;
 import "group_file_common.proto";
 
 message oidb_0x6d9 {

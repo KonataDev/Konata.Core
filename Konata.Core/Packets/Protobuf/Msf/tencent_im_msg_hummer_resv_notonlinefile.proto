@@ -1,5 +1,5 @@
 syntax = "proto2";
-package Konata.Core.Packets.Msf;
+package Konata.Core.Packets.Protobuf.Msf;
 
 message tencent_im_msg_hummer_resv_notonlinefile {
   message ResvAttr {  

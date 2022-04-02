@@ -1,5 +1,5 @@
 syntax = "proto2";
-package Konata.Core.Packets.Msf;
+package Konata.Core.Packets.Protobuf.Msf;
 
 message oidb_0x758 {
   message InviteUinInfo {  

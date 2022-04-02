@@ -1,5 +1,5 @@
 syntax = "proto2";
-package Konata.Core.Packets.Msf;
+package Konata.Core.Packets.Protobuf.Msf;
 import "oidb_0xef0.proto";
 
 message oidb_0x88d {
