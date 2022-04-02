@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Google.Protobuf;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Protobuf;
@@ -20,7 +21,7 @@ internal class PacketBase : ByteBuffer
         buffer = cryptor.Decrypt(data, cryptKey);
         bufferLength = (uint) buffer.Length;
     }
-    
+
     public PacketBase(byte[] data, ICryptor cryptor)
     {
         buffer = cryptor.Decrypt(data);
@@ -74,6 +75,19 @@ internal class PacketBase : ByteBuffer
     public void PutProtoNode(ProtoTreeRoot value)
     {
         PutBytes(ProtoTreeRoot.Serialize(value).GetBytes());
+    }
+
+    /// <summary>
+    /// Put proto message
+    /// </summary>
+    /// <param name="message"></param>
+    public void PutProtoMessage(IMessage message)
+    {
+        using var mem = new MemoryStream();
+        {
+            message.WriteTo(mem);
+            PutBytes(mem.ToArray());
+        }
     }
 
     public string TakeHexString(out string value, Prefix prefixFlag)

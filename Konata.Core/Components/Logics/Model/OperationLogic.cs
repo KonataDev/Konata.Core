@@ -259,4 +259,35 @@ internal class OperationLogic : BaseLogic
             return true;
         }
     }
+
+    public async Task<bool> ApproveGroupInvitation(uint groupUin, uint inviterUin, long token)
+    {
+        var args = GroupInviteEvent.Approve(groupUin, inviterUin, token);
+        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve group invitation: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeclineGroupInvitation(uint groupUin, uint inviterUin,
+        long token, string reason, bool preventRequest)
+    {
+        var args = GroupInviteEvent.Decline(groupUin, inviterUin, token, reason, preventRequest);
+        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve group invitation: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
 }

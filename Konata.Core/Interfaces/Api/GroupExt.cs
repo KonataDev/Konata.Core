@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
+using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
@@ -164,12 +165,38 @@ public static class GroupExt
     /// Get member info
     /// </summary>
     /// <param name="bot"><b>[In]</b> Bot instance</param>
-    /// <param name="groupUin"><b>[In]</b> Group uin. </param>
-    /// <param name="memberUin"><b>[In]</b> Member uin. </param>
-    /// <param name="forceUpdate"><b>[In]</b> Force update. </param>
+    /// <param name="groupUin"><b>[In]</b> Group uin</param>
+    /// <param name="memberUin"><b>[In]</b> Member uin</param>
+    /// <param name="forceUpdate"><b>[In] [Opt]</b> Force update</param>
     /// <returns></returns>
     /// <exception cref="SyncFailedException"></exception>
     [KonataApi(1)]
     public static Task<BotMember> GetGroupMemberInfo(this Bot bot, uint groupUin, uint memberUin, bool forceUpdate = false)
         => bot.BusinessComponent.CacheSync.GetGroupMemberInfo(groupUin, memberUin, forceUpdate);
+
+    /// <summary>
+    /// Process group invitation message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="groupUin"><b>[In]</b> Group uin</param>
+    /// <param name="inviterUin"><b>[In]</b> Inviter uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="GroupInviteEvent.Token"/></param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> ApproveGroupInvitation(this Bot bot, uint groupUin, uint inviterUin, long token)
+        => bot.BusinessComponent.Operation.ApproveGroupInvitation(groupUin, inviterUin, token);
+
+    /// <summary>
+    /// Process group invitation message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="groupUin"><b>[In]</b> Group uin</param>
+    /// <param name="inviterUin"><b>[In]</b> Inviter uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="GroupInviteEvent.Token"/></param>
+    /// <param name="reason"><b>[In] [Opt]</b> The reason string</param>
+    /// <param name="preventRequest"><b>[In] [Opt]</b> Prevent this request</param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> DeclineGroupInvitation(this Bot bot, uint groupUin, uint inviterUin, long token, string reason, bool preventRequest)
+        => bot.BusinessComponent.Operation.DeclineGroupInvitation(groupUin, inviterUin, token, reason, preventRequest);
 }

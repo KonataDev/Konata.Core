@@ -12,10 +12,12 @@ using Konata.Core.Events.Model;
 [assembly: InternalsVisibleToAttribute("Konata.Core.Test")]
 [assembly: InternalsVisibleToAttribute("Konata.Framework")]
 
-// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable EventNeverSubscribedTo.Global
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core;
 
@@ -145,6 +147,16 @@ public class Bot : BaseEntity, IDisposable
     public event KonataEvent<GroupPromoteAdminEvent> OnGroupPromoteAdmin;
 
     /// <summary>
+    /// On group invite event
+    /// </summary>
+    public event KonataEvent<GroupInviteEvent> OnGroupInvite;
+
+    /// <summary>
+    /// On group request join event
+    /// </summary>
+    public event KonataEvent<GroupRequestJoinEvent> OnGroupRequestJoin;
+
+    /// <summary>
     /// On friend message event
     /// </summary>
     public event KonataEvent<FriendMessageEvent> OnFriendMessage;
@@ -173,100 +185,26 @@ public class Bot : BaseEntity, IDisposable
     {
         _dict = new()
         {
+            // Other
             {typeof(LogEvent), e => OnLog?.Invoke(this, (LogEvent) e)},
             {typeof(CaptchaEvent), e => OnCaptcha?.Invoke(this, (CaptchaEvent) e)},
             {typeof(OnlineStatusEvent), e => OnOnlineStatusChanged?.Invoke(this, (OnlineStatusEvent) e)},
+
+            // Group events
             {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
             {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
             {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
             {typeof(GroupKickMemberEvent), e => OnGroupKickMember?.Invoke(this, (GroupKickMemberEvent) e)},
             {typeof(GroupPromoteAdminEvent), e => OnGroupPromoteAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
             {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
+            {typeof(GroupInviteEvent), e => OnGroupInvite?.Invoke(this, (GroupInviteEvent) e)},
+            {typeof(GroupRequestJoinEvent), e => OnGroupRequestJoin?.Invoke(this, (GroupRequestJoinEvent) e)},
+
+            // Friend events
             {typeof(FriendMessageEvent), e => OnFriendMessage?.Invoke(this, (FriendMessageEvent) e)},
             {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},
             {typeof(FriendMessageRecallEvent), e => OnFriendMessageRecall?.Invoke(this, (FriendMessageRecallEvent) e)},
             {typeof(FriendTypingEvent), e => OnFriendTyping?.Invoke(this, (FriendTypingEvent) e)},
-        };
-
-        // Default group message handler
-        OnGroupMessage += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group]{e.GroupUin} " +
-                                  $"[Member]{e.MemberUin} {e.Chain}"));
-        };
-
-        // Default group mute handler
-        OnGroupMute += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group Mute]{e.GroupUin} " +
-                                  $"[Operator]{e.OperatorUin} " +
-                                  $"[Member]{e.MemberUin} " +
-                                  $"[Time]{e.TimeSeconds} sec."));
-        };
-
-        // Default group poke handler
-        OnGroupPoke += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group Poke]{e.GroupUin} " +
-                                  $"[Operator]{e.OperatorUin} " +
-                                  $"[Member]{e.MemberUin}"));
-        };
-
-        // Default group recall handler
-        OnGroupMessageRecall += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group Recall]{e.GroupUin} " +
-                                  $"[Member]{e.OperatorUin}"));
-        };
-
-        // Default group promote handler
-        OnGroupPromoteAdmin += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group Promote]{e.GroupUin} " +
-                                  $"[Member]{e.MemberUin} " +
-                                  $"[Set]{e.ToggleType}"));
-        };
-
-        // Default group promote handler
-        OnGroupKickMember += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Group Kick]{e.GroupUin} " +
-                                  $"[Operator]{e.OperatorUin} " +
-                                  $"[Member]{e.MemberUin}"));
-        };
-
-        // Default friend message handler
-        OnFriendMessage += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Friend]{e.FriendUin} {e.Chain}"));
-        };
-
-        // Default friend message recall handler
-        OnFriendMessageRecall += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Friend Recall]{e.FriendUin}"));
-        };
-
-        // Default friend poke handler
-        OnFriendPoke += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Friend Poke]{e.FriendUin}"));
-        };
-
-        // Default friend poke handler
-        OnFriendTyping += (sender, e) =>
-        {
-            OnLog?.Invoke(sender, LogEvent.Create("Bot",
-                LogLevel.Verbose, $"[Friend Typing]{e.FriendUin}"));
         };
     }
 

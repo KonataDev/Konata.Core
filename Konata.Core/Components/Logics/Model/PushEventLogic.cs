@@ -27,14 +27,18 @@ namespace Konata.Core.Components.Logics.Model;
 [EventSubscribe(typeof(GroupKickMemberEvent))]
 [EventSubscribe(typeof(GroupPromoteAdminEvent))]
 [EventSubscribe(typeof(GroupMessageEvent))]
+[EventSubscribe(typeof(GroupInviteEvent))]
+[EventSubscribe(typeof(GroupRequestJoinEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
 internal class PushEventLogic : BaseLogic
 {
     private const string TAG = "PushEvent Logic";
+    private bool _tempFilter;
 
     internal PushEventLogic(BusinessComponent context)
         : base(context)
     {
+        _tempFilter = false;
     }
 
     public override async Task Incoming(ProtocolEvent e)
@@ -118,10 +122,16 @@ internal class PushEventLogic : BaseLogic
                 await OnPullNewMessage();
                 break;
 
-            case NotifyType.GroupRequest:
+            // TODO:
+            // Fixme Filter
             case NotifyType.GroupRequest525:
+                _tempFilter = !_tempFilter;
+                if (_tempFilter) goto case NotifyType.GroupRequest;
+                break;
+
+            case NotifyType.GroupRequest:
             case NotifyType.GroupInvitation:
-                // ProfileService.Pb.ReqSystemMsgNew.Group
+                await OnReqSystemGroupMsg();
                 break;
 
             case NotifyType.FriendRequest:
@@ -145,4 +155,7 @@ internal class PushEventLogic : BaseLogic
                 ConfigComponent.SyncCookie = result.SyncCookie;
         }
     }
+
+    internal Task OnReqSystemGroupMsg()
+        => Context.SendPacket<ReqSystemMsgGroupEvent>(ReqSystemMsgGroupEvent.Create());
 }

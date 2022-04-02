@@ -71,7 +71,7 @@ namespace Konata.Core.Common
         /// Member is admin (except owner)
         /// </summary>
         internal bool IsAdmin { get; set; }
-        
+
         /// <summary>
         /// Mute timestamp
         /// </summary>
@@ -92,13 +92,13 @@ namespace Konata.Core.Common
         /// <summary>
         ///  Normal member
         /// </summary>
-        Member,
-        
+        Member = 1,
+
         /// <summary>
         /// Administator
         /// </summary>
         Admin,
-        
+
         /// <summary>
         /// Owner
         /// </summary>
