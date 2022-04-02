@@ -176,6 +176,11 @@ public class Bot : BaseEntity, IDisposable
     /// </summary>
     public event KonataEvent<FriendTypingEvent> OnFriendTyping;
 
+    /// <summary>
+    /// On friend request event
+    /// </summary>
+    public event KonataEvent<FriendRequestEvent> OnFriendRequest;
+
     private Dictionary<Type, Action<BaseEvent>> _dict;
 
     /// <summary>
@@ -205,6 +210,7 @@ public class Bot : BaseEntity, IDisposable
             {typeof(FriendPokeEvent), e => OnFriendPoke?.Invoke(this, (FriendPokeEvent) e)},
             {typeof(FriendMessageRecallEvent), e => OnFriendMessageRecall?.Invoke(this, (FriendMessageRecallEvent) e)},
             {typeof(FriendTypingEvent), e => OnFriendTyping?.Invoke(this, (FriendTypingEvent) e)},
+            {typeof(FriendRequestEvent), e => OnFriendRequest?.Invoke(this, (FriendRequestEvent) e)}
         };
     }
 

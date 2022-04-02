@@ -56,7 +56,7 @@ internal class Group : BaseService<ReqSystemMsgGroupEvent>
     {
         var proto = new structmsg.Types.ReqSystemMsgNew
         {
-            Num = 20,
+            Num = (uint) input.RequestNum,
             Version = 1000,
             Checktype = 3,
             Flag = new()

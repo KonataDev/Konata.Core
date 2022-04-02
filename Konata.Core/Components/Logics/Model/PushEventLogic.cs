@@ -19,6 +19,7 @@ namespace Konata.Core.Components.Logics.Model;
 [EventSubscribe(typeof(FriendPokeEvent))]
 [EventSubscribe(typeof(FriendTypingEvent))]
 [EventSubscribe(typeof(FriendMessageRecallEvent))]
+[EventSubscribe(typeof(FriendRequestEvent))]
 
 // Group Events
 [EventSubscribe(typeof(GroupPokeEvent))]
@@ -136,7 +137,7 @@ internal class PushEventLogic : BaseLogic
 
             case NotifyType.FriendRequest:
             case NotifyType.FriendIncreaseSingle:
-                // ProfileService.Pb.ReqSystemMsgNew.Friend
+                await OnReqSystemFriendMsg();
                 break;
 
             default:
@@ -158,4 +159,8 @@ internal class PushEventLogic : BaseLogic
 
     internal Task OnReqSystemGroupMsg()
         => Context.SendPacket<ReqSystemMsgGroupEvent>(ReqSystemMsgGroupEvent.Create());
+    
+    internal Task OnReqSystemFriendMsg()
+        => Context.SendPacket<ReqSystemMsgFriendEvent>(ReqSystemMsgFriendEvent.Create());
+    
 }
