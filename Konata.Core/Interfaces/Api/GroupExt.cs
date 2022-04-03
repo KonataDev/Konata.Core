@@ -199,4 +199,30 @@ public static class GroupExt
     [KonataApi(1)]
     public static Task<bool> DeclineGroupInvitation(this Bot bot, uint groupUin, uint inviterUin, long token, string reason = "", bool preventRequest = false)
         => bot.BusinessComponent.Operation.DeclineGroupInvitation(groupUin, inviterUin, token, reason, preventRequest);
+    
+    /// <summary>
+    /// Process group request join message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="groupUin"><b>[In]</b> Group uin</param>
+    /// <param name="reqUin"><b>[In]</b> Inviter uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="GroupInviteEvent.Token"/></param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> ApproveGroupRequestJoin(this Bot bot, uint groupUin, uint reqUin, long token)
+        => bot.BusinessComponent.Operation.ApproveGroupRequestJoin(groupUin, reqUin, token);
+
+    /// <summary>
+    /// Process group request join message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="groupUin"><b>[In]</b> Group uin</param>
+    /// <param name="reqUin"><b>[In]</b> Inviter uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="GroupInviteEvent.Token"/></param>
+    /// <param name="reason"><b>[In] [Opt]</b> The reason string</param>
+    /// <param name="preventRequest"><b>[In] [Opt]</b> Prevent this request</param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> DeclineGroupRequestJoin(this Bot bot, uint groupUin, uint reqUin, long token, string reason = "", bool preventRequest = false)
+        => bot.BusinessComponent.Operation.DeclineGroupRequestJoin(groupUin, reqUin, token, reason, preventRequest);
 }

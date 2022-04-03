@@ -291,10 +291,41 @@ internal class OperationLogic : BaseLogic
         return true;
     }
     
+    public async Task<bool> ApproveGroupRequestJoin(uint groupUin, uint reqUin, long token)
+    {
+        var args = GroupRequestJoinEvent.Approve(groupUin, reqUin, token);
+        var result = await Context.SendPacket<GroupRequestJoinEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve group request: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeclineGroupRequestJoin(uint groupUin, uint reqUin,
+        long token, string reason, bool preventRequest)
+    {
+        var args = GroupRequestJoinEvent.Decline(groupUin, reqUin, token, reason, preventRequest);
+        var result = await Context.SendPacket<GroupRequestJoinEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve group request: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
+    
     public async Task<bool> ApproveFriendRequest(uint reqUin, long token)
     {
         var args = FriendRequestEvent.Approve(reqUin, token);
-        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        var result = await Context.SendPacket<FriendRequestEvent>(args);
         {
             if (result.ResultCode != 0)
             {
@@ -309,7 +340,7 @@ internal class OperationLogic : BaseLogic
     public async Task<bool> DeclineFriendRequest(uint reqUin, long token, bool preventRequest)
     {
         var args = FriendRequestEvent.Decline(reqUin, token, preventRequest);
-        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        var result = await Context.SendPacket<FriendRequestEvent>(args);
         {
             if (result.ResultCode != 0)
             {
