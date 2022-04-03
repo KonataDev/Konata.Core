@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Konata.Core.Attributes;
+using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
 
