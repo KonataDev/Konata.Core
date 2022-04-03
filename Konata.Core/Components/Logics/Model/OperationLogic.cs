@@ -290,4 +290,34 @@ internal class OperationLogic : BaseLogic
 
         return true;
     }
+    
+    public async Task<bool> ApproveFriendRequest(uint reqUin, long token)
+    {
+        var args = FriendRequestEvent.Approve(reqUin, token);
+        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve friend request: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeclineFriendRequest(uint reqUin, long token, bool preventRequest)
+    {
+        var args = FriendRequestEvent.Decline(reqUin, token, preventRequest);
+        var result = await Context.SendPacket<GroupInviteEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-1,
+                    "Failed to approve group invitation: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return true;
+    }
 }

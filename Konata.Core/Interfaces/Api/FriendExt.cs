@@ -58,4 +58,27 @@ public static class FriendExt
     [KonataApi(1, experimental: true)]
     public static Task<bool> SendFriendPoke(this Bot bot, uint friendUin)
         => bot.BusinessComponent.Operation.FriendPoke(friendUin);
+    
+    /// <summary>
+    /// Process friend request message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="reqUin"><b>[In]</b> Group uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="FriendRequestEvent.Token"/></param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> ApproveFriendRequest(this Bot bot, uint reqUin, long token)
+        => bot.BusinessComponent.Operation.ApproveFriendRequest(reqUin, token);
+
+    /// <summary>
+    /// Process friend request message
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> <see cref="Bot"/> instance</param>
+    /// <param name="reqUin"><b>[In]</b> Group uin</param>
+    /// <param name="token"><b>[In]</b> Request <see cref="FriendRequestEvent.Token"/></param>
+    /// <param name="preventRequest"><b>[In] [Opt]</b> Prevent this request</param>
+    /// <returns></returns>
+    [KonataApi(1)]
+    public static Task<bool> DeclineFriendRequest(this Bot bot, uint reqUin, long token, bool preventRequest = false)
+        => bot.BusinessComponent.Operation.DeclineFriendRequest(reqUin, token, preventRequest);
 }

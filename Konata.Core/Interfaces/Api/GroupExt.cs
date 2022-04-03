@@ -197,6 +197,6 @@ public static class GroupExt
     /// <param name="preventRequest"><b>[In] [Opt]</b> Prevent this request</param>
     /// <returns></returns>
     [KonataApi(1)]
-    public static Task<bool> DeclineGroupInvitation(this Bot bot, uint groupUin, uint inviterUin, long token, string reason, bool preventRequest)
+    public static Task<bool> DeclineGroupInvitation(this Bot bot, uint groupUin, uint inviterUin, long token, string reason = "", bool preventRequest = false)
         => bot.BusinessComponent.Operation.DeclineGroupInvitation(groupUin, inviterUin, token, reason, preventRequest);
 }
