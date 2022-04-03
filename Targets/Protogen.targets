@@ -11,8 +11,8 @@
 
         <!-- Compile including -->
         <ItemGroup>
-            <Compile Include="$(IntermediateOutputPath)protogen/*.cs"/>
-            <FileWrites Include="$(IntermediateOutputPath)protogen/*.cs"/>
+            <Compile Include="$(IntermediateOutputPath)Protogen/*.cs"/>
+            <FileWrites Include="$(IntermediateOutputPath)Protogen/*.cs"/>
         </ItemGroup>
 
     </Target>
