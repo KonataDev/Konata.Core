@@ -1,0 +1,20 @@
+<Project>
+
+    <!-- Compile *.proto files to c# -->
+    <Target Name="BuildProto" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(MSBuildProjectName)' == 'Konata.Core'">
+
+        <!-- Mkdir for generated files -->
+        <MakeDir Directories="$(IntermediateOutputPath)Protogen"/>
+
+        <!-- Compile each file -->
+        <Exec Command="protoc --proto_path=%(Protobuf.ProtoRoot) --csharp_out=%(Protobuf.Access)$(IntermediateOutputPath)Protogen/ %(Protobuf.Identity)"/>
+
+        <!-- Compile including -->
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)protogen/*.cs"/>
+            <FileWrites Include="$(IntermediateOutputPath)protogen/*.cs"/>
+        </ItemGroup>
+
+    </Target>
+
+</Project>
