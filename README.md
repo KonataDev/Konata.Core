@@ -21,13 +21,11 @@ based on **.net standard 2.1**, event driven.
 ## Example
 ```C#
 // Create a bot instance
-var bot = new Bot(config, device, keystore);
+var bot = BotFather.Create(config, device, keystore);
 {
     // Handle the captcha
-    bot.OnCaptcha += (s, e) =>
+    bot.OnCaptcha += (bot, e) =>
     {
-        var bot = (Bot)s;
-        
         if(e.Type == CaptchaType.Slider)
         {
             Console.WriteLine(e.SliderUrl); 
