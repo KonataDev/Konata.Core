@@ -1,4 +1,6 @@
-﻿using Konata.Core.Utils.IO;
+﻿using System;
+using System.Linq;
+using Konata.Core.Utils.IO;
 
 // ReSharper disable ConvertIfStatementToSwitchStatement
 
@@ -8,12 +10,12 @@ internal static partial class FileFormat
 {
     public enum AudioFormat
     {
-        UNKNOWN,
-        WAV,
-        MP3,
-        SILKV3,
-        TENSILKV3,
-        AMR,
+        Unknown,
+        Wav,
+        Mp3,
+        SilkV3,
+        TenSilkV3,
+        Amr,
     }
 
     /// <summary>
@@ -37,7 +39,7 @@ internal static partial class FileFormat
             // 0           4     6  
             if (value == 0x23215349)
             {
-                type = AudioFormat.SILKV3;
+                type = AudioFormat.SilkV3;
                 return true;
             }
 
@@ -49,7 +51,7 @@ internal static partial class FileFormat
             // 0           4        7  
             if (value == 0x02232153)
             {
-                type = AudioFormat.TENSILKV3;
+                type = AudioFormat.TenSilkV3;
                 return true;
             }
 
@@ -61,7 +63,7 @@ internal static partial class FileFormat
             // 0           4     6
             if (value == 0x2321414D)
             {
-                type = AudioFormat.AMR;
+                type = AudioFormat.Amr;
                 return true;
             }
 
@@ -74,7 +76,7 @@ internal static partial class FileFormat
             if (value == 0x52494646 &&
                 buffer.PeekUintBE(8, out _) == 0x57415645)
             {
-                type = AudioFormat.WAV;
+                type = AudioFormat.Wav;
                 return true;
             }
 
@@ -86,12 +88,46 @@ internal static partial class FileFormat
             // 0        3
             if (value >> 8 == 0x494433)
             {
-                type = AudioFormat.MP3;
+                type = AudioFormat.Mp3;
                 return true;
             }
         }
 
-        type = AudioFormat.UNKNOWN;
+        type = AudioFormat.Unknown;
         return false;
+    }
+
+    /// <summary>
+    /// Get silk total time
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    public static double GetSilkTime(byte[] data, int offset = 0)
+    {
+        var blocks = 0;
+        var position = 9 + offset;
+
+        // Find all blocks
+        while (position + 2 < data.Length)
+        {
+            // Teardown block size
+            var len = BitConverter.ToUInt16
+                (data[position..(position + 2)].ToArray());
+
+            // End with 0xFFFFFF
+            // for standard silk files
+            if (len == 0xFFFF) break;
+            
+            // Teardown block
+            ++blocks;
+
+            // Move to next block
+            position += len + 2;
+        }
+
+        // Because the silk encoder encodes each 20ms sample as a block,
+        // So that we can calculate the total time easily.
+        return blocks * 0.02;
     }
 }

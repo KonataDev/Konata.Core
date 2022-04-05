@@ -130,53 +130,48 @@ public class RecordChain : BaseChain
         {
             var audioType = RecordType.Silk;
             var audioData = Array.Empty<byte>();
-            var audioTime = 0U;
+            var audioTime = .0d;
 
             // Process
             switch (type)
             {
                 // Amr format
                 // We no need to convert it
-                case FileFormat.AudioFormat.AMR:
+                case FileFormat.AudioFormat.Amr:
                     audioData = audio;
                     audioType = RecordType.Amr;
 
                     // Estimated time
-                    audioTime = (uint) audio.Length / 1607;
+                    audioTime = audio.Length / 1607.0;
 
                     break;
 
                 // Silk v3 for tx use
-                case FileFormat.AudioFormat.TENSILKV3:
+                case FileFormat.AudioFormat.TenSilkV3:
                     audioData = audio;
                     audioType = RecordType.Silk;
-
-                    // Estimated time
-                    audioTime = (uint) audio.Length / 2394;
+                    audioTime = FileFormat.GetSilkTime(audio, 1);
                     break;
 
                 // Normal silk v3
                 // We need to append a header 0x02
                 // and remove 0xFFFF end for it
-                case FileFormat.AudioFormat.SILKV3:
+                case FileFormat.AudioFormat.SilkV3:
                 {
                     audioType = RecordType.Silk;
-                    audioData = new byte[] {0x02}
-                        .Concat(audio[..^2]).ToArray();
-
-                    // Estimated time
-                    audioTime = (uint) audio.Length / 2394;
+                    audioData = new byte[] {0x02}.Concat(audio[..^2]).ToArray();
+                    audioTime = FileFormat.GetSilkTime(audio);
                     break;
                 }
 
                 // Cannot convert unknown type
-                case FileFormat.AudioFormat.UNKNOWN:
+                case FileFormat.AudioFormat.Unknown:
                     return null;
 
                 // Need to convert
                 default:
-                case FileFormat.AudioFormat.MP3:
-                case FileFormat.AudioFormat.WAV:
+                case FileFormat.AudioFormat.Mp3:
+                case FileFormat.AudioFormat.Wav:
                 {
                     using var inputStream = new MemoryStream(audio);
                     using var outputStream = new MemoryStream();
@@ -185,11 +180,11 @@ public class RecordChain : BaseChain
                         type switch
                         {
                             // Decode Mp3 to pcm
-                            FileFormat.AudioFormat.MP3 =>
+                            FileFormat.AudioFormat.Mp3 =>
                                 new Mp3Codec.Decoder(inputStream),
 
                             // Decode Wav to pcm
-                            FileFormat.AudioFormat.WAV =>
+                            FileFormat.AudioFormat.Wav =>
                                 throw new NotImplementedException(),
                         },
 
@@ -209,7 +204,7 @@ public class RecordChain : BaseChain
                         // Set audio information
                         audioType = RecordType.Silk;
                         audioData = outputStream.ToArray();
-                        audioTime = (uint) Math.Ceiling(audioPipeline.GetAudioTime());
+                        audioTime = audioPipeline.GetAudioTime();
                         audioPipeline.Dispose();
                     }
 
@@ -220,9 +215,11 @@ public class RecordChain : BaseChain
             // Audio MD5
             var audioMd5 = audioData.Md5();
             var audioMd5Str = audioMd5.ToHex().ToUpper();
+
+            audioTime = Math.Round(audioTime);
             if (audioTime == 0) audioTime = 1;
 
-            return new RecordChain(audioData, audioTime,
+            return new RecordChain(audioData, (uint) audioTime,
                 audioMd5, audioMd5Str, audioType);
         }
 
@@ -260,7 +257,7 @@ public class RecordChain : BaseChain
     /// <returns></returns>
     public static RecordChain CreateFromUrl(string url)
         => Create(Utils.Network.Http.Get(url, limitLen: 1048576 * 10).Result);
-    
+
     /// <summary>
     /// Parse the code
     /// </summary>
