@@ -9,15 +9,14 @@ using Konata.Core.Packets.SvcPush;
 
 namespace Konata.Core.Components.Services.StatSvc;
 
-[EventSubscribe(typeof(ReqMSFOfflineEvent))]
 [Service("StatSvc.ReqMSFOffline", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
-internal class ReqMSFOffline : BaseService<ReqMSFOfflineEvent>
+internal class ReqMSFOffline : BaseService<ForceOfflineEvent>
 {
     protected override bool Parse(SSOFrame input,
-        BotKeyStore keystore, out ReqMSFOfflineEvent output)
+        BotKeyStore keystore, out ForceOfflineEvent output)
     {
-        var tree = new SvcPushMsfForceOffline(input.Payload.GetBytes());
-        output = new ReqMSFOfflineEvent(tree.Title, tree.Message);
+        var tree = new SvcPushReqMsfOffline(input.Payload.GetBytes());
+        output = new ForceOfflineEvent(tree.Title, tree.Message);
         return true;
     }
 }

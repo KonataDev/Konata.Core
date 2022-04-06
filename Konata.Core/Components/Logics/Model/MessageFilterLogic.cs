@@ -45,6 +45,12 @@ internal class MessageFilterLogic : BaseLogic
                 OnSyncServerTime();
                 return;
 
+            // Bot offline
+            case OnlineStatusEvent {EventType: OnlineStatusEvent.Type.Offline}:
+                ScheduleComponent.Cancel(ScheduleCacheClear);
+                ScheduleComponent.Cancel(ScheduleSyncServerTime);
+                return;
+
             // private message coming
             case FriendMessageEvent friend:
                 await FilterMessages(friend);

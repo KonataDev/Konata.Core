@@ -14,6 +14,7 @@ namespace Konata.Core.Components.Logics.Model;
 
 [EventSubscribe(typeof(ProtocolEvent))]
 [EventSubscribe(typeof(OnlineStatusEvent))]
+[EventSubscribe(typeof(ForceOfflineEvent))]
 [BusinessLogic("Wtlogin Exchange Logic", "Responsible for the online tasks.")]
 internal class WtExchangeLogic : BaseLogic
 {
@@ -39,13 +40,18 @@ internal class WtExchangeLogic : BaseLogic
 
     public override Task Incoming(ProtocolEvent e)
     {
-        // Receive online status from server
-        if (e is OnlineStatusEvent status)
+        switch (e)
         {
-            // Online status changed
-            _onlineType = status.EventType;
+            // Receive online status from server
+            case OnlineStatusEvent status:
+                _onlineType = status.EventType;
+                break;
+            
+            case ForceOfflineEvent offline:
+                OnForceOffline(offline);
+                break;
         }
-        
+
         _heartbeatCounter++;
         return Task.CompletedTask;
     }
@@ -431,6 +437,18 @@ internal class WtExchangeLogic : BaseLogic
         }
 
         Context.LogI(TAG, "Bot has been restored from offline.");
+    }
+
+    private void OnForceOffline(ForceOfflineEvent e)
+    {
+        Logout();
+
+        // Clear the old key
+        ConfigComponent.KeyStore.Session.D2Key = Array.Empty<byte>();
+        ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
+        
+        Context.LogI(TAG, "Server pushed force offline.");
+        Context.PostEventToEntity(e);
     }
 
     #region Stub methods

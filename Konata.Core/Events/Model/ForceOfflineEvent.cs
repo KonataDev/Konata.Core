@@ -1,22 +1,23 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Konata.Core.Events.Model;
 
-internal class ReqMSFOfflineEvent : ProtocolEvent
+internal class ForceOfflineEvent : ProtocolEvent
 {
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Highway host server
     /// </summary>
-    internal string NotifyTitle { get; }
+    public string NotifyTitle { get; }
 
     /// <summary>
     /// <b>[Out]</b> <br/>
     /// Offline reason string
     /// </summary>
-    internal string OfflineReason { get; }
+    public string OfflineReason { get; }
 
-    internal ReqMSFOfflineEvent(string notifyTitle,
+    internal ForceOfflineEvent(string notifyTitle,
         string offlineReason) : base(0)
     {
         NotifyTitle = notifyTitle;

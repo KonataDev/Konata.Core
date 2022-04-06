@@ -72,5 +72,8 @@
     <ItemGroup Condition="'$(TargetArchitechture)' == 'Arm'">
         <Protobuf Update="Packets/Protobuf/Msf/*.proto" Access="internal_access:"/>
     </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Components\Services\PttTrans"/>
+    </ItemGroup>
 
 </Project>
