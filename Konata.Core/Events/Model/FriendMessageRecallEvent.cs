@@ -11,10 +11,10 @@ public class FriendMessageRecallEvent : ProtocolEvent
     public uint FriendUin { get; }
 
     /// <summary>
-    /// <b>[Opt] [Out]</b> <br/>
-    /// Recall suffix <br/>
+    /// <b>[Out]</b> <br/>
+    /// Operator uin <br/>
     /// </summary>
-    public string RecallSuffix { get; }
+    public uint OperatorUin { get; }
 
     /// <summary>
     /// <b>[In] [Out]</b> <br/>
@@ -41,6 +41,17 @@ public class FriendMessageRecallEvent : ProtocolEvent
     public uint Time { get; }
 
     private FriendMessageRecallEvent(uint friendUin,
+        uint operatorUin, uint sequence, uint random, long uuid, uint time) : base(true)
+    {
+        FriendUin = friendUin;
+        OperatorUin = operatorUin;
+        Sequence = sequence;
+        Random = random;
+        Uuid = uuid;
+        Time = time;
+    }
+
+    private FriendMessageRecallEvent(uint friendUin,
         uint sequence, uint random, long uuid, uint time) : base(true)
     {
         FriendUin = friendUin;
@@ -53,13 +64,6 @@ public class FriendMessageRecallEvent : ProtocolEvent
     private FriendMessageRecallEvent(int resultCode)
         : base(resultCode)
     {
-    }
-
-    private FriendMessageRecallEvent
-        (uint friendUin, string recallSuffix) : base(0)
-    {
-        FriendUin = friendUin;
-        RecallSuffix = recallSuffix;
     }
 
     /// <summary>
@@ -86,8 +90,11 @@ public class FriendMessageRecallEvent : ProtocolEvent
     /// Construct event push
     /// </summary>
     /// <param name="friendUin"></param>
-    /// <param name="recallSuffix"></param>
+    /// <param name="operatorUin"></param>
+    /// <param name="sequence"></param>
+    /// <param name="rand"></param>
+    /// <param name="time"></param>
     /// <returns></returns>
-    internal static FriendMessageRecallEvent Push(uint friendUin, string recallSuffix)
-        => new(friendUin, recallSuffix);
+    internal static FriendMessageRecallEvent Push(uint friendUin, uint operatorUin, uint sequence, uint rand, long uuid, uint time)
+        => new(friendUin, operatorUin, sequence, rand, uuid, time);
 }

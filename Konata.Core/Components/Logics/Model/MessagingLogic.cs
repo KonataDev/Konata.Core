@@ -419,8 +419,8 @@ internal class MessagingLogic : BaseLogic
     private static Task<ProtocolEvent> RecallGroupMessage(BusinessComponent context, uint groupUin, uint sequence, uint random)
         => context.SendPacket<ProtocolEvent>(GroupMessageRecallEvent.Create(groupUin, sequence, random));
 
-    private static Task<ProtocolEvent> RecallFriendMessage(BusinessComponent context, uint groupUin, uint sequence, uint random, long uuid, uint time)
-        => context.SendPacket<ProtocolEvent>(FriendMessageRecallEvent.Create(groupUin, sequence, random, uuid, time));
+    private static Task<ProtocolEvent> RecallFriendMessage(BusinessComponent context, uint friendUin, uint sequence, uint random, long uuid, uint time)
+        => context.SendPacket<ProtocolEvent>(FriendMessageRecallEvent.Create(friendUin, sequence, random, uuid, time));
 
     private static Task<PicUpEvent> GroupPicUp(BusinessComponent context, uint groupUin, List<ImageChain> images)
         => context.SendPacket<PicUpEvent>(PicUpEvent.GroupUp(groupUin, context.Bot.Uin, images));

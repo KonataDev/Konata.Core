@@ -106,15 +106,18 @@ internal class ReqPush : BaseService<OnlineReqPushEvent>
 
                 // Get data
                 var info0A = (ProtoTreeRoot) recallTree.GetLeaf("0A");
-                var info6A = (ProtoTreeRoot) info0A.GetLeaf("6A");
 
-                var recallSuffix = "";
-                var friendUin = (uint) info0A.GetLeafVar("08");
-                if (info6A.TryGetLeafString("12", out var str))
-                    recallSuffix = str;
+                var fromUin = (uint) info0A.GetLeafVar("08");
+                var toUin = (uint) info0A.GetLeafVar("10");
+                var msgSeq = (uint) info0A.GetLeafVar("18");
+                var msgUuid = (long) info0A.GetLeafVar("20");
+                var msgTime = (uint) info0A.GetLeafVar("28");
+                var msgRand = (uint) info0A.GetLeafVar("30");
+
+                var friendUin = fromUin == key.Account.Uin ? toUin : fromUin;
 
                 // Construct event
-                return FriendMessageRecallEvent.Push(friendUin, recallSuffix);
+                return FriendMessageRecallEvent.Push(friendUin, fromUin, msgSeq, msgRand, msgUuid, msgTime);
             }
         },
 
