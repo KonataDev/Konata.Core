@@ -1,4 +1,6 @@
-﻿// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace Konata.Core.Events.Model;
 
@@ -256,7 +258,7 @@ public class CaptchaEvent : BaseEvent
     public enum CaptchaType
     {
         Unknown,
-        SMS,
+        Sms,
         Slider
     }
 
@@ -273,7 +275,7 @@ public class CaptchaEvent : BaseEvent
         switch (wtEvent.EventType)
         {
             case WtLoginEvent.Type.CheckSms:
-                Type = CaptchaType.SMS;
+                Type = CaptchaType.Sms;
                 Phone = wtEvent.SmsPhone;
                 Country = wtEvent.SmsCountry;
                 break;

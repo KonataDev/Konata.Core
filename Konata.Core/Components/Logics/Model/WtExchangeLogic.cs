@@ -26,6 +26,7 @@ internal class WtExchangeLogic : BaseLogic
     private TaskCompletionSource<WtLoginEvent> _userOperation;
     private uint _heartbeatCounter;
     private bool _useFastLogin;
+    private bool _isFirstLogin;
 
     public OnlineStatusEvent.Type OnlineType
         => _onlineType;
@@ -35,10 +36,11 @@ internal class WtExchangeLogic : BaseLogic
     {
         _onlineType = OnlineStatusEvent.Type.Offline;
         _useFastLogin = false;
+        _isFirstLogin = true;
         _heartbeatCounter = 0;
     }
 
-    public override Task Incoming(ProtocolEvent e)
+    public override async Task Incoming(ProtocolEvent e)
     {
         switch (e)
         {
@@ -46,14 +48,13 @@ internal class WtExchangeLogic : BaseLogic
             case OnlineStatusEvent status:
                 _onlineType = status.EventType;
                 break;
-            
+
             case ForceOfflineEvent offline:
-                OnForceOffline(offline);
+                await OnForceOffline(offline);
                 break;
         }
 
         _heartbeatCounter++;
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -119,7 +120,9 @@ internal class WtExchangeLogic : BaseLogic
                 switch (wtStatus.EventType)
                 {
                     case WtLoginEvent.Type.OK:
-                        return await OnBotOnline();
+                        if (!await OnBotOnline()) return false;
+                        _isFirstLogin = false;
+                        return true;
 
                     case WtLoginEvent.Type.CheckSms:
                     case WtLoginEvent.Type.CheckSlider:
@@ -189,10 +192,22 @@ internal class WtExchangeLogic : BaseLogic
         ScheduleComponent.Cancel(ScheduleCheckConnection);
 
         // Push offline
-        Context.PostEvent<BusinessComponent>
-            (OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, "user logout"));
+        Context.PostEvent<BusinessComponent>(
+            OnlineStatusEvent.Push(
+                OnlineStatusEvent.Type.Offline,
+                "User logout"
+            )
+        );
 
-        return SocketComponent.Disconnect("user logout");
+        // Push loggedout
+        Context.PostEventToEntity(
+            BotOfflineEvent.Push(
+                BotOfflineEvent.OfflineType.UserLoggedOut,
+                "User logout"
+            )
+        );
+
+        return SocketComponent.Disconnect("User logout");
     }
 
     /// <summary>
@@ -231,36 +246,36 @@ internal class WtExchangeLogic : BaseLogic
         return _userOperation.Task;
     }
 
-    /// <summary>
-    /// Set online status
-    /// </summary>
-    /// <param name="status"></param>
-    /// <returns></returns>
-    public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
-    {
-        if (_onlineType == status)
-        {
-            return Task.FromResult(true);
-        }
-
-        switch (_onlineType)
-        {
-            // Login
-            case OnlineStatusEvent.Type.Online:
-                return Login();
-
-            // Not supported yet
-            case OnlineStatusEvent.Type.Offline:
-            case OnlineStatusEvent.Type.Leave:
-            case OnlineStatusEvent.Type.Busy:
-            case OnlineStatusEvent.Type.Hidden:
-            case OnlineStatusEvent.Type.QMe:
-            case OnlineStatusEvent.Type.DoNotDistrub:
-                return Task.FromResult(false);
-        }
-
-        return Task.FromResult(false);
-    }
+    // /// <summary>
+    // /// Set online status
+    // /// </summary>
+    // /// <param name="status"></param>
+    // /// <returns></returns>
+    // public Task<bool> SetOnlineStatus(OnlineStatusEvent.Type status)
+    // {
+    //     if (_onlineType == status)
+    //     {
+    //         return Task.FromResult(true);
+    //     }
+    //
+    //     switch (_onlineType)
+    //     {
+    //         // Login
+    //         case OnlineStatusEvent.Type.Online:
+    //             return Login();
+    //
+    //         // Not supported yet
+    //         case OnlineStatusEvent.Type.Offline:
+    //         case OnlineStatusEvent.Type.Leave:
+    //         case OnlineStatusEvent.Type.Busy:
+    //         case OnlineStatusEvent.Type.Hidden:
+    //         case OnlineStatusEvent.Type.QMe:
+    //         case OnlineStatusEvent.Type.DoNotDistrub:
+    //             return Task.FromResult(false);
+    //     }
+    //
+    //     return Task.FromResult(false);
+    // }
 
     /// <summary>
     /// On bot online
@@ -285,15 +300,21 @@ internal class WtExchangeLogic : BaseLogic
             // Update online status
             if (online.EventType == OnlineStatusEvent.Type.Online)
             {
-                // Bot online
-                Context.PostEventToEntity(online);
-                await Context.SendEvent<BusinessComponent>(online);
+                Context.LogI(TAG, "Bot online.");
 
                 // Register schedules
                 ScheduleComponent.Interval(SchedulePullMessage, 180 * 1000, OnPullMessage);
                 ScheduleComponent.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
 
-                Context.LogI(TAG, "Bot online.");
+                // Bot online
+                Context.PostEvent<BusinessComponent>(online);
+                Context.PostEventToEntity(
+                    BotOnlineEvent.Push(_isFirstLogin
+                        ? BotOnlineEvent.OnlineType.FirstOnline
+                        : BotOnlineEvent.OnlineType.ConnectionReset
+                    )
+                );
+
                 return true;
             }
         }
@@ -347,6 +368,13 @@ internal class WtExchangeLogic : BaseLogic
         {
             Context.LogW(TAG, "The client was offline.");
             Context.LogE(TAG, e);
+
+            Context.PostEventToEntity(
+                BotOfflineEvent.Push(
+                    BotOfflineEvent.OfflineType.NetworkDown,
+                    "Client was down due to network issue."
+                )
+            );
 
             // Disconnect
             await SocketComponent.Disconnect("Heart broken.");
@@ -410,7 +438,7 @@ internal class WtExchangeLogic : BaseLogic
     private async void OnReConnect()
     {
         var retry = 0;
-        
+
         while (true)
         {
             Context.LogV(TAG, $"Try reconnecting, tried {++retry} times.");
@@ -431,7 +459,7 @@ internal class WtExchangeLogic : BaseLogic
             {
                 Context.LogE(TAG, e);
             }
-            
+
             Context.LogW(TAG, "ReLogin failed? Retry again after 10s.");
             await Task.Delay(10 * 1000);
         }
@@ -439,16 +467,34 @@ internal class WtExchangeLogic : BaseLogic
         Context.LogI(TAG, "Bot has been restored from offline.");
     }
 
-    private void OnForceOffline(ForceOfflineEvent e)
+    private async Task OnForceOffline(ForceOfflineEvent e)
     {
-        Logout();
+        Context.LogI(TAG, "Server pushed force offline.");
+        await SocketComponent.Disconnect("Pushed offline");
 
         // Clear the old key
         ConfigComponent.KeyStore.Session.D2Key = Array.Empty<byte>();
         ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
-        
-        Context.LogI(TAG, "Server pushed force offline.");
-        Context.PostEventToEntity(e);
+
+        // Cancel schedules
+        ScheduleComponent.Cancel(SchedulePullMessage);
+        ScheduleComponent.Cancel(ScheduleCheckConnection);
+
+        // Push offline
+        var reason = $"{e.NotifyTitle} {e.OfflineReason}";
+        Context.PostEvent<BusinessComponent>(
+            OnlineStatusEvent.Push(
+                OnlineStatusEvent.Type.Offline,
+                reason
+            )
+        );
+
+        Context.PostEventToEntity(
+            BotOfflineEvent.Push(
+                BotOfflineEvent.OfflineType.ServerKickOff,
+                reason
+            )
+        );
     }
 
     #region Stub methods

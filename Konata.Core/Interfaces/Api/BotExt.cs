@@ -91,15 +91,15 @@ public static class BotExt
     public static OnlineStatusEvent.Type GetOnlineStatus(this Bot bot)
         => bot.BusinessComponent.WtExchange.OnlineType;
 
-    /// <summary>
-    /// Set online status
-    /// </summary>
-    /// <param name="bot"><b>[In]</b> Bot instance</param>
-    /// <param name="status"><b>[In]</b> Online status</param>
-    /// <returns></returns>
-    [KonataApi(1, experimental: true)]
-    public static Task<bool> SetOnlineStatus(this Bot bot, OnlineStatusEvent.Type status)
-        => bot.BusinessComponent.WtExchange.SetOnlineStatus(status);
+    // /// <summary>
+    // /// Set online status
+    // /// </summary>
+    // /// <param name="bot"><b>[In]</b> Bot instance</param>
+    // /// <param name="status"><b>[In]</b> Online status</param>
+    // /// <returns></returns>
+    // [KonataApi(1, experimental: true)]
+    // public static Task<bool> SetOnlineStatus(this Bot bot, OnlineStatusEvent.Type status)
+    //     => bot.BusinessComponent.WtExchange.SetOnlineStatus(status);
 
     /// <summary>
     /// Is Online

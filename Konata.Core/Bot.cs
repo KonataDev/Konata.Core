@@ -106,15 +106,19 @@ public class Bot : BaseEntity, IDisposable
     public event KonataEvent<LogEvent> OnLog;
 
     /// <summary>
+    /// Handle bot online event
+    /// </summary>
+    public event KonataEvent<BotOnlineEvent> OnBotOnline;
+    
+    /// <summary>
+    /// Handle bot offline event
+    /// </summary>
+    public event KonataEvent<BotOfflineEvent> OnBotOffline;
+    
+    /// <summary>
     /// Handle captcha event
     /// </summary>
     public event KonataEvent<CaptchaEvent> OnCaptcha;
-
-    /// <summary>
-    /// On online status changed event
-    /// </summary>
-    [Obsolete("This event will be removed in future.")]
-    public event KonataEvent<OnlineStatusEvent> OnOnlineStatusChanged;
 
     /// <summary>
     /// On group message event
@@ -193,7 +197,8 @@ public class Bot : BaseEntity, IDisposable
             // Other
             {typeof(LogEvent), e => OnLog?.Invoke(this, (LogEvent) e)},
             {typeof(CaptchaEvent), e => OnCaptcha?.Invoke(this, (CaptchaEvent) e)},
-            {typeof(OnlineStatusEvent), e => OnOnlineStatusChanged?.Invoke(this, (OnlineStatusEvent) e)},
+            {typeof(BotOnlineEvent), e => OnBotOnline?.Invoke(this, (BotOnlineEvent) e)},
+            {typeof(BotOfflineEvent), e => OnBotOffline?.Invoke(this, (BotOfflineEvent) e)},
 
             // Group events
             {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
