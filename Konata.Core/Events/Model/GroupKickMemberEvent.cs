@@ -1,4 +1,7 @@
-﻿namespace Konata.Core.Events.Model;
+﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+namespace Konata.Core.Events.Model;
 
 public class GroupKickMemberEvent : ProtocolEvent
 {

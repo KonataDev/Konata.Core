@@ -93,6 +93,7 @@ public class FriendMessageRecallEvent : ProtocolEvent
     /// <param name="operatorUin"></param>
     /// <param name="sequence"></param>
     /// <param name="rand"></param>
+    /// <param name="uuid"></param>
     /// <param name="time"></param>
     /// <returns></returns>
     internal static FriendMessageRecallEvent Push(uint friendUin, uint operatorUin, uint sequence, uint rand, long uuid, uint time)
