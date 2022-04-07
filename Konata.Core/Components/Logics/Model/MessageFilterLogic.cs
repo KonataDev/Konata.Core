@@ -111,12 +111,11 @@ internal class MessageFilterLogic : BaseLogic
     private async void OnSyncServerTime()
     {
         // Get server time
-        if (_serverTimeOffset == int.MaxValue)
-        {
-            var server = (await GetServerTime()).ServerTime;
-            var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            _serverTimeOffset = server - current;
-        }
+        var server = (await GetServerTime()).ServerTime;
+        var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        _serverTimeOffset = server - current;
+        
+        Context.LogI(TAG, $"Server diff time: {_serverTimeOffset}");
     }
 
     /// <summary>
