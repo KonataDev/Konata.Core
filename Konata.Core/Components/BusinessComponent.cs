@@ -13,6 +13,7 @@ using Konata.Core.Utils;
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InconsistentNaming
 
 namespace Konata.Core.Components;
 
