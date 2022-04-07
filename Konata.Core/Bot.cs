@@ -143,12 +143,12 @@ public class Bot : BaseEntity, IDisposable
     /// <summary>
     /// On group member decrease event
     /// </summary>
-    public event KonataEvent<GroupKickMemberEvent> OnGroupMemberDecreased;
+    public event KonataEvent<GroupKickMemberEvent> OnGroupMemberDecrease;
 
     /// <summary>
     /// On group member increase event
     /// </summary>
-    public event KonataEvent<GroupMemberIncreaseEvent> OnGroupMemberIncreased;
+    public event KonataEvent<GroupMemberIncreaseEvent> OnGroupMemberIncrease;
 
     /// <summary>
     /// On group admin set/unset event
@@ -209,8 +209,8 @@ public class Bot : BaseEntity, IDisposable
             {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},
             {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
             {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
-            {typeof(GroupKickMemberEvent), e => OnGroupMemberDecreased?.Invoke(this, (GroupKickMemberEvent) e)},
-            {typeof(GroupMemberIncreaseEvent), e => OnGroupMemberIncreased?.Invoke(this, (GroupMemberIncreaseEvent) e)},
+            {typeof(GroupKickMemberEvent), e => OnGroupMemberDecrease?.Invoke(this, (GroupKickMemberEvent) e)},
+            {typeof(GroupMemberIncreaseEvent), e => OnGroupMemberIncrease?.Invoke(this, (GroupMemberIncreaseEvent) e)},
             {typeof(GroupPromoteAdminEvent), e => OnGroupPromoteAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
             {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
             {typeof(GroupInviteEvent), e => OnGroupInvite?.Invoke(this, (GroupInviteEvent) e)},
