@@ -1,4 +1,5 @@
 ﻿using Konata.Core.Common;
+using Konata.Core.Message;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -6,7 +7,7 @@
 
 namespace Konata.Core.Events.Model;
 
-public class GroupRequestJoinEvent : ProtocolEvent
+public class GroupRequestJoinEvent : FilterableEvent
 {
     /// <summary>
     /// [Out] <br/>

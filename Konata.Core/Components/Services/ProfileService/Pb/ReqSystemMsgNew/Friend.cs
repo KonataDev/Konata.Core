@@ -3,6 +3,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Message;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf.Msf;
 
@@ -25,13 +26,15 @@ internal class Friend : BaseService<ReqSystemMsgFriendEvent>
             output = ReqSystemMsgFriendEvent.Create(proto.Head.Result);
             foreach (var msg in proto.Friendmsgs)
             {
+                FilterableEvent outEvent = null;
                 switch (msg.Msg.SubType)
                 {
                     // Friend requests
                     case 1:
-                        extra.Add(FriendRequestEvent.Push((uint) msg.ReqUin,
-                            msg.Msg.ReqUinNick, (uint) msg.Time, msg.Msg.Additional, (long) msg.Seq));
-                        return true;
+                        outEvent = FriendRequestEvent.Push((uint) msg.ReqUin,
+                            msg.Msg.ReqUinNick, (uint) msg.Time, msg.Msg.Additional, (long) msg.Seq
+                        );
+                        break;
 
                     // Friend added (single)
                     // case 9:
@@ -40,6 +43,13 @@ internal class Friend : BaseService<ReqSystemMsgFriendEvent>
                     //         msg.Msg.Additional, (uint) msg.Time, (long) msg.Seq
                     //     ));
                     //     return true;
+                }
+
+                // Append events
+                if (outEvent != null)
+                {
+                    extra.Add(outEvent);
+                    outEvent.SetFilterIdenfidentor((uint) msg.Time, (uint) msg.Seq);
                 }
             }
 

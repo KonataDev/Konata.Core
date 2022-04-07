@@ -66,7 +66,7 @@ internal static class Reflection
 
         foreach (var type in types)
         {
-            if (type.BaseType == t)
+            if (t.IsAssignableFrom(type))
             {
                 list.Add(type);
             }

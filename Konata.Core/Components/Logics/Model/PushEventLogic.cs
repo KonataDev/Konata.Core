@@ -19,18 +19,14 @@ namespace Konata.Core.Components.Logics.Model;
 [EventSubscribe(typeof(FriendPokeEvent))]
 [EventSubscribe(typeof(FriendTypingEvent))]
 [EventSubscribe(typeof(FriendMessageRecallEvent))]
-[EventSubscribe(typeof(FriendRequestEvent))]
 
 // Group Events
 [EventSubscribe(typeof(GroupPokeEvent))]
 [EventSubscribe(typeof(GroupMuteMemberEvent))]
 [EventSubscribe(typeof(GroupMessageRecallEvent))]
 [EventSubscribe(typeof(GroupKickMemberEvent))]
-[EventSubscribe(typeof(GroupMemberIncreasedEvent))]
 [EventSubscribe(typeof(GroupPromoteAdminEvent))]
 [EventSubscribe(typeof(GroupMessageEvent))]
-[EventSubscribe(typeof(GroupInviteEvent))]
-[EventSubscribe(typeof(GroupRequestJoinEvent))]
 [BusinessLogic("PushEvent Logic", "Forward push events to userend.")]
 internal class PushEventLogic : BaseLogic
 {

@@ -1,9 +1,11 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 
+using Konata.Core.Message;
+
 namespace Konata.Core.Events.Model;
 
-public class FriendRequestEvent : ProtocolEvent
+public class FriendRequestEvent : FilterableEvent
 {
     /// <summary>
     /// [Out] <br/>

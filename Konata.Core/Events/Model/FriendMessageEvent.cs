@@ -6,7 +6,7 @@
 
 namespace Konata.Core.Events.Model;
 
-public class FriendMessageEvent : ProtocolEvent
+public class FriendMessageEvent : FilterableEvent
 {
     /// <summary>
     /// <b>[In]</b> <br/>

@@ -3,6 +3,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Message;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Protobuf.Msf;
 
@@ -27,23 +28,32 @@ internal class Group : BaseService<ReqSystemMsgGroupEvent>
                 // Filter subtype 1
                 if (msg.Msg.SubType != 1) continue;
 
+                FilterableEvent outEvent = null;
                 switch (msg.Msg.GroupMsgType)
                 {
                     // Group invite
                     case 2:
-                        extra.Add(GroupInviteEvent.Push((uint) msg.Msg.GroupCode,
+                        outEvent = GroupInviteEvent.Push((uint) msg.Msg.GroupCode,
                             msg.Msg.GroupName, (uint) msg.Msg.ActionUin, msg.Msg.ActionUinNick,
-                            msg.Msg.GroupInviterRole > 1, (uint) msg.Time, (long) msg.Seq));
-                        return true;
+                            msg.Msg.GroupInviterRole > 1, (uint) msg.Time, (long) msg.Seq
+                        );
+                        break;
 
                     // Group request join
                     case 1:
                     case 22:
-                        extra.Add(GroupRequestJoinEvent.Push((uint) msg.Msg.GroupCode,
+                        outEvent = GroupRequestJoinEvent.Push((uint) msg.Msg.GroupCode,
                             msg.Msg.GroupName, (uint) msg.Msg.ActionUin, (uint) msg.ReqUin, msg.Msg.ReqUinNick,
                             msg.Msg.Additional, (uint) msg.Time, (long) msg.Seq
-                        ));
-                        return true;
+                        );
+                        break;
+                }
+
+                // Append events
+                if (outEvent != null)
+                {
+                    extra.Add(outEvent);
+                    outEvent.SetFilterIdenfidentor((uint) msg.Time, (uint) msg.Seq);
                 }
             }
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
-using Konata.Core.Message;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable InconsistentNaming
@@ -16,13 +15,14 @@ using Konata.Core.Message;
 namespace Konata.Core.Components.Logics.Model;
 
 [EventSubscribe(typeof(OnlineStatusEvent))]
-[EventSubscribe(typeof(FriendMessageEvent))]
+[EventSubscribe(typeof(FilterableEvent))]
 [BusinessLogic("Mesage Filter Logic", "Filter duplicate push events.")]
 internal class MessageFilterLogic : BaseLogic
 {
     private const string TAG = "Mesage Filter Logic";
     private const string ScheduleSyncServerTime = "Logic.Filter.SyncServerTime";
     private const string ScheduleCacheClear = "Logic.Filter.CacheClear";
+    private const int FilterCacheTime = 15;
 
     private readonly ConcurrentDictionary<uint, HashSet<long>> _cache;
     private long _serverTimeOffset;
@@ -51,38 +51,34 @@ internal class MessageFilterLogic : BaseLogic
                 ScheduleComponent.Cancel(ScheduleSyncServerTime);
                 return;
 
-            // private message coming
-            case FriendMessageEvent friend:
-                await FilterMessages(friend);
+            // Filter duplicate message
+            case FilterableEvent filterable:
+                await FilterMessages(filterable);
                 return;
         }
     }
 
-    private Task FilterMessages(FriendMessageEvent e)
+    private Task FilterMessages(FilterableEvent e)
     {
         // Ignore if server time has not corrected
         if (_serverTimeOffset == int.MaxValue)
             return Task.FromResult(false);
 
-        // Ignore self messages
-        if (e.SelfUin == e.Message.Sender.Uin)
-            return Task.FromResult(false);
-
-        // Ignore messages which exceed 30 sec
-        if (GetLocalServerTime() - e.Message.Time > 30)
+        // Ignore messages which exceed 15 sec
+        if (GetLocalServerTime() - e.FilterTime > FilterCacheTime)
             return Task.FromResult(false);
 
         // Check the cache
-        var time = e.Message.Time;
-        var msgid = GetMessageId(e.Message);
+        var time = e.FilterTime;
+        var msghash = e.GetFilterIdenfidentor();
         var item = _cache.GetOrAdd(time, _ => new());
         {
             lock (item)
             {
                 // Add new message id
-                if (!item.Contains(msgid))
+                if (!item.Contains(msghash))
                 {
-                    item.Add(msgid);
+                    item.Add(msghash);
                     Context.PostEventToEntity(e);
                 }
 
@@ -98,24 +94,19 @@ internal class MessageFilterLogic : BaseLogic
         => DateTimeOffset.UtcNow.ToUnixTimeSeconds() + _serverTimeOffset;
 
     /// <summary>
-    /// Get message unique id for filtering
-    /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    private static long GetMessageId(MessageStruct s)
-        => (long) s.Sender.Uin << 32 | s.Random;
-
-    /// <summary>
     /// On sync server time
     /// </summary>
     private async void OnSyncServerTime()
     {
         // Get server time
-        var server = (await GetServerTime()).ServerTime;
-        var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        _serverTimeOffset = server - current;
-        
-        Context.LogI(TAG, $"Server diff time: {_serverTimeOffset}");
+        var result = await Context.SendPacket
+            <CorrectTimeEvent>(CorrectTimeEvent.Create());
+        {
+            var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            _serverTimeOffset = result.ServerTime - current;
+
+            Context.LogI(TAG, $"Server diff time: {_serverTimeOffset}");
+        }
     }
 
     /// <summary>
@@ -127,20 +118,14 @@ internal class MessageFilterLogic : BaseLogic
 
         // Remove cache messages
         var time = GetLocalServerTime();
-        var list = _cache.Where(s => time - s.Key > 30).Select(s => s.Key).ToList();
+        var list = _cache.Where(s => time - s.Key > FilterCacheTime).Select(s => s.Key).ToList();
         foreach (var i in list)
         {
             _cache.TryRemove(i, out _);
             Console.WriteLine($"deleted {i}");
         }
 
-        Context.LogV(TAG, $"Cleared {list.Count} cache(s).");
+        if (list.Count != 0)
+            Context.LogV(TAG, $"Cleared {list.Count} cache(s).");
     }
-
-    #region Stub methods
-
-    private Task<CorrectTimeEvent> GetServerTime()
-        => Context.SendPacket<CorrectTimeEvent>(CorrectTimeEvent.Create());
-
-    #endregion
 }

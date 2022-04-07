@@ -110,16 +110,27 @@ internal class BusinessComponent : InternalComponent
         _businessLogics.TryGetValue
             (typeof(ProtocolEvent), out var baseLogics);
 
+        _businessLogics.TryGetValue
+            (typeof(FilterableEvent), out var filterLogics);
+
         // Handle event
-        if (_businessLogics.TryGetValue
-                (protocolEvent.GetType(), out var logics))
+        _businessLogics.TryGetValue(protocolEvent.GetType(), out var normalLogics);
         {
             // Append base logics and
             // select distinct to avoid multiple executes
-            if (baseLogics != null)
+            var logics = new List<BaseLogic>();
             {
-                logics.AddRange(baseLogics);
+                if (baseLogics != null) logics.AddRange(baseLogics);
+                if (filterLogics != null) logics.AddRange(filterLogics);
+                if (normalLogics != null) logics.AddRange(normalLogics);
                 logics = logics.Distinct().ToList();
+            }
+
+            // No handler
+            if (logics.Count == 0)
+            {
+                LogW(TAG, "The event has no logic to handle.");
+                return false;
             }
 
             foreach (var i in logics)
@@ -136,15 +147,9 @@ internal class BusinessComponent : InternalComponent
                     LogE(TAG, e);
                 }
             }
-        }
 
-        // No handler
-        else
-        {
-            LogW(TAG, "The event has no logic to handle.");
+            return true;
         }
-
-        return false;
     }
 
     #region Business Logics

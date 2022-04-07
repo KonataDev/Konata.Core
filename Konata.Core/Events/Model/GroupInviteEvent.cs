@@ -3,7 +3,7 @@
 
 namespace Konata.Core.Events.Model;
 
-public class GroupInviteEvent : ProtocolEvent
+public class GroupInviteEvent : FilterableEvent
 {
     /// <summary>
     /// [Out] <br/>

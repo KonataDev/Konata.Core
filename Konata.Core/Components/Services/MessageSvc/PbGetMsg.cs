@@ -89,7 +89,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
             var sequence = (uint) pb.GetLeafVar("28");
             var time = (uint) pb.GetLeafVar("30");
             var uuid = pb.GetLeafVar("38");
-           
+
             var rand = !root.TryPathTo<ProtoVarInt>("1A.0A.0A.18", out var x)
                 ? (uint) (uuid & 0xFFFFFFFF)
                 : x;
@@ -101,21 +101,27 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
             context.SetSenderInfo(fromUin, "");
             context.SetReceiverInfo(toUin, "");
             context.SetSourceInfo(sequence, rand, time, uuid);
+            message.SetFilterIdenfidentor(time, rand);
         }
 
         message.SetSelfUin(selfUin);
         return message;
     }
 
-    private GroupMemberIncreasedEvent OnProcessNewMember(uint selfUin, ProtoTreeRoot root)
+    private GroupMemberIncreaseEvent OnProcessNewMember(uint selfUin, ProtoTreeRoot root)
     {
         var pb = root.PathTo<ProtoTreeRoot>("0A");
+        {
+            var seq = (uint) pb.GetLeafVar("28");
+            var time = (uint) pb.GetLeafVar("30");
+            var groupCode = (uint) pb.GetLeafVar("08");
+            var memberUin = (uint) pb.GetLeafVar("78");
+            var memberNick = pb.GetLeafString("8201");
 
-        var groupCode = (uint) pb.GetLeafVar("08");
-        var memberUin = (uint) pb.GetLeafVar("78");
-        var memberNick = pb.GetLeafString("8201");
+            var e = GroupMemberIncreaseEvent.Push(Oicq.GroupCode2GroupUin(groupCode), memberUin, memberNick);
+            e.SetFilterIdenfidentor(time, seq);
 
-        var e = GroupMemberIncreasedEvent.Push(Oicq.GroupCode2GroupUin(groupCode), memberUin, memberNick);
-        return e;
+            return e;
+        }
     }
 }

@@ -148,7 +148,7 @@ public class Bot : BaseEntity, IDisposable
     /// <summary>
     /// On group member increase event
     /// </summary>
-    public event KonataEvent<GroupMemberIncreasedEvent> OnGroupMemberIncreased;
+    public event KonataEvent<GroupMemberIncreaseEvent> OnGroupMemberIncreased;
 
     /// <summary>
     /// On group admin set/unset event
@@ -210,7 +210,7 @@ public class Bot : BaseEntity, IDisposable
             {typeof(GroupMuteMemberEvent), e => OnGroupMute?.Invoke(this, (GroupMuteMemberEvent) e)},
             {typeof(GroupPokeEvent), e => OnGroupPoke?.Invoke(this, (GroupPokeEvent) e)},
             {typeof(GroupKickMemberEvent), e => OnGroupMemberDecreased?.Invoke(this, (GroupKickMemberEvent) e)},
-            {typeof(GroupMemberIncreasedEvent), e => OnGroupMemberIncreased?.Invoke(this, (GroupMemberIncreasedEvent) e)},
+            {typeof(GroupMemberIncreaseEvent), e => OnGroupMemberIncreased?.Invoke(this, (GroupMemberIncreaseEvent) e)},
             {typeof(GroupPromoteAdminEvent), e => OnGroupPromoteAdmin?.Invoke(this, (GroupPromoteAdminEvent) e)},
             {typeof(GroupMessageRecallEvent), e => OnGroupMessageRecall?.Invoke(this, (GroupMessageRecallEvent) e)},
             {typeof(GroupInviteEvent), e => OnGroupInvite?.Invoke(this, (GroupInviteEvent) e)},

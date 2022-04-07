@@ -1,9 +1,11 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
+using Konata.Core.Message;
+
 namespace Konata.Core.Events.Model;
 
-public class GroupMemberIncreasedEvent : ProtocolEvent
+public class GroupMemberIncreaseEvent : FilterableEvent
 {
     /// <summary>
     /// <b>[In]</b> <br/>
@@ -23,7 +25,7 @@ public class GroupMemberIncreasedEvent : ProtocolEvent
     /// </summary>
     public string MemberNick { get; }
 
-    private GroupMemberIncreasedEvent(uint groupUin,
+    private GroupMemberIncreaseEvent(uint groupUin,
         uint memberUin, string memberNick) : base(0)
     {
         GroupUin = groupUin;
@@ -38,6 +40,6 @@ public class GroupMemberIncreasedEvent : ProtocolEvent
     /// <param name="memberUin"></param>
     /// <param name="memberNick"></param>
     /// <returns></returns>
-    internal static GroupMemberIncreasedEvent Push(uint groupUin, uint memberUin, string memberNick)
+    internal static GroupMemberIncreaseEvent Push(uint groupUin, uint memberUin, string memberNick)
         => new(groupUin, memberUin, memberNick);
 }
