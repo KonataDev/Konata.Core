@@ -8,6 +8,7 @@ using Konata.Core.Utils.Protobuf;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Utils.Protobuf.ProtoModel;
+using Konata.Core.Utils;
 
 // ReSharper disable UnusedType.Global
 
@@ -46,12 +47,15 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                             extra.Add(OnProcessMessage(keystore.Account.Uin, j));
                             break;
 
+                        case NotifyType.NewMember:
+                            extra.Add(OnProcessNewMember(keystore.Account.Uin, j));
+                            break;
+
                         case NotifyType.StrangerMessage:
                             break;
 
                         default:
                         case NotifyType.FriendFileMessage:
-                        case NotifyType.NewMember:
                         case NotifyType.GroupCreated:
                         case NotifyType.GroupRequestAccepted:
                             break;
@@ -101,5 +105,17 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 
         message.SetSelfUin(selfUin);
         return message;
+    }
+
+    private GroupMemberIncreasedEvent OnProcessNewMember(uint selfUin, ProtoTreeRoot root)
+    {
+        var pb = root.PathTo<ProtoTreeRoot>("0A");
+
+        var groupCode = (uint) pb.GetLeafVar("08");
+        var memberUin = (uint) pb.GetLeafVar("78");
+        var memberNick = pb.GetLeafString("8201");
+
+        var e = GroupMemberIncreasedEvent.Push(Oicq.GroupCode2GroupUin(groupCode), memberUin, memberNick);
+        return e;
     }
 }

@@ -26,6 +26,7 @@ namespace Konata.Core.Components.Logics.Model;
 [EventSubscribe(typeof(GroupMuteMemberEvent))]
 [EventSubscribe(typeof(GroupMessageRecallEvent))]
 [EventSubscribe(typeof(GroupKickMemberEvent))]
+[EventSubscribe(typeof(GroupMemberIncreasedEvent))]
 [EventSubscribe(typeof(GroupPromoteAdminEvent))]
 [EventSubscribe(typeof(GroupMessageEvent))]
 [EventSubscribe(typeof(GroupInviteEvent))]
