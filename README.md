@@ -90,5 +90,10 @@ Console.WriteLine("We got online!");
 [2]: Not supported to recall messages sent from the bot.  
 [3]: Not supported temp messages.
 
-## LICENSE
+## Special Thanks
+Special thanks to **JetBrains** offers free open-source licenses for us!  
+  
+[<img src="https://plugins.jetbrains.com/assets/icons/jetbrains.png" width="200"/>](https://www.jetbrains.com/?from=konata)
+
+## License
 Licensed in GNU GPLv3 with ❤.
