@@ -93,7 +93,7 @@ Console.WriteLine("We got online!");
 ## Special Thanks
 Special thanks to **JetBrains** offers free open-source licenses for us!  
   
-[<img src="https://plugins.jetbrains.com/assets/icons/jetbrains.png" width="200"/>](https://www.jetbrains.com/?from=konata)
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200"/>](https://www.jetbrains.com/?from=konata)
 
 ## License
 Licensed in GNU GPLv3 with ❤.
