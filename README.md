@@ -69,22 +69,22 @@ Console.WriteLine("We got online!");
 </details>
 
 ## Features List
-| Messages    | Support | Operations     | Support | Events              | Support |
-|:------------|:--------|:---------------|:--------|:--------------------|:--------|
-| Images      | 🟢      | Poke           | 🟢      | Captcha             | 🟢      |
-| Text / At   | 🟢      | Recall         | 🟡[2]   | BotOnline           | 🟢      |
-| Records     | 🟢      | Leave Group    | 🟢      | BotOffline          | 🟢      |
-| QFace       | 🟢      | Special Title  | 🟢      | Message             | 🟡[3]   |
-| Json        | 🟢      | Kick Member    | 🟢      | Poke                | 🟢      |
-| Xml         | 🟢      | Mute Member    | 🟢      | MessageRecall       | 🟢      |
-| Forward     | 🟡[1]   | Set Admin      | 🟢      | GroupMemberDecrease | 🟢      |
-| Video       | 🔴      | Friend Request | 🟢      | GroupMemberIncrease | 🟢      |
-| Flash Image | 🟢      | Group Request  | 🟢      | GroupPromoteAdmin   | 🟢      |
-| Reply       | 🟢      | Voice Call     | 🔴      | GroupInvite         | 🟢      |
-| File        | 🔴      | Csrf Token     | 🟢      | GroupRequestJoin    | 🟢      |
-|             |         | Cookies        | 🔴      | FriendRequest       | 🟢      |
-|             |         |                |         | FriendTyping        | 🟢      |
-|             |         |                |         | FriendVoiceCall     | 🔴      |
+| Messages    | Support           | Operations     | Support          | Events              | Support          |
+|:------------|:------------------|:---------------|:-----------------|:--------------------|:-----------------|
+| Images      | 🟢                | Poke           | 🟢               | Captcha             | 🟢               |
+| Text / At   | 🟢                | Recall         | 🟡<sup>[2]</sup> | BotOnline           | 🟢               |
+| Records     | 🟢                | Leave Group    | 🟢               | BotOffline          | 🟢               |
+| QFace       | 🟢                | Special Title  | 🟢               | Message             | 🟡<sup>[3]</sup> |
+| Json        | 🟢                | Kick Member    | 🟢               | Poke                | 🟢               |
+| Xml         | 🟢                | Mute Member    | 🟢               | MessageRecall       | 🟢               |
+| Forward     | 🟡<sup>[1]</sup>  | Set Admin      | 🟢               | GroupMemberDecrease | 🟢               |
+| Video       | 🔴                | Friend Request | 🟢               | GroupMemberIncrease | 🟢               |
+| Flash Image | 🟢                | Group Request  | 🟢               | GroupPromoteAdmin   | 🟢               |
+| Reply       | 🟢                | Voice Call     | 🔴               | GroupInvite         | 🟢               |
+| File        | 🔴                | Csrf Token     | 🟢               | GroupRequestJoin    | 🟢               |
+|             |                   | Cookies        | 🔴               | FriendRequest       | 🟢               |
+|             |                   |                |                  | FriendTyping        | 🟢               |
+|             |                   |                |                  | FriendVoiceCall     | 🔴               |
 
 [1]: Not supported to forward messages between group and friend.  
 [2]: Not supported to recall messages sent from the bot.  

@@ -419,7 +419,7 @@ internal static class MessagePacker
                 image.AddLeafVar("48", chain.Height);
                 image.AddLeafString("52", (string) chain.PicUpInfo.UploadId);
                 // image.AddLeafBytes("5A", );
-                image.AddTree("EA01", __ => __.AddLeafVar("08", 1)); // as face
+                image.AddTree("EA01", __ => __.AddLeafVar("08", 0)); // as face
             }
         }
 
