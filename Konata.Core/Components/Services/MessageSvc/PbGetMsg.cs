@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Message;
@@ -38,27 +39,35 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
             {
                 j.GetTree("0A", _ =>
                 {
-                    var type = (NotifyType) _.GetLeafVar("18");
-                    switch (type)
+                    try
                     {
-                        case NotifyType.FriendMessage:
-                        case NotifyType.FriendMessageSingle:
-                        case NotifyType.FriendPttMessage:
-                            extra.Add(OnProcessMessage(keystore.Account.Uin, j));
-                            break;
+                        var type = (NotifyType) _.GetLeafVar("18");
+                        switch (type)
+                        {
+                            case NotifyType.FriendMessage:
+                            case NotifyType.FriendMessageSingle:
+                            case NotifyType.FriendPttMessage:
+                                extra.Add(OnProcessMessage(keystore.Account.Uin, j));
+                                break;
 
-                        case NotifyType.NewMember:
-                            extra.Add(OnProcessNewMember(keystore.Account.Uin, j));
-                            break;
+                            case NotifyType.NewMember:
+                                extra.Add(OnProcessNewMember(keystore.Account.Uin, j));
+                                break;
 
-                        case NotifyType.StrangerMessage:
-                            break;
+                            case NotifyType.StrangerMessage:
+                                break;
 
-                        default:
-                        case NotifyType.FriendFileMessage:
-                        case NotifyType.GroupCreated:
-                        case NotifyType.GroupRequestAccepted:
-                            break;
+                            default:
+                            case NotifyType.FriendFileMessage:
+                            case NotifyType.GroupCreated:
+                            case NotifyType.GroupRequestAccepted:
+                                break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // TODO: Droppppppp
+                        // Fixme
                     }
                 });
             }
