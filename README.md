@@ -15,10 +15,13 @@ QQ(Android) protocol core implemented with pure C#
 based on **.net standard 2.1**, event driven.
 </div>
 
-## Documentation
- Stay tuned...
+## Docs
+- Go to [API references](https://github.com/KonataDev/Konata.Core/wiki) page
+- Quick start with [Kagami](https://github.com/KonataDev/Kagami)
 
-## Example
+<details>
+<summary>Example code snippets</summary>
+
 ```C#
 // Create a bot instance
 var bot = BotFather.Create(config, device, keystore);
@@ -31,7 +34,7 @@ var bot = BotFather.Create(config, device, keystore);
             Console.WriteLine(e.SliderUrl); 
             bot.SubmitSliderTicket(Console.ReadLine());
         }
-        else if(e.Type == CaptchaType.SMS)
+        else if(e.Type == CaptchaType.Sms)
         {
             Console.WriteLine(e.Phone); 
             bot.SubmitSmsCode(Console.ReadLine());
@@ -63,17 +66,29 @@ if(!await bot.Login())
 Console.WriteLine("We got online!");
 ```
 
-## TODO list
-- [x] Internal audio codec
-- [x] Internal audio resampling
-- [x] Record chain
-- [ ] Expose more APIs
-- [x] Refactor sso services
-- [ ] Refactor packets
-- [ ] Robust login logic
-- [x] Ecdh xchg
-- [x] Fix task stuck
-- [ ] [More Plans](../../projects/1)...
+</details>
+
+## Features List
+| Messages    | Support | Operations     | Support | Events              | Support |
+|:------------|:--------|:---------------|:--------|:--------------------|:--------|
+| Images      | 🟢      | Poke           | 🟢      | Captcha             | 🟢      |
+| Text / At   | 🟢      | Recall         | 🟡[2]   | BotOnline           | 🟢      |
+| Records     | 🟢      | Leave Group    | 🟢      | BotOffline          | 🟢      |
+| QFace       | 🟢      | Special Title  | 🟢      | Message             | 🟡[3]   |
+| Json        | 🟢      | Kick Member    | 🟢      | Poke                | 🟢      |
+| Xml         | 🟢      | Mute Member    | 🟢      | MessageRecall       | 🟢      |
+| Forward     | 🟡[1]   | Set Admin      | 🟢      | GroupMemberDecrease | 🟢      |
+| Video       | 🔴      | Friend Request | 🟢      | GroupMemberIncrease | 🟢      |
+| Flash Image | 🟢      | Group Request  | 🟢      | GroupPromoteAdmin   | 🟢      |
+| Reply       | 🟢      | Voice Call     | 🔴      | GroupInvite         | 🟢      |
+| File        | 🔴      | Csrf Token     | 🟢      | GroupRequestJoin    | 🟢      |
+|             |         | Cookies        | 🔴      | FriendRequest       | 🟢      |
+|             |         |                |         | FriendTyping        | 🟢      |
+|             |         |                |         | FriendVoiceCall     | 🔴      |
+
+[1]: Not supported to forward messages between group and friend.  
+[2]: Not supported to recall messages sent from the bot.  
+[3]: Not supported temp messages.
 
 ## LICENSE
 Licensed in GNU GPLv3 with ❤.
