@@ -128,6 +128,18 @@ public static class GroupExt
         => bot.SendGroupMessage(groupUin, new MessageBuilder(chains));
 
     /// <summary>
+    /// Send message to the group
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> Bot instance</param>
+    /// <param name="groupUin"><b>[In]</b> Group uin. </param>
+    /// <param name="chain"><b>[In]</b> Message chain. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    [KonataApi(1)]
+    public static Task<bool> SendGroupMessage(this Bot bot, uint groupUin, MessageChain chain)
+        => bot.SendGroupMessage(groupUin, new MessageBuilder(chain));
+    
+    /// <summary>
     /// Recall a message
     /// </summary>
     /// <param name="bot"><b>[In]</b> Bot instance</param>

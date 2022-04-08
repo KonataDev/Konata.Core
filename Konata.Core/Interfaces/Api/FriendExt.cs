@@ -50,6 +50,18 @@ public static class FriendExt
         => bot.SendFriendMessage(friendUin, new MessageBuilder(chains));
 
     /// <summary>
+    /// Send the message to a friend
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> Bot instance</param>
+    /// <param name="friendUin"><b>[In]</b> Friend uin. </param>
+    /// <param name="chain"><b>[In]</b> Message chain. </param>
+    /// <returns>Return true for operation successfully.</returns>
+    /// <exception cref="MessagingException"></exception>
+    [KonataApi(1)]
+    public static Task<bool> SendFriendMessage(this Bot bot, uint friendUin, MessageChain chain)
+        => bot.SendFriendMessage(friendUin, new MessageBuilder(chain));
+    
+    /// <summary>
     /// Poke Friend
     /// </summary>
     /// <param name="bot"><b>[In]</b> Bot instance</param>
