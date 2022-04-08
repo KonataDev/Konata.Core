@@ -25,7 +25,7 @@ internal class GroupMngReq : BaseService<GroupLeaveEvent>
     protected override bool Build(int sequence, GroupLeaveEvent input,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output = new SvcReqGroupMngReq(input.SelfUin, input.GroupCode, input.Dismiss);
+        output = new SvcReqGroupMngReq(input.SelfUin, input.GroupUin, input.Dismiss);
         return true;
     }
 }

@@ -199,12 +199,8 @@ internal class OperationLogic : BaseLogic
     /// <exception cref="OperationFailedException"></exception>
     public async Task<bool> GroupLeave(uint groupUin)
     {
-        // Get group code
-        var groupCode = ConfigComponent.GetGroupCode(groupUin);
-        if (groupCode == 0) throw new OperationFailedException(-1, "Failed to lave group: Lack group code.");
-
         // Leave group
-        var args = GroupLeaveEvent.Create(groupCode, Context.Bot.Uin, false);
+        var args = GroupLeaveEvent.Create(groupUin, Context.Bot.Uin, false);
         var result = await Context.SendPacket<GroupLeaveEvent>(args);
         {
             if (result.ResultCode != 0)

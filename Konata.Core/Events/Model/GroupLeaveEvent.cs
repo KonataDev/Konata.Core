@@ -11,19 +11,19 @@ internal class GroupLeaveEvent : ProtocolEvent
     public bool Dismiss { get; }
 
     /// <summary>
-    /// Group code
+    /// Group uin
     /// </summary>
-    public ulong GroupCode { get; }
+    public uint GroupUin { get; }
 
     /// <summary>
     /// Self uin
     /// </summary>
     public uint SelfUin { get; }
 
-    private GroupLeaveEvent(ulong groupCode,
+    private GroupLeaveEvent(uint groupUin,
         uint selfUin, bool dismiss) : base(true)
     {
-        GroupCode = groupCode;
+        GroupUin = groupUin;
         SelfUin = selfUin;
         Dismiss = dismiss;
     }
@@ -36,12 +36,12 @@ internal class GroupLeaveEvent : ProtocolEvent
     /// <summary>
     /// Construct request event
     /// </summary>
-    /// <param name="groupCode"></param>
+    /// <param name="groupUin"></param>
     /// <param name="selfUin"></param>
     /// <param name="dismiss"></param>
     /// <returns></returns>
-    public static GroupLeaveEvent Create(ulong groupCode,
-        uint selfUin, bool dismiss) => new(groupCode, selfUin, dismiss);
+    public static GroupLeaveEvent Create(uint groupUin,
+        uint selfUin, bool dismiss) => new(groupUin, selfUin, dismiss);
 
     /// <summary>
     /// Construct event result

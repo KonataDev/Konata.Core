@@ -8,7 +8,7 @@ namespace Konata.Core.Packets.SvcRequest;
 
 internal class SvcReqGroupMngReq : UniPacket
 {
-    public SvcReqGroupMngReq(uint selfUin, ulong groupCode, bool dismiss)
+    public SvcReqGroupMngReq(uint selfUin, uint groupUin, bool dismiss)
         : base(0x03, "KQQ.ProfileService.ProfileServantObj",
             "GroupMngReq", "GroupMngReq", 0x00, 0x00, 117456266,
             (out JStruct w) =>
@@ -22,14 +22,14 @@ internal class SvcReqGroupMngReq : UniPacket
                     {
                         if (dismiss)
                         {
-                            buf.PutUintBE((uint) groupCode);
+                            buf.PutUintBE(groupUin);
                             buf.PutUintBE(selfUin);
                         }
 
                         else
                         {
                             buf.PutUintBE(selfUin);
-                            buf.PutUintBE((uint) groupCode);
+                            buf.PutUintBE(groupUin);
                         }
                     }
 
