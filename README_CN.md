@@ -11,25 +11,27 @@
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)
 [![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
 
-QQ(Android) protocol core implemented with pure C#  
-based on **.net standard 2.1**, event driven.
+纯C#实现的QQ(Android)协议核心
+
+基于 **.net standard 2.1**、事件驱动
+
 </div>
 
-## Docs
+## 文档
 
-[简体中文](/README_CN.md) / English
+简体中文 / [English](/README.md)
 
-- Go to [API references](https://github.com/KonataDev/Konata.Core/wiki) page
-- Quick start with [Kagami](https://github.com/KonataDev/Kagami)
+- [API 参考](https://github.com/KonataDev/Konata.Core/wiki) 页面
+- 查看示例bot：[Kagami](https://github.com/KonataDev/Kagami)
 
 <details>
-<summary>Example code snippets</summary>
+<summary>示例代码片段</summary>
 
 ```C#
-// Create a bot instance
+// 创建一个bot实例
 var bot = BotFather.Create(config, device, keystore);
 {
-    // Handle the captcha
+    // 处理验证码
     bot.OnCaptcha += (bot, e) =>
     {
         if(e.Type == CaptchaType.Slider)
@@ -44,11 +46,11 @@ var bot = BotFather.Create(config, device, keystore);
         }
     };
 
-    // Print the log
+    // 输入日志
     bot.OnLog += (_, e) 
         => Console.WriteLine(e.EventMessage);
 
-    // Handle group messages
+    // 处理群消息
     bot.OnGroupMessage += (_, e) 
         => Console.WriteLine(e.Message); 
     
@@ -56,10 +58,10 @@ var bot = BotFather.Create(config, device, keystore);
     bot.OnFriendMessage += (_, e) 
         => Console.WriteLine(e.Message);
     
-    // ... More handlers
+    // ... 其他处理器
 }
 
-// Do login
+// 登录bot
 if(!await bot.Login())
 {
     Console.WriteLine("Login failed");
@@ -71,8 +73,8 @@ Console.WriteLine("We got online!");
 
 </details>
 
-## Features List
-| Messages    | Support           | Operations     | Support          | Events              | Support          |
+## 现已支持
+| 消息    | 状态           | 操作     | 状态          | 事件              | 状态          |
 |:------------|:------------------|:---------------|:-----------------|:--------------------|:-----------------|
 | Images      | 🟢                | Poke           | 🟢               | Captcha             | 🟢               |
 | Text / At   | 🟢                | Recall         | 🟡<sup>[2]</sup> | BotOnline           | 🟢               |
@@ -89,14 +91,17 @@ Console.WriteLine("We got online!");
 |             |                   |                |                  | FriendTyping        | 🟢               |
 |             |                   |                |                  | FriendVoiceCall     | 🔴               |
 
-[1]: Not supported to forward messages between group and friend.  
-[2]: Not supported to recall messages sent from the bot.  
-[3]: Not supported temp messages.
 
-## Special Thanks
-Special thanks to **JetBrains** offers free open-source licenses for us!  
+1: 不支持在群和好友之间转发消息。 
+2: 不支持撤回bot发送的消息。
+3: 不支持临时消息。
+
+## 特别致谢
+
+非常感谢**JetBrains**给我们提供了免费的开源许可证。
   
 [<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200"/>](https://www.jetbrains.com/?from=konata)
 
-## License
+## 开源许可
+
 Licensed in GNU GPLv3 with ❤.
