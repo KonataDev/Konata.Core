@@ -11,9 +11,9 @@
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)
 [![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
 
-纯C#实现的QQ(Android)协议核心
+纯 C# 实现的 QQ(Android) 协议核心
 
-基于 **.net standard 2.1**、事件驱动
+基于 **.NET Standard 2.1**，事件驱动
 
 </div>
 
@@ -22,13 +22,13 @@
 简体中文 / [English](/README.md)
 
 - [API 参考](https://github.com/KonataDev/Konata.Core/wiki) 页面
-- 查看示例bot：[Kagami](https://github.com/KonataDev/Kagami)
+- 查看示例 bot：[Kagami](https://github.com/KonataDev/Kagami)
 
 <details>
 <summary>示例代码片段</summary>
 
 ```C#
-// 创建一个bot实例
+// 创建一个 bot 实例
 var bot = BotFather.Create(config, device, keystore);
 {
     // 处理验证码
@@ -61,7 +61,7 @@ var bot = BotFather.Create(config, device, keystore);
     // ... 其他处理器
 }
 
-// 登录bot
+// 登录 bot
 if(!await bot.Login())
 {
     Console.WriteLine("Login failed");
@@ -94,13 +94,13 @@ Console.WriteLine("We got online!");
 
 1: 不支持在群和好友之间转发消息。 
 
-2: 不支持撤回bot发送的消息。
+2: 不支持撤回 bot 发送的消息。
 
 3: 不支持临时消息。
 
 ## 特别致谢
 
-非常感谢**JetBrains**给我们提供了免费的开源许可证。
+非常感谢 **JetBrains** 给我们提供了免费的开源许可证。
   
 [<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200"/>](https://www.jetbrains.com/?from=konata)
 

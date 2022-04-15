@@ -12,7 +12,7 @@
 [![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
 
 QQ(Android) protocol core implemented with pure C#  
-based on **.net standard 2.1**, event driven.
+based on **.NET Standard 2.1**, event driven.
 </div>
 
 ## Docs
