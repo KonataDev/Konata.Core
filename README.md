@@ -75,12 +75,12 @@ Console.WriteLine("We got online!");
 | Messages    | Support           | Operations     | Support          | Events              | Support          |
 |:------------|:------------------|:---------------|:-----------------|:--------------------|:-----------------|
 | Images      | 🟢                | Poke           | 🟢               | Captcha             | 🟢               |
-| Text / At   | 🟢                | Recall         | 🟡<sup>[2]</sup> | BotOnline           | 🟢               |
+| Text / At   | 🟢                | Recall         | 🟡[^1]           | BotOnline           | 🟢               |
 | Records     | 🟢                | Leave Group    | 🟢               | BotOffline          | 🟢               |
-| QFace       | 🟢                | Special Title  | 🟢               | Message             | 🟡<sup>[3]</sup> |
+| QFace       | 🟢                | Special Title  | 🟢               | Message             | 🟡[^2]           |
 | Json        | 🟢                | Kick Member    | 🟢               | Poke                | 🟢               |
 | Xml         | 🟢                | Mute Member    | 🟢               | MessageRecall       | 🟢               |
-| Forward     | 🟡<sup>[1]</sup>  | Set Admin      | 🟢               | GroupMemberDecrease | 🟢               |
+| Forward     | 🟡[^3]            | Set Admin      | 🟢               | GroupMemberDecrease | 🟢               |
 | Video       | 🔴                | Friend Request | 🟢               | GroupMemberIncrease | 🟢               |
 | Flash Image | 🟢                | Group Request  | 🟢               | GroupPromoteAdmin   | 🟢               |
 | Reply       | 🟢                | Voice Call     | 🔴               | GroupInvite         | 🟢               |
@@ -89,9 +89,9 @@ Console.WriteLine("We got online!");
 |             |                   |                |                  | FriendTyping        | 🟢               |
 |             |                   |                |                  | FriendVoiceCall     | 🔴               |
 
-[1]: Not supported to forward messages between group and friend.  
-[2]: Not supported to recall messages sent from the bot.  
-[3]: Not supported temp messages.
+[^1]: Not supported to recall messages sent from the bot.  
+[^2]: Not supported temp messages.
+[^3]: Not supported to forward messages between group and friend.  
 
 ## Special Thanks
 Special thanks to **JetBrains** offers free open-source licenses for us!  
