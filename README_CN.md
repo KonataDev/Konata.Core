@@ -77,12 +77,12 @@ Console.WriteLine("We got online!");
 | 消息    | 状态           | 操作     | 状态          | 事件              | 状态          |
 |:------------|:------------------|:---------------|:-----------------|:--------------------|:-----------------|
 | Images      | 🟢                | Poke           | 🟢               | Captcha             | 🟢               |
-| Text / At   | 🟢                | Recall         | 🟡<sup>[2]</sup> | BotOnline           | 🟢               |
+| Text / At   | 🟢                | Recall         | 🟡[^1]           | BotOnline           | 🟢               |
 | Records     | 🟢                | Leave Group    | 🟢               | BotOffline          | 🟢               |
-| QFace       | 🟢                | Special Title  | 🟢               | Message             | 🟡<sup>[3]</sup> |
+| QFace       | 🟢                | Special Title  | 🟢               | Message             | 🟡[^2]           |
 | Json        | 🟢                | Kick Member    | 🟢               | Poke                | 🟢               |
 | Xml         | 🟢                | Mute Member    | 🟢               | MessageRecall       | 🟢               |
-| Forward     | 🟡<sup>[1]</sup>  | Set Admin      | 🟢               | GroupMemberDecrease | 🟢               |
+| Forward     | 🟡[^3]            | Set Admin      | 🟢               | GroupMemberDecrease | 🟢               |
 | Video       | 🔴                | Friend Request | 🟢               | GroupMemberIncrease | 🟢               |
 | Flash Image | 🟢                | Group Request  | 🟢               | GroupPromoteAdmin   | 🟢               |
 | Reply       | 🟢                | Voice Call     | 🔴               | GroupInvite         | 🟢               |
@@ -92,11 +92,11 @@ Console.WriteLine("We got online!");
 |             |                   |                |                  | FriendVoiceCall     | 🔴               |
 
 
-1: 不支持在群和好友之间转发消息。 
+[^1]: 不支持撤回 bot 发送的消息。
 
-2: 不支持撤回 bot 发送的消息。
+[^2]: 不支持临时消息。
 
-3: 不支持临时消息。
+[^3]: 不支持在群和好友之间转发消息。 
 
 ## 特别致谢
 
