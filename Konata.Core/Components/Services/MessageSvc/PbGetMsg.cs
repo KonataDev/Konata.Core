@@ -95,6 +95,10 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
         {
             var toUin = (uint) pb.GetLeafVar("10");
             var fromUin = (uint) pb.GetLeafVar("08");
+
+            if (fromUin == selfUin && toUin != selfUin)
+                throw new Exception("skip self-sent message");
+
             var sequence = (uint) pb.GetLeafVar("28");
             var time = (uint) pb.GetLeafVar("30");
             var uuid = pb.GetLeafVar("38");
