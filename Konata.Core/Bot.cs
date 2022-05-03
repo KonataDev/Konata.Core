@@ -5,19 +5,13 @@ using Konata.Core.Entity;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Konata.Core.Test")]
 [assembly: InternalsVisibleTo("Konata.Framework")]
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable EventNeverSubscribedTo.Global
-// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable MemberCanBeProtected.Global
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
 namespace Konata.Core;
 
