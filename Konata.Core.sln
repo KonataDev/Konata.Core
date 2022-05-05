@@ -1,10 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Core", "Konata.Core\Konata.Core.csproj", "{C06DDAF5-43DC-439F-AF6A-BB1FCB191987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core.Test", "Konata.Core.Test\Konata.Core.Test.csproj", "{C8CECF2F-C76D-4AC9-A2E4-522B591AACDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Konata.Core.Test", "Konata.Core.Test\Konata.Core.Test.csproj", "{C8CECF2F-C76D-4AC9-A2E4-522B591AACDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konata.Core.SourceGenerator", "Konata.Core.SourceGenerator\Konata.Core.SourceGenerator.csproj", "{BB71E24F-B2A9-424D-BE07-36E0DAFA9348}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +22,10 @@ Global
 		{C8CECF2F-C76D-4AC9-A2E4-522B591AACDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8CECF2F-C76D-4AC9-A2E4-522B591AACDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8CECF2F-C76D-4AC9-A2E4-522B591AACDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB71E24F-B2A9-424D-BE07-36E0DAFA9348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB71E24F-B2A9-424D-BE07-36E0DAFA9348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB71E24F-B2A9-424D-BE07-36E0DAFA9348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB71E24F-B2A9-424D-BE07-36E0DAFA9348}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,79 +1,82 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- Language features -->
-    <PropertyGroup>
-        <LangVersion>latest</LangVersion>
-        <TargetFrameworks>netstandard2.1;net50;net60</TargetFrameworks>
-        <TargetArchitechture>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</TargetArchitechture>
-    </PropertyGroup>
+	<!-- Language features -->
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<TargetFrameworks>netstandard2.1;net50;net60</TargetFrameworks>
+		<TargetArchitechture>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</TargetArchitechture>
+	</PropertyGroup>
 
-    <!-- Package definition -->
-    <PropertyGroup>
-        <Product>Konata Core</Product>
-        <Authors>Konata Project</Authors>
-        <Copyright>Konata Project (C) $([System.DateTime]::Now.Year)</Copyright>
-        <Description>Core implementation for Konata.</Description>
+	<!-- Package definition -->
+	<PropertyGroup>
+		<Product>Konata Core</Product>
+		<Authors>Konata Project</Authors>
+		<Copyright>Konata Project (C) $([System.DateTime]::Now.Year)</Copyright>
+		<Description>Core implementation for Konata.</Description>
 
-        <PackageVersion>1.3.1</PackageVersion>
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageVersion>1.3.1</PackageVersion>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 
-        <RepositoryType>Git</RepositoryType>
-        <RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<RepositoryUrl>https://github.com/KonataDev/Konata.Core</RepositoryUrl>
 
-        <NoWarn>1701;1702;1591;0612</NoWarn>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <DocumentationFile>$(ProjectDir)bin\Konata.Core.xml</DocumentationFile>
-    </PropertyGroup>
+		<NoWarn>1701;1702;1591;0612</NoWarn>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<DocumentationFile>$(ProjectDir)bin\Konata.Core.xml</DocumentationFile>
+	</PropertyGroup>
 
-    <!-- File definition -->
-    <PropertyGroup>
-        <Version>$(PackageVersion)</Version>
-        <FileVersion>1.0.0.0</FileVersion>
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <NeutralLanguage>en-US</NeutralLanguage>
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    </PropertyGroup>
+	<!-- File definition -->
+	<PropertyGroup>
+		<Version>$(PackageVersion)</Version>
+		<FileVersion>1.0.0.0</FileVersion>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+	</PropertyGroup>
 
-    <!-- Files -->
-    <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath=""/>
-        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
-        <None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png"/>
-    </ItemGroup>
+	<!-- Files -->
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+		<None Include="..\LICENSE" Pack="true" PackagePath="" />
+		<None Include="..\Resources\konata_icon_512_round64.png" Pack="true" PackagePath="icon.png" />
+	</ItemGroup>
 
-    <!-- References -->
-    <ItemGroup>
-        <PackageReference Include="Konata.Codec" Version="1.3.1"/>
-        <PackageReference Include="Google.Protobuf" Version="3.20.0-rc2"/>
-        <PackageReference Include="NekoRush.FuturedSocket" Version="0.1.0"/>
+	<!-- References -->
+	<ItemGroup>
+		<PackageReference Include="Konata.Codec" Version="1.3.1" />
+		<PackageReference Include="Google.Protobuf" Version="3.20.0-rc2" />
+		<PackageReference Include="NekoRush.FuturedSocket" Version="0.1.0" />
 
-        <!-- Including this reference will cause the build to fail on armv7 devices.-->
-        <PackageReference Include="Grpc.Tools" Version="2.45.0" Condition="'$(TargetArchitechture)' != 'Arm'">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+		<!-- Including this reference will cause the build to fail on armv7 devices.-->
+		<PackageReference Include="Grpc.Tools" Version="2.45.0" Condition="'$(TargetArchitechture)' != 'Arm'">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-    <ItemGroup>
-        <Protobuf Include="Packets/Protobuf/Msf/structmsg.proto"/>
-        <Protobuf Update="Packets/Protobuf/Msf/*.proto" ProtoRoot="Packets/Protobuf/Msf" Access="Internal" GrpcServices="none"/>
-    </ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Packets/Protobuf/Msf/structmsg.proto" />
+		<Protobuf Update="Packets/Protobuf/Msf/*.proto" ProtoRoot="Packets/Protobuf/Msf" Access="Internal" GrpcServices="none" />
+	</ItemGroup>
 
-    <!-- Impory build targets -->
-    <Import Project="..\Targets\BuildStamp.targets"/>
-    <Import Project="..\Targets\Integration.targets"/>
+	<!-- Impory build targets -->
+	<Import Project="..\Targets\BuildStamp.targets" />
+	<Import Project="..\Targets\Integration.targets" />
 
-    <!-- For armv7 devices -->
-    <!-- Build the proto manually cuz the BuildTool doesn't supported -->
-    <!-- running on the armv7 devices. WTF sucks.-->
-    <Import Project="..\Targets\Protogen.targets" Condition="'$(TargetArchitechture)' == 'Arm'"/>
-    <ItemGroup Condition="'$(TargetArchitechture)' == 'Arm'">
-        <Protobuf Update="Packets/Protobuf/Msf/*.proto" Access="internal_access:"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Components\Services\PttTrans"/>
-    </ItemGroup>
+	<!-- For armv7 devices -->
+	<!-- Build the proto manually cuz the BuildTool doesn't supported -->
+	<!-- running on the armv7 devices. WTF sucks.-->
+	<Import Project="..\Targets\Protogen.targets" Condition="'$(TargetArchitechture)' == 'Arm'" />
+	<ItemGroup Condition="'$(TargetArchitechture)' == 'Arm'">
+		<Protobuf Update="Packets/Protobuf/Msf/*.proto" Access="internal_access:" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Components\Services\PttTrans" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Konata.Core.SourceGenerator\Konata.Core.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
 
 </Project>
