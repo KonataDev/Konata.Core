@@ -21,7 +21,7 @@ public static class BotExt
     /// <param name="bot"><b>[In]</b> Bot instance</param>
     /// <returns></returns>
     [KonataApi(1)]
-    public static Task<bool> Login(this Bot bot)
+    public static Task<(bool Success, WtLoginEvent.Type Type)> Login(this Bot bot)
         => bot.BusinessComponent.WtExchange.Login();
 
     /// <summary>
