@@ -55,26 +55,26 @@ internal class WtExchangeLogic : BaseLogic
         _heartbeatCounter++;
     }
 
+    private static readonly (bool Success, WtLoginEvent.Type Type) DefaultValue = (false, WtLoginEvent.Type.Unknown);
+
     /// <summary>
     /// Bot login
     /// </summary>
     /// <returns></returns>
     public async Task<(bool Success, WtLoginEvent.Type Type)> Login()
     {
-        var result = (false, WtLoginEvent.Type.Unknown);
-
         // Check online type
         if (_onlineType != OnlineStatusEvent.Type.Offline)
         {
             Context.LogW(TAG, "Calling Login method again while online.");
-            return result;
+            return DefaultValue;
         }
 
         // Connect to the server
         Context.LogI(TAG, "Connecting server...");
         if (!await SocketComponent.Connect(true))
         {
-            return result;
+            return DefaultValue;
         }
 
         try
@@ -118,12 +118,10 @@ internal class WtExchangeLogic : BaseLogic
             {
                 Context.LogI(TAG, $"Status => {wtStatus.EventType}");
 
-                result = (false, wtStatus.EventType);
-
                 switch (wtStatus.EventType)
                 {
                     case WtLoginEvent.Type.OK:
-                        if (!await OnBotOnline()) return result;
+                        if (!await OnBotOnline()) ;
                         _isFirstLogin = false;
                         return (true, WtLoginEvent.Type.OK);
 
@@ -137,7 +135,7 @@ internal class WtExchangeLogic : BaseLogic
                             Context.LogW(TAG,
                                          "No captcha event handler registered, "
                                          + "Please note, Konata cannot process captcha automatically.");
-                            return result;
+                            break;
                         }
 
                         // Wait for user operation
@@ -164,23 +162,24 @@ internal class WtExchangeLogic : BaseLogic
                     case WtLoginEvent.Type.HighRiskEnvironment:
                     case WtLoginEvent.Type.InvalidUinOrPassword:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
-                        return result;
+                        break;
 
                     default:
                     case WtLoginEvent.Type.Unknown:
                     case WtLoginEvent.Type.NotImplemented:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
                         Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
-                        return result;
+                        break;
                 }
-            }
+            } 
+            return (false, wtStatus.EventType);
         }
         catch (Exception e)
         {
             await SocketComponent.Disconnect(e.Message);
             Context.LogE(TAG, e);
 
-            return result;
+            return DefaultValue;
         }
     }
 
@@ -209,8 +208,7 @@ internal class WtExchangeLogic : BaseLogic
     /// <param name="ticket"><b>[In]</b> Slider ticket</param>
     public bool SubmitSliderTicket(string ticket)
     {
-        if (_userOperation == null) return false;
-        if (_userOperation.Task.IsCompleted) return false;
+        if (_userOperation?.Task.IsCompleted != false) return false;
 
         _userOperation.SetResult(WtLoginEvent.CreateSubmitTicket(ticket));
         return true;
@@ -222,8 +220,7 @@ internal class WtExchangeLogic : BaseLogic
     /// <param name="code"><b>[In]</b> Sms code</param>
     public bool SubmitSmsCode(string code)
     {
-        if (_userOperation == null) return false;
-        if (_userOperation.Task.IsCompleted) return false;
+        if (_userOperation?.Task.IsCompleted != false) return false;
 
         _userOperation.SetResult(WtLoginEvent.CreateSubmitSmsCode(code));
         return true;
@@ -235,7 +232,7 @@ internal class WtExchangeLogic : BaseLogic
     /// <returns></returns>
     private Task<WtLoginEvent> WaitForUserOperation()
     {
-        _userOperation = new TaskCompletionSource<WtLoginEvent>();
+        _userOperation = new();
         return _userOperation.Task;
     }
 
