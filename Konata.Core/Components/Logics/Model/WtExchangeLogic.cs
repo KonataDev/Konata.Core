@@ -121,7 +121,7 @@ internal class WtExchangeLogic : BaseLogic
                 switch (wtStatus.EventType)
                 {
                     case WtLoginEvent.Type.OK:
-                        if (!await OnBotOnline()) ;
+                        if (!await OnBotOnline()) return DefaultValue;
                         _isFirstLogin = false;
                         return (true, WtLoginEvent.Type.OK);
 
@@ -135,7 +135,7 @@ internal class WtExchangeLogic : BaseLogic
                             Context.LogW(TAG,
                                          "No captcha event handler registered, "
                                          + "Please note, Konata cannot process captcha automatically.");
-                            break;
+                            return (false, wtStatus.EventType);
                         }
 
                         // Wait for user operation
@@ -162,17 +162,16 @@ internal class WtExchangeLogic : BaseLogic
                     case WtLoginEvent.Type.HighRiskEnvironment:
                     case WtLoginEvent.Type.InvalidUinOrPassword:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
-                        break;
+                        return (false, wtStatus.EventType);
 
-                    default:
                     case WtLoginEvent.Type.Unknown:
                     case WtLoginEvent.Type.NotImplemented:
+                    default:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
                         Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
-                        break;
+                        return (false, wtStatus.EventType);
                 }
-            } 
-            return (false, wtStatus.EventType);
+            }
         }
         catch (Exception e)
         {
