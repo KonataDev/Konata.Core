@@ -354,9 +354,6 @@ internal class WtExchangeLogic : BaseLogic
             Context.LogW(TAG, "The client was offline.");
             Context.LogE(TAG, e);
 
-            Context.PostEventToEntity(BotOfflineEvent.Push(BotOfflineEvent.OfflineType.NetworkDown,
-                                                           "Client was down due to network issue."));
-
             // Disconnect
             await SocketComponent.Disconnect("Heart broken.");
 
@@ -367,7 +364,7 @@ internal class WtExchangeLogic : BaseLogic
             // Check if reconnect
             if (ConfigComponent.GlobalConfig.TryReconnect)
             {
-                Context.LogW(TAG, "Reconnect.");
+                Context.LogW(TAG, "Client was down due to network issue. Reconnecting...");
 
                 // Reconnect
                 if (await SocketComponent.Reconnect())
@@ -378,7 +375,10 @@ internal class WtExchangeLogic : BaseLogic
                         Context.LogI(TAG, "Network reset.");
                         return;
                     }
-
+                    
+                    Context.PostEventToEntity(BotOfflineEvent.Push(BotOfflineEvent.OfflineType.NetworkDown,
+                                                                   "Client was down due to network issue. Reconnect failed."));
+                   
                     Context.LogW(TAG, "Reconnect failed! " + "Might need to relogin?");
                 }
 
