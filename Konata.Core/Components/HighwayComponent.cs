@@ -1,14 +1,14 @@
-﻿using System;
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Network.TcpClient;
 using Konata.Core.Utils.Protobuf;
@@ -153,12 +153,14 @@ internal class HighwayComponent : InternalComponent
     }
 
     private class HighwayClient
-        : AsyncClient, IClientListener
+        : ClientListener
     {
         private readonly uint _peer;
         private readonly byte[] _ticket;
         private int _sequence;
         private readonly Md5Cryptor _md5Cryptor;
+
+        public override uint HeaderSize => 9;
 
         // We no need to use a dict to storage
         // the pending requests, cuz there's only
@@ -195,7 +197,6 @@ internal class HighwayComponent : InternalComponent
             var datamd5 = data.Md5();
 
             var client = new HighwayClient(peer, ticket);
-            client.SetListener(client);
             {
                 // Connect to server
                 if (!await client.Connect(host, port)) return null;
@@ -225,7 +226,7 @@ internal class HighwayComponent : InternalComponent
             }
 
             // Disconnect after send finish
-            await client.Disconnect();
+            client.Disconnect();
             return lastResponse;
         }
 
@@ -297,36 +298,22 @@ internal class HighwayComponent : InternalComponent
             return _hwResponse;
         }
 
-        /// <summary>
-        /// Dissect a packet
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public uint OnStreamDissect(byte[] data, uint length)
+        public override uint GetPacketLength(ReadOnlySpan<byte> header)
         {
             // 28
             // 00 00 00 10
             // 00 00 00 E9
-            if (length < 9) return 0;
-
-            // Get the header
-            var header = ByteConverter
-                .BytesToUInt32(data, 1, Endian.Big);
-            var databody = ByteConverter
-                .BytesToUInt32(data, 1 + 4, Endian.Big);
-
-            // Calculate the length
-            // 0x28 + 8 + h + b + 0x29
-            return 1 + 4 + 4 + header + databody + 1;
+            uint databody = BinaryPrimitives.ReadUInt32BigEndian(header[5..]);
+            uint headerSize = BinaryPrimitives.ReadUInt32BigEndian(header[1..]);
+            return 1 + 4 + 4 + headerSize + databody + 1;
         }
 
-        public void OnRecvPacket(byte[] data)
+        public override void OnRecvPacket(ReadOnlySpan<byte> packet)
         {
             try
             {
                 // Parse the data to HwResponse
-                _hwResponse = HwResponse.Parse(data);
+                _hwResponse = HwResponse.Parse(packet.ToArray());
                 _requestAwaiter.Set();
             }
             catch
@@ -337,11 +324,11 @@ internal class HighwayComponent : InternalComponent
             }
         }
 
-        public void OnDisconnect()
+        public override void OnDisconnect()
         {
         }
 
-        public void OnSocketError(Exception e)
+        public override void OnSocketError(Exception e)
         {
         }
     }
