@@ -4,17 +4,18 @@ namespace Konata.Core.Utils.Network.TcpClient;
 
 internal interface IClientListener
 {
+    uint HeaderSize { get; }
+
     /// <summary>
     /// Dissect a stream
     /// </summary>
     /// <returns></returns>
-    public uint OnStreamDissect(byte[] data, uint length);
+    public uint GetPacketLength(ReadOnlySpan<byte> header);
 
     /// <summary>
     /// On handle a packet
     /// </summary>
-    /// <param name="data"></param>
-    public void OnRecvPacket(byte[] data);
+    public void OnRecvPacket(ReadOnlySpan<byte> packet);
 
     /// <summary>
     /// On client disconnect

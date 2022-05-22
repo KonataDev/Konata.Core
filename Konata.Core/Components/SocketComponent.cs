@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Buffers.Binary;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +32,16 @@ internal class SocketComponent : InternalComponent, IClientListener
     public bool Connected
         => _tcpClient.Connected;
 
+    public uint HeaderSize => 4;
+
     private const string TAG = "SocketComponent";
-    private readonly AsyncClient _tcpClient;
+    private readonly ClientListener _tcpClient;
+
+    private (string, ushort) _recentlyHost;
 
     public SocketComponent()
     {
-        _tcpClient = new(this);
+        _tcpClient = new CallbackClientListener(this);
     }
 
     /// <summary>
@@ -53,9 +58,6 @@ internal class SocketComponent : InternalComponent, IClientListener
             return true;
         }
 
-        var lowestTime = long.MaxValue;
-        var serverList = new ((string, int), long)[] { }.ToList();
-
         // Using user config
         if (ConfigComponent.GlobalConfig!.CustomHost != null)
         {
@@ -67,8 +69,13 @@ internal class SocketComponent : InternalComponent, IClientListener
             // custom server address
             if (customHost.Length >= 1)
             {
-                return await _tcpClient.Connect(customHost[0],
-                    customHost.Length == 2 ? ushort.Parse(customHost[1]) : 8080);
+                ushort port = 8080;
+                if (customHost.Length == 1 || ushort.TryParse(customHost[1], out port))
+                {
+                    string host = customHost[0];
+                    _recentlyHost = (host, port);
+                    return await _tcpClient.Connect(host, port);
+                }
             }
 
             // Failed to parse the config
@@ -80,14 +87,14 @@ internal class SocketComponent : InternalComponent, IClientListener
         else if (useLowLatency)
         {
             var servers = await GetServerList();
+            var serverList = new List<(string, int, long)>(servers.Count);
 
             // Ping the server
             foreach (var server in servers)
             {
                 var time = Icmp.Ping(server.Host, 2000);
                 {
-                    if (time < lowestTime) lowestTime = time;
-                    serverList.Add(((server.Host, server.Port), time));
+                    serverList.Add((server.Host, server.Port, time));
                 }
 
                 LogI(TAG, "Testing latency " +
@@ -96,14 +103,12 @@ internal class SocketComponent : InternalComponent, IClientListener
             }
 
             // Sort the list by lantency
-            serverList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
-            var tryQueue = new Queue(serverList);
-
+            serverList.Sort((a, b) => a.Item3.CompareTo(b.Item3));
+          
             // Try connect to each server
-            while (tryQueue.Count > 0)
+            for (int i = 0; i < serverList.Count; i++)
             {
-                var pop = (((string, int ) Host, long Latency)) tryQueue.Dequeue();
-                var (addr, port) = pop.Host;
+                var (addr, port, lantency) = serverList[i];
 
                 // Connect
                 LogI(TAG, $"Try Connecting {addr}:{port}.");
@@ -111,10 +116,7 @@ internal class SocketComponent : InternalComponent, IClientListener
 
                 // Try next server
                 if (result) return true;
-                {
-                    LogI(TAG, $"Failed to connecting to {addr}:{port}.");
-                    await _tcpClient.Disconnect();
-                }
+                LogI(TAG, $"Failed to connecting to {addr}:{port}.");
             }
         }
 
@@ -126,55 +128,42 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// </summary>
     /// <returns></returns>
     public Task<bool> Reconnect()
-        => _tcpClient.Reconnect();
+        => _tcpClient.Connect(_recentlyHost.Item1, _recentlyHost.Item2);
 
     /// <summary>
     /// Disconnect from server
     /// </summary>
     /// <param name="reason"></param>
-    public async Task<bool> Disconnect(string reason)
+    public Task<bool> Disconnect(string reason)
     {
         // Not connected
         if (_tcpClient is not {Connected: true})
         {
             LogW(TAG, "Calling Disconnect " +
                       "method after socket disconnected.");
-            return true;
         }
-
-        // Disconnect
-        LogI(TAG, $"Disconnect, Reason => {reason}");
-        return await _tcpClient.Disconnect();
+        else
+        {
+            // Disconnect
+            LogI(TAG, $"Disconnect, Reason => {reason}");
+            _tcpClient.Disconnect();
+        }
+        return Task.FromResult(true);
     }
 
-    /// <summary>
-    /// On dissecting a packet
-    /// </summary>
-    /// <param name="data"></param>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    public uint OnStreamDissect(byte[] data, uint length)
+    public uint GetPacketLength(ReadOnlySpan<byte> header)
     {
-        // Lack more data
-        if (length < 4) return 0;
-
-        // Teardown the packet length
-        return BitConverter.ToUInt32
-            (data.Take(4).Reverse().ToArray(), 0);
+        return BinaryPrimitives.ReadUInt32BigEndian(header);
     }
 
     /// <summary>
     /// On Received a packet 
     /// </summary>
-    /// <param name="data"></param>
-    public void OnRecvPacket(byte[] data)
+    public void OnRecvPacket(ReadOnlySpan<byte> packet)
     {
-        var packet = new byte[data.Length];
-        Array.Copy(data, 0, packet, 0, data.Length);
-        {
-            // LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
-            PostEvent<PacketComponent>(PacketEvent.Push(data));
-        }
+        var packetBuffer = packet.ToArray();
+        // LogV(TAG, $"Recv data => \n  {ByteConverter.Hex(packet, true)}");
+        PostEvent<PacketComponent>(PacketEvent.Push(packetBuffer));
     }
 
     /// <summary>
@@ -216,7 +205,7 @@ internal class SocketComponent : InternalComponent, IClientListener
     /// Get server list
     /// </summary>
     /// <returns></returns>
-    private async Task<IEnumerable<ServerInfo>> GetServerList()
+    private async Task<List<ServerInfo>> GetServerList()
     {
         // Make request packet
         var encKey = "F0441F5FF42DA58FDCF7949ABA62D411".UnHex();
@@ -249,7 +238,7 @@ internal class SocketComponent : InternalComponent, IClientListener
         {
             LogE(TAG, e);
             LogW(TAG, "Request server list failed, fallback to the default server.");
-            return new ServerInfo[] {new("msfwifi.3g.qq.com", 8080)};
+            return new List<ServerInfo>(1) { new("msfwifi.3g.qq.com", 8080) };
         }
     }
 }
