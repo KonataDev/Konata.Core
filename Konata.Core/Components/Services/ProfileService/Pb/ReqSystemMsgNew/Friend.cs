@@ -16,7 +16,7 @@ namespace Konata.Core.Components.Services.ProfileService.Pb.ReqSystemMsgNew;
 [Service("ProfileService.Pb.ReqSystemMsgNew.Friend", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Friend : BaseService<ReqSystemMsgFriendEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out ReqSystemMsgFriendEvent output, List<ProtocolEvent> extra)
     {
         // input.Payload
@@ -57,7 +57,7 @@ internal class Friend : BaseService<ReqSystemMsgFriendEvent>
         }
     }
 
-    protected override bool Build(int sequence, ReqSystemMsgFriendEvent input,
+    protected override bool Build(int sequence, ReqSystemMsgFriendEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         var proto = new structmsg.Types.ReqSystemMsgNew

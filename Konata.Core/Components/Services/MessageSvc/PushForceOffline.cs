@@ -11,7 +11,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 [Service("MessageSvc.PushForceOffline", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PushForceOffline : BaseService<ForceOfflineEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out ForceOfflineEvent output)
     {
         var tree = new SvcPushForceOffline(input.Payload.GetBytes());

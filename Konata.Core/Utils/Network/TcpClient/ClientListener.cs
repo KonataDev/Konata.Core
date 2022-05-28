@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Utils.Extensions;
 
+// ReSharper disable PublicConstructorInAbstractClass
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global

@@ -11,7 +11,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 [Service("MessageSvc.PushNotify", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PushNotify : BaseService<PushNotifyEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PushNotifyEvent output)
     {
         input.Payload.EatBytes(4);

@@ -23,7 +23,7 @@ namespace Konata.Core.Components.Services.WtLogin;
 [Service("wtlogin.exchange_emp", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Session)]
 internal class ExchangeEmp : BaseService<WtLoginEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, 
         BotKeyStore keystore, out WtLoginEvent output)
     {
         // Parse oicq response
@@ -40,7 +40,7 @@ internal class ExchangeEmp : BaseService<WtLoginEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, WtLoginEvent input,
+    protected override bool Build(int sequence, WtLoginEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = null;
@@ -56,7 +56,7 @@ internal class ExchangeEmp : BaseService<WtLoginEvent>
         // Build OicqRequest
         if (input.EventType == WtLoginEvent.Type.Xchg)
         {
-            output = new OicqRequestXchg(sequence, keystore, device);
+            output = new OicqRequestXchg(sequence, appInfo, keystore, device);
             return true;
         }
 

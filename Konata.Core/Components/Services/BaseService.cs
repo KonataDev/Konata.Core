@@ -15,24 +15,27 @@ internal abstract class BaseService<TEvent> : IService
     /// Parse packet
     /// </summary>
     /// <param name="input"></param>
+    /// <param name="appInfo"></param>
     /// <param name="keystore"></param>
     /// <param name="output"></param>
     /// <returns></returns>
-    protected virtual bool Parse(SSOFrame input, BotKeyStore keystore,
-        out TEvent output) => (output = null) != null;
+    protected virtual bool Parse(SSOFrame input, AppInfo appInfo, 
+        BotKeyStore keystore, out TEvent output) => (output = null) != null;
 
     /// <summary>
     /// Parse packet
     /// </summary>
     /// <param name="input"></param>
+    /// <param name="appInfo"></param>
     /// <param name="keystore"></param>
     /// <param name="output"></param>
     /// <param name="extra"></param>
     /// <returns></returns>
-    protected virtual bool Parse(SSOFrame input, BotKeyStore keystore, out TEvent output, List<ProtocolEvent> extra)
+    protected virtual bool Parse(SSOFrame input, AppInfo appInfo, 
+        BotKeyStore keystore, out TEvent output, List<ProtocolEvent> extra)
     {
         output = null;
-        if (Parse(input, keystore, out var x))
+        if (Parse(input, appInfo, keystore, out var x))
         {
             output = x;
             return true;
@@ -46,22 +49,23 @@ internal abstract class BaseService<TEvent> : IService
     /// </summary>
     /// <param name="sequence"></param>
     /// <param name="input"></param>
+    /// <param name="appInfo"></param>
     /// <param name="keystore"></param>
     /// <param name="device"></param>
     /// <param name="output"></param>
     /// <returns></returns>
-    protected virtual bool Build(int sequence, TEvent input,
+    protected virtual bool Build(int sequence, TEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output) => false;
 
-    bool IService.Build(int sequence, ProtocolEvent input, BotKeyStore keystore,
-        BotDevice device, ref PacketBase output) => Build(sequence, (TEvent) input, keystore, device, ref output);
+    bool IService.Build(int sequence, ProtocolEvent input, AppInfo appInfo, BotKeyStore keystore,
+        BotDevice device, ref PacketBase output) => Build(sequence, (TEvent) input, appInfo, keystore, device, ref output);
 
-    bool IService.Parse(SSOFrame input, BotKeyStore keystore, out ProtocolEvent output, out List<ProtocolEvent> extra)
+    bool IService.Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore, out ProtocolEvent output, out List<ProtocolEvent> extra)
     {
         output = null;
         extra = new List<ProtocolEvent>();
 
-        if (Parse(input, keystore, out var x, extra)) output = x;
+        if (Parse(input, appInfo, keystore, out var x, extra)) output = x;
         return output != null;
     }
 }

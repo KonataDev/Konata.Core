@@ -14,7 +14,7 @@ namespace Konata.Core.Components.Services.OnlinePush;
 [Service("OnlinePush.PbPushGroupMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GroupMessageEvent output)
     {
         var message = GroupMessageEvent.Push();

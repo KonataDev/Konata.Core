@@ -24,7 +24,7 @@ using FriendPushHandler = Dictionary<ushort, Func<BotKeyStore, uint, JStruct, Pr
 [Service("OnlinePush.ReqPush", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ReqPush : BaseService<OnlineReqPushEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out OnlineReqPushEvent output, List<ProtocolEvent> extra)
     {
         // Parse push event

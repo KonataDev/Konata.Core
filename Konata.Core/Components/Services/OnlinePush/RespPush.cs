@@ -13,7 +13,7 @@ namespace Konata.Core.Components.Services.OnlinePush;
 [Service("OnlinePush.RespPush", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class RespPush : BaseService<OnlineRespPushEvent>
 {
-    protected override bool Build(int sequence, OnlineRespPushEvent input,
+    protected override bool Build(int sequence, OnlineRespPushEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new SvcReqPushMsgResp(input.RequestId, input.SelfUin, input.FromSource,

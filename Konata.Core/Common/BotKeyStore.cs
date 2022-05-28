@@ -82,9 +82,9 @@ public class BotKeyStore
         };
     }
 
-    internal void Initial(string imei)
+    internal void Initial(BotConfig config, BotDevice device)
     {
-        Session.GSecret ??= MakeGSecret(imei, Session.DSecret, null);
+        Session.GSecret ??= MakeGSecret(device.Model.Imei, Session.DSecret, null);
 
         // Make sync cookie for syncing message
         var cookie = MakeSyncCookie();

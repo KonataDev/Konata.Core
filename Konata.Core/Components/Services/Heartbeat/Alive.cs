@@ -13,14 +13,14 @@ namespace Konata.Core.Components.Services.Heartbeat;
 [Service("Heartbeat.Alive", PacketType.TypeA, AuthFlag.DefaultlyNo, SequenceMode.Managed)]
 internal class Alive : BaseService<CheckHeartbeatEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out CheckHeartbeatEvent output)
     {
         output = CheckHeartbeatEvent.Result(0);
         return true;
     }
 
-    protected override bool Build(int sequence, CheckHeartbeatEvent input, 
+    protected override bool Build(int sequence, CheckHeartbeatEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         return true;

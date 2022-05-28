@@ -16,6 +16,11 @@ namespace Konata.Core.Components;
 internal class ConfigComponent : InternalComponent
 {
     /// <summary>
+    /// App info
+    /// </summary>
+    public AppInfo AppInfo { get; private set; }
+    
+    /// <summary>
     /// Keystore
     /// </summary>
     public BotKeyStore KeyStore { get; private set; }
@@ -53,17 +58,24 @@ internal class ConfigComponent : InternalComponent
         _friendList = new();
     }
 
-    public void LoadKeyStore(BotKeyStore keyStore, string imei)
+    public void Initial(BotKeyStore keyStore, BotConfig config, BotDevice device)
     {
+        // Save instance
         KeyStore = keyStore;
-        KeyStore.Initial(imei);
+        GlobalConfig = config;
+        DeviceInfo = device;
+        
+        // Initialize keystore
+        KeyStore.Initial(config, device);
+        
+        // Select protocol type
+        AppInfo = config.Protocol switch
+        {
+            OicqProtocol.Android => AppInfo.Android,
+            OicqProtocol.Watch => AppInfo.Watch,
+            _ => AppInfo.Android
+        };
     }
-
-    public void LoadConfig(BotConfig config)
-        => GlobalConfig = config;
-
-    public void LoadDeviceInfo(BotDevice device)
-        => DeviceInfo = device;
 
     /// <summary>
     /// Get member information

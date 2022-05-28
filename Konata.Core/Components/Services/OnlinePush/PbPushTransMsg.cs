@@ -16,7 +16,7 @@ namespace Konata.Core.Components.Services.OnlinePush;
 [Service("OnlinePush.PbPushTransMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbPushTransMsg : BaseService<PushTransMsgEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PushTransMsgEvent output, List<ProtocolEvent> extra)
     {
         var pb = ProtobufDecoder.Create(input.Payload.GetBytes());

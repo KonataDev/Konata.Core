@@ -14,7 +14,7 @@ namespace Konata.Core.Components.Services.OidbSvc;
 [Service("OidbSvc.0x8a0_1", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Oidb0x8a0_1 : BaseService<GroupKickMemberEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GroupKickMemberEvent output)
     {
         var tree = ProtoTreeRoot.Deserialize
@@ -26,7 +26,7 @@ internal class Oidb0x8a0_1 : BaseService<GroupKickMemberEvent>
         }
     }
 
-    protected override bool Build(int sequence, GroupKickMemberEvent input,
+    protected override bool Build(int sequence, GroupKickMemberEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new OidbCmd0x8a0_1(input.GroupUin, input.MemberUin, input.ToggleType);

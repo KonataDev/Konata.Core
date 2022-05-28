@@ -215,7 +215,7 @@ internal class SocketComponent : InternalComponent, IClientListener
             reqBuf.EnterBarrierEncrypted(ByteBuffer.Prefix.None,
                 Endian.FollowMachine, TeaCryptor.Instance, encKey);
             {
-                var body = new SvcReqHttpServerListReq();
+                var body = new SvcReqHttpServerListReq(ConfigComponent.AppInfo);
                 reqBuf.PutUintBE(body.Length + 4);
                 reqBuf.PutByteBuffer(body);
             }

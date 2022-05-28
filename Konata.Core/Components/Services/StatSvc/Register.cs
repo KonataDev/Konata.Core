@@ -14,7 +14,7 @@ namespace Konata.Core.Components.Services.StatSvc;
 [EventSubscribe(typeof(OnlineStatusEvent))]
 internal class Register : BaseService<OnlineStatusEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out OnlineStatusEvent output)
     {
         var svcResponse = new SvcRspRegister(input.Payload.GetBytes());
@@ -26,7 +26,7 @@ internal class Register : BaseService<OnlineStatusEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, OnlineStatusEvent input,
+    protected override bool Build(int sequence, OnlineStatusEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new SvcReqRegister(new RegisterInfo

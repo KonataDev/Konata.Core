@@ -1,11 +1,12 @@
-﻿using Konata.Core.Packets.Wup;
+﻿using Konata.Core.Common;
+using Konata.Core.Packets.Wup;
 using Konata.Core.Utils.JceStruct.Model;
 
 namespace Konata.Core.Packets.SvcRequest;
 
 internal class SvcReqHttpServerListReq : UniPacket
 {
-    public SvcReqHttpServerListReq()
+    public SvcReqHttpServerListReq(AppInfo appInfo)
         : base(0x03, "ConfigHttp", "HttpServerListReq", "HttpServerListReq", 0x00, 0x00, 0,
             (out JStruct w) => w = new JStruct
             {
@@ -14,7 +15,7 @@ internal class SvcReqHttpServerListReq : UniPacket
                 [3] = (JNumber) 1,
                 [4] = (JString) "00000",
                 [5] = (JNumber) 100,
-                [6] = (JNumber) AppInfo.SubAppId,
+                [6] = (JNumber) appInfo.SubAppId,
                 [7] = (JString) "356235088634151",
                 [8] = (JNumber) 0,
                 [9] = (JNumber) 0,

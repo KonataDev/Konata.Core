@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
@@ -53,7 +54,8 @@ internal class HighwayComponent : InternalComponent
                     chunksize, selfUin,
                     i.PicUpInfo.UploadTicket,
                     i.FileData,
-                    isGroup ? PicUp.CommandId.GroupPicDataUp : PicUp.CommandId.FriendPicDataUp
+                    isGroup ? PicUp.CommandId.GroupPicDataUp : PicUp.CommandId.FriendPicDataUp,
+                    ConfigComponent.AppInfo
                 ));
             }
         }
@@ -85,7 +87,8 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             chain.MultiMsgUpInfo.UploadTicket,
             ProtoTreeRoot.Serialize(data).GetBytes(),
-            PicUp.CommandId.MultiMsgDataUp
+            PicUp.CommandId.MultiMsgDataUp,
+            ConfigComponent.AppInfo
         );
 
         LogV(TAG, "Task queued, " +
@@ -104,6 +107,7 @@ internal class HighwayComponent : InternalComponent
     /// <summary>
     /// Upload record
     /// </summary>
+    /// <param name="appInfo"></param>
     /// <param name="destUin"></param>
     /// <param name="selfUin"></param>
     /// <param name="upload"></param>
@@ -119,7 +123,10 @@ internal class HighwayComponent : InternalComponent
             upload.PttUpInfo.UploadTicket,
             upload.FileData,
             isGroup ? PicUp.CommandId.GroupPttDataUp : PicUp.CommandId.FriendPttDataUp,
-            isGroup ? new GroupPttUpRequest(destUin, selfUin, upload) : new FriendPttUpRequest(destUin, selfUin, upload)
+            ConfigComponent.AppInfo,
+            isGroup
+                ? new GroupPttUpRequest(ConfigComponent.AppInfo, destUin, selfUin, upload)
+                : new FriendPttUpRequest(destUin, selfUin, upload)
         );
 
         LogV(TAG, "Task queued, " +
@@ -155,6 +162,7 @@ internal class HighwayComponent : InternalComponent
     private class HighwayClient
         : ClientListener
     {
+        private readonly AppInfo _appInfo;
         private readonly uint _peer;
         private readonly byte[] _ticket;
         private int _sequence;
@@ -168,10 +176,11 @@ internal class HighwayComponent : InternalComponent
         private HwResponse _hwResponse;
         private readonly ManualResetEvent _requestAwaiter;
 
-        private HighwayClient(uint peer, byte[] ticket)
+        private HighwayClient(AppInfo appInfo, uint peer, byte[] ticket)
         {
             _peer = peer;
             _ticket = ticket;
+            _appInfo = appInfo;
             _sequence = new Random().Next(0x2333, 0x7090);
             _hwResponse = default;
             _requestAwaiter = new(false);
@@ -188,15 +197,16 @@ internal class HighwayComponent : InternalComponent
         /// <param name="ticket"></param>
         /// <param name="data"></param>
         /// <param name="cmdId"></param>
+        /// <param name="appInfo"></param>
         /// <param name="extend"></param>
         /// <returns></returns>
         public static async Task<HwResponse> Upload(string host, int port, int chunk,
-            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
+            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, AppInfo appInfo, ProtoTreeRoot extend = null)
         {
             HwResponse lastResponse = null;
             var datamd5 = data.Md5();
 
-            var client = new HighwayClient(peer, ticket);
+            var client = new HighwayClient(appInfo, peer, ticket);
             {
                 // Connect to server
                 if (!await client.Connect(host, port)) return null;
@@ -238,7 +248,7 @@ internal class HighwayComponent : InternalComponent
         {
             // Send request
             var result = await SendRequest
-                (new PicUpEcho(_peer, _sequence));
+                (new PicUpEcho(_appInfo, _peer, _sequence));
             {
                 // No response
                 if (result == null) return false;
@@ -269,7 +279,7 @@ internal class HighwayComponent : InternalComponent
             var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
             // Send request
-            var result = await SendRequest(new PicUpDataUp(cmdId, _peer, _sequence,
+            var result = await SendRequest(new PicUpDataUp(cmdId, _appInfo, _peer, _sequence,
                 _ticket, data.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
             {
                 // No response

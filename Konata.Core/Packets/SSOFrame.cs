@@ -108,11 +108,11 @@ internal class SSOFrame
         return true;
     }
 
-    public static ByteBuffer Build(SSOFrame ssoFrame, BotDevice device)
+    public static ByteBuffer Build(SSOFrame ssoFrame, AppInfo appInfo, BotDevice device)
     {
         byte[] unknownBytes0 = { };
         byte[] unknownBytes1 = { };
-        string unknownString = $"||A{AppInfo.ApkVersionName}.{AppInfo.AppRevision}";
+        string unknownString = $"||A{appInfo.ApkVersionName}.{appInfo.AppRevision}";
         byte[] sessionBytes = ByteConverter.UInt32ToBytes(ssoFrame._session, Endian.Big);
 
         var write = new PacketBase();
@@ -121,8 +121,8 @@ internal class SSOFrame
             if (ssoFrame.PacketType == PacketType.TypeA)
             {
                 head.PutIntBE(ssoFrame._sequence);
-                head.PutUintBE(AppInfo.SubAppId);
-                head.PutUintBE(AppInfo.SubAppId);
+                head.PutUintBE(appInfo.SubAppId);
+                head.PutUintBE(appInfo.SubAppId);
                 head.PutHexString("01 00 00 00 00 00 00 00 00 00 01 00");
 
                 head.PutBytes(ssoFrame._tgtoken ?? new byte[0],

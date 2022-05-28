@@ -12,7 +12,7 @@ namespace Konata.Core.Components.Services.StatSvc;
 [Service("StatSvc.ReqMSFOffline", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ReqMSFOffline : BaseService<ForceOfflineEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out ForceOfflineEvent output)
     {
         var tree = new SvcPushReqMsfOffline(input.Payload.GetBytes());

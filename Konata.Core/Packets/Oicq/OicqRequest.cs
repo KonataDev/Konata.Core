@@ -1,4 +1,5 @@
-﻿using Konata.Core.Utils.IO;
+﻿using Konata.Core.Common;
+using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -37,7 +38,7 @@ internal class OicqRequest : PacketBase
     public delegate void OicqBodyWriter(PacketBase writer);
 
     public OicqRequest(ushort command, uint uin, EcdhCryptor.CryptId method,
-        byte[] randKey, EcdhCryptor cryptor, OicqBodyWriter writer) : base()
+        byte[] randKey, EcdhCryptor cryptor, AppInfo appInfo, OicqBodyWriter writer) : base()
     {
         var body = new PacketBase();
 
@@ -53,7 +54,7 @@ internal class OicqRequest : PacketBase
                 PutByte((byte) method);
                 PutByte(0x00); // 0x00
                 PutUintBE(2);
-                PutUintBE(AppInfo.AppClientVersion);
+                PutUintBE(appInfo.AppClientVersion);
                 PutUintBE(0);
 
                 writer.Invoke(body);

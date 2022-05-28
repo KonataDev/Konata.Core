@@ -1,4 +1,5 @@
-﻿using Konata.Core.Message.Model;
+﻿using Konata.Core.Common;
+using Konata.Core.Message.Model;
 using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf.Highway.Requests;
@@ -10,7 +11,7 @@ internal class GroupPttUpRequest : ProtoTreeRoot
     /// </summary>
     private class RecordInfo : ProtoTreeRoot
     {
-        public RecordInfo(uint groupUin, uint selfUin, RecordChain chain)
+        public RecordInfo(AppInfo appInfo, uint groupUin, uint selfUin, RecordChain chain)
         {
             AddLeafVar("08", groupUin);
             AddLeafVar("10", selfUin);
@@ -29,7 +30,7 @@ internal class GroupPttUpRequest : ProtoTreeRoot
             AddLeafVar("38", 5);
             AddLeafVar("40", 9);
             AddLeafVar("48", 3);
-            AddLeafString("52", AppInfo.AppBuildVer);
+            AddLeafString("52", appInfo.AppBuildVer);
 
             // Record time seconds
             AddLeafVar("60", chain.TimeSeconds);
@@ -40,11 +41,11 @@ internal class GroupPttUpRequest : ProtoTreeRoot
         }
     }
 
-    public GroupPttUpRequest(uint groupUin,
+    public GroupPttUpRequest(AppInfo appInfo, uint groupUin,
         uint selfUin, RecordChain chain)
     {
         AddLeafVar("08", 3);
         AddLeafVar("10", 3);
-        AddTree("2A", new RecordInfo(groupUin, selfUin, chain));
+        AddTree("2A", new RecordInfo(appInfo, groupUin, selfUin, chain));
     }
 }

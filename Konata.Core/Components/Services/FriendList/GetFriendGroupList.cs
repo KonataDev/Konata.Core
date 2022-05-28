@@ -15,7 +15,7 @@ namespace Konata.Core.Components.Services.Friendlist;
 [Service("friendlist.getFriendGroupList", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class GetFriendGroupList : BaseService<PullFriendListEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PullFriendListEvent output)
     {
         var response = new SvcRspGetFriendListResp(input.Payload.GetBytes());
@@ -24,7 +24,7 @@ internal class GetFriendGroupList : BaseService<PullFriendListEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, PullFriendListEvent input,
+    protected override bool Build(int sequence, PullFriendListEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new SvcReqGetFriendListReq(input.SelfUin, input.StartIndex, input.LimitNum);

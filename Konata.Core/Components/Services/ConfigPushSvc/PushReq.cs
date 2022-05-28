@@ -9,7 +9,7 @@ namespace Konata.Core.Components.Services.ConfigPushSvc;
 [Service("ConfigPushSvc.PushReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PushReq : BaseService<PushConfigEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PushConfigEvent output)
     {
         output = null;

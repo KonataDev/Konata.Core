@@ -2,34 +2,33 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Konata.Core.Utils.Network.TcpClient
+namespace Konata.Core.Utils.Network.TcpClient;
+
+internal abstract partial class ClientListener
 {
-    internal abstract partial class ClientListener
+    protected sealed class SocketSession : IDisposable
     {
-        protected sealed class SocketSession : IDisposable
+        public Socket Socket { get; }
+
+        private CancellationTokenSource _cts;
+
+        public CancellationToken Token { get; }
+
+        public SocketSession()
         {
-            public Socket Socket { get; }
+            Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _cts = new CancellationTokenSource();
+            Token = _cts.Token;
+        }
 
-            private CancellationTokenSource _cts;
-
-            public CancellationToken Token { get; }
-
-            public SocketSession()
+        public void Dispose()
+        {
+            var cts = Interlocked.Exchange(ref _cts, null);
+            if (cts == null) return;
             {
-                Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _cts = new CancellationTokenSource();
-                Token = _cts.Token;
-            }
-
-            public void Dispose()
-            {
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cts, null);
-                if (cts != null)
-                {
-                    cts.Cancel();
-                    cts.Dispose();
-                    Socket.Dispose();
-                }
+                cts.Cancel();
+                cts.Dispose();
+                Socket.Dispose();    
             }
         }
     }

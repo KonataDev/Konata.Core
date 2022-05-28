@@ -42,8 +42,8 @@ internal class ServiceMessage
     public PacketType MessagePktType
         => _packetType;
 
-    public static bool Build(ServiceMessage toService, BotDevice device,
-        out byte[] output)
+    public static bool Build(ServiceMessage toService, AppInfo appInfo, 
+        BotDevice device, out byte[] output)
     {
         var body = new PacketBase();
         var write = new PacketBase();
@@ -61,9 +61,9 @@ internal class ServiceMessage
                 ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
             if (toService._keyData == null)
-                body.PutByteBuffer(SSOFrame.Build(toService._payloadFrame, device));
+                body.PutByteBuffer(SSOFrame.Build(toService._payloadFrame, appInfo, device));
             else
-                body.PutEncryptedBytes(SSOFrame.Build(toService._payloadFrame, device).GetBytes(),
+                body.PutEncryptedBytes(SSOFrame.Build(toService._payloadFrame, appInfo, device).GetBytes(),
                     TeaCryptor.Instance, toService._keyData);
         }
         write.PutByteBuffer(body,
