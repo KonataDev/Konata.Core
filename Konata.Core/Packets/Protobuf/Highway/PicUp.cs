@@ -19,8 +19,11 @@ internal class PicUp : ProtoTreeRoot
         // Avatar
         SelfPortrait = 5,
 
-        // Multl message
-        MultiMsgDataUp = 27
+        // Multi message
+        MultiMsgDataUp = 27,
+        
+        // Image OCR
+        ImageOcrDataUp = 76
     }
 
     public PicUp(string cmd, CommandId cmdid, AppInfo appInfo, uint peerUin, int sequence)

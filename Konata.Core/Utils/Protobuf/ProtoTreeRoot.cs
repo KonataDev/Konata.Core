@@ -103,6 +103,9 @@ internal class ProtoTreeRoot : ProtoLengthDelimited
         reader((ProtoTreeRoot) GetLeaf(treePath));
     }
 
+    public ProtoTreeRoot GetTree(string treePath)
+        => (ProtoTreeRoot) GetLeaf(treePath);
+
     public string GetLeafString(string leafPath)
     {
         return GetLeaf<ProtoLengthDelimited>(leafPath).ToString();

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
+using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
@@ -104,10 +105,33 @@ internal class HighwayComponent : InternalComponent
         }
     }
 
+    public async Task<string> ImageOcrUp(uint selfUin, ServerInfo server, 
+        byte[] ticket, ImageChain image)
+    {
+        // Get upload config
+        var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
+        if (chunksize is <= 1024 or > 1048576) chunksize = 8192;
+
+        // Wait for tasks
+        var result = await HighwayClient.Upload(
+            server.Host,
+            server.Port,
+            chunksize, selfUin, ticket,
+            image.FileData,
+            PicUp.CommandId.ImageOcrDataUp,
+            ConfigComponent.AppInfo
+        );
+
+        // Check result code
+        var code = result.GetLeafVar("18");
+        if (code != 0) return null;
+
+        return result.GetTree("3A").GetLeafString("12");
+    }
+
     /// <summary>
     /// Upload record
     /// </summary>
-    /// <param name="appInfo"></param>
     /// <param name="destUin"></param>
     /// <param name="selfUin"></param>
     /// <param name="upload"></param>

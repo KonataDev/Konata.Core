@@ -21,7 +21,7 @@ internal class AppInfo
         public uint SubSigBitmap { get; internal set; }
         public uint[] SubAppIdList { get; internal set; }
     }
-    
+
     public static AppInfo Android => new()
     {
         AppId = 16,
@@ -38,7 +38,7 @@ internal class AppInfo
             0x52, 0x77, 0x16, 0xF6,
             0xF3, 0x6E, 0xB6, 0x8D
         },
-        WtLoginSdk = new WtLoginSdkDef()
+        WtLoginSdk = new()
         {
             SdkBuildTime = 1640921786,
             SdkVersion = "6.0.0.2494",
@@ -65,7 +65,7 @@ internal class AppInfo
             0x52, 0x77, 0x16, 0xF6,
             0xF3, 0x6E, 0xB6, 0x8D
         },
-        WtLoginSdk = new WtLoginSdkDef()
+        WtLoginSdk = new()
         {
             SdkBuildTime = 1559564731,
             SdkVersion = "6.0.0.2365",
@@ -75,5 +75,4 @@ internal class AppInfo
             SubAppIdList = new uint[] {1600000226}
         }
     };
-
 }

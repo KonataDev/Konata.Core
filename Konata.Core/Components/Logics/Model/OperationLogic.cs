@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
+using Konata.Core.Message.Model;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -286,7 +288,7 @@ internal class OperationLogic : BaseLogic
 
         return true;
     }
-    
+
     public async Task<bool> ApproveGroupRequestJoin(uint groupUin, uint reqUin, long token)
     {
         var args = GroupRequestJoinEvent.Approve(groupUin, reqUin, token);
@@ -317,7 +319,7 @@ internal class OperationLogic : BaseLogic
 
         return true;
     }
-    
+
     public async Task<bool> ApproveFriendRequest(uint reqUin, long token)
     {
         var args = FriendRequestEvent.Approve(reqUin, token);
@@ -346,5 +348,35 @@ internal class OperationLogic : BaseLogic
         }
 
         return true;
+    }
+
+    public async Task<List<ImageOcrResult>> ImageOcr(ImageChain image)
+    {
+        // Upload image first
+        var url = await HighwayComponent.ImageOcrUp(
+            Context.Bot.Uin,
+            ConfigComponent.HighwayConfig.Server,
+            ConfigComponent.HighwayConfig.Ticket,
+            image
+        );
+
+        if (url == null)
+        {
+            throw new OperationFailedException(-1,
+                "Failed to recongize an image: Image upload failed.");
+        }
+
+        // Get ocr result
+        var args = ImageOcrEvent.Create(url, image.FileHash, image.Width, image.Height, image.FileLength);
+        var result = await Context.SendPacket<ImageOcrEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-2,
+                    "Failed to recongize the image: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return result.OcrResult;
     }
 }

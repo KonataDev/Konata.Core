@@ -5,6 +5,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
+using Konata.Core.Message.Model;
 
 // ReSharper disable ArgumentsStyleLiteral
 // ReSharper disable UnusedMember.Global
@@ -91,6 +92,16 @@ public static class BotExt
     public static OnlineStatusEvent.Type GetOnlineStatus(this Bot bot)
         => bot.BusinessComponent.WtExchange.OnlineType;
 
+    /// <summary>
+    /// Image ocr
+    /// </summary>
+    /// <param name="bot"><b>[In]</b> Bot instance</param>
+    /// <param name="image">The image</param>
+    /// <returns></returns>
+    [KonataApi(1, experimental: true)]
+    public static Task<List<ImageOcrResult>> ImageOcr(this Bot bot, ImageChain image)
+        => bot.BusinessComponent.Operation.ImageOcr(image);
+    
     // /// <summary>
     // /// Set online status
     // /// </summary>
