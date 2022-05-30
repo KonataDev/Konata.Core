@@ -12,7 +12,7 @@ namespace Konata.Core.Components.Services.Trpc.Group_pro.SyncLogic.SyncLogic;
 [Service("trpc.group_pro.synclogic.SyncLogic.SyncFirstView", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class SyncFirstView : BaseService<GuildSyncFirstView>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GuildSyncFirstView output)
     {
         var pb = ProtobufDecoder.Create(input.Payload);
@@ -20,7 +20,7 @@ internal class SyncFirstView : BaseService<GuildSyncFirstView>
         return true;
     }
 
-    protected override bool Build(int sequence, GuildSyncFirstView input,
+    protected override bool Build(int sequence, GuildSyncFirstView input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         var root = new ProtoTreeRoot();

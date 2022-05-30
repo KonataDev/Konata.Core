@@ -19,7 +19,7 @@ namespace Konata.Core.Components.Services.WtLogin;
 [Service("wtlogin.login", PacketType.TypeA, AuthFlag.WtLoginExchange, SequenceMode.Session)]
 internal class Login : BaseService<WtLoginEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out WtLoginEvent output)
     {
         // Parse oicq response
@@ -42,7 +42,7 @@ internal class Login : BaseService<WtLoginEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, WtLoginEvent input,
+    protected override bool Build(int sequence, WtLoginEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         // newSequence = sequence.GetSessionSequence("wtlogin.login");
@@ -51,23 +51,23 @@ internal class Login : BaseService<WtLoginEvent>
         switch (input.EventType)
         {
             case WtLoginEvent.Type.Tgtgt:
-                output = new OicqRequestTgtgt(sequence, keystore, device);
+                output = new OicqRequestTgtgt(sequence, appInfo, keystore, device);
                 break;
 
             case WtLoginEvent.Type.CheckSms:
-                output = new OicqRequestCheckSms(input.CaptchaResult, keystore);
+                output = new OicqRequestCheckSms(input.CaptchaResult, appInfo, keystore);
                 break;
 
             case WtLoginEvent.Type.RefreshSms:
-                output = new OicqRequestRefreshSms(keystore);
+                output = new OicqRequestRefreshSms(appInfo, keystore);
                 break;
 
             case WtLoginEvent.Type.CheckSlider:
-                output = new OicqRequestCheckSlider(input.CaptchaResult, keystore);
+                output = new OicqRequestCheckSlider(input.CaptchaResult, appInfo, keystore);
                 break;
 
             case WtLoginEvent.Type.VerifyDeviceLock:
-                output = new OicqRequestVerifyDeviceLock(keystore);
+                output = new OicqRequestVerifyDeviceLock(appInfo, keystore);
                 break;
 
             default: return false;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Konata.Core.Common;
 using Konata.Core.Message.Model;
 using Konata.Core.Utils.Protobuf;
 
@@ -11,7 +12,8 @@ internal class GroupPicUpRequest : ProtoTreeRoot
     /// </summary>
     private class PicInfo : ProtoTreeRoot
     {
-        public PicInfo(uint groupUin, uint selfUin, ImageChain chain)
+        public PicInfo(AppInfo appInfo, uint groupUin, 
+            uint selfUin, ImageChain chain)
         {
             AddLeafVar("08", groupUin);
             AddLeafVar("10", selfUin);
@@ -41,7 +43,7 @@ internal class GroupPicUpRequest : ProtoTreeRoot
             AddLeafVar("60", (long) chain.ImageType);
 
             // Version
-            AddLeafString("6A", AppInfo.AppBuildVer);
+            AddLeafString("6A", appInfo.AppBuildVer);
             AddLeafVar("78", 1052);
 
             // Original image
@@ -50,7 +52,7 @@ internal class GroupPicUpRequest : ProtoTreeRoot
         }
     }
 
-    public GroupPicUpRequest(uint groupUin,
+    public GroupPicUpRequest(AppInfo appInfo, uint groupUin, 
         uint selfUin, List<ImageChain> chains)
     {
         AddLeafVar("08", 3);
@@ -58,7 +60,7 @@ internal class GroupPicUpRequest : ProtoTreeRoot
 
         foreach (var i in chains)
         {
-            AddTree("1A", new PicInfo(groupUin, selfUin, i));
+            AddTree("1A", new PicInfo(appInfo, groupUin, selfUin, i));
         }
     }
 }

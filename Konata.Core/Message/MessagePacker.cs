@@ -572,7 +572,7 @@ internal static class MessagePacker
         // For PC versions <= 909 has no hash str
         // The result of KQ code will be come to
         // [KQ:record=]
-        
+
         var url = tree.TryGetLeafString("A201", out var x) ? x : "";
         var hashstr = tree.GetLeafBytes("22").ToHex();
 
@@ -666,7 +666,9 @@ internal static class MessagePacker
                 ? (ImageType) type
                 : ImageType.Jpg;
 
-            if (!tree.TryGetLeafString("8201", out var url))
+            if (tree.TryGetLeafString("8201", out var url))
+                url = $"https://gchat.qpic.cn{url}";
+            else
                 url = $"https://gchat.qpic.cn/gchatpic_new/0/0-0-{hash}/0";
 
             // Create image chain

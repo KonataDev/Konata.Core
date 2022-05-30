@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
+using Konata.Core.Message.Model;
+using Konata.Core.Utils;
+using Konata.Core.Utils.Network;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -286,7 +290,7 @@ internal class OperationLogic : BaseLogic
 
         return true;
     }
-    
+
     public async Task<bool> ApproveGroupRequestJoin(uint groupUin, uint reqUin, long token)
     {
         var args = GroupRequestJoinEvent.Approve(groupUin, reqUin, token);
@@ -317,7 +321,7 @@ internal class OperationLogic : BaseLogic
 
         return true;
     }
-    
+
     public async Task<bool> ApproveFriendRequest(uint reqUin, long token)
     {
         var args = FriendRequestEvent.Approve(reqUin, token);
@@ -346,5 +350,46 @@ internal class OperationLogic : BaseLogic
         }
 
         return true;
+    }
+
+    public async Task<List<ImageOcrResult>> ImageOcr(ImageChain image)
+    {
+        if (image.ImageUrl == null && image.FileData == null)
+        {
+            throw new OperationFailedException(-1,
+                "Failed to recognize an image: Can not upload image cuz image is empty.");
+        }
+
+        // Upload image (optional)
+        // We actually can use image url directly to instead
+        // of downloading image and upload to ocr server.
+        // Idk if we do that can cause what, or a ban.
+        var data = image.FileData ?? await Http.Get(image.ImageUrl);
+        var guid = Guid.GenerateString();
+        var url = await HighwayComponent.ImageOcrUp(
+            Context.Bot.Uin,
+            ConfigComponent.HighwayConfig.Server,
+            ConfigComponent.HighwayConfig.Ticket,
+            data, guid
+        );
+
+        if (url == null)
+        {
+            throw new OperationFailedException(-2,
+                "Failed to recognize an image: Image upload failed.");
+        }
+
+        // Get ocr result
+        var args = ImageOcrEvent.Create(image.ImageUrl, image.FileHash, image.Width, image.Height, image.FileLength);
+        var result = await Context.SendPacket<ImageOcrEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-3,
+                    "Failed to recognize the image: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+
+        return result.OcrResult;
     }
 }

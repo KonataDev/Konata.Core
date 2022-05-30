@@ -9,8 +9,8 @@ using Konata.Core.Components;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 
-[assembly: InternalsVisibleToAttribute("Konata.Core.Test")]
-[assembly: InternalsVisibleToAttribute("Konata.Framework")]
+[assembly: InternalsVisibleTo("Konata.Core.Test")]
+[assembly: InternalsVisibleTo("Konata.Framework")]
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable EventNeverSubscribedTo.Global
@@ -40,11 +40,7 @@ public class Bot : BaseEntity, IDisposable
 
         // Setup configs
         var component = GetComponent<ConfigComponent>();
-        {
-            component.LoadConfig(config);
-            component.LoadDeviceInfo(device);
-            component.LoadKeyStore(keystore, device.Model.Imei);
-        }
+        component.Initial(keystore, config, device);
 
         // Setup event handlers
         InitializeHandlers();

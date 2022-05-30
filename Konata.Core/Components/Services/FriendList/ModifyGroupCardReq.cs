@@ -14,13 +14,13 @@ namespace Konata.Core.Components.Services.Friendlist;
 [Service("friendlist.ModifyGroupCardReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ModifyGroupCardReq : BaseService<GroupModifyMemberCardEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GroupModifyMemberCardEvent output)
     {
         throw new NotImplementedException();
     }
 
-    protected override bool Build(int sequence, GroupModifyMemberCardEvent input,
+    protected override bool Build(int sequence, GroupModifyMemberCardEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new SvcReqModifyGroupCard(input.GroupUin, input.MemberUin, input.MemberCard);

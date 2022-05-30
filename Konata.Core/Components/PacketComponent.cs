@@ -126,7 +126,7 @@ internal class PacketComponent : InternalComponent
         try
         {
             // Translate bytes to ProtocolEvent 
-            if (service.Parse(ssoFrame, ConfigComponent.KeyStore,
+            if (service.Parse(ssoFrame, ConfigComponent.AppInfo, ConfigComponent.KeyStore,
                     out var outEvent, out var outExtra) && outEvent != null)
             {
                 // Set result
@@ -179,8 +179,8 @@ internal class PacketComponent : InternalComponent
             var wupBuffer = new PacketBase();
 
             // Build body data
-            var result = instance.Build(sequence, protocolEvent, ConfigComponent.KeyStore,
-                ConfigComponent.DeviceInfo, ref wupBuffer);
+            var result = instance.Build(sequence, protocolEvent, ConfigComponent.AppInfo,
+                ConfigComponent.KeyStore, ConfigComponent.DeviceInfo, ref wupBuffer);
             {
                 if (!result) continue;
                 LogV(TAG, $"[send:{attr.Command}] \n{wupBuffer.GetBytes().ToHex()}");
@@ -198,7 +198,8 @@ internal class PacketComponent : InternalComponent
                     throw new Exception("Create service message failed.");
 
                 // Packup
-                if (!ServiceMessage.Build(toService, ConfigComponent.DeviceInfo, out var output))
+                if (!ServiceMessage.Build(toService,
+                        ConfigComponent.AppInfo, ConfigComponent.DeviceInfo, out var output))
                     throw new Exception("Build packet failed");
 
                 // Pass messages to socket

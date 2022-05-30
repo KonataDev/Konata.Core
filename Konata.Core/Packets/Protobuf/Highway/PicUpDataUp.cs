@@ -1,4 +1,5 @@
-﻿using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Common;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf.Highway;
 
@@ -11,6 +12,7 @@ internal class PicUpDataUp : PicUp
     /// </summary>
     /// <param name="cmdId"></param>
     /// <param name="peerUin"></param>
+    /// <param name="appInfo"></param>
     /// <param name="sequence"></param>
     /// <param name="ticket"></param>
     /// <param name="fileSize"></param>
@@ -19,9 +21,9 @@ internal class PicUpDataUp : PicUp
     /// <param name="chunkSize"></param>
     /// <param name="chunkMd5"></param>
     /// <param name="request"></param>
-    public PicUpDataUp(CommandId cmdId, uint peerUin, int sequence, byte[] ticket,
+    public PicUpDataUp(CommandId cmdId, AppInfo appInfo, uint peerUin, int sequence, byte[] ticket,
         int fileSize, byte[] fileMd5, int chunkOffset, int chunkSize, byte[] chunkMd5, ProtoTreeRoot request = null)
-        : base(Command, cmdId, peerUin, sequence)
+        : base(Command, cmdId, appInfo, peerUin, sequence)
     {
         AddTree("12", w =>
         {

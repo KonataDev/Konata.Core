@@ -14,7 +14,7 @@ namespace Konata.Core.Components.Services.ProfileService;
 [Service("ProfileService.GroupMngReq", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class GroupMngReq : BaseService<GroupLeaveEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GroupLeaveEvent output)
     {
         var root = new SvcRspGroupMng(input.Payload.GetBytes());
@@ -22,7 +22,7 @@ internal class GroupMngReq : BaseService<GroupLeaveEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, GroupLeaveEvent input,
+    protected override bool Build(int sequence, GroupLeaveEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new SvcReqGroupMngReq(input.SelfUin, input.GroupUin, input.Dismiss);

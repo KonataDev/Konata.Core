@@ -14,13 +14,13 @@ namespace Konata.Core.Components.Services.OidbSvc;
 [Service("OidbSvc.0x55c_1", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Oidb0x55c_1 : BaseService<GroupPromoteAdminEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out GroupPromoteAdminEvent output)
     {
         throw new NotImplementedException();
     }
 
-    protected override bool Build(int sequence, GroupPromoteAdminEvent input,
+    protected override bool Build(int sequence, GroupPromoteAdminEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new OidbCmd0x55c_1(input.GroupUin, input.MemberUin, input.ToggleType);

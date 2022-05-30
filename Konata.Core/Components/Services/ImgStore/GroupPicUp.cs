@@ -19,7 +19,7 @@ namespace Konata.Core.Components.Services.ImgStore;
 [Service("ImgStore.GroupPicUp", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class GroupPicUp : BaseService<PicUpEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PicUpEvent output)
     {
         var tree = new ProtoTreeRoot(input.Payload.GetBytes(), true);
@@ -85,11 +85,11 @@ internal class GroupPicUp : BaseService<PicUpEvent>
         }
     }
 
-    protected override bool Build(int sequence, PicUpEvent input,
+    protected override bool Build(int sequence, PicUpEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         if (input.Mode != UpMode.GroupUp) return false;
-        output.PutProtoNode(new GroupPicUpRequest(input.DestUin, input.SelfUin, input.UploadImages));
+        output.PutProtoNode(new GroupPicUpRequest(appInfo, input.DestUin, input.SelfUin, input.UploadImages));
         return true;
     }
 }

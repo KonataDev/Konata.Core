@@ -17,7 +17,7 @@ namespace Konata.Core.Components.Services.LongConn;
 [Service("LongConn.OffPicUp", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class OffPicUp : BaseService<PicUpEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PicUpEvent output)
     {
         var tree = new ProtoTreeRoot(input.Payload.GetBytes(), true);
@@ -83,11 +83,11 @@ internal class OffPicUp : BaseService<PicUpEvent>
         }
     }
 
-    protected override bool Build(int sequence, PicUpEvent input,
+    protected override bool Build(int sequence, PicUpEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         if (input.Mode != UpMode.OffUp) return false;
-        output.PutProtoNode(new OffPicUpRequest(input.DestUin, input.SelfUin, input.UploadImages));
+        output.PutProtoNode(new OffPicUpRequest(appInfo, input.DestUin, input.SelfUin, input.UploadImages));
         return true;
     }
 }

@@ -15,7 +15,7 @@ namespace Konata.Core.Components.Services.ProfileService.Pb.ReqSystemMsgNew;
 [Service("ProfileService.Pb.ReqSystemMsgNew.Group", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Group : BaseService<ReqSystemMsgGroupEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out ReqSystemMsgGroupEvent output, List<ProtocolEvent> extra)
     {
         // input.Payload
@@ -61,7 +61,7 @@ internal class Group : BaseService<ReqSystemMsgGroupEvent>
         }
     }
 
-    protected override bool Build(int sequence, ReqSystemMsgGroupEvent input,
+    protected override bool Build(int sequence, ReqSystemMsgGroupEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         var proto = new structmsg.Types.ReqSystemMsgNew

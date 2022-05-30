@@ -15,7 +15,7 @@ namespace Konata.Core.Components.Services.PbMessageSvc;
 [Service("PbMessageSvc.PbMsgWithDraw", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbMsgWithDraw : BaseService<ProtocolEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out ProtocolEvent output)
     {
         var pb = ProtobufDecoder.Create(input.Payload);
@@ -23,7 +23,7 @@ internal class PbMsgWithDraw : BaseService<ProtocolEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, ProtocolEvent input,
+    protected override bool Build(int sequence, ProtocolEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         switch (input)

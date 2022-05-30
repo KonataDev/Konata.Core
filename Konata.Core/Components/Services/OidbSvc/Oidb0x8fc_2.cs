@@ -14,7 +14,7 @@ namespace Konata.Core.Components.Services.OidbSvc;
 [Service("OidbSvc.0x8fc_2", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class Oidb0x8fc_2 : BaseService<GroupSpecialTitleEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out GroupSpecialTitleEvent output)
     {
         // TODO: parse result
@@ -22,7 +22,7 @@ internal class Oidb0x8fc_2 : BaseService<GroupSpecialTitleEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, GroupSpecialTitleEvent input,
+    protected override bool Build(int sequence, GroupSpecialTitleEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output = new OidbCmd0x8fc_2(input.GroupUin,

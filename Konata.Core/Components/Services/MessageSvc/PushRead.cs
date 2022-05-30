@@ -10,7 +10,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 [Service("MessageSvc.PushReaded", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PushRead : BaseService<ProtocolEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out ProtocolEvent output)
     {
         output = null;

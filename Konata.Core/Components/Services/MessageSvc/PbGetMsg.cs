@@ -19,7 +19,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 [Service("MessageSvc.PbGetMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbGetMsg : BaseService<PbGetMessageEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out PbGetMessageEvent output, List<ProtocolEvent> extra)
     {
         var root = ProtoTreeRoot.Deserialize(input.Payload, true);
@@ -78,7 +78,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, PbGetMessageEvent input,
+    protected override bool Build(int sequence, PbGetMessageEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output.PutProtoNode(new GetMessageRequest(input.SyncCookie));

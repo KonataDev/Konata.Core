@@ -6,11 +6,16 @@
 internal static class Guid
 {
     /// <summary>
-    /// 生成bytes类别的GUID
+    /// Generate a guid as bytes
     /// </summary>
     /// <returns></returns>
-    public static byte[] Generate()
-    {
-        return System.Guid.NewGuid().ToByteArray();
-    }
+    public static byte[] GenerateBytes()
+        => System.Guid.NewGuid().ToByteArray();
+
+    /// <summary>
+    /// Generate a guid as a string
+    /// </summary>
+    /// <returns></returns>
+    public static string GenerateString()
+        => System.Guid.NewGuid().ToString();
 }

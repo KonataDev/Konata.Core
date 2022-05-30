@@ -15,7 +15,7 @@ namespace Konata.Core.Components.Services.MultiMsg;
 [Service("MultiMsg.ApplyUp", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class ApplyUp : BaseService<MultiMsgApplyUpEvent>
 {
-    protected override bool Parse(SSOFrame input, BotKeyStore keystore,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo, BotKeyStore keystore,
         out MultiMsgApplyUpEvent output)
     {
         var root = ProtoTreeRoot.Deserialize(input.Payload.GetBytes(), true);
@@ -42,11 +42,10 @@ internal class ApplyUp : BaseService<MultiMsgApplyUpEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, MultiMsgApplyUpEvent input,
+    protected override bool Build(int sequence, MultiMsgApplyUpEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
-        output.PutProtoNode(new MultiMsgApplyUpReq
-            (input.DestUin, input.PackedLength, input.Md5Hash));
+        output.PutProtoNode(new MultiMsgApplyUpReq(appInfo, input.DestUin, input.PackedLength, input.Md5Hash));
         return true;
     }
 }

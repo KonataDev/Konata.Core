@@ -16,7 +16,7 @@ namespace Konata.Core.Components.Services.MessageSvc;
 [Service("MessageSvc.PbSendMsg", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Managed)]
 internal class PbSendMsg : BaseService<ProtocolEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out ProtocolEvent output)
     {
         var pb = ProtobufDecoder.Create(input.Payload);
@@ -24,7 +24,7 @@ internal class PbSendMsg : BaseService<ProtocolEvent>
         return true;
     }
 
-    protected override bool Build(int sequence, ProtocolEvent input,
+    protected override bool Build(int sequence, ProtocolEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         switch (input)

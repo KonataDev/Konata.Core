@@ -1,14 +1,16 @@
-﻿using System;
+using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Crypto;
 using Konata.Core.Attributes;
+using Konata.Core.Common;
+using Konata.Core.Events.Model;
 using Konata.Core.Message.Model;
 using Konata.Core.Packets.Protobuf.Highway;
 using Konata.Core.Packets.Protobuf.Highway.Requests;
+using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.Network.TcpClient;
 using Konata.Core.Utils.Protobuf;
@@ -53,7 +55,8 @@ internal class HighwayComponent : InternalComponent
                     chunksize, selfUin,
                     i.PicUpInfo.UploadTicket,
                     i.FileData,
-                    isGroup ? PicUp.CommandId.GroupPicDataUp : PicUp.CommandId.FriendPicDataUp
+                    isGroup ? PicUp.CommandId.GroupPicDataUp : PicUp.CommandId.FriendPicDataUp,
+                    ConfigComponent.AppInfo
                 ));
             }
         }
@@ -85,7 +88,8 @@ internal class HighwayComponent : InternalComponent
             8192, selfUin,
             chain.MultiMsgUpInfo.UploadTicket,
             ProtoTreeRoot.Serialize(data).GetBytes(),
-            PicUp.CommandId.MultiMsgDataUp
+            PicUp.CommandId.MultiMsgDataUp,
+            ConfigComponent.AppInfo
         );
 
         LogV(TAG, "Task queued, " +
@@ -99,6 +103,31 @@ internal class HighwayComponent : InternalComponent
 
             return true;
         }
+    }
+
+    public async Task<string> ImageOcrUp(uint selfUin, ServerInfo server, 
+        byte[] ticket, byte[] image, string guid)
+    {
+        // Get upload config
+        var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
+        if (chunksize is <= 1024 or > 1048576) chunksize = 8192;
+
+        // Wait for tasks
+        var result = await HighwayClient.Upload(
+            server.Host,
+            server.Port,
+            chunksize, selfUin, ticket,
+            image,
+            PicUp.CommandId.ImageOcrDataUp,
+            ConfigComponent.AppInfo,
+            new ImageOcrUpRequest(guid)
+        );
+
+        // Check result code
+        var code = result.GetLeafVar("18");
+        if (code != 0) return null;
+
+        return result.GetTree("3A").GetLeafString("12");
     }
 
     /// <summary>
@@ -119,7 +148,10 @@ internal class HighwayComponent : InternalComponent
             upload.PttUpInfo.UploadTicket,
             upload.FileData,
             isGroup ? PicUp.CommandId.GroupPttDataUp : PicUp.CommandId.FriendPttDataUp,
-            isGroup ? new GroupPttUpRequest(destUin, selfUin, upload) : new FriendPttUpRequest(destUin, selfUin, upload)
+            ConfigComponent.AppInfo,
+            isGroup
+                ? new GroupPttUpRequest(ConfigComponent.AppInfo, destUin, selfUin, upload)
+                : new FriendPttUpRequest(destUin, selfUin, upload)
         );
 
         LogV(TAG, "Task queued, " +
@@ -153,12 +185,15 @@ internal class HighwayComponent : InternalComponent
     }
 
     private class HighwayClient
-        : AsyncClient, IClientListener
+        : ClientListener
     {
+        private readonly AppInfo _appInfo;
         private readonly uint _peer;
         private readonly byte[] _ticket;
         private int _sequence;
         private readonly Md5Cryptor _md5Cryptor;
+
+        public override uint HeaderSize => 9;
 
         // We no need to use a dict to storage
         // the pending requests, cuz there's only
@@ -166,10 +201,11 @@ internal class HighwayComponent : InternalComponent
         private HwResponse _hwResponse;
         private readonly ManualResetEvent _requestAwaiter;
 
-        private HighwayClient(uint peer, byte[] ticket)
+        private HighwayClient(AppInfo appInfo, uint peer, byte[] ticket)
         {
             _peer = peer;
             _ticket = ticket;
+            _appInfo = appInfo;
             _sequence = new Random().Next(0x2333, 0x7090);
             _hwResponse = default;
             _requestAwaiter = new(false);
@@ -186,16 +222,16 @@ internal class HighwayComponent : InternalComponent
         /// <param name="ticket"></param>
         /// <param name="data"></param>
         /// <param name="cmdId"></param>
+        /// <param name="appInfo"></param>
         /// <param name="extend"></param>
         /// <returns></returns>
         public static async Task<HwResponse> Upload(string host, int port, int chunk,
-            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, ProtoTreeRoot extend = null)
+            uint peer, byte[] ticket, byte[] data, PicUp.CommandId cmdId, AppInfo appInfo, ProtoTreeRoot extend = null)
         {
             HwResponse lastResponse = null;
             var datamd5 = data.Md5();
 
-            var client = new HighwayClient(peer, ticket);
-            client.SetListener(client);
+            var client = new HighwayClient(appInfo, peer, ticket);
             {
                 // Connect to server
                 if (!await client.Connect(host, port)) return null;
@@ -225,7 +261,7 @@ internal class HighwayComponent : InternalComponent
             }
 
             // Disconnect after send finish
-            await client.Disconnect();
+            client.Disconnect();
             return lastResponse;
         }
 
@@ -237,7 +273,7 @@ internal class HighwayComponent : InternalComponent
         {
             // Send request
             var result = await SendRequest
-                (new PicUpEcho(_peer, _sequence));
+                (new PicUpEcho(_appInfo, _peer, _sequence));
             {
                 // No response
                 if (result == null) return false;
@@ -268,7 +304,7 @@ internal class HighwayComponent : InternalComponent
             var chunkMD5 = _md5Cryptor.Encrypt(chunk);
 
             // Send request
-            var result = await SendRequest(new PicUpDataUp(cmdId, _peer, _sequence,
+            var result = await SendRequest(new PicUpDataUp(cmdId, _appInfo, _peer, _sequence,
                 _ticket, data.Length, dataMd5, offset, length, chunkMD5, extend), chunk);
             {
                 // No response
@@ -297,36 +333,22 @@ internal class HighwayComponent : InternalComponent
             return _hwResponse;
         }
 
-        /// <summary>
-        /// Dissect a packet
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public uint OnStreamDissect(byte[] data, uint length)
+        public override uint GetPacketLength(ReadOnlySpan<byte> header)
         {
             // 28
             // 00 00 00 10
             // 00 00 00 E9
-            if (length < 9) return 0;
-
-            // Get the header
-            var header = ByteConverter
-                .BytesToUInt32(data, 1, Endian.Big);
-            var databody = ByteConverter
-                .BytesToUInt32(data, 1 + 4, Endian.Big);
-
-            // Calculate the length
-            // 0x28 + 8 + h + b + 0x29
-            return 1 + 4 + 4 + header + databody + 1;
+            uint databody = BinaryPrimitives.ReadUInt32BigEndian(header[5..]);
+            uint headerSize = BinaryPrimitives.ReadUInt32BigEndian(header[1..]);
+            return 1 + 4 + 4 + headerSize + databody + 1;
         }
 
-        public void OnRecvPacket(byte[] data)
+        public override void OnRecvPacket(ReadOnlySpan<byte> packet)
         {
             try
             {
                 // Parse the data to HwResponse
-                _hwResponse = HwResponse.Parse(data);
+                _hwResponse = HwResponse.Parse(packet.ToArray());
                 _requestAwaiter.Set();
             }
             catch
@@ -337,11 +359,11 @@ internal class HighwayComponent : InternalComponent
             }
         }
 
-        public void OnDisconnect()
+        public override void OnDisconnect()
         {
         }
 
-        public void OnSocketError(Exception e)
+        public override void OnSocketError(Exception e)
         {
         }
     }

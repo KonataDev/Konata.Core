@@ -12,7 +12,7 @@ namespace Konata.Core.Components.Services.StatSvc;
 [Service("StatSvc.SimpleGet", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.Session)]
 internal class SimpleGet : BaseService<SimpleGetEvent>
 {
-    protected override bool Parse(SSOFrame input,
+    protected override bool Parse(SSOFrame input, AppInfo appInfo,
         BotKeyStore keystore, out SimpleGetEvent output)
     {
         var root = ProtoTreeRoot.Deserialize
@@ -28,6 +28,6 @@ internal class SimpleGet : BaseService<SimpleGetEvent>
         }
     }
 
-    protected override bool Build(int sequence, SimpleGetEvent input,
+    protected override bool Build(int sequence, SimpleGetEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output) => true;
 }

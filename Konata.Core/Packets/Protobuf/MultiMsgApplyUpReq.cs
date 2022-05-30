@@ -1,16 +1,18 @@
-﻿using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Common;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf;
 
 internal class MultiMsgApplyUpReq : ProtoTreeRoot
 {
-    public MultiMsgApplyUpReq(uint destUin, uint msgLen, byte[] msgMd5)
+    public MultiMsgApplyUpReq(AppInfo appInfo, uint destUin, 
+        uint msgLen, byte[] msgMd5)
     {
         AddLeafVar("08", 1);
         AddLeafVar("10", 5);
         AddLeafVar("18", 9);
         AddLeafVar("20", 3);
-        AddLeafString("2A", AppInfo.AppBuildVer);
+        AddLeafString("2A", appInfo.AppBuildVer);
 
         AddTree("32", _ =>
         {

@@ -1,4 +1,5 @@
-﻿using Konata.Core.Utils.Protobuf;
+﻿using Konata.Core.Common;
+using Konata.Core.Utils.Protobuf;
 
 namespace Konata.Core.Packets.Protobuf.Highway;
 
@@ -18,11 +19,14 @@ internal class PicUp : ProtoTreeRoot
         // Avatar
         SelfPortrait = 5,
 
-        // Multl message
-        MultiMsgDataUp = 27
+        // Multi message
+        MultiMsgDataUp = 27,
+        
+        // Image OCR
+        ImageOcrDataUp = 76
     }
 
-    public PicUp(string cmd, CommandId cmdid, uint peerUin, int sequence)
+    public PicUp(string cmd, CommandId cmdid, AppInfo appInfo, uint peerUin, int sequence)
     {
         AddTree("0A", (w) =>
         {
@@ -42,7 +46,7 @@ internal class PicUp : ProtoTreeRoot
             w.AddLeafVar("28", 0);
 
             // App id
-            w.AddLeafVar("30", AppInfo.SubAppId);
+            w.AddLeafVar("30", appInfo.SubAppId);
 
             // Normal Flag
             w.AddLeafVar("38", 4096);

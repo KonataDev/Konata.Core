@@ -141,7 +141,7 @@ public class BotDevice
 
         // Roll a random system
         var randOsVer = RandOsVer();
-        var randGuid = Guid.Generate();
+        var randGuid = Guid.GenerateBytes();
         var randBootId = StringGen.GetRandHex(16, false);
         var randBootLoader = $"KONATA.CORE.{StringGen.GetRandHex(8)}.BOOTLOADER_1_0";
         var randAndroidId = StringGen.GetRandHex(16, false);

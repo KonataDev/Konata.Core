@@ -12,7 +12,7 @@ namespace Konata.Core.Components.Services.PbMessageSvc;
 [Service("PbMessageSvc.PbMsgReadedReport", PacketType.TypeB, AuthFlag.D2Authentication, SequenceMode.EventBased)]
 internal class PbMsgReadReport : BaseService<GroupMessageReadEvent>
 {
-    protected override bool Build(int sequence, GroupMessageReadEvent input,
+    protected override bool Build(int sequence, GroupMessageReadEvent input, AppInfo appInfo,
         BotKeyStore keystore, BotDevice device, ref PacketBase output)
     {
         output.PutProtoNode(new GroupMsgReadReport(input.GroupUin, input.RequestId));
