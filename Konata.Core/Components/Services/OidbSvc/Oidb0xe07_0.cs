@@ -43,7 +43,18 @@ internal class Oidb0xe07_0 : BaseService<ImageOcrEvent>
             {
                 var text = item.GetLeafString("0A");
                 var confidence = (int) item.GetLeafVar("10");
-                result.Add(new ImageOcrResult(text, confidence));
+
+                // Parse points
+                var points = new List<ImageOcrResult.Point>();
+                foreach (var point in item.GetTree("1A").GetLeaves<ProtoTreeRoot>("0A"))
+                {
+                    // The empty field is zero
+                    point.TryGetLeafVar("08", out var x);
+                    point.TryGetLeafVar("10", out var y);
+                    points.Add(new((int) x, (int) y));
+                }
+
+                result.Add(new ImageOcrResult(text, confidence, points));
             }
 
             output = ImageOcrEvent.Result(0, result);

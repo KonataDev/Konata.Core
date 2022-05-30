@@ -69,19 +69,38 @@ internal class ImageOcrEvent : ProtocolEvent
 
 public class ImageOcrResult
 {
-    // public int X { get; }
-    //
-    // public int Y { get; }
+    public class Point
+    {
+        public int X { get; }
+        
+        public int Y { get; }
 
+        internal Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
+
+    /// <summary>
+    /// OCR result text
+    /// </summary>
     public string Text { get; }
 
+    /// <summary>
+    /// Result confidence in percentage
+    /// </summary>
     public int Confidence { get; }
+    
+    /// <summary>
+    /// Bounding polygon
+    /// </summary>
+    public List<Point> Polygon { get; }
 
-    public ImageOcrResult(string text, int confidence)
+    internal ImageOcrResult(string text, int confidence, List<Point> bounding)
     {
-        // X = x;
-        // Y = y;
         Text = text;
         Confidence = confidence;
+        Polygon = bounding;
     }
 }
