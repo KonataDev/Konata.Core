@@ -75,9 +75,9 @@ public class ImageOcrResult
 
     public string Text { get; }
 
-    public uint Confidence { get; }
+    public int Confidence { get; }
 
-    public ImageOcrResult(int x, int y, string text, uint confidence)
+    public ImageOcrResult(string text, int confidence)
     {
         // X = x;
         // Y = y;

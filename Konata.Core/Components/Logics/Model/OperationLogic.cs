@@ -5,6 +5,8 @@ using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message.Model;
+using Konata.Core.Utils;
+using Konata.Core.Utils.Network;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -352,28 +354,39 @@ internal class OperationLogic : BaseLogic
 
     public async Task<List<ImageOcrResult>> ImageOcr(ImageChain image)
     {
-        // Upload image first
+        if (image.ImageUrl == null && image.FileData == null)
+        {
+            throw new OperationFailedException(-1,
+                "Failed to recognize an image: Can not upload image cuz image is empty.");
+        }
+
+        // Upload image (optional)
+        // We actually can use image url directly to instead
+        // of downloading image and upload to ocr server.
+        // Idk if we do that can cause what, or a ban.
+        var data = image.FileData ?? await Http.Get(image.ImageUrl);
+        var guid = Guid.GenerateString();
         var url = await HighwayComponent.ImageOcrUp(
             Context.Bot.Uin,
             ConfigComponent.HighwayConfig.Server,
             ConfigComponent.HighwayConfig.Ticket,
-            image
+            data, guid
         );
 
         if (url == null)
         {
-            throw new OperationFailedException(-1,
-                "Failed to recongize an image: Image upload failed.");
+            throw new OperationFailedException(-2,
+                "Failed to recognize an image: Image upload failed.");
         }
 
         // Get ocr result
-        var args = ImageOcrEvent.Create(url, image.FileHash, image.Width, image.Height, image.FileLength);
+        var args = ImageOcrEvent.Create(image.ImageUrl, image.FileHash, image.Width, image.Height, image.FileLength);
         var result = await Context.SendPacket<ImageOcrEvent>(args);
         {
             if (result.ResultCode != 0)
             {
-                throw new OperationFailedException(-2,
-                    "Failed to recongize the image: Assert failed. Ret => " + result.ResultCode);
+                throw new OperationFailedException(-3,
+                    "Failed to recognize the image: Assert failed. Ret => " + result.ResultCode);
             }
         }
 

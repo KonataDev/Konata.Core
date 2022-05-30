@@ -106,7 +106,7 @@ internal class HighwayComponent : InternalComponent
     }
 
     public async Task<string> ImageOcrUp(uint selfUin, ServerInfo server, 
-        byte[] ticket, ImageChain image)
+        byte[] ticket, byte[] image, string guid)
     {
         // Get upload config
         var chunksize = ConfigComponent.GlobalConfig.HighwayChunkSize;
@@ -117,9 +117,10 @@ internal class HighwayComponent : InternalComponent
             server.Host,
             server.Port,
             chunksize, selfUin, ticket,
-            image.FileData,
+            image,
             PicUp.CommandId.ImageOcrDataUp,
-            ConfigComponent.AppInfo
+            ConfigComponent.AppInfo,
+            new ImageOcrUpRequest(guid)
         );
 
         // Check result code

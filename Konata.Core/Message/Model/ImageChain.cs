@@ -4,6 +4,7 @@ using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Events.Model;
 using Konata.Core.Utils.FileFormat;
+using Konata.Core.Utils.Network;
 
 // ReSharper disable InvertIf
 // ReSharper disable MemberCanBeProtected.Global
@@ -197,7 +198,7 @@ public class ImageChain : BaseChain
     /// <param name="url"></param>
     /// <returns></returns>
     public static ImageChain CreateFromUrl(string url)
-        => Create(Utils.Network.Http.Get(url, limitLen: 1048576 * 10).Result);
+        => Create(Http.Get(url, limitLen: 1048576 * 10).Result);
 
     /// <summary>
     /// Set image url
@@ -206,6 +207,13 @@ public class ImageChain : BaseChain
     internal void SetImageUrl(string url)
         => ImageUrl = url;
 
+    /// <summary>
+    /// Set image data
+    /// </summary>
+    /// <param name="data"></param>
+    internal void SetImageData(byte[] data)
+        => FileData = data;
+    
     /// <summary>
     /// Parse the code
     /// </summary>
