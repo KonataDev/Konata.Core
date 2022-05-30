@@ -32,13 +32,15 @@ public static class BotFather
     /// <param name="config"></param>
     /// <param name="device"></param>
     /// <param name="keystore"></param>
+    /// <param name="protocol"></param>
     /// <returns></returns>
     [KonataApi(1, experimental: true)]
-    public static Bot Create(string uin, string passwd,
-        out BotConfig config, out BotDevice device, out BotKeyStore keystore)
+    public static Bot Create(string uin, string passwd, out BotConfig config, out BotDevice device,
+                             out BotKeyStore keystore, OicqProtocol protocol = OicqProtocol.Android)
     {
         device = BotDevice.Default();
         config = BotConfig.Default();
+        config.Protocol = protocol;
         keystore = new BotKeyStore(uin, passwd);
         return new Bot(config, device, keystore);
     }
