@@ -60,7 +60,7 @@ internal class T106Body : TlvBody
         PutBytes(_tgtgKey, Prefix.None, 16);
         PutUintBE(0);
         PutBoolBE(_isGuidAvailable, 1);
-        PutBytes(_isGuidAvailable ? _guid : Guid.Generate(), Prefix.None, 16);
+        PutBytes(_isGuidAvailable ? _guid : Guid.GenerateBytes(), Prefix.None, 16);
         PutUintBE(_subAppId);
         PutUintBE((uint) _loginType);
         PutString(_uinString, Prefix.Uint16);

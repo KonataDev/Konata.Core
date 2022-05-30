@@ -35,7 +35,7 @@ public class MultiMsgChain : XmlChain, IEnumerable<MessageStruct>
     public MultiMsgChain() : base("")
     {
         Messages = new();
-        FileName = Guid.Generate().ToHex();
+        FileName = Guid.GenerateString();
         Type = ChainType.MultiMsg;
     }
 
