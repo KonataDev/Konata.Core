@@ -284,7 +284,7 @@ internal class WtExchangeLogic : BaseLogic
 
         try
         {
-            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
+            var online = await SetClientOnlineType(Context, OnlineStatusEvent.Type.Online);
 
             // Update online status
             if (online.EventType == OnlineStatusEvent.Type.Online)
@@ -461,7 +461,7 @@ internal class WtExchangeLogic : BaseLogic
         // Push offline
         var reason = $"{e.NotifyTitle} {e.OfflineReason}";
         Context.PostEvent<BusinessComponent>(OnlineStatusEvent.Push(OnlineStatusEvent.Type.Offline, reason));
-
+        
         Context.PostEventToEntity(BotOfflineEvent.Push(BotOfflineEvent.OfflineType.ServerKickOff, reason));
     }
 
@@ -483,7 +483,7 @@ internal class WtExchangeLogic : BaseLogic
         context.SendPacket<WtLoginEvent>(userOperation);
 
     private static Task<OnlineStatusEvent>
-        SetClientOnineType(BusinessComponent context, OnlineStatusEvent.Type onlineType) =>
+        SetClientOnlineType(BusinessComponent context, OnlineStatusEvent.Type onlineType) =>
         context.SendPacket<OnlineStatusEvent>(OnlineStatusEvent.Create(onlineType));
 
     private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context) =>

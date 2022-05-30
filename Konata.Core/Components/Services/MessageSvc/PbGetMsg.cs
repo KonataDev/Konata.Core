@@ -64,7 +64,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                                 break;
                         }
                     }
-                    catch (Exception e)
+                    catch //(Exception e)
                     {
                         // TODO: Droppppppp
                         // Fixme
