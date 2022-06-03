@@ -295,7 +295,7 @@ internal class WtExchangeLogic : BaseLogic
 
         try
         {
-            var online = await SetClientOnineType(Context, OnlineStatusEvent.Type.Online);
+            var online = await SetClientOnlineType(Context, OnlineStatusEvent.Type.Online);
 
             // Update online status
             if (online.EventType == OnlineStatusEvent.Type.Online)
@@ -514,7 +514,7 @@ internal class WtExchangeLogic : BaseLogic
     private static Task<WtLoginEvent> WtCheckUserOperation(BusinessComponent context, WtLoginEvent userOperation)
         => context.SendPacket<WtLoginEvent>(userOperation);
 
-    private static Task<OnlineStatusEvent> SetClientOnineType(BusinessComponent context, OnlineStatusEvent.Type onlineType)
+    private static Task<OnlineStatusEvent> SetClientOnlineType(BusinessComponent context, OnlineStatusEvent.Type onlineType)
         => context.SendPacket<OnlineStatusEvent>(OnlineStatusEvent.Create(onlineType));
 
     private static Task<CheckHeartbeatEvent> CheckHeartbeat(BusinessComponent context)
