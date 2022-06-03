@@ -98,14 +98,20 @@ internal class MessageFilterLogic : BaseLogic
     /// </summary>
     private async void OnSyncServerTime()
     {
-        // Get server time
-        var result = await Context.SendPacket
-            <CorrectTimeEvent>(CorrectTimeEvent.Create());
+        try
         {
-            var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            _serverTimeOffset = result.ServerTime - current;
+            // Get server time
+            var result = await Context.SendPacket<CorrectTimeEvent>(CorrectTimeEvent.Create());
+            {
+                var current = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                _serverTimeOffset = result.ServerTime - current;
 
-            Context.LogI(TAG, $"Server diff time: {_serverTimeOffset}");
+                Context.LogI(TAG, $"Server diff time: {_serverTimeOffset}");
+            }
+        }
+        catch
+        {
+            // do nothing
         }
     }
 
