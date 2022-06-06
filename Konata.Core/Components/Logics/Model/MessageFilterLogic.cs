@@ -128,7 +128,7 @@ internal class MessageFilterLogic : BaseLogic
         foreach (var i in list)
         {
             _cache.TryRemove(i, out _);
-            Console.WriteLine($"deleted {i}");
+            //Console.WriteLine($"deleted {i}");
         }
 
         if (list.Count != 0)
