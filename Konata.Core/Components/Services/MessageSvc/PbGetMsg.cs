@@ -47,6 +47,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                             case NotifyType.FriendMessage:
                             case NotifyType.FriendMessageSingle:
                             case NotifyType.FriendPttMessage:
+                            case NotifyType.FriendFileMessage:
                                 extra.Add(OnProcessMessage(keystore.Account.Uin, j));
                                 break;
 
@@ -56,15 +57,14 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
 
                             case NotifyType.StrangerMessage:
                                 break;
-
+                            
                             default:
-                            case NotifyType.FriendFileMessage:
                             case NotifyType.GroupCreated:
                             case NotifyType.GroupRequestAccepted:
                                 break;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // TODO: Droppppppp
                         // Fixme
@@ -107,8 +107,7 @@ internal class PbGetMsg : BaseService<PbGetMessageEvent>
                 ? (uint) (uuid & 0xFFFFFFFF)
                 : x;
 
-            var chains = MessagePacker.UnPack(root.PathTo
-                <ProtoTreeRoot>("1A.0A"), MessagePacker.Mode.Friend);
+            var chains = MessagePacker.UnPack(root.PathTo<ProtoTreeRoot>("1A"), MessagePacker.Mode.Friend);
 
             context.SetMessage(chains);
             context.SetSenderInfo(fromUin, "");
