@@ -139,7 +139,7 @@ public class BaseEntity
     {
         // Create a task
         var task = new KonataTask(anyEvent, timeout);
-        var compoment = GetComponent<TComp>();
+        var component = GetComponent<TComp>();
 
         Task.Run(async () =>
         {
@@ -147,7 +147,7 @@ public class BaseEntity
             {
                 // Force finish the tasks if the
                 // handler does not save the event by itself.
-                if (!await compoment.OnHandleEvent(task) && !task.Complected)
+                if (!await component.OnHandleEvent(task) && !task.Complected)
                     task.Finish();
 
                 // TODO:
@@ -173,7 +173,7 @@ public class BaseEntity
     {
         // Create a task
         var task = new KonataTask(anyEvent);
-        var compoment = GetComponent<TComponent>();
+        var component = GetComponent<TComponent>();
 
         Task.Run(async () =>
         {
@@ -181,7 +181,7 @@ public class BaseEntity
             {
                 // Force finish the tasks if the
                 // handler does not save the event by itself.
-                if (!await compoment.OnHandleEvent(task) && !task.Complected)
+                if (!await component.OnHandleEvent(task) && !task.Complected)
                     task.Finish();
 
                 // TODO:

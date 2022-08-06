@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using Konata.Core.Events.Model;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Protobuf;
 using Konata.Core.Message.Model;
@@ -149,7 +150,10 @@ internal static class MessagePacker
         BaseChain chain;
         var builder = new MessageBuilder();
 
-        root.ForEach<ProtoTreeRoot>((key, val) =>
+        var isFileEvent = root.TryGetLeaf("12", out var fileLeaf);
+        if (isFileEvent) builder.Add(ParseFile(fileLeaf as ProtoTreeRoot, mode));
+
+        (root.GetLeaf<ProtoTreeRoot>("0A")).ForEach<ProtoTreeRoot>((key, val) =>
         {
             switch (key)
             {
@@ -611,7 +615,7 @@ internal static class MessagePacker
                 return ParseBigQFace(tree.GetLeaf<ProtoTreeRoot>("12"));
 
             default:
-            case 2:
+             case 2:
                 throw new NotImplementedException();
         }
     }
@@ -674,6 +678,36 @@ internal static class MessagePacker
             // Create image chain
             return ImageChain.Create(url, hash,
                 hash, width, height, length, imgtype);
+        }
+    }
+
+    /// <summary>
+    /// Process File chain
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    private static FileChain ParseFile(ProtoTreeRoot tree, Mode mode)
+    {
+        if (mode == Mode.Friend)
+        {
+            var fileRoot = tree.GetLeaf<ProtoTreeRoot>("0A");
+
+            var filename = fileRoot.GetLeafString("2A");
+            var filesize = (ulong)fileRoot.GetLeafVar("30");
+            var fileHash = fileRoot.GetLeafBytes("22");
+            var fileUuid = fileRoot.GetLeafString("1A");
+
+            return new FileChain(filename, filesize, fileHash, fileUuid);
+        }
+        else // TODO: Group File
+        {
+            var filename = "";
+            ulong filesize = 0;
+            var fileHash = Array.Empty<byte>();
+            var fileUuid = "";
+            
+            return new FileChain(filename, filesize, fileHash, fileUuid);
         }
     }
 
