@@ -11,27 +11,27 @@ public class ReplyChain : BaseChain
     /// <summary>
     /// Reply uin
     /// </summary>
-    internal uint Uin { get; }
+    public uint Uin { get; }
 
     /// <summary>
     /// Sequence of reply message
     /// </summary>
-    internal uint Sequence { get; }
+    public uint Sequence { get; }
 
     /// <summary>
     /// Uuid of reply message
     /// </summary>
-    internal long Uuid { get; }
+    public long Uuid { get; }
 
     /// <summary>
     /// Time of reply message
     /// </summary>
-    internal uint Time { get; }
+    public uint Time { get; }
 
     /// <summary>
     /// Reply message preview
     /// </summary>
-    internal string Preview { get; }
+    public string Preview { get; }
 
     private ReplyChain(uint uin, uint sequence, long uuid, uint time, string preview)
         : base(ChainType.Reply, ChainMode.Singletag)
