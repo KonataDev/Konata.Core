@@ -185,6 +185,11 @@ public class Bot : BaseEntity, IDisposable
     /// On friend request event
     /// </summary>
     public event KonataEvent<FriendRequestEvent> OnFriendRequest;
+    
+    /// <summary>
+    /// On bot fk event
+    /// </summary>
+    public event KonataEvent<GroupMessageBlockedEvent> OnGroupMessageBlocked;
 
     private Dictionary<Type, Action<BaseEvent>> _dict;
 
@@ -200,6 +205,7 @@ public class Bot : BaseEntity, IDisposable
             {typeof(CaptchaEvent), e => OnCaptcha?.Invoke(this, (CaptchaEvent) e)},
             {typeof(BotOnlineEvent), e => OnBotOnline?.Invoke(this, (BotOnlineEvent) e)},
             {typeof(BotOfflineEvent), e => OnBotOffline?.Invoke(this, (BotOfflineEvent) e)},
+            {typeof(GroupMessageBlockedEvent), e => OnGroupMessageBlocked?.Invoke(this, (GroupMessageBlockedEvent) e)},
 
             // Group events
             {typeof(GroupMessageEvent), e => OnGroupMessage?.Invoke(this, (GroupMessageEvent) e)},

@@ -34,7 +34,7 @@ internal class MessagingLogic : BaseLogic
     /// <param name="message"></param>
     /// <returns></returns>
     /// <exception cref="MessagingException"></exception>
-    public async Task<bool> SendFriendMessage(uint friendUin, MessageChain message)
+    public async Task<int> SendFriendMessage(uint friendUin, MessageChain message)
     {
         // Wait for upload done
         var results = await UploadResources(friendUin, message, false);
@@ -52,11 +52,7 @@ internal class MessagingLogic : BaseLogic
 
         // Send the message
         var result = await SendFriendMessage(Context, friendUin, message);
-        if (result.ResultCode == 0) return true;
-        {
-            throw new MessagingException("Send friend message failed: " +
-                                         $"Assert failed. Ret => {result.ResultCode}");
-        }
+        return result.ResultCode;
     }
 
     /// <summary>
@@ -66,7 +62,7 @@ internal class MessagingLogic : BaseLogic
     /// <param name="message"></param>
     /// <returns></returns>
     /// <exception cref="MessagingException"></exception>
-    public async Task<bool> SendGroupMessage(uint groupUin, MessageChain message)
+    public async Task<int> SendGroupMessage(uint groupUin, MessageChain message)
     {
         // Wait for upload done
         var results = await UploadResources(groupUin, message, true);
@@ -84,11 +80,11 @@ internal class MessagingLogic : BaseLogic
 
         // Send the message
         var result = await SendGroupMessage(Context, groupUin, message);
-        if (result.ResultCode == 0) return true;
-        {
-            throw new MessagingException("Send group message failed: " +
-                                         $"Assert failed. Ret => {result.ResultCode}");
-        }
+        
+        if (result.ResultCode == 46)
+            Context.Bot.PostEventToEntity(GroupMessageBlockedEvent.Push());
+
+        return result.ResultCode;
     }
     
     /// <summary>
@@ -97,7 +93,7 @@ internal class MessagingLogic : BaseLogic
     /// <param name="message"></param>
     /// <returns></returns>
     /// <exception cref="MessagingException"></exception>
-    public async Task<bool> RecallMessage(MessageStruct message)
+    public async Task<int> RecallMessage(MessageStruct message)
     {
         ProtocolEvent result = null;
         if (message.Type == MessageStruct.SourceType.Group)
@@ -109,12 +105,7 @@ internal class MessagingLogic : BaseLogic
             result = await RecallFriendMessage(Context, message.Receiver.Uin, message.Sequence, message.Random, message.Uuid, message.Time);
         }
         
-        
-        if (result.ResultCode == 0) return true;
-        {
-            throw new MessagingException("Recall message failed: " +
-                                         $"Assert failed. Ret => {result.ResultCode}");
-        }
+        return result.ResultCode;
     }
 
     #region Resource upload logics

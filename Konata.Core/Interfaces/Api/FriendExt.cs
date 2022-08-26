@@ -22,7 +22,7 @@ public static class FriendExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="MessagingException"></exception>
     [KonataApi(1)]
-    public static Task<bool> SendFriendMessage(this Bot bot, uint friendUin, MessageBuilder builder)
+    public static Task<int> SendFriendMessage(this Bot bot, uint friendUin, MessageBuilder builder)
         => bot.BusinessComponent.Messaging.SendFriendMessage(friendUin, builder.Build());
 
     /// <summary>
@@ -34,7 +34,7 @@ public static class FriendExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="MessagingException"></exception>
     [KonataApi(1)]
-    public static Task<bool> SendFriendMessage(this Bot bot, uint friendUin, string message)
+    public static Task<int> SendFriendMessage(this Bot bot, uint friendUin, string message)
         => bot.SendFriendMessage(friendUin, new MessageBuilder(message));
 
     /// <summary>
@@ -46,7 +46,7 @@ public static class FriendExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="MessagingException"></exception>
     [KonataApi(1)]
-    public static Task<bool> SendFriendMessage(this Bot bot, uint friendUin, params BaseChain[] chains)
+    public static Task<int> SendFriendMessage(this Bot bot, uint friendUin, params BaseChain[] chains)
         => bot.SendFriendMessage(friendUin, new MessageBuilder(chains));
 
     /// <summary>
@@ -58,7 +58,7 @@ public static class FriendExt
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="MessagingException"></exception>
     [KonataApi(1)]
-    public static Task<bool> SendFriendMessage(this Bot bot, uint friendUin, MessageChain chain)
+    public static Task<int> SendFriendMessage(this Bot bot, uint friendUin, MessageChain chain)
         => bot.SendFriendMessage(friendUin, new MessageBuilder(chain));
     
     /// <summary>
