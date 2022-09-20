@@ -56,7 +56,7 @@ internal class OperationLogic : BaseLogic
             .GetGroupInfo(groupUin);
         {
             // Check owner
-            if (groupInfo.OwnerUin != memberUin)
+            if (groupInfo.OwnerUin != Context.Bot.Uin)
             {
                 throw new OperationFailedException(-1,
                     "Failed to promote admin: You're not the owner of this group.");
