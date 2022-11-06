@@ -25,10 +25,10 @@ internal class AppInfo
     public static AppInfo Android => new()
     {
         AppId = 16,
-        SubAppId = 537113159,
+        SubAppId = 537138832,
         AppClientVersion = 0,
         ApkPackageName = "com.tencent.mobileqq",
-        ApkVersionName = "8.8.80",
+        ApkVersionName = "8.9.15.9425",
         AppBuildVer = "8.8.80.7400",
         AppRevision = "61cd5c8c",
         ApkSignatureMd5 = new byte[]

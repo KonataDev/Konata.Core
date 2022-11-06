@@ -134,8 +134,8 @@ public class BotDevice
     public static BotDevice Default()
     {
         // Roll a random model
-        var randName = $"Konata {StringGen.GetRandHex(8)}";
-        var randBaseBand = $"KONATA.CORE.{StringGen.GetRandHex(4)}.1.0.REV";
+        var randName = $"Andreal {StringGen.GetRandHex(8)}";
+        var randBaseBand = $"ANDREAL.CORE.{StringGen.GetRandHex(4)}.1.0.REV";
         var randImei = StringGen.GetRandNumber(14);
         var randImsi = StringGen.GetRandNumber(15);
 
@@ -162,7 +162,7 @@ public class BotDevice
             {
                 Name = randName,
                 CodeName = "REL",
-                Manufacturer = "Konata Project",
+                Manufacturer = "Project Andreal",
                 BaseBand = randBaseBand,
                 Imei = randImei,
                 Imsi = randImsi
