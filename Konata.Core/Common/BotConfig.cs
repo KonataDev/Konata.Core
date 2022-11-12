@@ -71,14 +71,15 @@ public class BotConfig
             HighwayChunkSize = 4096,
             EnableAudio = false,
             DefaultTimeout = 6000,
-            Protocol = OicqProtocol.Android
+            Protocol = OicqProtocol.AndroidPhone
         };
     }
 }
 
 public enum OicqProtocol
 {
-    Android = 0,
+    AndroidPhone = 0,
     Watch = 1,
-    // Ipad = 2
+    // Ipad = 2,
+    AndroidPad = 3,
 }
