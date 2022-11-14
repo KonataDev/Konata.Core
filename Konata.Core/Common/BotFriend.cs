@@ -33,6 +33,12 @@ namespace Konata.Core.Common
         /// </summary>
         public byte Gender { get; internal set; }
 
+        /// <summary>
+        /// Friend Avatar Url
+        /// </summary>
+        public string AvatarUrl
+            => "https://q1.qlogo.cn/g?b=qq&nk={uin}&s=0".Replace("{uin}", Uin.ToString());
+
         internal BotFriend()
         {
             Name = "";

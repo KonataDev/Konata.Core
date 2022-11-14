@@ -68,6 +68,12 @@ namespace Konata.Core.Common
         public RoleType Role { get; set; }
 
         /// <summary>
+        /// Member Avatar Url
+        /// </summary>
+        public string AvatarUrl
+            => "https://q1.qlogo.cn/g?b=qq&nk={uin}&s=0".Replace("{uin}", Uin.ToString());
+
+        /// <summary>
         /// Member is admin (except owner)
         /// </summary>
         internal bool IsAdmin { get; set; }
