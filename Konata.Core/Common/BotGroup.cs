@@ -58,6 +58,12 @@ namespace Konata.Core.Common
         public uint MutedMe { get; set; }
 
         /// <summary>
+        /// Group Avatar Url
+        /// </summary>
+        public string AvatarUrl
+            => "https://p.qlogo.cn/gh/{uin}/{uin}/0/".Replace("{uin}", Uin.ToString());
+
+        /// <summary>
         /// Last update time
         /// </summary>
         internal DateTime LastUpdate { get; set; }
