@@ -55,13 +55,13 @@ internal class WtExchangeLogic : BaseLogic
         _heartbeatCounter++;
     }
 
-    private static readonly (bool Success, WtLoginEvent.Type Type) DefaultValue = (false, WtLoginEvent.Type.Unknown);
+    private static readonly (bool Success, WtLoginEvent Event) DefaultValue = (false, WtLoginEvent.ResultNotImplemented(0,""));
 
     /// <summary>
     /// Bot login
     /// </summary>
     /// <returns></returns>
-    public async Task<(bool Success, WtLoginEvent.Type Type)> Login()
+    public async Task<(bool Success, WtLoginEvent Event)> Login()
     {
         // Check online type
         if (_onlineType != OnlineStatusEvent.Type.Offline)
@@ -123,7 +123,7 @@ internal class WtExchangeLogic : BaseLogic
                     case WtLoginEvent.Type.OK:
                         if (!await OnBotOnline()) return DefaultValue;
                         _isFirstLogin = false;
-                        return (true, WtLoginEvent.Type.OK);
+                        return (true, wtStatus);
 
                     case WtLoginEvent.Type.CheckSms:
                     case WtLoginEvent.Type.CheckSlider:
@@ -135,7 +135,7 @@ internal class WtExchangeLogic : BaseLogic
                             Context.LogW(TAG,
                                          "No captcha event handler registered, "
                                          + "Please note, Konata cannot process captcha automatically.");
-                            return (false, wtStatus.EventType);
+                            return (false, wtStatus);
                         }
 
                         // Wait for user operation
@@ -162,14 +162,14 @@ internal class WtExchangeLogic : BaseLogic
                     case WtLoginEvent.Type.HighRiskEnvironment:
                     case WtLoginEvent.Type.InvalidUinOrPassword:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
-                        return (false, wtStatus.EventType);
+                        return (false, wtStatus);
 
                     case WtLoginEvent.Type.Unknown:
                     case WtLoginEvent.Type.NotImplemented:
                     default:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
                         Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
-                        return (false, wtStatus.EventType);
+                        return (false, wtStatus);
                 }
             }
         }
