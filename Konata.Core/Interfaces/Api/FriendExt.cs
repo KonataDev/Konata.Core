@@ -94,4 +94,8 @@ public static class FriendExt
     [KonataApi(1)]
     public static Task<bool> DeclineFriendRequest(this Bot bot, uint reqUin, long token, bool preventRequest = false)
         => bot.BusinessComponent.Operation.DeclineFriendRequest(reqUin, token, preventRequest);
+    
+    [KonataApi(1, experimental: true)]
+    public static Task<string> GetOfflineFileUrl(this Bot bot, FileChain chain)
+        => bot.BusinessComponent.Operation.GetOfflineFileUrl(chain.FileUuid);
 }

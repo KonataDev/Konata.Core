@@ -71,11 +71,11 @@ internal class ConfigComponent : InternalComponent
         // Select protocol type
         AppInfo = config.Protocol switch
         {
-            OicqProtocol.Android    => AppInfo.Android,
-            OicqProtocol.Watch      => AppInfo.Watch,
-            OicqProtocol.AndroidPad => AppInfo.AndroidPad,
-            OicqProtocol.iPad       => AppInfo.Ipad,
-            _                       => AppInfo.Android
+            OicqProtocol.AndroidPhone => AppInfo.AndroidPhone,
+            OicqProtocol.Watch        => AppInfo.Watch,
+            OicqProtocol.AndroidPad   => AppInfo.AndroidPad,
+            OicqProtocol.IPad         => AppInfo.Ipad,
+            _                         => AppInfo.AndroidPhone
         };
     }
 

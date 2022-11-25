@@ -155,10 +155,10 @@ internal static partial class FileFormat
     private static bool DetectWebp(ByteBuffer buffer,
         out uint width, out uint height)
     {
-        buffer.PeekUshortLE(0x1A, out var w);
-        width = w;
-        buffer.PeekUshortLE(0x1C, out var h);
-        height = h;
+        buffer.PeekUshortLE(0x18, out var w);
+        width = w + (uint)1;
+        buffer.PeekUshortLE(0x1B, out var h);
+        height = h + (uint)1;
         return true;
     }
 }

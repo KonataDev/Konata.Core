@@ -72,7 +72,7 @@ internal class PbPushGroupMsg : BaseService<GroupMessageEvent>
 
             // Parse message content
             var chains = MessagePacker.UnPack(root.PathTo
-                <ProtoTreeRoot>("0A.1A.0A"), MessagePacker.Mode.Group);
+                <ProtoTreeRoot>("0A.1A"), MessagePacker.Mode.Group);
             {
                 source.SetMessage(chains);
             }

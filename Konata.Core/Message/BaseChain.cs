@@ -22,6 +22,7 @@ public abstract class BaseChain
         Xml,
         MultiMsg,
         Json,
+        File,
     }
 
     public enum ChainMode

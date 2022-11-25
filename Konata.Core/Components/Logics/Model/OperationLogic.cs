@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message.Model;
-using Konata.Core.Utils;
 using Konata.Core.Utils.Network;
+using Guid = Konata.Core.Utils.Guid;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -55,7 +56,7 @@ internal class OperationLogic : BaseLogic
             .GetGroupInfo(groupUin);
         {
             // Check owner
-            if (groupInfo.OwnerUin != memberUin)
+            if (groupInfo.OwnerUin != Context.Bot.Uin)
             {
                 throw new OperationFailedException(-1,
                     "Failed to promote admin: You're not the owner of this group.");
@@ -391,5 +392,19 @@ internal class OperationLogic : BaseLogic
         }
 
         return result.OcrResult;
+    }
+    
+    public async Task<string> GetOfflineFileUrl(string fileUuid)
+    {        
+        var args = OfflineFileDownloadEvent.Create(Context.Bot.Uin, fileUuid);
+        var result = await Context.SendPacket<OfflineFileDownloadEvent>(args);
+        {
+            if (result.ResultCode != 0)
+            {
+                throw new OperationFailedException(-3,
+                    "Failed to get the file url: Assert failed. Ret => " + result.ResultCode);
+            }
+        }
+        return result.FileUrl;
     }
 }

@@ -24,79 +24,86 @@ internal class AppInfo
         public uint[] SubAppIdList { get; internal set; }
     }
 
-    public static AppInfo Android
-        => new()
-           {
-               AppId = 16,
-               SubAppId = 537138832,
-               AppClientVersion = 0,
-               ApkPackageName = "com.tencent.mobileqq",
-               ApkVersionName = "8.9.15.9425",
-               AppBuildVer = "8.8.80.7400",
-               AppRevision = "61cd5c8c",
-               ApkSignatureMd5
-                   = new byte[]
-                     {
-                         0xA6, 0xB7, 0x45, 0xBF, 0x24, 0xA2, 0xC2, 0x77, 0x52, 0x77, 0x16, 0xF6, 0xF3, 0x6E, 0xB6, 0x8D
-                     },
-               WtLoginSdk = new()
-                            {
-                                SdkBuildTime = 1640921786,
-                                SdkVersion = "6.0.0.2494",
-                                MainSigBitmap = 16724722,
-                                MiscBitmap = 150470524,
-                                SubSigBitmap = 66560,
-                                SubAppIdList = new uint[] { 1600000226 }
-                            }
-           };
+    public static AppInfo AndroidPhone => new()
+    {
+        AppId = 16,
+        SubAppId = 537138832,
+        AppClientVersion = 0,
+        ApkPackageName = "com.tencent.mobileqq",
+        ApkVersionName = "8.9.15.9425",
+        AppBuildVer = "8.8.80.7400",
+        AppRevision = "61cd5c8c",
+        ApkSignatureMd5 = new byte[]
+        {
+            0xA6, 0xB7, 0x45, 0xBF,
+            0x24, 0xA2, 0xC2, 0x77,
+            0x52, 0x77, 0x16, 0xF6,
+            0xF3, 0x6E, 0xB6, 0x8D
+        },
+        WtLoginSdk = new()
+        {
+            SdkBuildTime = 1640921786,
+            SdkVersion = "6.0.0.2494",
+            MainSigBitmap = 16724722,
+            MiscBitmap = 150470524,
+            SubSigBitmap = 66560,
+            SubAppIdList = new uint[] {1600000226}
+        }
+    };
 
-    public static AppInfo AndroidPad
-        => new()
-           {
-               AppId = 16,
-               SubAppId = 537140414,
-               AppClientVersion = 0,
-               ApkPackageName = "com.tencent.mobileqq",
-               ApkVersionName = "8.9.15.9425",
-               AppBuildVer = "8.8.80.7400",
-               AppRevision = "61cd5c8c",
-               ApkSignatureMd5
-                   = new byte[]
-                     {
-                         0xA6, 0xB7, 0x45, 0xBF, 0x24, 0xA2, 0xC2, 0x77, 0x52, 0x77, 0x16, 0xF6, 0xF3, 0x6E, 0xB6, 0x8D
-                     },
-               WtLoginSdk = new()
-                            {
-                                SdkBuildTime = 1640921786,
-                                SdkVersion = "6.0.0.2494",
-                                MainSigBitmap = 16724722,
-                                MiscBitmap = 150470524,
-                                SubSigBitmap = 66560,
-                                SubAppIdList = new uint[] { 1600000226 }
-                            }
-           };
+    public static AppInfo AndroidPad => new()
+    {
+        AppId = 16,
+        SubAppId = 537140414,
+        AppClientVersion = 0,
+        ApkPackageName = "com.tencent.mobileqq",
+        ApkVersionName = "8.9.15.9425",
+        AppBuildVer = "8.8.80.7400",
+        AppRevision = "61cd5c8c",
+        ApkSignatureMd5 = new byte[]
+        {
+            0xA6, 0xB7, 0x45, 0xBF,
+            0x24, 0xA2, 0xC2, 0x77,
+            0x52, 0x77, 0x16, 0xF6,
+            0xF3, 0x6E, 0xB6, 0x8D
+        },
+        WtLoginSdk = new()
+        {
+            SdkBuildTime = 1640921786,
+            SdkVersion = "6.0.0.2494",
+            MainSigBitmap = 16724722,
+            MiscBitmap = 150470524,
+            SubSigBitmap = 66560,
+            SubAppIdList = new uint[] { 1600000226 }
+        }
+    };
 
-    public static AppInfo Watch
-        => new()
-           {
-               AppId = 16,
-               SubAppId = 537064446,
-               AppClientVersion = 0,
-               ApkPackageName = "com.tencent.qqlite",
-               ApkVersionName = "3.3.0",
-               AppBuildVer = "3.3.0.20",
-               AppRevision = "", // empty for watch
-               ApkSignatureMd5 = new byte[] { 0xA6, 0xB7, 0x45, 0xBF, 0x24, 0xA2, 0xC2, 0x77, 0x52, 0x77, 0x16, 0xF6, 0xF3, 0x6E, 0xB6, 0x8D },
-               WtLoginSdk = new()
-                            {
-                                SdkBuildTime = 1559564731,
-                                SdkVersion = "6.0.0.2365",
-                                MainSigBitmap = 16724722,
-                                MiscBitmap = 16252796,
-                                SubSigBitmap = 66560,
-                                SubAppIdList = new uint[] { 1600000226 }
-                            }
-           };
+    public static AppInfo Watch => new()
+    {
+        AppId = 16,
+        SubAppId = 537064446,
+        AppClientVersion = 0,
+        ApkPackageName = "com.tencent.qqlite",
+        ApkVersionName = "3.3.0",
+        AppBuildVer = "3.3.0.20",
+        AppRevision = "", // empty for watch
+        ApkSignatureMd5 = new byte[]
+        {
+            0xA6, 0xB7, 0x45, 0xBF,
+            0x24, 0xA2, 0xC2, 0x77,
+            0x52, 0x77, 0x16, 0xF6,
+            0xF3, 0x6E, 0xB6, 0x8D
+        },
+        WtLoginSdk = new()
+        {
+            SdkBuildTime = 1559564731,
+            SdkVersion = "6.0.0.2365",
+            MainSigBitmap = 16724722,
+            MiscBitmap = 16252796,
+            SubSigBitmap = 66560,
+            SubAppIdList = new uint[] {1600000226}
+        }
+    };
 
     public static AppInfo Ipad
         => new()
