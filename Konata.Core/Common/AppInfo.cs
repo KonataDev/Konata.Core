@@ -102,4 +102,31 @@ internal class AppInfo
             SubAppIdList = new uint[] {1600000226}
         }
     };
+    
+    public static AppInfo Ipad => new()
+    {
+        AppId = 12,
+        SubAppId = 537097188,
+        AppClientVersion = 0,
+        ApkPackageName = "com.tencent.minihd.qq",
+        ApkVersionName = "8.8.35",
+        AppBuildVer = "8.8.38.2266",
+        AppRevision = "61cd5c8c",
+        ApkSignatureMd5 = new byte[]
+        {
+            0xAA, 0x39, 0x78, 0xF4,
+            0x1F, 0xD9, 0x6F, 0xF9,
+            0x91, 0x4A, 0x66, 0x9E,
+            0x18, 0x64, 0x74, 0xC7
+        },
+        WtLoginSdk = new()
+                    {
+                        SdkBuildTime = 1640921786,
+                        SdkVersion = "6.0.0.2433",
+                        MainSigBitmap = 1970400,
+                        MiscBitmap = 150470524,
+                        SubSigBitmap = 66560,
+                        SubAppIdList = new uint[] { 1600000226 }
+                    }
+    };
 }
