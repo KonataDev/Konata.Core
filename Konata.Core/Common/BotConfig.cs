@@ -80,6 +80,6 @@ public enum OicqProtocol
 {
     AndroidPhone = 0,
     Watch = 1,
-    // Ipad = 2,
+    Ipad = 2,
     AndroidPad = 3,
 }
