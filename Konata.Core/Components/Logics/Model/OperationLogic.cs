@@ -162,7 +162,7 @@ internal class OperationLogic : BaseLogic
     /// <param name="groupUin"><b>[In]</b> Group uin being operated. </param>
     /// <param name="memberUin"><b>[In]</b> Member uin being operated. </param>
     /// <param name="specialTitle"><b>[In]</b> Special title. </param>
-    /// <param name="expiredTime"><b>[In]</b> Exipred time. </param>
+    /// <param name="expiredTime"><b>[In]</b> Expired time. </param>
     /// <returns>Return true for operation successfully.</returns>
     /// <exception cref="OperationFailedException"></exception>
     public async Task<bool> GroupSetSpecialTitle(uint groupUin,

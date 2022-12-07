@@ -243,7 +243,7 @@ public class RecordChain : BaseChain
 
     /// <summary>
     /// Create a record chain from plain base64 <br />
-    /// Not incuding the header 'base64://'
+    /// Not including the header 'base64://'
     /// </summary>
     /// <param name="base64"></param>
     /// <returns></returns>

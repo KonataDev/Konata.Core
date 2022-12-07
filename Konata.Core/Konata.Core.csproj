@@ -4,7 +4,7 @@
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
         <TargetFrameworks>netstandard2.1;net50;net60</TargetFrameworks>
-        <TargetArchitechture>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</TargetArchitechture>
+        <TargetArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</TargetArchitecture>
     </PropertyGroup>
 
     <!-- Package definition -->
@@ -50,7 +50,7 @@
         <PackageReference Include="NekoRush.FuturedSocket" Version="0.1.0" />
 
         <!-- Including this reference will cause the build to fail on armv7 devices.-->
-        <PackageReference Include="Grpc.Tools" Version="2.45.0" Condition="'$(TargetArchitechture)' != 'Arm'">
+        <PackageReference Include="Grpc.Tools" Version="2.45.0" Condition="'$(TargetArchitecture)' != 'Arm'">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -68,8 +68,8 @@
     <!-- For armv7 devices -->
     <!-- Build the proto manually cuz the BuildTool doesn't supported -->
     <!-- running on the armv7 devices. WTF sucks.-->
-    <Import Project="..\Targets\Protogen.targets" Condition="'$(TargetArchitechture)' == 'Arm'" />
-    <ItemGroup Condition="'$(TargetArchitechture)' == 'Arm'">
+    <Import Project="..\Targets\Protogen.targets" Condition="'$(TargetArchitecture)' == 'Arm'" />
+    <ItemGroup Condition="'$(TargetArchitecture)' == 'Arm'">
         <Protobuf Update="Packets/Protobuf/Msf/*.proto" Access="internal_access:" />
     </ItemGroup>
     <ItemGroup>

@@ -76,11 +76,11 @@ internal static class MessagePacker
     public static byte[] PackMultiMsg(MultiMsgChain main, List<MultiMsgChain> sides, Mode mode)
     {
         var newClientMsgs = new ProtoTreeRoot();
-        var compatiableMsgs = new ProtoTreeRoot();
+        var compatibleMsgs = new ProtoTreeRoot();
         var flatMultiMsgs = new ProtoTreeRoot();
 
         // For old device compatibility
-        compatiableMsgs.AddTree("0A", _ =>
+        compatibleMsgs.AddTree("0A", _ =>
         {
             // Message source
             _.AddTree("0A", __ => ConstructSource(__, main.Messages[0]));
@@ -128,7 +128,7 @@ internal static class MessagePacker
 
         // Construct multimsg tree
         var tree = new ProtoTreeRoot();
-        tree.AddTree(compatiableMsgs);
+        tree.AddTree(compatibleMsgs);
         tree.AddTree(flatMultiMsgs);
         tree.AddTree("12", _ =>
         {

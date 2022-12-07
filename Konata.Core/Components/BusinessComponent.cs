@@ -89,7 +89,7 @@ internal class BusinessComponent : InternalComponent
         if (_taskTimeout <= 2000)
         {
             LogW(TAG, "The timeout you configured is less than 2000ms, " +
-                      "this can cause server communication chances to fail. Force reseted to 6000ms.");
+                      "this can cause server communication chances to fail. Force reset to 6000ms.");
             _taskTimeout = 6000;
         }
     }

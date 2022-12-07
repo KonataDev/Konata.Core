@@ -399,7 +399,7 @@ internal class MessagingLogic : BaseLogic
                 .PttUp(uin, Context.Bot.Uin, i, isGroup);
         }
 
-        Context.LogV(TAG, "Recored uploaded.");
+        Context.LogV(TAG, "Recorded uploaded.");
         return true;
     }
 

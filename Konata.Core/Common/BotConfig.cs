@@ -52,7 +52,7 @@ public class BotConfig
     #region Protocol
 
     /// <summary>
-    /// Procotol type
+    /// Protocol type
     /// </summary>
     public OicqProtocol Protocol;
 

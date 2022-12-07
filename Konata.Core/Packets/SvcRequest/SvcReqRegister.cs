@@ -15,7 +15,7 @@ internal struct RegisterInfo
     public byte openPush;
     public byte regType;
     public byte setMute;
-    public byte slientPush;
+    public byte silentPush;
     public byte[] cmd0x769Reqbody;
     public byte connType;
     public byte netType;
@@ -74,7 +74,7 @@ internal class SvcReqRegister : UniPacket
             [15] = (JSimpleList) info.devParam,
             [16] = (JSimpleList) info.guid,
             [17] = (JNumber) info.localeID,
-            [18] = (JNumber) info.slientPush,
+            [18] = (JNumber) info.silentPush,
 
             [19] = (JString) info.devName,
             [20] = (JString) info.devType,

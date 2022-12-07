@@ -270,7 +270,7 @@ internal class WtExchangeLogic : BaseLogic
     //         case OnlineStatusEvent.Type.Busy:
     //         case OnlineStatusEvent.Type.Hidden:
     //         case OnlineStatusEvent.Type.QMe:
-    //         case OnlineStatusEvent.Type.DoNotDistrub:
+    //         case OnlineStatusEvent.Type.DoNotDisturb:
     //             return Task.FromResult(false);
     //     }
     //

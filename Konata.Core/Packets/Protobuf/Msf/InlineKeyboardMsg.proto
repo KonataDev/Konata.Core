@@ -6,7 +6,7 @@ message InlineKeyboardMsg {
     optional uint32 type = 1;
     optional Permission permission = 2;
     optional uint32 clickLimit = 3;
-    optional string unsupportTips = 4;
+    optional string unsupportedTips = 4;
     optional string data = 5;
     optional bool atBotShowChannelList = 6;
   }

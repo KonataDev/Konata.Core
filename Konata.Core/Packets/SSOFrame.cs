@@ -92,7 +92,7 @@ internal class SSOFrame
             read.TakeBoolBE(out var isCompressed, 4);
 
             // new unknown data after 12/08/2021
-            read.TakeBytes(out var unknwonData,
+            read.TakeBytes(out var unknownData,
                 ByteBuffer.Prefix.Uint32 | ByteBuffer.Prefix.WithPrefix);
 
             {

@@ -213,7 +213,7 @@ message structmsg {
     optional uint32 doubtFlag = 31;
     optional bytes warningTips = 32;
     optional bytes nameMore = 33;
-    optional bytes addtion = 34;
+    optional bytes addition = 34;
     optional bytes transparentGroupNotify = 35;
     optional int32 reqUinFaceid = 50;
     optional string reqUinNick = 51;

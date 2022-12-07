@@ -16,7 +16,7 @@ message oidb_0x8a7 {
     optional uint32 remainAtAllCountForGroup = 3;
     optional bytes promptMsg_1 = 4;
     optional bytes promptMsg_2 = 5;
-    optional bool showAtAllLable = 6;
+    optional bool showAtAllLabel = 6;
   }
 }
 

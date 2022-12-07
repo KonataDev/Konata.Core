@@ -103,7 +103,7 @@ message generalflags {
     optional uint32 groupRichFlag = 81;
     optional bytes yuhengTaskMsgBuf = 82;
     optional bytes tagName = 83;
-    optional bytes messsageExt = 84;
+    optional bytes messageExt = 84;
     optional uint32 compoundMsgFlag = 85;
     optional bytes transData = 86;
     optional MetaData gameMetaData = 87;

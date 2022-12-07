@@ -127,7 +127,7 @@ public class BaseEntity
     }
 
     /// <summary>
-    /// Send an event to a component whitch
+    /// Send an event to a component which
     /// attached under this entity with timeout
     /// </summary>
     /// <param name="anyEvent"></param>
@@ -163,7 +163,7 @@ public class BaseEntity
     }
 
     /// <summary>
-    /// Post an event to a component whitch
+    /// Post an event to a component which
     /// attached under this entity
     /// </summary>
     /// <param name="anyEvent"></param>
