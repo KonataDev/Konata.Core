@@ -187,7 +187,7 @@ internal class MessagingLogic : BaseLogic
                 // Upload records
                 UploadRecords(recordChains, uin, isGroup),
 
-                // Placeholder for multisg
+                // Placeholder for MultiMsg
                 Task.FromResult(false)
             );
 
@@ -325,7 +325,7 @@ internal class MessagingLogic : BaseLogic
     }
 
     /// <summary>
-    /// Upload multimsg
+    /// Upload MultiMsg
     /// </summary>
     /// <param name="uin"></param>
     /// <param name="main"></param>
@@ -335,7 +335,7 @@ internal class MessagingLogic : BaseLogic
     private async Task<bool> UploadMultiMsg(MultiMsgChain main,
         List<MultiMsgChain> sides, uint uin, bool isGroup)
     {
-        // Chain packup
+        // Chain pack up
         var packed = MessagePacker.PackMultiMsg(main, sides,
             isGroup ? MessagePacker.Mode.Group : MessagePacker.Mode.Friend);
 
@@ -351,7 +351,7 @@ internal class MessagingLogic : BaseLogic
             main.SetMultiMsgUpInfo(result.UploadInfo, packed);
         }
 
-        // Highway multimsg upload
+        // Highway MultiMsg upload
         return await HighwayComponent.MultiMsgUp(uin, Context.Bot.Uin, main);
     }
 

@@ -25,7 +25,7 @@ public class FriendPokeEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[Out]</b> <br/>
-    /// Action suffixs string <br/>
+    /// Action suffix string <br/>
     /// </summary>
     public string ActionSuffix { get; }
 

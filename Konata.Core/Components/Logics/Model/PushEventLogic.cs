@@ -49,21 +49,21 @@ internal class PushEventLogic : BaseLogic
                 break;
 
             // Handle online push
-            case OnlineReqPushEvent reqpush:
-                await OnOnlineReqPush(reqpush);
+            case OnlineReqPushEvent reqPush:
+                await OnOnlineReqPush(reqPush);
                 break;
 
             // Handle online push trans
-            case PushTransMsgEvent transpush:
-                await OnPushTransMsg(transpush);
+            case PushTransMsgEvent transPush:
+                await OnPushTransMsg(transPush);
                 break;
 
             // Handle push notify event
-            case PushNotifyEvent notifypush:
-                await OnPushNotify(notifypush);
+            case PushNotifyEvent notifyPush:
+                await OnPushNotify(notifyPush);
                 break;
 
-            // Just forward messages to userend
+            // Just forward messages to user end
             default:
                 Context.PostEventToEntity(e);
                 break;

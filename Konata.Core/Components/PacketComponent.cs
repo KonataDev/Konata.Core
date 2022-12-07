@@ -191,13 +191,13 @@ internal class PacketComponent : InternalComponent
                         _serviceSequence.Session, wupBuffer, out var ssoFrame))
                     throw new Exception("Create sso frame failed.");
 
-                // Build to srevice message
+                // Build to service message
                 if (!ServiceMessage.Create(ssoFrame, attr.AuthType, Bot.Uin,
                         ConfigComponent.KeyStore.Session.D2Token,
                         ConfigComponent.KeyStore.Session.D2Key, out var toService))
                     throw new Exception("Create service message failed.");
 
-                // Packup
+                // Pack up
                 if (!ServiceMessage.Build(toService,
                         ConfigComponent.AppInfo, ConfigComponent.DeviceInfo, out var output))
                     throw new Exception("Build packet failed");

@@ -70,7 +70,7 @@ internal class HighwayComponent : InternalComponent
     }
 
     /// <summary>
-    /// Multimsg upload
+    /// MultiMsg upload
     /// </summary>
     /// <param name="selfUin"></param>
     /// <param name="destUin"></param>
@@ -239,7 +239,7 @@ internal class HighwayComponent : InternalComponent
                 // Hello Im coming
                 if (!await client.Echo()) return null;
 
-                // Send the dataup
+                // Send the data up
                 var i = 0;
                 while (i < data.Length)
                 {

@@ -59,7 +59,7 @@ public class ImageChain : BaseChain
     public ImageType ImageType { get; protected set; }
 
     /// <summary>
-    /// Picup information
+    /// PicUp information
     /// </summary>
     internal PicUpInfo PicUpInfo { get; private set; }
 
@@ -79,7 +79,7 @@ public class ImageChain : BaseChain
         Height = height;
         ImageType = type;
 
-        // Unhash
+        // UnHex
         HashData = ByteConverter.UnHex(fileHash);
     }
 

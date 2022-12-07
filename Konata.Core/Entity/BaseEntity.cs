@@ -19,7 +19,7 @@ namespace Konata.Core.Entity;
 public class BaseEntity
 {
     /// <summary>
-    /// Conpoments on this entity
+    /// Components on this entity
     /// </summary>
     private readonly Dictionary<Type, BaseComponent> _componentDict;
 

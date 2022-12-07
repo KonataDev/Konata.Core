@@ -136,7 +136,7 @@ internal abstract partial class ClientListener : IClientListener
     }
 
     /// <summary>
-    /// Recv the data
+    /// Receive the data
     /// </summary>
     private async Task ReceiveLoop(SocketSession session, CancellationToken token = default)
     {

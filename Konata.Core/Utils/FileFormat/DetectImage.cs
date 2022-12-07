@@ -15,7 +15,7 @@ internal static partial class FileFormat
     }
 
     /// <summary>
-    /// Dectet image type
+    /// Detect image type
     /// </summary>
     /// <param name="data"></param>
     /// <param name="type"></param>

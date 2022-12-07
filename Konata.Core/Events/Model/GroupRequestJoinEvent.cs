@@ -41,7 +41,7 @@ public class GroupRequestJoinEvent : FilterableEvent
 
     /// <summary>
     /// [Out] <br/>
-    /// Intive time
+    /// Request time
     /// </summary>
     public uint ReqTime { get; }
 

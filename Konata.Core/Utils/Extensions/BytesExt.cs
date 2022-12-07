@@ -46,7 +46,7 @@ internal static class BytesExt
     }
 
     /// <summary>
-    /// Caldulate Crc32 checksum
+    /// Calculate Crc32 checksum
     /// For detailed documentation, please ref
     /// <a herf="https://en.wikipedia.org/wiki/Cyclic_redundancy_check"></a><br/>
     /// </summary>

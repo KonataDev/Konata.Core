@@ -15,7 +15,7 @@ message videoFile {
     optional bytes animojiModelId = 10;
     optional uint32 longVideoKandianType = 11;
     optional uint32 source = 12;
-    optional bytes cameraTemplateid = 13;
+    optional bytes cameraTemplateId = 13;
     optional bytes cameraTemplateName = 14;
     optional uint32 embedVideo = 15;
   }

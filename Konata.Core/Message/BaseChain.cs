@@ -44,7 +44,7 @@ public abstract class BaseChain
 
     /// <summary>
     /// Serialize to protobuf<br/>
-    /// // TODO Serialzie
+    /// // TODO Serialize
     /// </summary>
     /// <returns></returns>
     internal virtual ProtoTreeRoot ToProtoBuf() => null;

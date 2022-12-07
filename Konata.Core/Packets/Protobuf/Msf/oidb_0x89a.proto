@@ -14,7 +14,7 @@ message oidb_0x89a {
 
   message GroupGeoInfo {  
     optional uint32 cityId = 1;
-    optional uint64 longtitude = 2;
+    optional uint64 longitude = 2;
     optional uint64 latitude = 3;
     optional bytes geoContent = 4;
     optional uint64 poiId = 5;
