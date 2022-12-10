@@ -9,7 +9,7 @@ message hummer_resv_21 {
     optional string iconUrl = 4;
   }
 
-  message FileAssistInfo {  
+  message FileAssitInfo {  
     optional uint64 sessionId = 1;
     optional uint32 groupId = 2;
     optional uint32 groupIdx = 3;
@@ -43,7 +43,7 @@ message hummer_resv_21 {
     optional ForwardExtFileInfo forwardExtFileInfo = 2;
     optional FileApkInfo fileApkInfo = 3;
     optional uint32 deviceType = 4;
-    optional FileAssistInfo fileAssistInfo = 5;
+    optional FileAssitInfo fileAssistInfo = 5;
   }
 
   message XtfSenderInfo {  

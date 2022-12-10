@@ -1,7 +1,7 @@
 syntax = "proto2";
 package Konata.Core.Packets.Protobuf.Msf;
 
-message GeneralFlags {
+message generalflags {
   message BotMetaData {  
     optional uint32 msgSrc = 1;
     optional uint64 inlineBotAppid = 2;
@@ -19,8 +19,8 @@ message GeneralFlags {
 
   message PassThrough {  
     optional bytes avTerminateExt = 1;
-    optional bytes qqConnectTagName = 2;
-    optional bytes qqConnectMessageExt = 3;
+    optional bytes qqconnectTagName = 2;
+    optional bytes qqconnectMessageExt = 3;
   }
 
   message ResvAttr {  
@@ -43,7 +43,7 @@ message GeneralFlags {
     optional uint32 showTailFlag = 17;
     optional uint32 doutuMsgType = 18;
     optional uint32 doutuCombo = 19;
-    optional uint32 customFeatureId = 20;
+    optional uint32 customFeatureid = 20;
     optional uint32 goldenMsgType = 21;
     optional bytes goldenMsgInfo = 22;
     optional uint32 botMessageClassId = 23;
@@ -103,7 +103,7 @@ message GeneralFlags {
     optional uint32 groupRichFlag = 81;
     optional bytes yuhengTaskMsgBuf = 82;
     optional bytes tagName = 83;
-    optional bytes messageExt = 84;
+    optional bytes messsageExt = 84;
     optional uint32 compoundMsgFlag = 85;
     optional bytes transData = 86;
     optional MetaData gameMetaData = 87;

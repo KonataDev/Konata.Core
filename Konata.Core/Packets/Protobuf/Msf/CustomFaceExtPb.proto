@@ -9,8 +9,8 @@ message CustomFaceExtPb {
 
   message ResvAttr {  
     optional uint32 imageBizType = 1;
-    optional uint32 customFaceType = 2;
-    optional uint32 emojiPackageId = 3;
+    optional uint32 customfaceType = 2;
+    optional uint32 emojiPackageid = 3;
     optional uint32 emojiId = 4;
     optional string text = 5;
     optional string doutuSuppliers = 6;
@@ -22,8 +22,8 @@ message CustomFaceExtPb {
     optional string emojiIconUrl = 13;
     optional string emojiMarketFaceName = 14;
     optional uint32 source = 15;
-    optional string cameraCaptureTemplateInfo = 16;
-    optional string cameraCaptureMaterialName = 17;
+    optional string cameraCaptureTemplateinfo = 16;
+    optional string cameraCaptureMaterialname = 17;
     optional string adEmoJumpUrl = 18;
     optional string adEmoDescStr = 19;
     optional bytes downloadIndex = 20;

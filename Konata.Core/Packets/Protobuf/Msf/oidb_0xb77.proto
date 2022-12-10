@@ -45,7 +45,7 @@ message oidb_0xb77 {
   }
 
   message ExtInfo {  
-    repeated uint32 customFeatureId = 11;
+    repeated uint32 customFeatureid = 11;
     optional string apnsWording = 12;
     optional uint32 groupSavedbFlag = 13;
     optional uint32 receiverAppid = 14;

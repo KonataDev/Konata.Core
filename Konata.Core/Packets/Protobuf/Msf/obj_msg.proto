@@ -27,7 +27,7 @@ message obj_msg {
   message ObjMsg {  
     optional uint32 msgType = 1;
     optional bytes title = 2;
-    repeated bytes abstract = 3;
+    repeated bytes abstact = 3;
     optional bytes titleExt = 5;
     repeated MsgPic pic = 6;
     repeated MsgContentInfo contentInfo = 7;

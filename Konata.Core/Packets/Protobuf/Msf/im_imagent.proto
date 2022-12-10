@@ -11,7 +11,7 @@ message im_imagent {
     optional string err = 4;
     optional bytes echoBuf = 5;
     optional im_common.User reqUser = 6;
-    optional RequestInfo reqInfo = 7;
+    optional Requestinfo reqInfo = 7;
     optional Signature signature = 8;
     optional uint32 subCmd = 9;
     optional uint32 serverIp = 10;
@@ -23,7 +23,7 @@ message im_imagent {
     optional im_msg.MsgSendResp sendResp = 12;
   }
 
-  message RequestInfo {  
+  message Requestinfo {  
     optional fixed32 reqIp = 1;
     optional uint32 reqPort = 2;
     optional uint32 reqFlag = 3;

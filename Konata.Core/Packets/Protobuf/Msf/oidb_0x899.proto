@@ -33,7 +33,7 @@ message oidb_0x899 {
     optional uint32 lastSpeakTime = 9;
     optional uint32 level = 10;
     optional uint32 point = 11;
-    optional uint32 shutupTimestamp = 12;
+    optional uint32 shutupTimestap = 12;
     optional uint32 flagex2 = 13;
     optional bytes specialTitle = 14;
     optional uint32 specialTitleExpireTime = 15;

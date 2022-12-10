@@ -77,11 +77,11 @@ message msg_svc {
     repeated RoutingHead repeatedRouting = 1;
     optional uint32 use = 2;
     optional uint64 tempId = 3;
-    optional uint64 videoLen = 4;
+    optional uint64 vedioLen = 4;
     optional bytes redbagId = 5;
     optional uint64 redbagAmount = 6;
     optional uint32 hasReadbag = 7;
-    optional uint32 hasVideo = 8;
+    optional uint32 hasVedio = 8;
   }
 
   message NearByAssistantTmp {  
