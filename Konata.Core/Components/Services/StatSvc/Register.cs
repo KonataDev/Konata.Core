@@ -47,7 +47,7 @@ internal class Register : BaseService<OnlineStatusEvent>
             regType = 0,
             guid = device.System.Guid,
             localeID = 2052,
-            slientPush = 0,
+            silentPush = 0,
             devName = device.Model.Name,
             devType = device.Model.Name,
             osVer = device.System.Version,

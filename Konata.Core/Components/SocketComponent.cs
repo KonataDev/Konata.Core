@@ -102,14 +102,12 @@ internal class SocketComponent : InternalComponent, IClientListener
                           $"=> {time}ms.");
             }
 
-            // Sort the list by lantency
+            // Sort the list by latency
             serverList.Sort((a, b) => a.Item3.CompareTo(b.Item3));
           
             // Try connect to each server
-            for (int i = 0; i < serverList.Count; i++)
+            foreach (var (addr, port, latency) in serverList)
             {
-                var (addr, port, lantency) = serverList[i];
-
                 // Connect
                 LogI(TAG, $"Try Connecting {addr}:{port}.");
                 var result = await _tcpClient.Connect(addr, port);

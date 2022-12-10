@@ -113,13 +113,13 @@ public class MessageStruct
     /// <summary>
     /// Set source info
     /// </summary>
-    /// <param name="squence"></param>
+    /// <param name="sequence"></param>
     /// <param name="rand"></param>
     /// <param name="time"></param>
     /// <param name="uuid"></param>
-    internal void SetSourceInfo(uint squence, uint rand, uint time, long uuid)
+    internal void SetSourceInfo(uint sequence, uint rand, uint time, long uuid)
     {
-        Sequence = squence;
+        Sequence = sequence;
         Random = rand;
         Time = time;
         Uuid = uuid;

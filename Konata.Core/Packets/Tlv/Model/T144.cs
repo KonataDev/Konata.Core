@@ -42,14 +42,14 @@ internal class T144Body : TlvBody
 
     public T144Body(string androidId, DeviceReport deviceReport, string osType, string osVersion,
         BotDevice.NetworkType networkType, string networkDetail, string apnName, bool isNewInstall,
-        bool isGuidAvaliable, bool isGuidChanged, byte[] guid, uint guidFlag,
+        bool isGuidAvailable, bool isGuidChanged, byte[] guid, uint guidFlag,
         string deviceModel, string deviceBrand)
     {
         _tlv109 = new Tlv(0x0109, new T109Body(androidId));
         _tlv16e = new Tlv(0x016e, new T16eBody(deviceModel));
         _tlv52d = new Tlv(0x052d, new T52dBody(deviceReport));
         _tlv124 = new Tlv(0x0124, new T124Body(osType, osVersion, networkType, networkDetail, apnName));
-        _tlv128 = new Tlv(0x0128, new T128Body(isNewInstall, isGuidAvaliable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand));
+        _tlv128 = new Tlv(0x0128, new T128Body(isNewInstall, isGuidAvailable, isGuidChanged, guid, guidFlag, deviceModel, deviceBrand));
 
         PutT144Body();
     }

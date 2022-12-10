@@ -16,10 +16,10 @@ namespace Konata.Core.Components.Logics.Model;
 
 [EventSubscribe(typeof(OnlineStatusEvent))]
 [EventSubscribe(typeof(FilterableEvent))]
-[BusinessLogic("Mesage Filter Logic", "Filter duplicate push events.")]
+[BusinessLogic("Message Filter Logic", "Filter duplicate push events.")]
 internal class MessageFilterLogic : BaseLogic
 {
-    private const string TAG = "Mesage Filter Logic";
+    private const string TAG = "Message Filter Logic";
     private const string ScheduleSyncServerTime = "Logic.Filter.SyncServerTime";
     private const string ScheduleCacheClear = "Logic.Filter.CacheClear";
     private const int FilterCacheTime = 15;

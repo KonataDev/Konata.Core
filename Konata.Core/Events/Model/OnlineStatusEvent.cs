@@ -10,7 +10,7 @@ public class OnlineStatusEvent : ProtocolEvent
         Hidden = 41,
         Busy = 50,
         QMe = 60,
-        DoNotDistrub = 70,
+        DoNotDisturb = 70,
     }
 
     public enum SubType

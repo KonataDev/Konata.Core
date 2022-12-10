@@ -37,7 +37,7 @@ public class GroupInviteEvent : FilterableEvent
 
     /// <summary>
     /// [Out] <br/>
-    /// Intive time
+    /// Invite time
     /// </summary>
     public uint InviteTime { get; }
 

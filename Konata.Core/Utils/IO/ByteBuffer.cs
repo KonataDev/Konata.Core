@@ -799,7 +799,7 @@ internal class ByteBuffer
 
     #endregion
 
-    #region PeekMetods 查看數據 此方法組不會對緩衝區造成影響
+    #region PeekMethods 查看數據 此方法組不會對緩衝區造成影響
 
     public byte PeekByte(uint offset, out byte value)
     {

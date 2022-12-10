@@ -120,7 +120,7 @@ internal abstract class OidbCmd0x899 : OidbSSOPkg
         public uint? point;
 
         // 0x60
-        public uint? shutup_timestap;
+        public uint? shutup_timestamp;
 
         // 0x68
         public uint? flagex2;
@@ -156,7 +156,7 @@ internal abstract class OidbCmd0x899 : OidbSSOPkg
             root.AddLeafVar("48", last_speak_time);
             root.AddLeafVar("50", level);
             root.AddLeafVar("58", point);
-            root.AddLeafVar("60", shutup_timestap);
+            root.AddLeafVar("60", shutup_timestamp);
             root.AddLeafVar("68", flagex2);
             root.AddLeafBytes("72", special_title);
             root.AddLeafVar("78", special_title_expire_time);

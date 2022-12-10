@@ -28,7 +28,7 @@ namespace Konata.Core.Common
         public string SpecialTitle { get; set; }
 
         /// <summary>
-        /// Member special title expird time
+        /// Member special title expire time
         /// </summary>
         public uint SpecialTitleExpiredTime { get; set; }
 
@@ -101,7 +101,7 @@ namespace Konata.Core.Common
         Member = 1,
 
         /// <summary>
-        /// Administator
+        /// Administrator
         /// </summary>
         Admin,
 

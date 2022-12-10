@@ -18,7 +18,7 @@ public class MultiMsgChain : XmlChain, IEnumerable<MessageStruct>
     internal List<MessageStruct> Messages { get; }
 
     /// <summary>
-    /// Multimsg up information
+    /// MultiMsg up information
     /// </summary>
     internal MultiMsgUpInfo MultiMsgUpInfo { get; private set; }
 
@@ -115,7 +115,7 @@ public class MultiMsgChain : XmlChain, IEnumerable<MessageStruct>
     //     => Guid = guid.ToHex();
 
     /// <summary>
-    /// Create mulimsg chain
+    /// Create MultiMsg chain
     /// </summary>
     public static MultiMsgChain Create()
         => new();

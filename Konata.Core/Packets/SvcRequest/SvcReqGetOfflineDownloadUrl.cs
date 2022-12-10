@@ -13,7 +13,7 @@ internal class SvcReqGetOfflineDownloadUrl: ProtoTreeRoot
         {
             leaf.AddLeafVar("50", selfUin);
             leaf.AddLeafString("A201", fileUuid);
-            leaf.AddLeafVar("F001", 2); // Owner tyoe
+            leaf.AddLeafVar("F001", 2); // Owner type
         }); // ApplyDownloadReq
 
         AddLeafVar("A806", 3); // BusinessId

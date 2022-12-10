@@ -63,7 +63,7 @@ internal class OffPicUp : BaseService<PicUpEvent>
                 }
 
                 // We have to
-                // upload the iamge
+                // upload the image
                 else
                 {
                     info.Ip = (uint) i.GetLeafVar("38");

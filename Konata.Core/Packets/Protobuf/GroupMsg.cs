@@ -27,7 +27,7 @@ internal class GroupMsg : ProtoTreeRoot
         // Add random request id
         AddLeafVar("20", new Random().Next(1000, 65536));
 
-        // Add ramdom bytes
+        // Add random bytes
         AddLeafVar("28", new Random().Next(int.MaxValue));
 
         // Unknown flag

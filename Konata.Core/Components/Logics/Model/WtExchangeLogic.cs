@@ -199,7 +199,7 @@ internal class WtExchangeLogic : BaseLogic
             )
         );
 
-        // Push loggedout
+        // Push logged out
         Context.PostEventToEntity(
             BotOfflineEvent.Push(
                 BotOfflineEvent.OfflineType.UserLoggedOut,
@@ -270,7 +270,7 @@ internal class WtExchangeLogic : BaseLogic
     //         case OnlineStatusEvent.Type.Busy:
     //         case OnlineStatusEvent.Type.Hidden:
     //         case OnlineStatusEvent.Type.QMe:
-    //         case OnlineStatusEvent.Type.DoNotDistrub:
+    //         case OnlineStatusEvent.Type.DoNotDisturb:
     //             return Task.FromResult(false);
     //     }
     //
@@ -391,7 +391,7 @@ internal class WtExchangeLogic : BaseLogic
                 // Reconnect
                 if (await SocketComponent.Reconnect())
                 {
-                    // Bot reonline
+                    // Bot re-online
                     if (await OnBotOnline())
                     {
                         Context.LogI(TAG, "Network reset.");
@@ -399,7 +399,7 @@ internal class WtExchangeLogic : BaseLogic
                     }
 
                     Context.LogW(TAG, "Reconnect failed! " +
-                                      "Might need to relogin?");
+                                      "Might need to re-login?");
                 }
 
                 // Relogin

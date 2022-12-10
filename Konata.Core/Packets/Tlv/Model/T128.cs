@@ -3,19 +3,19 @@
 internal class T128Body : TlvBody
 {
     public readonly bool _isNewInstall;
-    public readonly bool _isGuidAvaliable;
+    public readonly bool _isGuidAvailable;
     public readonly bool _isGuidChanged;
     public readonly byte[] _guid;
     public readonly uint _guidFlag;
     public readonly string _deviceModel;
     public readonly string _deviceBrand;
 
-    public T128Body(bool isNewInstall, bool isGuidAvaliable, bool isGuidChanged,
+    public T128Body(bool isNewInstall, bool isGuidAvailable, bool isGuidChanged,
         byte[] guid, uint guidFlag, string deviceModel, string deviceBrand)
         : base()
     {
         _isNewInstall = isNewInstall;
-        _isGuidAvaliable = isGuidAvaliable;
+        _isGuidAvailable = isGuidAvailable;
         _isGuidChanged = isGuidChanged;
         _guid = guid;
         _guidFlag = guidFlag;
@@ -24,7 +24,7 @@ internal class T128Body : TlvBody
 
         PutUshortBE(0);
         PutBoolBE(_isNewInstall, 1);
-        PutBoolBE(_isGuidAvaliable, 1);
+        PutBoolBE(_isGuidAvailable, 1);
         PutBoolBE(_isGuidChanged, 1);
         PutUintBE(_guidFlag);
         PutString(_deviceModel, Prefix.Uint16, 32);
@@ -37,7 +37,7 @@ internal class T128Body : TlvBody
     {
         EatBytes(2);
         TakeBoolBE(out _isNewInstall, 1);
-        TakeBoolBE(out _isGuidAvaliable, 1);
+        TakeBoolBE(out _isGuidAvailable, 1);
         TakeBoolBE(out _isGuidChanged, 1);
         TakeUintBE(out _guidFlag);
         TakeString(out _deviceModel, Prefix.Uint16);

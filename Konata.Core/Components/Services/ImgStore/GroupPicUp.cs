@@ -65,7 +65,7 @@ internal class GroupPicUp : BaseService<PicUpEvent>
                 }
 
                 // We have to
-                // upload the iamge
+                // upload the image
                 else
                 {
                     info.UseCached = false;

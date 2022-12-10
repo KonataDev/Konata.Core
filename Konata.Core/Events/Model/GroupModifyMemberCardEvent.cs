@@ -16,7 +16,7 @@ public class GroupModifyMemberCardEvent : ProtocolEvent
 
     /// <summary>
     /// <b>[In]</b> <br/>
-    /// Member groupd card <br/>
+    /// Member group card <br/>
     /// </summary>
     public string MemberCard { get; }
 

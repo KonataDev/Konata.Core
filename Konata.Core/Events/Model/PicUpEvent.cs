@@ -7,7 +7,7 @@ internal class PicUpEvent : ProtocolEvent
 {
     /// <summary>s
     /// <b>[In]</b> <br/>
-    /// Destnation uin <br/>
+    /// Destination uin <br/>
     /// [UpMode.GroupUp] Group uin <br/>
     /// [UpMode.OffUp] Friend uin <br/>
     /// </summary>
