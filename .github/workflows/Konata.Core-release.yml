@@ -1,0 +1,53 @@
+name: Konata.Core Release
+
+on: 
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.100
+        
+    - name: Build
+      run: |
+        cd ./Konata.Core
+        dotnet build --configuration Release
+        ls
+        ls ./bin/Release/
+      
+    - name: Zip the Build
+      run: |
+        cd ./Konata.Core/bin/Release
+        zip -r Konata.Core-net5.0.zip ./net50/ 
+        zip -r Konata.Core-net6.0.zip ./net60/ 
+        zip -r Konata.Core-netstandard2.1.zip ./netstandard2.1/ 
+        cd ../../../
+        mv ./Konata.Core/bin/Release/*.zip ./
+      
+    - name: Create Release and Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        #tag_name: ${{ github.ref }}
+        #name: ${{ github.ref }}
+        body: TODO New Release.
+        #body_path: CHANGELOG.txt
+        draft: false
+        prerelease: false
+        files: |
+          Konata.Core-net5.0.zip
+          Konata.Core-net6.0.zip
+          Konata.Core-netstandard2.1.zip
+          LICENSE 
+          README.md
