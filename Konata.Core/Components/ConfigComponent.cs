@@ -228,6 +228,7 @@ internal class ConfigComponent : InternalComponent
             member.LastSpeakTime = memberInfo.LastSpeakTime;
             member.SpecialTitle = memberInfo.SpecialTitle;
             member.SpecialTitleExpiredTime = memberInfo.SpecialTitleExpiredTime;
+            member.JoinTime = memberInfo.JoinTime;
         }
 
         // Update member role
