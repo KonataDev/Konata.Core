@@ -120,13 +120,13 @@ internal class AppInfo
             0x18, 0x64, 0x74, 0xC7
         },
         WtLoginSdk = new()
-                    {
-                        SdkBuildTime = 1640921786,
-                        SdkVersion = "6.0.0.2433",
-                        MainSigBitmap = 1970400,
-                        MiscBitmap = 150470524,
-                        SubSigBitmap = 66560,
-                        SubAppIdList = new uint[] { 1600000226 }
-                    }
+        {
+            SdkBuildTime = 1640921786,
+            SdkVersion = "6.0.0.2433",
+            MainSigBitmap = 1970400,
+            MiscBitmap = 150470524,
+            SubSigBitmap = 66560,
+            SubAppIdList = new uint[] { 1600000226 }
+        }
     };
 }
