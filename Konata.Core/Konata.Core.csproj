@@ -3,7 +3,7 @@
     <!-- Language features -->
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
-        <TargetFrameworks>netstandard2.1;net50;net60</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;net60;net70</TargetFrameworks>
         <TargetArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)</TargetArchitecture>
     </PropertyGroup>
 
