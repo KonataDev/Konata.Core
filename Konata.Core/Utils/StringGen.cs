@@ -57,9 +57,9 @@ internal static class StringGen
         var chars = new char[length];
 
         // Generate random char from the template
-        for (int i = 0; i < length; ++i)
+        for (var i = 0; i < length; ++i)
         {
-            var roll = rand.Next(0, template.Length - 1);
+            var roll = rand.Next(0, template.Length);
             chars[i] = template[roll];
         }
 
