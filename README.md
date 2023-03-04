@@ -9,7 +9,7 @@
 [![NuGet](https://img.shields.io/nuget/v/Konata.Core)](https://www.nuget.org/packages/Konata.Core)  
 [![NuGet](https://img.shields.io/nuget/dt/Konata.Core)](https://www.nuget.org/packages/Konata.Core)
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GNU%20GPLv3&color=lightrey)](./blob/main/LICENSE)
-[![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=master)](./actions/workflows/build.yml)
+[![Build](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/KonataDev/Konata.Core/actions/workflows/build.yml)
 [![Telegram](https://img.shields.io/endpoint?color=blue&url=https://telegram-badge-4mbpu8e0fit4.runkit.sh/?url=https://t.me/konachan_wifi)](https://t.me/konachan_wifi)
 
 QQ(Android) protocol core implemented with pure C#  
