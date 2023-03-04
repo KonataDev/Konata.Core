@@ -8,6 +8,7 @@ using Konata.Core.Common;
 using Konata.Core.Packets.Oicq;
 using Konata.Core.Utils.Crypto;
 
+// ReSharper disable InconsistentNaming
 // ReSharper disable InvertIf
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedVariable
@@ -34,7 +35,8 @@ internal class Login : BaseService<WtLoginEvent>
             OicqStatus.DoVerifySmsCaptcha => OnRecvCheckSmsCaptcha(oicqResponse, keystore),
             OicqStatus.PreventByIncorrectPassword => OnRecvIncorrectPassword(oicqResponse, keystore),
             OicqStatus.PreventByIncorrectSmsCode => OnRecvIncorrectSmsCode(oicqResponse, keystore),
-            OicqStatus.PreventByHighRiskEnvironment => OnRecvHighRiskEnvironment(oicqResponse, keystore),
+            OicqStatus.PreventByHighRiskOfEnvironment => OnRecvHighRiskOfEnvironment(oicqResponse, keystore),
+            OicqStatus.PreventByOutdatedVersion => OnRecvOutdatedVersion(oicqResponse, keystore),
             OicqStatus.PreventByLoginDenied => OnRecvLoginDenied(oicqResponse, keystore),
             _ => OnRecvUnknown(oicqResponse)
         };
@@ -304,28 +306,22 @@ internal class Login : BaseService<WtLoginEvent>
         => WtLoginEvent.ResultInvalidSmsCode((int) response.Status);
 
     /// <summary>
-    /// High risk environment
+    /// High risk of environment
     /// </summary>
     /// <param name="response"></param>
     /// <param name="keystore"></param>
     /// <returns></returns>
-    private WtLoginEvent OnRecvHighRiskEnvironment(OicqResponse response, BotKeyStore keystore)
-    {
-        var tlvs = response.BodyData.TakeAllBytes(out var _);
-        var unpacker = new TlvUnpacker(tlvs, true);
+    private WtLoginEvent OnRecvHighRiskOfEnvironment(OicqResponse response, BotKeyStore keystore)
+        => OnRecvMessageTips(WtLoginEvent.Type.HighRiskOfEnvironment, response, keystore);
 
-        Tlv tlv146 = unpacker.TryGetTlv(0x146);
-        if (tlv146 != null)
-        {
-            var errorTitle = ((T146Body) tlv146._tlvBody)._title;
-            var errorMessage = ((T146Body) tlv146._tlvBody)._message;
-
-            return WtLoginEvent.ResultHighRiskEnvironment
-                ((int) response.Status, $"{errorTitle} {errorMessage}");
-        }
-
-        return OnRecvUnknown(response);
-    }
+    /// <summary>
+    /// Outdated version
+    /// </summary>
+    /// <param name="response"></param>
+    /// <param name="keystore"></param>
+    /// <returns></returns>
+    private WtLoginEvent OnRecvOutdatedVersion(OicqResponse response, BotKeyStore keystore)
+        => OnRecvMessageTips(WtLoginEvent.Type.OutdatedVersion, response, keystore);
 
     /// <summary>
     /// Any error denied login
@@ -334,6 +330,18 @@ internal class Login : BaseService<WtLoginEvent>
     /// <param name="keystore"></param>
     /// <returns></returns>
     private WtLoginEvent OnRecvLoginDenied(OicqResponse response, BotKeyStore keystore)
+        => OnRecvMessageTips(WtLoginEvent.Type.LoginDenied, response, keystore);
+
+    /// <summary>
+    /// Unknown code
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
+    private static WtLoginEvent OnRecvUnknown(OicqResponse response)
+        => WtLoginEvent.ResultUnknown((int) response.Status, "Unknown OicqRequest received.");
+
+    private static WtLoginEvent OnRecvMessageTips
+        (WtLoginEvent.Type type, OicqResponse response, BotKeyStore keystore)
     {
         var tlvs = response.BodyData.TakeAllBytes(out var _);
         var unpacker = new TlvUnpacker(tlvs, true);
@@ -343,21 +351,14 @@ internal class Login : BaseService<WtLoginEvent>
         {
             var errorTitle = ((T146Body) tlv146._tlvBody)._title;
             var errorMessage = ((T146Body) tlv146._tlvBody)._message;
+            var errorInformation = ((T146Body) tlv146._tlvBody)._errorInfo;
 
-            return WtLoginEvent.ResultLoginDenied
-                ((int) response.Status, $"{errorTitle} {errorMessage}");
+            return WtLoginEvent.Result(type, (int) response.Status,
+                $"{errorTitle} {errorMessage} {errorInformation}");
         }
 
         return OnRecvUnknown(response);
     }
-
-    /// <summary>
-    /// Unknown code
-    /// </summary>
-    /// <param name="response"></param>
-    /// <returns></returns>
-    private WtLoginEvent OnRecvUnknown(OicqResponse response)
-        => WtLoginEvent.ResultUnknown((int) response.Status, "Unknown OicqRequest received.");
 
     #endregion
 }

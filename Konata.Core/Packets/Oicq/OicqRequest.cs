@@ -24,7 +24,8 @@ internal enum OicqStatus
     PreventBySmsSentFailed = 162,
     PreventByIncorrectSmsCode = 163,
     PreventByLoginDenied = 167,
-    PreventByHighRiskEnvironment = 237,
+    PreventByOutdatedVersion = 235,
+    PreventByHighRiskOfEnvironment = 237,
 }
 
 internal enum OicqShareKeyStat

@@ -84,7 +84,13 @@ internal class WtLoginEvent : ProtocolEvent
         /// <b>[Out]</b> <br/>
         /// Wtlogin failed about login environment
         /// </summary>
-        HighRiskEnvironment,
+        HighRiskOfEnvironment,
+
+        /// <summary>
+        /// <b>[Out]</b> <br/>
+        /// Wtlogin failed about outdated version
+        /// </summary>
+        OutdatedVersion,
 
         /// <summary>
         /// <b>[Out]</b> <br/>
@@ -238,7 +244,10 @@ internal class WtLoginEvent : ProtocolEvent
         => new(resultCode, Type.InvalidSmsCode, "Incorrect sms code.");
 
     internal static WtLoginEvent ResultHighRiskEnvironment(int resultCode, string reason)
-        => new(resultCode, Type.HighRiskEnvironment, reason);
+        => new(resultCode, Type.HighRiskOfEnvironment, reason);
+
+    internal static WtLoginEvent ResultOutdatedVersion(int resultCode, string reason)
+        => new(resultCode, Type.OutdatedVersion, reason);
 
     internal static WtLoginEvent ResultLoginDenied(int resultCode, string reason)
         => new(resultCode, Type.LoginDenied, reason);
@@ -247,10 +256,13 @@ internal class WtLoginEvent : ProtocolEvent
         => new(resultCode, Type.TokenExpired, "Token expired.");
 
     internal static WtLoginEvent ResultUnknown(int resultCode, string reason)
-        => new(resultCode, Type.LoginDenied, reason);
+        => new(resultCode, Type.Unknown, reason);
 
     internal static WtLoginEvent ResultNotImplemented(int resultCode, string reason)
         => new(Type.NotImplemented) {ResultCode = resultCode, EventMessage = reason, WaitForResponse = false};
+
+    internal static WtLoginEvent Result(WtLoginEvent.Type type, int resultCode, string reason)
+        => new(resultCode, type, reason);
 }
 
 public class CaptchaEvent : BaseEvent

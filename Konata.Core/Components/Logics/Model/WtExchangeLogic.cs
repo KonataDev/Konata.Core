@@ -158,16 +158,19 @@ internal class WtExchangeLogic : BaseLogic
 
                     case WtLoginEvent.Type.LoginDenied:
                     case WtLoginEvent.Type.InvalidSmsCode:
-                    case WtLoginEvent.Type.HighRiskEnvironment:
+                    case WtLoginEvent.Type.HighRiskOfEnvironment:
                     case WtLoginEvent.Type.InvalidUinOrPassword:
+                    case WtLoginEvent.Type.OutdatedVersion:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
+                        Context.LogE(TAG, $"Wtlogin failed with code {wtStatus.ResultCode}. {wtStatus.EventMessage}");
                         return false;
 
                     default:
                     case WtLoginEvent.Type.Unknown:
                     case WtLoginEvent.Type.NotImplemented:
                         await Context.SocketComponent.Disconnect("Wtlogin failed.");
-                        Context.LogE(TAG, "Login fail. Unsupported wtlogin event type received.");
+                        Context.LogE(TAG, $"Wtlogin failed with code {wtStatus.ResultCode}, " +
+                                          $"Unsupported wtlogin event type received. {wtStatus.EventMessage}");
                         return false;
                 }
             }
