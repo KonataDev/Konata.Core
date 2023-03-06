@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message.Model;
+using Konata.Core.Network.Highway;
 using Konata.Core.Utils.Network;
 using Guid = Konata.Core.Utils.Guid;
 
@@ -365,15 +365,18 @@ internal class OperationLogic : BaseLogic
         // We actually can use image url directly to instead
         // of downloading image and upload to ocr server.
         // Idk if we do that can cause what, or a ban.
-        var data = image.FileData ?? await Http.Get(image.ImageUrl);
-        var guid = Guid.GenerateString();
-        var url = await HighwayComponent.ImageOcrUp(
-            Context.Bot.Uin,
-            ConfigComponent.HighwayConfig.Server,
-            ConfigComponent.HighwayConfig.Ticket,
-            data, guid
-        );
+        var uploader = new ImageOcrUploader()
+        {
+            SelfUin = Context.Bot.Uin,
+            AppInfo = ConfigComponent.AppInfo,
+            ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+            Server = ConfigComponent.HighwayConfig.Server,
+            UploadTicket = ConfigComponent.HighwayConfig.Ticket,
+            ImageData = image.FileData ?? await Http.Get(image.ImageUrl),
+            ImageGuid = Guid.GenerateString()
+        };
 
+        var url = await uploader.Upload();
         if (url == null)
         {
             throw new OperationFailedException(-2,
@@ -393,9 +396,9 @@ internal class OperationLogic : BaseLogic
 
         return result.OcrResult;
     }
-    
+
     public async Task<string> GetOfflineFileUrl(string fileUuid)
-    {        
+    {
         var args = OfflineFileDownloadEvent.Create(Context.Bot.Uin, fileUuid);
         var result = await Context.SendPacket<OfflineFileDownloadEvent>(args);
         {

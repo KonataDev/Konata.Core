@@ -109,7 +109,4 @@ internal class InternalComponent : BaseComponent
 
     public ScheduleComponent ScheduleComponent
         => Bot.ScheduleComponent;
-
-    public HighwayComponent HighwayComponent
-        => Bot.HighwayComponent;
 }

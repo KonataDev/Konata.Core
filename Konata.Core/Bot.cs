@@ -81,9 +81,6 @@ public class Bot : BaseEntity, IDisposable
     internal SocketComponent SocketComponent
         => GetComponent<SocketComponent>();
 
-    internal HighwayComponent HighwayComponent
-        => GetComponent<HighwayComponent>();
-
     /// <summary>
     /// Keystore
     /// </summary>

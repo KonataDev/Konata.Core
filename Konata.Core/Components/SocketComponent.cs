@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
 using Konata.Core.Events;
+using Konata.Core.Network.TcpClient;
 using Konata.Core.Packets;
 using Konata.Core.Packets.SvcRequest;
 using Konata.Core.Packets.SvcResponse;
@@ -14,7 +15,7 @@ using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
 using Konata.Core.Utils.Network;
-using Konata.Core.Utils.Network.TcpClient;
+using ClientListener = Konata.Core.Network.TcpClient.ClientListener;
 
 // ReSharper disable InvertIf
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident

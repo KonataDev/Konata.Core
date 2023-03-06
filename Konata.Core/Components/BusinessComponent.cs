@@ -85,13 +85,6 @@ internal class BusinessComponent : InternalComponent
     public override void OnStart()
     {
         _taskTimeout = ConfigComponent.GlobalConfig.DefaultTimeout;
-
-        if (_taskTimeout <= 2000)
-        {
-            LogW(TAG, "The timeout you configured is less than 2000ms, " +
-                      "this can cause server communication chances to fail. Force reset to 6000ms.");
-            _taskTimeout = 6000;
-        }
     }
 
     public override void OnDestroy()

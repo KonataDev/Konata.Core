@@ -2,7 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Konata.Core.Utils.Network.TcpClient;
+namespace Konata.Core.Network.TcpClient;
 
 internal abstract partial class ClientListener
 {

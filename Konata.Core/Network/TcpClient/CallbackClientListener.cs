@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Konata.Core.Utils.Network.TcpClient;
+namespace Konata.Core.Network.TcpClient;
 
 internal sealed class CallbackClientListener : ClientListener
 {

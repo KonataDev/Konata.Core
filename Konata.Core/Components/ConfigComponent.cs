@@ -15,11 +15,13 @@ namespace Konata.Core.Components;
 [Component("ConfigComponent", "Konata Config Management Component")]
 internal class ConfigComponent : InternalComponent
 {
+    private const string TAG = "ConfigComponent";
+
     /// <summary>
     /// App info
     /// </summary>
     public AppInfo AppInfo { get; private set; }
-    
+
     /// <summary>
     /// Keystore
     /// </summary>
@@ -64,19 +66,33 @@ internal class ConfigComponent : InternalComponent
         KeyStore = keyStore;
         GlobalConfig = config;
         DeviceInfo = device;
-        
+
         // Initialize keystore
         KeyStore.Initial(config, device);
-        
+
         // Select protocol type
         AppInfo = config.Protocol switch
         {
             OicqProtocol.AndroidPhone => AppInfo.AndroidPhone,
-            OicqProtocol.Watch        => AppInfo.Watch,
-            OicqProtocol.Ipad         => AppInfo.Ipad,
-            OicqProtocol.AndroidPad   => AppInfo.AndroidPad,
-            _                         => AppInfo.AndroidPhone
+            OicqProtocol.Watch => AppInfo.Watch,
+            OicqProtocol.Ipad => AppInfo.Ipad,
+            OicqProtocol.AndroidPad => AppInfo.AndroidPad,
+            _ => AppInfo.AndroidPhone
         };
+
+        if (GlobalConfig.HighwayChunkSize is <= 1024 or > 1048576)
+        {
+            LogW(TAG, $"The valid range of '{nameof(GlobalConfig.HighwayChunkSize)}'" +
+                      $"is from 1024 to 1048576 bytes, but current is {GlobalConfig.HighwayChunkSize}. Force reset to 8192.");
+            GlobalConfig.HighwayChunkSize = 8192;
+        }
+
+        if (GlobalConfig.DefaultTimeout <= 2000)
+        {
+            LogW(TAG, "The timeout you configured is less than 2000ms, " +
+                      "this can cause server communication chances to fail. Force reset to 6000.");
+            GlobalConfig.DefaultTimeout = 6000;
+        }
     }
 
     /// <summary>

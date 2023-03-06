@@ -8,6 +8,7 @@ using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
 using Konata.Core.Message.Model;
+using Konata.Core.Network.Highway;
 using Konata.Core.Utils.Extensions;
 using Konata.Core.Utils.IO;
 
@@ -90,7 +91,7 @@ internal class MessagingLogic : BaseLogic
                                          $"Assert failed. Ret => {result.ResultCode}");
         }
     }
-    
+
     /// <summary>
     /// Recall a message
     /// </summary>
@@ -108,8 +109,8 @@ internal class MessagingLogic : BaseLogic
         {
             result = await RecallFriendMessage(Context, message.Receiver.Uin, message.Sequence, message.Random, message.Uuid, message.Time);
         }
-        
-        
+
+
         if (result.ResultCode == 0) return true;
         {
             throw new MessagingException("Recall message failed: " +
@@ -317,8 +318,18 @@ internal class MessagingLogic : BaseLogic
                 block[i].SetPicUpInfo(result.UploadInfo[i]);
 
             // Highway image upload
-            if (!await HighwayComponent.PicDataUp(Context.Bot.Uin, block, isGroup))
-                return false;
+            var uploader = new PicDataUploader()
+            {
+                SelfUin = Context.Bot.Uin,
+                AppInfo = ConfigComponent.AppInfo,
+                ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+                Images = block,
+                ImageType = isGroup
+                    ? PicDataUploader.DataType.GroupImage
+                    : PicDataUploader.DataType.PrivateImage
+            };
+
+            if (!await uploader.Upload()) return false;
         }
 
         return true;
@@ -352,7 +363,16 @@ internal class MessagingLogic : BaseLogic
         }
 
         // Highway MultiMsg upload
-        return await HighwayComponent.MultiMsgUp(uin, Context.Bot.Uin, main);
+        var uploader = new MultiMsgUploader()
+        {
+            SelfUin = Context.Bot.Uin,
+            AppInfo = ConfigComponent.AppInfo,
+            ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+            DestUin = uin,
+            MultiMessages = main,
+        };
+
+        return await uploader.Upload();
     }
 
     /// <summary>
@@ -395,8 +415,19 @@ internal class MessagingLogic : BaseLogic
             });
 
             // Upload the record
-            return await HighwayComponent
-                .PttUp(uin, Context.Bot.Uin, i, isGroup);
+            var uploader = new PttDataUploader()
+            {
+                SelfUin = Context.Bot.Uin,
+                AppInfo = ConfigComponent.AppInfo,
+                ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+                DestUin = uin,
+                PttInfo = i,
+                PttType = isGroup
+                    ? PttDataUploader.DataType.GroupPtt
+                    : PttDataUploader.DataType.PrivatePtt,
+            };
+
+            return await uploader.Upload();
         }
 
         Context.LogV(TAG, "Recorded uploaded.");
@@ -415,7 +446,7 @@ internal class MessagingLogic : BaseLogic
 
     private static Task<ProtocolEvent> SendFriendMessage(BusinessComponent context, uint friendUin, MessageChain message)
         => context.SendPacket<ProtocolEvent>(FriendMessageEvent.Create(friendUin, context.Bot.Uin, message));
-    
+
     private static Task<ProtocolEvent> RecallGroupMessage(BusinessComponent context, uint groupUin, uint sequence, uint random)
         => context.SendPacket<ProtocolEvent>(GroupMessageRecallEvent.Create(groupUin, sequence, random));
 
