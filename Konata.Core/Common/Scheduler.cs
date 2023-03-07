@@ -1,5 +1,5 @@
 ﻿using System;
-using Konata.Core.Components;
+using Konata.Core.Utils;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
@@ -24,7 +24,7 @@ public class Scheduler
     /// <summary>
     /// Scheduler entity
     /// </summary>
-    private ScheduleComponent Instance { get; }
+    private TaskScheduler Instance { get; }
 
     /// <summary>
     /// Scheduler name
@@ -41,7 +41,7 @@ public class Scheduler
         Bot = bot;
         Name = name;
         Action = action;
-        Instance = bot.ScheduleComponent;
+        Instance = bot.Scheduler;
     }
 
     /// <summary>

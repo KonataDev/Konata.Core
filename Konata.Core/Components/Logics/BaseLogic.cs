@@ -17,9 +17,6 @@ internal class BaseLogic : IBaseLogic
     internal PacketComponent PacketComponent
         => Context.GetComponent<PacketComponent>();
 
-    internal ScheduleComponent ScheduleComponent
-        => Context.GetComponent<ScheduleComponent>();
-
     internal SocketComponent SocketComponent
         => Context.GetComponent<SocketComponent>();
 

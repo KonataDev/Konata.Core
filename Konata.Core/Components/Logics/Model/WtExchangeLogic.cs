@@ -191,8 +191,8 @@ internal class WtExchangeLogic : BaseLogic
     public Task<bool> Logout()
     {
         // Cancel schedules
-        ScheduleComponent.Cancel(SchedulePullMessage);
-        ScheduleComponent.Cancel(ScheduleCheckConnection);
+        Context.Bot.Scheduler.Cancel(SchedulePullMessage);
+        Context.Bot.Scheduler.Cancel(ScheduleCheckConnection);
 
         // Push offline
         Context.PostEvent<BusinessComponent>(
@@ -306,8 +306,8 @@ internal class WtExchangeLogic : BaseLogic
                 Context.LogI(TAG, "Bot online.");
 
                 // Register schedules
-                ScheduleComponent.Interval(SchedulePullMessage, 180 * 1000, OnPullMessage);
-                ScheduleComponent.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
+                Context.Bot.Scheduler.Interval(SchedulePullMessage, 180 * 1000, OnPullMessage);
+                Context.Bot.Scheduler.Interval(ScheduleCheckConnection, 60 * 1000, OnCheckConnection);
 
                 // Bot online
                 Context.PostEvent<BusinessComponent>(online);
@@ -383,8 +383,8 @@ internal class WtExchangeLogic : BaseLogic
             await SocketComponent.Disconnect("Heart broken.");
 
             // Cancel schedules
-            ScheduleComponent.Cancel(SchedulePullMessage);
-            ScheduleComponent.Cancel(ScheduleCheckConnection);
+            Context.Bot.Scheduler.Cancel(SchedulePullMessage);
+            Context.Bot.Scheduler.Cancel(ScheduleCheckConnection);
 
             // Check if reconnect
             if (ConfigComponent.GlobalConfig.TryReconnect)
@@ -431,7 +431,7 @@ internal class WtExchangeLogic : BaseLogic
 
             // Check the connection
             _heartbeatCounter = 0;
-            ScheduleComponent.Trigger(ScheduleCheckConnection);
+            Context.Bot.Scheduler.Trigger(ScheduleCheckConnection);
         }
     }
 
@@ -480,8 +480,8 @@ internal class WtExchangeLogic : BaseLogic
         ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
 
         // Cancel schedules
-        ScheduleComponent.Cancel(SchedulePullMessage);
-        ScheduleComponent.Cancel(ScheduleCheckConnection);
+        Context.Bot.Scheduler.Cancel(SchedulePullMessage);
+        Context.Bot.Scheduler.Cancel(ScheduleCheckConnection);
 
         // Push offline
         var reason = $"{e.NotifyTitle} {e.OfflineReason}";

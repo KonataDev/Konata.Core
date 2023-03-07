@@ -40,15 +40,15 @@ internal class MessageFilterLogic : BaseLogic
         {
             // Bot is online
             case OnlineStatusEvent {EventType: OnlineStatusEvent.Type.Online}:
-                ScheduleComponent.Interval(ScheduleCacheClear, 30 * 1000, OnFilterCacheClear);
-                ScheduleComponent.Interval(ScheduleSyncServerTime, 1800 * 1000, OnSyncServerTime);
+                Context.Bot.Scheduler.Interval(ScheduleCacheClear, 30 * 1000, OnFilterCacheClear);
+                Context.Bot.Scheduler.Interval(ScheduleSyncServerTime, 1800 * 1000, OnSyncServerTime);
                 OnSyncServerTime();
                 return;
 
             // Bot offline
             case OnlineStatusEvent {EventType: OnlineStatusEvent.Type.Offline}:
-                ScheduleComponent.Cancel(ScheduleCacheClear);
-                ScheduleComponent.Cancel(ScheduleSyncServerTime);
+                Context.Bot.Scheduler.Cancel(ScheduleCacheClear);
+                Context.Bot.Scheduler.Cancel(ScheduleSyncServerTime);
                 return;
 
             // Filter duplicate message

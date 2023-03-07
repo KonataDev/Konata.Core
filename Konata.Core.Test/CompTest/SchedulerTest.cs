@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading;
-using Konata.Core.Components;
+﻿using System.Threading;
+using Konata.Core.Utils;
 using NUnit.Framework;
 
 namespace Konata.Core.Test.CompTest;
@@ -12,13 +11,13 @@ public class SchedulerTest
     [Test]
     public void TestRunOnce()
     {
-        var component = new ScheduleComponent();
+        using var scheduler = new TaskScheduler();
         {
             var task = new ManualResetEvent(false);
-            component.RunOnce(ScheduleTestRunOnce, 1000, () => task.Set());
+            scheduler.RunOnce(ScheduleTestRunOnce, 1000, () => task.Set());
             task.WaitOne();
         }
-        component.OnDestroy();
+
         Assert.Pass();
     }
 }

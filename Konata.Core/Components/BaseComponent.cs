@@ -106,7 +106,4 @@ internal class InternalComponent : BaseComponent
 
     public SocketComponent SocketComponent
         => Bot.SocketComponent;
-
-    public ScheduleComponent ScheduleComponent
-        => Bot.ScheduleComponent;
 }

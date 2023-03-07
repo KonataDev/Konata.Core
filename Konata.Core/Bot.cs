@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Konata.Core.Entity;
@@ -8,6 +7,7 @@ using Konata.Core.Common;
 using Konata.Core.Components;
 using Konata.Core.Events;
 using Konata.Core.Events.Model;
+using Konata.Core.Utils;
 
 [assembly: InternalsVisibleTo("Konata.Core.Test")]
 [assembly: InternalsVisibleTo("Konata.Framework")]
@@ -35,6 +35,9 @@ public class Bot : BaseEntity, IDisposable
     [Obsolete("Use BotFather.Create instead.")]
     public Bot(BotConfig config, BotDevice device, BotKeyStore keystore)
     {
+        // Init task scheduler
+        Scheduler = new TaskScheduler();
+        
         // Load components
         LoadComponents<ComponentAttribute>();
 
@@ -50,7 +53,10 @@ public class Bot : BaseEntity, IDisposable
     }
 
     public void Dispose()
-        => UnloadComponents();
+    {
+        UnloadComponents();
+        
+    }
 
     #region Bot Information
 
@@ -66,6 +72,8 @@ public class Bot : BaseEntity, IDisposable
     public string Name
         => KeyStore.Account.Name;
 
+    internal TaskScheduler Scheduler;
+    
     internal BusinessComponent BusinessComponent
         => GetComponent<BusinessComponent>();
 
@@ -74,9 +82,6 @@ public class Bot : BaseEntity, IDisposable
 
     internal PacketComponent PacketComponent
         => GetComponent<PacketComponent>();
-
-    internal ScheduleComponent ScheduleComponent
-        => GetComponent<ScheduleComponent>();
 
     internal SocketComponent SocketComponent
         => GetComponent<SocketComponent>();
@@ -224,7 +229,7 @@ public class Bot : BaseEntity, IDisposable
     /// <param name="anyEvent"></param>
     internal override void PostEventToEntity(BaseEvent anyEvent)
     {
-        Task.Run(() =>
+        System.Threading.Tasks.Task.Run(() =>
         {
             try
             {

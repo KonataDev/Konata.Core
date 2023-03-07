@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Konata.Core.Attributes;
 
 // ReSharper disable InvertIf
 // ReSharper disable FunctionNeverReturns
@@ -11,10 +10,9 @@ using Konata.Core.Attributes;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
-namespace Konata.Core.Components;
+namespace Konata.Core.Utils;
 
-[Component("ScheduleComponent", "Konata Schedule Task Component")]
-internal class ScheduleComponent : InternalComponent
+internal class TaskScheduler : IDisposable
 {
     private class Schedule
     {
@@ -70,13 +68,12 @@ internal class ScheduleComponent : InternalComponent
         }
     }
 
-    private const string TAG = "ScheduleComponent";
     private readonly Thread _taskThread;
     private readonly ConcurrentDictionary<string, Schedule> _taskDict;
     private readonly ManualResetEvent _taskNotify;
     private bool _taskThreadExit;
 
-    public ScheduleComponent()
+    public TaskScheduler()
     {
         _taskDict = new();
         _taskNotify = new(false);
@@ -87,7 +84,7 @@ internal class ScheduleComponent : InternalComponent
         _taskThread.Start();
     }
 
-    public override void OnDestroy()
+    public void Dispose()
     {
         _taskThreadExit = true;
         _taskNotify.Set();
@@ -135,7 +132,7 @@ internal class ScheduleComponent : InternalComponent
 
                         // Join the queue
                         taskTable.Add(value);
-                        LogI(TAG, $"Join the task => {key}");
+                        // LogI(TAG, $"Join the task => {key}");
                     }
                 }
 
@@ -209,7 +206,7 @@ internal class ScheduleComponent : InternalComponent
                 // Cleanup died tasks
                 if (taskTable[i].RemainTimes <= 0)
                 {
-                    LogI(TAG, $"Destroy the task => '{taskTable[i].Name}'");
+                    // LogI(TAG, $"Destroy the task => '{taskTable[i].Name}'");
 
                     _taskDict.TryRemove(taskTable[i].Name, out _);
                     taskTable.RemoveAt(i);
@@ -231,8 +228,8 @@ internal class ScheduleComponent : InternalComponent
                     }
                     catch (Exception e)
                     {
-                        LogE(TAG, "Task failed.");
-                        LogE(TAG, e);
+                        // LogE(TAG, "Task failed.");
+                        // LogE(TAG, e);
                     }
                 });
             }
@@ -275,7 +272,7 @@ internal class ScheduleComponent : InternalComponent
         // Check duplicate
         if (_taskDict.ContainsKey(name))
         {
-            LogW(TAG, $"Conflict schedule found. '{name}', override.");
+            // LogW(TAG, $"Conflict schedule found. '{name}', override.");
             _taskDict[name] = task;
         }
 
@@ -328,7 +325,7 @@ internal class ScheduleComponent : InternalComponent
         // Check the task
         if (!_taskDict.TryGetValue(name, out var task))
         {
-            LogW(TAG, $"Schedule '{name}' not exist.");
+            // LogW(TAG, $"Schedule '{name}' not exist.");
             return;
         }
 
