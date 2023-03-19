@@ -77,7 +77,7 @@ internal class PushEventLogic : BaseLogic
     private void OnPushConfig(PushConfigEvent e)
     {
         // Update the config
-        ConfigComponent.HighwayConfig = new()
+        Context.Bot.HighwayServer = new()
         {
             Server = e.HighwayHost,
             Ticket = e.HighwayTicket
@@ -145,12 +145,12 @@ internal class PushEventLogic : BaseLogic
 
     internal async Task OnPullNewMessage()
     {
-        var args = PbGetMessageEvent.Create(ConfigComponent.SyncCookie);
+        var args = PbGetMessageEvent.Create(Context.Bot.SyncCookie);
         var result = await Context.SendPacket<PbGetMessageEvent>(args);
         {
             // Update sync cookie
             if (result.SyncCookie != null)
-                ConfigComponent.SyncCookie = result.SyncCookie;
+                Context.Bot.SyncCookie = result.SyncCookie;
         }
     }
 

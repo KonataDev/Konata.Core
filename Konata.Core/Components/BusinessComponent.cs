@@ -84,7 +84,7 @@ internal class BusinessComponent : InternalComponent
 
     public override void OnStart()
     {
-        _taskTimeout = ConfigComponent.GlobalConfig.DefaultTimeout;
+        _taskTimeout = Bot.GlobalConfig.DefaultTimeout;
     }
 
     public override void OnDestroy()

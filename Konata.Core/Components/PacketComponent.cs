@@ -98,7 +98,7 @@ internal class PacketComponent : InternalComponent
     {
         // Parse service message
         if (!ServiceMessage.Parse(packetEvent.Buffer,
-                ConfigComponent.KeyStore, out var serviceMsg))
+                Bot.KeyStore, out var serviceMsg))
         {
             LogW(TAG, "Parse message failed.");
             return false;
@@ -126,7 +126,7 @@ internal class PacketComponent : InternalComponent
         try
         {
             // Translate bytes to ProtocolEvent 
-            if (service.Parse(ssoFrame, ConfigComponent.AppInfo, ConfigComponent.KeyStore,
+            if (service.Parse(ssoFrame, Bot.AppInfo, Bot.KeyStore,
                     out var outEvent, out var outExtra) && outEvent != null)
             {
                 // Set result
@@ -179,27 +179,27 @@ internal class PacketComponent : InternalComponent
             var wupBuffer = new PacketBase();
 
             // Build body data
-            var result = instance.Build(sequence, protocolEvent, ConfigComponent.AppInfo,
-                ConfigComponent.KeyStore, ConfigComponent.DeviceInfo, ref wupBuffer);
+            var result = instance.Build(sequence, protocolEvent, Bot.AppInfo,
+                Bot.KeyStore, Bot.DeviceInfo, ref wupBuffer);
             {
                 if (!result) continue;
                 LogV(TAG, $"[send:{attr.Command}] \n{wupBuffer.GetBytes().ToHex()}");
 
                 // Build sso frame
                 if (!SSOFrame.Create(attr.Command, attr.PacketType, sequence,
-                        attr.NeedTgtToken ? ConfigComponent.KeyStore.Session.TgtToken : null,
+                        attr.NeedTgtToken ? Bot.KeyStore.Session.TgtToken : null,
                         _serviceSequence.Session, wupBuffer, out var ssoFrame))
                     throw new Exception("Create sso frame failed.");
 
                 // Build to service message
                 if (!ServiceMessage.Create(ssoFrame, attr.AuthType, Bot.Uin,
-                        ConfigComponent.KeyStore.Session.D2Token,
-                        ConfigComponent.KeyStore.Session.D2Key, out var toService))
+                        Bot.KeyStore.Session.D2Token,
+                        Bot.KeyStore.Session.D2Key, out var toService))
                     throw new Exception("Create service message failed.");
 
                 // Pack up
                 if (!ServiceMessage.Build(toService,
-                        ConfigComponent.AppInfo, ConfigComponent.DeviceInfo, out var output))
+                        Bot.AppInfo, Bot.DeviceInfo, out var output))
                     throw new Exception("Build packet failed");
 
                 // Pass messages to socket

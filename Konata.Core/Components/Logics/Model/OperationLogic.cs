@@ -49,11 +49,10 @@ internal class OperationLogic : BaseLogic
         (uint groupUin, uint memberUin, bool toggleAdmin)
     {
         // Sync the member list
-        if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+        if (Context.Bot.IsLackMemberCacheForGroup(groupUin))
             await Context.CacheSync.SyncGroupMemberList(groupUin);
 
-        var groupInfo = ConfigComponent
-            .GetGroupInfo(groupUin);
+        var groupInfo = Context.Bot.GetGroupInfo(groupUin);
         {
             // Check owner
             if (groupInfo.OwnerUin != Context.Bot.Uin)
@@ -88,11 +87,11 @@ internal class OperationLogic : BaseLogic
         (uint groupUin, uint memberUin, uint timeSeconds)
     {
         // Sync the member list
-        if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+        if (Context.Bot.IsLackMemberCacheForGroup(groupUin))
             await Context.CacheSync.SyncGroupMemberList(groupUin);
 
-        var selfInfo = ConfigComponent.GetMemberInfo(groupUin, Context.Bot.Uin);
-        var memberInfo = ConfigComponent.GetMemberInfo(groupUin, memberUin);
+        var selfInfo = Context.Bot.GetMemberInfo(groupUin, Context.Bot.Uin);
+        var memberInfo = Context.Bot.GetMemberInfo(groupUin, memberUin);
         {
             // No permission
             if (selfInfo.Role <= memberInfo.Role)
@@ -127,11 +126,11 @@ internal class OperationLogic : BaseLogic
         (uint groupUin, uint memberUin, bool preventRequest)
     {
         // Sync the member list
-        if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+        if (Context.Bot.IsLackMemberCacheForGroup(groupUin))
             await Context.CacheSync.SyncGroupMemberList(groupUin);
 
-        var selfInfo = ConfigComponent.GetMemberInfo(groupUin, Context.Bot.Uin);
-        var memberInfo = ConfigComponent.GetMemberInfo(groupUin, memberUin);
+        var selfInfo = Context.Bot.GetMemberInfo(groupUin, Context.Bot.Uin);
+        var memberInfo = Context.Bot.GetMemberInfo(groupUin, memberUin);
         {
             // No permission
             if (selfInfo.Role <= memberInfo.Role)
@@ -169,10 +168,10 @@ internal class OperationLogic : BaseLogic
         uint memberUin, string specialTitle, uint expiredTime)
     {
         // Sync the member list
-        if (ConfigComponent.IsLackMemberCacheForGroup(groupUin))
+        if (Context.Bot.IsLackMemberCacheForGroup(groupUin))
             await Context.CacheSync.SyncGroupMemberList(groupUin);
 
-        var groupInfo = ConfigComponent.GetGroupInfo(groupUin);
+        var groupInfo = Context.Bot.GetGroupInfo(groupUin);
         {
             // No permission
             if (groupInfo.OwnerUin != Context.Bot.Uin)
@@ -368,10 +367,10 @@ internal class OperationLogic : BaseLogic
         var uploader = new ImageOcrUploader()
         {
             SelfUin = Context.Bot.Uin,
-            AppInfo = ConfigComponent.AppInfo,
-            ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
-            Server = ConfigComponent.HighwayConfig.Server,
-            UploadTicket = ConfigComponent.HighwayConfig.Ticket,
+            AppInfo = Context.Bot.AppInfo,
+            ChunkSize = Context.Bot.GlobalConfig.HighwayChunkSize,
+            Server = Context.Bot.HighwayServer.Server,
+            UploadTicket = Context.Bot.HighwayServer.Ticket,
             ImageData = image.FileData ?? await Http.Get(image.ImageUrl),
             ImageGuid = Guid.GenerateString()
         };

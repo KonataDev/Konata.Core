@@ -13,12 +13,6 @@ public class BotConfig
     #region Networking
 
     /// <summary>
-    /// <b>[not used]</b> <br/>
-    /// Use ipv6 connection.
-    /// </summary>
-    public bool UseIPv6Connection { get; set; }
-
-    /// <summary>
     /// Try reconnect while offline.
     /// </summary>
     public bool TryReconnect { get; set; }

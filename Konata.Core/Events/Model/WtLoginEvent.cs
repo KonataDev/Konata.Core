@@ -76,25 +76,25 @@ internal class WtLoginEvent : ProtocolEvent
 
         /// <summary>
         /// <b>[Out]</b> <br/>
-        /// Wtlogin failed about pwd issue
+        /// Wtlogin failed with pwd issue
         /// </summary>
         InvalidUinOrPassword,
 
         /// <summary>
         /// <b>[Out]</b> <br/>
-        /// Wtlogin failed about login environment
+        /// Wtlogin failed with login environment
         /// </summary>
         HighRiskOfEnvironment,
 
         /// <summary>
         /// <b>[Out]</b> <br/>
-        /// Wtlogin failed about outdated version
+        /// Wtlogin failed with outdated version
         /// </summary>
         OutdatedVersion,
 
         /// <summary>
         /// <b>[Out]</b> <br/>
-        /// Wtlogin failed about invalid SMS code
+        /// Wtlogin failed with invalid SMS code
         /// </summary>
         InvalidSmsCode,
 

@@ -82,8 +82,8 @@ internal class WtExchangeLogic : BaseLogic
             WtLoginEvent wtStatus;
 
             // Can I fast login?
-            if (ConfigComponent.KeyStore.Session.D2Key.Length != 0
-                && ConfigComponent.KeyStore.Session.D2Token.Length != 0)
+            if (Context.Bot.KeyStore.Session.D2Key.Length != 0
+                && Context.Bot.KeyStore.Session.D2Token.Length != 0)
             {
                 // Okay, We can try it
                 Context.LogI(TAG, "Do WtXchg");
@@ -288,10 +288,10 @@ internal class WtExchangeLogic : BaseLogic
     {
         // Dump keys
         Context.LogV(TAG, "Keystore Dump");
-        Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Key)}");
-        Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(ConfigComponent.KeyStore.Session.D2Token)}");
-        Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtKey)}");
-        Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(ConfigComponent.KeyStore.Session.TgtToken)}");
+        Context.LogV(TAG, $"  D2Key    {ByteConverter.Hex(Context.Bot.KeyStore.Session.D2Key)}");
+        Context.LogV(TAG, $"  D2Token  {ByteConverter.Hex(Context.Bot.KeyStore.Session.D2Token)}");
+        Context.LogV(TAG, $"  Tgtgt    {ByteConverter.Hex(Context.Bot.KeyStore.Session.TgtKey)}");
+        Context.LogV(TAG, $"  TgtToken {ByteConverter.Hex(Context.Bot.KeyStore.Session.TgtToken)}");
 
         // Set online
         Context.LogI(TAG, "Registering client");
@@ -334,8 +334,8 @@ internal class WtExchangeLogic : BaseLogic
                               "Relogin with password.");
 
             // Clear the old key
-            ConfigComponent.KeyStore.Session.D2Key = Array.Empty<byte>();
-            ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
+            Context.Bot.KeyStore.Session.D2Key = Array.Empty<byte>();
+            Context.Bot.KeyStore.Session.D2Token = Array.Empty<byte>();
 
             // Do login again
             return await Login();
@@ -387,7 +387,7 @@ internal class WtExchangeLogic : BaseLogic
             Context.Bot.Scheduler.Cancel(ScheduleCheckConnection);
 
             // Check if reconnect
-            if (ConfigComponent.GlobalConfig.TryReconnect)
+            if (Context.Bot.GlobalConfig.TryReconnect)
             {
                 Context.LogW(TAG, "Reconnect.");
 
@@ -476,8 +476,8 @@ internal class WtExchangeLogic : BaseLogic
         await SocketComponent.Disconnect("Pushed offline");
 
         // Clear the old key
-        ConfigComponent.KeyStore.Session.D2Key = Array.Empty<byte>();
-        ConfigComponent.KeyStore.Session.D2Token = Array.Empty<byte>();
+        Context.Bot.KeyStore.Session.D2Key = Array.Empty<byte>();
+        Context.Bot.KeyStore.Session.D2Token = Array.Empty<byte>();
 
         // Cancel schedules
         Context.Bot.Scheduler.Cancel(SchedulePullMessage);

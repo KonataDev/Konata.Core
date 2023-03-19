@@ -95,14 +95,8 @@ internal class InternalComponent : BaseComponent
     public Bot Bot
         => (Bot) Entity;
 
-    public ConfigComponent ConfigComponent
-        => Bot.ConfigComponent;
-
     public BusinessComponent BusinessComponent
         => Bot.BusinessComponent;
-
-    public PacketComponent PacketComponent
-        => Bot.PacketComponent;
 
     public SocketComponent SocketComponent
         => Bot.SocketComponent;

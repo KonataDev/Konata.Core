@@ -1,8 +1,6 @@
 using System;
 using System.Buffers.Binary;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Konata.Core.Attributes;
 using Konata.Core.Common;
@@ -60,11 +58,10 @@ internal class SocketComponent : InternalComponent, IClientListener
         }
 
         // Using user config
-        if (ConfigComponent.GlobalConfig!.CustomHost != null)
+        if (Bot.GlobalConfig!.CustomHost != null)
         {
             // Parse the config
-            var customHost = ConfigComponent
-                .GlobalConfig.CustomHost.Split(':');
+            var customHost = Bot.GlobalConfig.CustomHost.Split(':');
 
             // Connect to server with
             // custom server address
@@ -73,7 +70,7 @@ internal class SocketComponent : InternalComponent, IClientListener
                 ushort port = 8080;
                 if (customHost.Length == 1 || ushort.TryParse(customHost[1], out port))
                 {
-                    string host = customHost[0];
+                    var host = customHost[0];
                     _recentlyHost = (host, port);
                     return await _tcpClient.Connect(host, port);
                 }
@@ -105,7 +102,7 @@ internal class SocketComponent : InternalComponent, IClientListener
 
             // Sort the list by latency
             serverList.Sort((a, b) => a.Item3.CompareTo(b.Item3));
-          
+
             // Try connect to each server
             foreach (var (addr, port, latency) in serverList)
             {
@@ -147,6 +144,7 @@ internal class SocketComponent : InternalComponent, IClientListener
             LogI(TAG, $"Disconnect, Reason => {reason}");
             _tcpClient.Disconnect();
         }
+
         return Task.FromResult(true);
     }
 
@@ -214,7 +212,7 @@ internal class SocketComponent : InternalComponent, IClientListener
             reqBuf.EnterBarrierEncrypted(ByteBuffer.Prefix.None,
                 Endian.FollowMachine, TeaCryptor.Instance, encKey);
             {
-                var body = new SvcReqHttpServerListReq(ConfigComponent.AppInfo);
+                var body = new SvcReqHttpServerListReq(Bot.AppInfo);
                 reqBuf.PutUintBE(body.Length + 4);
                 reqBuf.PutByteBuffer(body);
             }
@@ -237,7 +235,7 @@ internal class SocketComponent : InternalComponent, IClientListener
         {
             LogE(TAG, e);
             LogW(TAG, "Request server list failed, fallback to the default server.");
-            return new List<ServerInfo>(1) { new("msfwifi.3g.qq.com", 8080) };
+            return new List<ServerInfo>(1) {new("msfwifi.3g.qq.com", 8080)};
         }
     }
 }

@@ -60,7 +60,7 @@ internal class CacheSyncLogic : BaseLogic
                 // Sync group list
                 foreach (var i in result.GroupInfo)
                 {
-                    ConfigComponent.TouchGroupInfo(i);
+                    Context.Bot.TouchGroupInfo(i);
                 }
             }
         }
@@ -79,7 +79,7 @@ internal class CacheSyncLogic : BaseLogic
         var nextUin = 0U;
         var memberCount = 0;
 
-        if (!ConfigComponent.TryGetGroupInfo
+        if (!Context.Bot.TryGetGroupInfo
                 (groupUin, out var groupInfo) || groupInfo.Code == 0)
         {
             Context.LogE(TAG, $"Sync group member failed, " +
@@ -104,7 +104,7 @@ internal class CacheSyncLogic : BaseLogic
             // Sync the member list
             foreach (var i in result.MemberInfo)
             {
-                ConfigComponent.TouchGroupMemberInfo(groupUin, i);
+                Context.Bot.TouchGroupMemberInfo(groupUin, i);
             }
 
             nextUin = result.NextUin;
@@ -147,7 +147,7 @@ internal class CacheSyncLogic : BaseLogic
             // Sync the friend list
             foreach (var i in result.FriendInfo)
             {
-                ConfigComponent.TouchFriendInfo(i);
+                Context.Bot.TouchFriendInfo(i);
             }
 
             nextIndex += limit;
@@ -177,7 +177,7 @@ internal class CacheSyncLogic : BaseLogic
     /// <param name="e"></param>
     private void SyncMemberInfo(GroupMessageEvent e)
     {
-        ConfigComponent.TouchGroupMemberInfo
+        Context.Bot.TouchGroupMemberInfo
             (e.GroupUin, e.MemberUin, e.MemberCard);
     }
 
@@ -202,7 +202,7 @@ internal class CacheSyncLogic : BaseLogic
         try
         {
             if (forceUpdate) await SyncGroupList();
-            return ConfigComponent.GetGroupList();
+            return Context.Bot.GetGroupList();
         }
 
         catch (Exception)
@@ -223,14 +223,14 @@ internal class CacheSyncLogic : BaseLogic
     {
         try
         {
-            if (forceUpdate || ConfigComponent
-                    .IsLackMemberCacheForGroup(groupUin))
+            if (forceUpdate ||
+                Context.Bot.IsLackMemberCacheForGroup(groupUin))
             {
                 await SyncGroupList();
                 await SyncGroupMemberList(groupUin);
             }
 
-            return ConfigComponent.GetGroupMemberList(groupUin);
+            return Context.Bot.GetGroupMemberList(groupUin);
         }
 
         catch (Exception)
@@ -253,14 +253,14 @@ internal class CacheSyncLogic : BaseLogic
     {
         try
         {
-            if (forceUpdate || ConfigComponent
-                    .IsLackMemberCacheForGroup(groupUin))
+            if (forceUpdate ||
+                Context.Bot.IsLackMemberCacheForGroup(groupUin))
             {
                 await SyncGroupList();
                 await SyncGroupMemberList(groupUin);
             }
 
-            return ConfigComponent.GetMemberInfo(groupUin, memberUin);
+            return Context.Bot.GetMemberInfo(groupUin, memberUin);
         }
 
         catch (Exception)
@@ -281,7 +281,7 @@ internal class CacheSyncLogic : BaseLogic
         try
         {
             if (forceUpdate) await SyncFriendList();
-            return ConfigComponent.GetFriendList();
+            return Context.Bot.GetFriendList();
         }
 
         catch (Exception)
@@ -298,7 +298,7 @@ internal class CacheSyncLogic : BaseLogic
     public Task<string> GetCsrfToken()
     {
         var token = 5381;
-        var stkey = ConfigComponent.KeyStore.Session.StKey;
+        var stkey = Context.Bot.KeyStore.Session.StKey;
 
         // Calculate token
         foreach (var i in stkey)

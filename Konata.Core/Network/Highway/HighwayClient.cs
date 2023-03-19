@@ -37,8 +37,6 @@ internal class HighwayClient : ClientListener
         _md5Cryptor = new();
     }
 
-
-
     /// <summary>
     /// Send Im coming
     /// </summary>

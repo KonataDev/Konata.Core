@@ -27,7 +27,7 @@ internal abstract partial class ClientListener : IClientListener
 
     public abstract uint HeaderSize { get; }
 
-    protected ClientListener.SocketSession _session;
+    protected SocketSession _session;
 
     /// <summary>
     /// Construct a tcp client
@@ -37,7 +37,7 @@ internal abstract partial class ClientListener : IClientListener
         
     }
 
-    private async Task<bool> InternalConnectAsync(ClientListener.SocketSession session, string host, int port)
+    private async Task<bool> InternalConnectAsync(SocketSession session, string host, int port)
     {
         try
         {
@@ -61,10 +61,10 @@ internal abstract partial class ClientListener : IClientListener
     /// <returns></returns>
     public Task<bool> Connect(string host, int port)
     {
-        ClientListener.SocketSession previousSession = _session,
+        SocketSession previousSession = _session,
                       createdSession = null;
         if (previousSession != null || // The client has been connected
-            Interlocked.CompareExchange(ref _session, createdSession = new ClientListener.SocketSession(), null) != null) // Another connect request before this request
+            Interlocked.CompareExchange(ref _session, createdSession = new SocketSession(), null) != null) // Another connect request before this request
         {
             createdSession?.Dispose();
             return Task.FromResult(false);
@@ -80,7 +80,7 @@ internal abstract partial class ClientListener : IClientListener
     /// <returns></returns>
     public void Disconnect()
     {
-        if (_session is ClientListener.SocketSession session)
+        if (_session is SocketSession session)
         {
             RemoveSession(session);
         }
@@ -138,7 +138,7 @@ internal abstract partial class ClientListener : IClientListener
     /// <summary>
     /// Receive the data
     /// </summary>
-    private async Task ReceiveLoop(ClientListener.SocketSession session, CancellationToken token = default)
+    private async Task ReceiveLoop(SocketSession session, CancellationToken token = default)
     {
         try
         {
@@ -182,7 +182,7 @@ internal abstract partial class ClientListener : IClientListener
         }
     }
 
-    private void RemoveSession(ClientListener.SocketSession session)
+    private void RemoveSession(SocketSession session)
     {
         if (Interlocked.CompareExchange(ref _session, null, session) == session)
         {

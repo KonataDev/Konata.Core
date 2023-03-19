@@ -229,7 +229,7 @@ internal class MessagingLogic : BaseLogic
             else
             {
                 // Okay we've got it
-                if (ConfigComponent.TryGetMemberInfo
+                if (Context.Bot.TryGetMemberInfo
                         (uin, i.AtUin, out var member))
                 {
                     i.DisplayString = $"@{member.NickName}";
@@ -240,13 +240,13 @@ internal class MessagingLogic : BaseLogic
                 else
                 {
                     // Check if lacks the member cache
-                    if (ConfigComponent.IsLackMemberCacheForGroup(uin))
+                    if (Context.Bot.IsLackMemberCacheForGroup(uin))
                     {
                         // Pull the cache and try again
                         if (await Context.CacheSync.SyncGroupMemberList(uin))
                         {
                             // Okay try again
-                            i.DisplayString = ConfigComponent.TryGetMemberInfo
+                            i.DisplayString = Context.Bot.TryGetMemberInfo
                                 (uin, i.AtUin, out member)
                                 ? $"@{member.NickName}"
                                 : $"@{i.AtUin}";
@@ -321,8 +321,8 @@ internal class MessagingLogic : BaseLogic
             var uploader = new PicDataUploader()
             {
                 SelfUin = Context.Bot.Uin,
-                AppInfo = ConfigComponent.AppInfo,
-                ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+                AppInfo = Context.Bot.AppInfo,
+                ChunkSize = Context.Bot.GlobalConfig.HighwayChunkSize,
                 Images = block,
                 ImageType = isGroup
                     ? PicDataUploader.DataType.GroupImage
@@ -366,8 +366,8 @@ internal class MessagingLogic : BaseLogic
         var uploader = new MultiMsgUploader()
         {
             SelfUin = Context.Bot.Uin,
-            AppInfo = ConfigComponent.AppInfo,
-            ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+            AppInfo = Context.Bot.AppInfo,
+            ChunkSize = Context.Bot.GlobalConfig.HighwayChunkSize,
             DestUin = uin,
             MultiMessages = main,
         };
@@ -388,7 +388,7 @@ internal class MessagingLogic : BaseLogic
         if (message.Count <= 0) return true;
 
         // Return false if audio configuration not enabled
-        if (!ConfigComponent.GlobalConfig.EnableAudio)
+        if (!Context.Bot.GlobalConfig.EnableAudio)
         {
             Context.LogW(TAG, "The audio function is currently disabled. \n" +
                               "Note: This function lack of codec library 'libSilkCodec', " +
@@ -397,7 +397,7 @@ internal class MessagingLogic : BaseLogic
         }
 
         // Check if no highway server
-        if (ConfigComponent.HighwayConfig == null)
+        if (Context.Bot.HighwayServer == null)
         {
             Context.LogW(TAG, "Highway server is not present.");
             return false;
@@ -409,17 +409,17 @@ internal class MessagingLogic : BaseLogic
             Context.LogV(TAG, "Uploading record file via highway.");
             i.SetPttUpInfo(Context.Bot.Uin, new PttUpInfo
             {
-                Host = ConfigComponent.HighwayConfig.Server.Host,
-                Port = ConfigComponent.HighwayConfig.Server.Port,
-                UploadTicket = ConfigComponent.HighwayConfig.Ticket,
+                Host = Context.Bot.HighwayServer.Server.Host,
+                Port = Context.Bot.HighwayServer.Server.Port,
+                UploadTicket = Context.Bot.HighwayServer.Ticket,
             });
 
             // Upload the record
             var uploader = new PttDataUploader()
             {
                 SelfUin = Context.Bot.Uin,
-                AppInfo = ConfigComponent.AppInfo,
-                ChunkSize = ConfigComponent.GlobalConfig.HighwayChunkSize,
+                AppInfo = Context.Bot.AppInfo,
+                ChunkSize = Context.Bot.GlobalConfig.HighwayChunkSize,
                 DestUin = uin,
                 PttInfo = i,
                 PttType = isGroup
