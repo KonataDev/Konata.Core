@@ -99,11 +99,7 @@ internal class Login : BaseService<WtLoginEvent>
         if (tlv104 != null && tlv192 != null)
         {
             T547Body tlv547 = null;
-            if (tlv546 != null)
-            {
-                Console.WriteLine("tlv546 received");
-                tlv547 = new T547Body((T546Body)tlv546._tlvBody);
-            }
+            if (tlv546 != null) tlv547 = new T547Body((T546Body)tlv546._tlvBody);
 
             var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
             var sigCaptchaURL = ((T192Body) tlv192._tlvBody)._url;

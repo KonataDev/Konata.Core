@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -41,8 +42,8 @@ internal class T546Body : TlvBody
         TakeBytes(out _source, (uint)sourceLength);
         TakeBytes(out _target, (uint)tgtLength);
         TakeBytes(out _clientPrivateKey, (uint)cpkLength);
-        
-        if (_target.Length != 32) return; // tgt length should be 32 so parse failed
+
+        if (_target.Length != 32) throw new InvalidDataException("tgt length should be 32, parse failed");
         
         long start = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); // start = time.time()
         var tmpSrc = new BigInteger(_source, false, true); // tmpSrc = int.from_bytes(src, "big", signed=False) // should use BitIntegers as it has 128 bytes
@@ -63,8 +64,9 @@ internal class T546Body : TlvBody
 
         byte[] Hasher(BigInteger source)
         {
+            using var sha256 = SHA256.Create();
             var sourceBytes = source.ToByteArray(false, true);
-            return SHA256.Create().ComputeHash(sourceBytes);
+            return sha256.ComputeHash(sourceBytes);
         }
     }
 }
