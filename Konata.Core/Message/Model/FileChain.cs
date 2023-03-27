@@ -1,4 +1,4 @@
-namespace Konata.Core.Message;
+namespace Konata.Core.Message.Model;
 
 public class FileChain: BaseChain
 {

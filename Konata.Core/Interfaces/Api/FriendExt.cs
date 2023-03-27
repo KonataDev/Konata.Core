@@ -3,6 +3,7 @@ using Konata.Core.Attributes;
 using Konata.Core.Events.Model;
 using Konata.Core.Exceptions.Model;
 using Konata.Core.Message;
+using Konata.Core.Message.Model;
 
 // ReSharper disable ArgumentsStyleLiteral
 // ReSharper disable UnusedMember.Global
