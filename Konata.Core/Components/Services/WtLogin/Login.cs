@@ -1,4 +1,5 @@
-﻿using Konata.Core.Events.Model;
+﻿using System;
+using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
@@ -88,20 +89,26 @@ internal class Login : BaseService<WtLoginEvent>
     /// <returns></returns>
     private WtLoginEvent OnRecvCheckSliderCaptcha(OicqResponse response, BotKeyStore keystore)
     {
-        var tlvs = response.BodyData.TakeAllBytes(out var _);
+        var tlvs = response.BodyData.TakeAllBytes(out _);
         var unpacker = new TlvUnpacker(tlvs, true);
 
         Tlv tlv104 = unpacker.TryGetTlv(0x104);
         Tlv tlv192 = unpacker.TryGetTlv(0x192);
+        Tlv tlv546 = unpacker.TryGetTlv(0x546);
+
         if (tlv104 != null && tlv192 != null)
         {
             var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
             var sigCaptchaURL = ((T192Body) tlv192._tlvBody)._url;
 
+            // Generate tlv547 for submiting captcha
+            if (tlv546 != null)
+                keystore.Session.WtSessionT547 = new T547Body((T546Body) tlv546._tlvBody).GetBytes();
+
+            // Save wtlogin session id
             keystore.Session.WtLoginSession = sigSession;
 
-            return WtLoginEvent.ResultCheckSlider
-                ((int) response.Status, sigCaptchaURL);
+            return WtLoginEvent.ResultCheckSlider((int) response.Status, sigCaptchaURL);
         }
 
         return OnRecvUnknown(response);

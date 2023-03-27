@@ -1,4 +1,5 @@
-﻿using Konata.Core.Common;
+﻿using System;
+using Konata.Core.Common;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
 
@@ -22,6 +23,9 @@ internal class OicqRequestCheckSlider : OicqRequest
                     tlvs.PutTlv(new Tlv(0x0104, new T104Body(signinfo.Session.WtLoginSession)));
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(appInfo.WtLoginSdk.MiscBitmap,
                         appInfo.WtLoginSdk.SubSigBitmap, appInfo.WtLoginSdk.SubAppIdList)));
+
+                    if (signinfo.Session.WtSessionT547 != null)
+                        tlvs.PutTlv(new Tlv(0x0547, signinfo.Session.WtSessionT547));
                 }
 
                 w.PutUshortBE(OicqSubCommand);
