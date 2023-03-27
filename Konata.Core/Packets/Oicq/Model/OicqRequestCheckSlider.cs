@@ -25,11 +25,7 @@ internal class OicqRequestCheckSlider : OicqRequest
                         appInfo.WtLoginSdk.SubSigBitmap, appInfo.WtLoginSdk.SubAppIdList)));
                 }
                 
-                if (t547 != null)
-                {
-                    tlvs.PutTlv(new Tlv(0x0547, t547));
-                    Console.WriteLine("tlv547 constructed");
-                }
+                if (t547 != null) tlvs.PutTlv(new Tlv(0x0547, t547));
 
                 w.PutUshortBE(OicqSubCommand);
                 w.PutBytes(tlvs.GetBytes(true));
