@@ -2,6 +2,9 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
+using Konata.Core.Packets.Tlv;
+using Konata.Core.Packets.Tlv.Model;
+
 namespace Konata.Core.Events.Model;
 
 internal class WtLoginEvent : ProtocolEvent
@@ -114,6 +117,8 @@ internal class WtLoginEvent : ProtocolEvent
     public string SliderUrl { get; }
 
     public string CaptchaResult { get; }
+    
+    public T547Body T547 { get; }
 
     private WtLoginEvent(Type eventType)
         : base(true)
@@ -128,11 +133,12 @@ internal class WtLoginEvent : ProtocolEvent
         CaptchaResult = captcha;
     }
 
-    private WtLoginEvent(int resultCode, string sliderUrl)
+    private WtLoginEvent(int resultCode, string sliderUrl, T547Body t547)
         : base(resultCode)
     {
         EventType = Type.CheckSlider;
         SliderUrl = sliderUrl;
+        T547 = t547;
     }
 
     private WtLoginEvent(int resultCode, string smsPhone,
@@ -215,9 +221,10 @@ internal class WtLoginEvent : ProtocolEvent
     /// </summary>
     /// <param name="resultCode"></param>
     /// <param name="sliderUrl"></param>
+    /// <param name="t547"></param>
     /// <returns></returns>
     internal static WtLoginEvent ResultCheckSlider(int resultCode,
-        string sliderUrl) => new(resultCode, sliderUrl);
+        string sliderUrl, T547Body t547) => new(resultCode, sliderUrl, t547);
 
     /// <summary>
     /// Construct check sms result

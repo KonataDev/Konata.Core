@@ -1,4 +1,5 @@
 ﻿using System;
+using Konata.Core.Packets.Tlv;
 using Konata.Core.Utils.Ecdh;
 using Konata.Core.Utils.Crypto;
 using Konata.Core.Utils.Extensions;

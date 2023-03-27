@@ -1,4 +1,5 @@
-﻿using Konata.Core.Events.Model;
+﻿using System;
+using Konata.Core.Events.Model;
 using Konata.Core.Packets;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
@@ -65,7 +66,7 @@ internal class Login : BaseService<WtLoginEvent>
                 break;
 
             case WtLoginEvent.Type.CheckSlider:
-                output = new OicqRequestCheckSlider(input.CaptchaResult, appInfo, keystore);
+                output = new OicqRequestCheckSlider(input.CaptchaResult, appInfo, keystore, input.T547);
                 break;
 
             case WtLoginEvent.Type.VerifyDeviceLock:
@@ -88,20 +89,29 @@ internal class Login : BaseService<WtLoginEvent>
     /// <returns></returns>
     private WtLoginEvent OnRecvCheckSliderCaptcha(OicqResponse response, BotKeyStore keystore)
     {
-        var tlvs = response.BodyData.TakeAllBytes(out var _);
+        var tlvs = response.BodyData.TakeAllBytes(out _);
         var unpacker = new TlvUnpacker(tlvs, true);
 
         Tlv tlv104 = unpacker.TryGetTlv(0x104);
         Tlv tlv192 = unpacker.TryGetTlv(0x192);
+        Tlv tlv546 = unpacker.TryGetTlv(0x546);
+        
         if (tlv104 != null && tlv192 != null)
         {
+            T547Body tlv547 = null;
+            if (tlv546 != null)
+            {
+                Console.WriteLine("tlv546 received");
+                tlv547 = new T547Body((T546Body)tlv546._tlvBody);
+            }
+
             var sigSession = ((T104Body) tlv104._tlvBody)._sigSession;
             var sigCaptchaURL = ((T192Body) tlv192._tlvBody)._url;
 
             keystore.Session.WtLoginSession = sigSession;
 
             return WtLoginEvent.ResultCheckSlider
-                ((int) response.Status, sigCaptchaURL);
+                ((int) response.Status, sigCaptchaURL, tlv547);
         }
 
         return OnRecvUnknown(response);
