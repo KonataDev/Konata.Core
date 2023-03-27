@@ -289,6 +289,11 @@ public class WtLogin
     internal string WtLoginSmsCountry { get; set; }
 
     internal string WtLoginSession { get; set; }
+
+    /// <summary>
+    /// T547 data for submiting slider captcha
+    /// </summary>
+    internal byte[] WtSessionT547 { get; set; }
 }
 
 internal class Highway

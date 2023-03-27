@@ -133,12 +133,11 @@ internal class WtLoginEvent : ProtocolEvent
         CaptchaResult = captcha;
     }
 
-    private WtLoginEvent(int resultCode, string sliderUrl, T547Body t547)
+    private WtLoginEvent(int resultCode, string sliderUrl)
         : base(resultCode)
     {
         EventType = Type.CheckSlider;
         SliderUrl = sliderUrl;
-        T547 = t547;
     }
 
     private WtLoginEvent(int resultCode, string smsPhone,
@@ -221,10 +220,9 @@ internal class WtLoginEvent : ProtocolEvent
     /// </summary>
     /// <param name="resultCode"></param>
     /// <param name="sliderUrl"></param>
-    /// <param name="t547"></param>
     /// <returns></returns>
     internal static WtLoginEvent ResultCheckSlider(int resultCode,
-        string sliderUrl, T547Body t547) => new(resultCode, sliderUrl, t547);
+        string sliderUrl) => new(resultCode, sliderUrl);
 
     /// <summary>
     /// Construct check sms result

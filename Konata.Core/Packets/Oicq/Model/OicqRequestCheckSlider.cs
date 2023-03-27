@@ -12,7 +12,7 @@ internal class OicqRequestCheckSlider : OicqRequest
     private const ushort OicqCommand = 0x0810;
     private const ushort OicqSubCommand = 0x0002;
 
-    public OicqRequestCheckSlider(string ticket, AppInfo appInfo, BotKeyStore signinfo, T547Body t547)
+    public OicqRequestCheckSlider(string ticket, AppInfo appInfo, BotKeyStore signinfo)
         : base(OicqCommand, signinfo.Account.Uin, signinfo.Ecdh.MethodId,
             signinfo.KeyStub.RandKey, signinfo.Ecdh, appInfo, w =>
             {
@@ -23,9 +23,10 @@ internal class OicqRequestCheckSlider : OicqRequest
                     tlvs.PutTlv(new Tlv(0x0104, new T104Body(signinfo.Session.WtLoginSession)));
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(appInfo.WtLoginSdk.MiscBitmap,
                         appInfo.WtLoginSdk.SubSigBitmap, appInfo.WtLoginSdk.SubAppIdList)));
+
+                    if (signinfo.Session.WtSessionT547 != null)
+                        tlvs.PutTlv(new Tlv(0x0547, signinfo.Session.WtSessionT547));
                 }
-                
-                if (t547 != null) tlvs.PutTlv(new Tlv(0x0547, t547));
 
                 w.PutUshortBE(OicqSubCommand);
                 w.PutBytes(tlvs.GetBytes(true));
