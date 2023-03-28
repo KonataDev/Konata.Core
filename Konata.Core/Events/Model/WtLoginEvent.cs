@@ -117,8 +117,6 @@ internal class WtLoginEvent : ProtocolEvent
     public string SliderUrl { get; }
 
     public string CaptchaResult { get; }
-    
-    public T547Body T547 { get; }
 
     private WtLoginEvent(Type eventType)
         : base(true)
