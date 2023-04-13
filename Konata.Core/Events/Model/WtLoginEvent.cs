@@ -2,9 +2,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
-using Konata.Core.Packets.Tlv;
-using Konata.Core.Packets.Tlv.Model;
-
 namespace Konata.Core.Events.Model;
 
 internal class WtLoginEvent : ProtocolEvent
