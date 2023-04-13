@@ -13,9 +13,9 @@
         <Product>Konata Core</Product>
         <Authors>Konata Project</Authors>
         <Copyright>Konata Project (C) $([System.DateTime]::Now.Year)</Copyright>
-        <Description>Core implementation for Konata.</Description>
+        <Description>Android QQ protocol core implementation written in C#.</Description>
 
-        <PackageVersion>1.3.3</PackageVersion>
+        <PackageVersion>1.4.0</PackageVersion>
         <PackageIcon>icon.png</PackageIcon>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -47,10 +47,10 @@
     <!-- References -->
     <ItemGroup>
         <PackageReference Include="Konata.Codec" Version="1.3.1" />
-        <PackageReference Include="Google.Protobuf" Version="3.20.0-rc2" />
+        <PackageReference Include="Google.Protobuf" Version="3.22.3" />
 
         <!-- Including this reference will cause the build to fail on armv7 devices.-->
-        <PackageReference Include="Grpc.Tools" Version="2.45.0" Condition="'$(TargetArchitecture)' != 'Arm'">
+        <PackageReference Include="Grpc.Tools" Version="2.54.0" Condition="'$(TargetArchitecture)' != 'Arm'">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
