@@ -99,6 +99,8 @@ internal class OicqRequestTgtgt : OicqRequest
                     tlvs.PutTlv(new Tlv(0x0521, new T521Body()));
                     tlvs.PutTlv(new Tlv(0x0525, new T525Body(new Tlv(0x0536,
                         new T536Body(new byte[] {0x01, 0x00})))));
+                    tlvs.PutTlv(new Tlv(0x0544, new T544Body(9, 2, appInfo.WtLoginSdk.SdkVersion, device.System.Guid, 
+                        signinfo.Account.Uin)));
                 }
 
                 w.PutUshortBE(OicqSubCommand);
