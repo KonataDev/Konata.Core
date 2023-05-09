@@ -1,5 +1,4 @@
-﻿using System;
-using Konata.Core.Common;
+﻿using Konata.Core.Common;
 using Konata.Core.Packets.Tlv;
 using Konata.Core.Packets.Tlv.Model;
 
@@ -12,7 +11,7 @@ internal class OicqRequestCheckSlider : OicqRequest
     private const ushort OicqCommand = 0x0810;
     private const ushort OicqSubCommand = 0x0002;
 
-    public OicqRequestCheckSlider(string ticket, AppInfo appInfo, BotKeyStore signinfo)
+    public OicqRequestCheckSlider(string ticket, AppInfo appInfo, BotKeyStore signinfo, BotDevice device)
         : base(OicqCommand, signinfo.Account.Uin, signinfo.Ecdh.MethodId,
             signinfo.KeyStub.RandKey, signinfo.Ecdh, appInfo, w =>
             {
@@ -23,7 +22,9 @@ internal class OicqRequestCheckSlider : OicqRequest
                     tlvs.PutTlv(new Tlv(0x0104, new T104Body(signinfo.Session.WtLoginSession)));
                     tlvs.PutTlv(new Tlv(0x0116, new T116Body(appInfo.WtLoginSdk.MiscBitmap,
                         appInfo.WtLoginSdk.SubSigBitmap, appInfo.WtLoginSdk.SubAppIdList)));
-
+                    tlvs.PutTlv(new Tlv(0x0544, new T544Body(OicqSubCommand, 2, 
+                        appInfo.WtLoginSdk.SdkVersion, device.System.Guid, signinfo.Account.Uin)));
+                    
                     if (signinfo.Session.WtSessionT547 != null)
                         tlvs.PutTlv(new Tlv(0x0547, signinfo.Session.WtSessionT547));
                 }
