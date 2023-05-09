@@ -58,7 +58,7 @@ internal class Login : BaseService<WtLoginEvent>
                 break;
 
             case WtLoginEvent.Type.CheckSms:
-                output = new OicqRequestCheckSms(input.CaptchaResult, appInfo, keystore);
+                output = new OicqRequestCheckSms(input.CaptchaResult, appInfo, keystore, device);
                 break;
 
             case WtLoginEvent.Type.RefreshSms:
@@ -66,7 +66,7 @@ internal class Login : BaseService<WtLoginEvent>
                 break;
 
             case WtLoginEvent.Type.CheckSlider:
-                output = new OicqRequestCheckSlider(input.CaptchaResult, appInfo, keystore);
+                output = new OicqRequestCheckSlider(input.CaptchaResult, appInfo, keystore, device);
                 break;
 
             case WtLoginEvent.Type.VerifyDeviceLock:

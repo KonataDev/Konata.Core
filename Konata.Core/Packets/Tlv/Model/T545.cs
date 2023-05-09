@@ -1,23 +1,22 @@
-﻿using Konata.Core.Utils.IO;
-using Konata.Core.Utils.Crypto;
+﻿using System;
+using Konata.Core.Common;
+using Konata.Core.Utils.IO;
+using Konata.Core.Utils.Tencent.QImei;
 
 namespace Konata.Core.Packets.Tlv.Model;
 
 internal class T545Body : TlvBody
 {
-    public readonly byte[] _unknownQiMeiMd5;
-
-    public T545Body(string qiMei = "")
+    public T545Body(BotDevice device, AppInfo appInfo)
         : base()
     {
-        _unknownQiMeiMd5 = new Md5Cryptor().Encrypt(ByteConverter.UnHex(qiMei));
-
-        PutBytes(_unknownQiMeiMd5);
+        var (qImei16, _) = QImeiProvider.RequestQImei(device, appInfo).Result;
+        PutBytes(qImei16 != null ? ByteConverter.UnHex(qImei16) : ByteConverter.UnHex(device.Model.Imei));
     }
 
     public T545Body(byte[] data)
         : base(data)
     {
-        TakeBytes(out _unknownQiMeiMd5, Prefix.None);
+        EatBytes(RemainLength);
     }
 }

@@ -11,7 +11,7 @@ internal class OicqRequestCheckSms : OicqRequest
     private const ushort OicqCommand = 0x0810;
     private const ushort OicqSubCommand = 0x0007;
 
-    public OicqRequestCheckSms(string code, AppInfo appInfo, BotKeyStore signinfo)
+    public OicqRequestCheckSms(string code, AppInfo appInfo, BotKeyStore signinfo, BotDevice device)
         : base(OicqCommand, signinfo.Account.Uin, signinfo.Ecdh.MethodId,
             signinfo.KeyStub.RandKey, signinfo.Ecdh, appInfo, w =>
             {
@@ -25,7 +25,8 @@ internal class OicqRequestCheckSms : OicqRequest
                     tlvs.PutTlv(new Tlv(0x017c, new T17cBody(code)));
                     tlvs.PutTlv(new Tlv(0x0198, new T198Body(0)));
                     tlvs.PutTlv(new Tlv(0x0401, new T401Body(signinfo.Session.GSecret))); // G
-                }
+                    tlvs.PutTlv(new Tlv(0x0544, new T544Body(OicqSubCommand, 2, 
+                        appInfo.WtLoginSdk.SdkVersion, device.System.Guid, signinfo.Account.Uin)));                }
 
                 w.PutUshortBE(OicqSubCommand);
                 w.PutBytes(tlvs.GetBytes(true));
