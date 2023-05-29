@@ -13,18 +13,18 @@ internal class T544Body : TlvBody
         var salt = new TlvBody();
         if (v == 2) // Tlv544v2
         {
-            salt.PutUintLE(0);
+            salt.PutUintBE(0);
             salt.PutBytes(guid);
             salt.PutBytes(Encoding.ASCII.GetBytes(sdkVersion));
-            salt.PutUintLE(subCmd);
-            salt.PutUintLE(0);
+            salt.PutUintBE(subCmd);
+            salt.PutUintBE(0);
         }
         else
         {
-            salt.PutUintLE(userId);
+            salt.PutUintBE(userId);
             salt.PutBytes(guid);
             salt.PutBytes(Encoding.ASCII.GetBytes(sdkVersion));
-            salt.PutUintLE(subCmd);
+            salt.PutUintBE(subCmd);
         }
         var sign = Algorithm.Sign((uint)(DateTime.UtcNow.Ticks / 10), salt.GetBytes());
         PutBytes(sign);
