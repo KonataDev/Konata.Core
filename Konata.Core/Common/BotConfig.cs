@@ -48,7 +48,7 @@ public class BotConfig
     /// <summary>
     /// Protocol type
     /// </summary>
-    public OicqProtocol Protocol;
+    public OicqProtocol Protocol { get; set; }
 
     #endregion
 
